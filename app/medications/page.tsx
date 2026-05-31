@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import {
   AlertTriangle,
+  BedDouble,
   CheckCircle2,
   ClipboardCheck,
   Clock,
+  DoorOpen,
   Pill,
   Stethoscope,
 } from "lucide-react";
@@ -64,12 +66,16 @@ const MAR_ACTIONS: { status: MarStatus; label: string }[] = [
   { status: "refused", label: "Refused" },
 ];
 
+/** Where the dose is administered: a ward bed vs. an outpatient/ED encounter. */
+type CareSetting = "inpatient" | "ambulatory";
+
 interface MarRow {
   prescription: Prescription;
   patientName: string;
   mrn: string;
   isAnonymous: boolean;
   unit: string;
+  setting: CareSetting;
   prescribedBy: string | null;
   administrations: MedicationAdministration[];
   dose: DoseStatus;
@@ -82,19 +88,29 @@ interface UnitSummary {
   due: number;
 }
 
-function unitForVisit(visitId: string): string {
+interface Placement {
+  unit: string;
+  setting: CareSetting;
+}
+
+/**
+ * A patient is inpatient only while an active admission holds a bed; everyone
+ * else (clinic, ED, observation without a bed) is ambulatory and grouped by
+ * their department instead of a ward.
+ */
+function placeVisit(visitId: string): Placement {
   const admission = getAdmissionForVisit(visitId);
-  if (admission?.bed_id) {
+  if (admission?.status === "active" && admission.bed_id) {
     const bed = getBedById(admission.bed_id);
     const ward = bed ? getWardById(bed.ward_id) : undefined;
-    if (ward) return ward.name;
+    if (ward) return { unit: ward.name, setting: "inpatient" };
   }
   const visit = getVisitById(visitId);
   if (visit?.department_id) {
     const dept = getDepartmentById(visit.department_id);
-    if (dept) return dept.name;
+    if (dept) return { unit: dept.name, setting: "ambulatory" };
   }
-  return "Unassigned";
+  return { unit: "Unassigned", setting: "ambulatory" };
 }
 
 function load(now: number): MarRow[] {
@@ -106,6 +122,7 @@ function load(now: number): MarRow[] {
       const administrations = getMedicationAdministrationsForPrescription(
         prescription.id,
       );
+      const place = placeVisit(prescription.visit_id);
       return {
         prescription,
         patientName: patient
@@ -115,7 +132,8 @@ function load(now: number): MarRow[] {
           : "Unknown patient",
         mrn: patient?.mrn ?? "—",
         isAnonymous,
-        unit: unitForVisit(prescription.visit_id),
+        unit: place.unit,
+        setting: place.setting,
         prescribedBy: prescription.prescribed_by_id
           ? (getStaffById(prescription.prescribed_by_id)?.full_name ?? null)
           : null,
@@ -162,6 +180,116 @@ function relativeToNow(iso: string, now: number): string {
   return `in ${span}`;
 }
 
+function WorklistCard({
+  row,
+  now,
+  onRecord,
+}: {
+  row: MarRow;
+  now: number;
+  onRecord: (
+    prescriptionId: string,
+    status: MarStatus,
+    due: string | null,
+  ) => void;
+}) {
+  const { prescription: p, dose } = row;
+  const token = DOSE_STATE_TOKEN[dose.state];
+  const detail = [p.dose, p.route, p.frequency].filter(Boolean).join(" · ");
+  const lastAdmin = row.administrations[0];
+
+  return (
+    <Card>
+      <CardContent className="flex flex-col gap-3 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span
+              aria-hidden
+              className="flex size-9 shrink-0 items-center justify-center rounded-md"
+              style={{
+                backgroundColor:
+                  "color-mix(in oklab, var(--status-diagnostics) 16%, transparent)",
+                color: "var(--status-diagnostics)",
+              }}
+            >
+              <Pill className="size-4.5" />
+            </span>
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="font-medium">{p.drug_name}</span>
+                <Badge
+                  variant="outline"
+                  className="gap-1 border-transparent text-[10px] uppercase"
+                  style={
+                    token === "muted"
+                      ? undefined
+                      : {
+                          backgroundColor: `var(--status-${token})`,
+                          color: `var(--status-${token}-foreground)`,
+                        }
+                  }
+                >
+                  {DOSE_STATE_LABEL[dose.state]}
+                </Badge>
+                {dose.nextDueAt ? (
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
+                    {dose.state === "upcoming" ? "due " : ""}
+                    {relativeToNow(dose.nextDueAt, now)}
+                  </span>
+                ) : null}
+              </div>
+              {detail ? (
+                <span className="text-xs text-muted-foreground">{detail}</span>
+              ) : null}
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                <span
+                  className={
+                    row.isAnonymous
+                      ? "font-mono"
+                      : "font-medium text-foreground"
+                  }
+                >
+                  {row.patientName}
+                </span>
+                <span className="font-mono">{row.mrn}</span>
+                <span>{row.unit}</span>
+                {row.prescribedBy ? (
+                  <span className="inline-flex items-center gap-1">
+                    <Stethoscope className="size-3" />
+                    {row.prescribedBy}
+                  </span>
+                ) : null}
+              </div>
+              {lastAdmin ? (
+                <span className="text-[11px] text-muted-foreground">
+                  Last: {lastAdmin.status}
+                  {lastAdmin.administered_at
+                    ? ` · ${new Date(
+                        lastAdmin.administered_at,
+                      ).toLocaleString()}`
+                    : ""}
+                </span>
+              ) : null}
+            </div>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            {MAR_ACTIONS.map((a) => (
+              <Button
+                key={a.status}
+                size="sm"
+                variant={a.status === "given" ? "default" : "outline"}
+                onClick={() => onRecord(p.id, a.status, dose.nextDueAt)}
+              >
+                {a.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function MedicationsPage() {
   const { actingStaff } = useRole();
   const [rows, setRows] = useState<MarRow[] | null>(null);
@@ -178,7 +306,11 @@ export default function MedicationsPage() {
     refresh();
   }, []);
 
-  function handleRecord(prescriptionId: string, status: MarStatus, due: string | null) {
+  function handleRecord(
+    prescriptionId: string,
+    status: MarStatus,
+    due: string | null,
+  ) {
     recordMedicationAdministration(prescriptionId, {
       administered_by_id: actingStaff?.id ?? null,
       status,
@@ -187,7 +319,10 @@ export default function MedicationsPage() {
     refresh();
   }
 
-  const summaries = rows ? summarize(rows) : [];
+  const inpatient = rows?.filter((r) => r.setting === "inpatient") ?? [];
+  const ambulatory = rows?.filter((r) => r.setting === "ambulatory") ?? [];
+  // Shift handover is a ward concept — only inpatient doses are handed over.
+  const summaries = summarize(inpatient);
   const overdue = rows?.filter((r) => r.dose.state === "overdue").length ?? 0;
   const due = rows?.filter((r) => r.dose.state === "due").length ?? 0;
 
@@ -203,14 +338,14 @@ export default function MedicationsPage() {
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Doses due across the active wards. Record each one as given, held or
-          refused — it stamps the time and your name so the next shift knows
-          exactly what was done.
+          Doses due across the floor. Record each one as given, held or refused
+          — it stamps the time and your name so the next shift knows exactly
+          what was done.
         </p>
       </header>
 
-      {/* Shift-handover summary — outstanding meds per ward */}
-      {rows && rows.length > 0 ? (
+      {/* Shift-handover summary — outstanding inpatient meds per ward */}
+      {inpatient.length > 0 ? (
         <section className="flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <ClipboardCheck className="size-4 text-muted-foreground" />
@@ -262,7 +397,7 @@ export default function MedicationsPage() {
         </section>
       ) : null}
 
-      {/* Worklist */}
+      {/* Worklist — split by care setting */}
       {rows === null ? (
         <p className="text-sm text-muted-foreground">Loading medications…</p>
       ) : rows.length === 0 ? (
@@ -276,109 +411,54 @@ export default function MedicationsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="flex flex-col gap-3">
-          {rows.map((row) => {
-            const { prescription: p, dose } = row;
-            const token = DOSE_STATE_TOKEN[dose.state];
-            const detail = [p.dose, p.route, p.frequency]
-              .filter(Boolean)
-              .join(" · ");
-            const lastAdmin = row.administrations[0];
-            return (
-              <Card key={p.id}>
-                <CardContent className="flex flex-col gap-3 p-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <span
-                        aria-hidden
-                        className="flex size-9 shrink-0 items-center justify-center rounded-md"
-                        style={{
-                          backgroundColor:
-                            "color-mix(in oklab, var(--status-diagnostics) 16%, transparent)",
-                          color: "var(--status-diagnostics)",
-                        }}
-                      >
-                        <Pill className="size-4.5" />
-                      </span>
-                      <div className="flex min-w-0 flex-col gap-0.5">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-medium">{p.drug_name}</span>
-                          <Badge
-                            variant="outline"
-                            className="gap-1 border-transparent text-[10px] uppercase"
-                            style={
-                              token === "muted"
-                                ? undefined
-                                : {
-                                    backgroundColor: `var(--status-${token})`,
-                                    color: `var(--status-${token}-foreground)`,
-                                  }
-                            }
-                          >
-                            {DOSE_STATE_LABEL[dose.state]}
-                          </Badge>
-                          {dose.nextDueAt ? (
-                            <span className="text-[11px] tabular-nums text-muted-foreground">
-                              {dose.state === "upcoming" ? "due " : ""}
-                              {relativeToNow(dose.nextDueAt, now)}
-                            </span>
-                          ) : null}
-                        </div>
-                        {detail ? (
-                          <span className="text-xs text-muted-foreground">
-                            {detail}
-                          </span>
-                        ) : null}
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                          <span
-                            className={
-                              row.isAnonymous
-                                ? "font-mono"
-                                : "font-medium text-foreground"
-                            }
-                          >
-                            {row.patientName}
-                          </span>
-                          <span className="font-mono">{row.mrn}</span>
-                          <span>{row.unit}</span>
-                          {row.prescribedBy ? (
-                            <span className="inline-flex items-center gap-1">
-                              <Stethoscope className="size-3" />
-                              {row.prescribedBy}
-                            </span>
-                          ) : null}
-                        </div>
-                        {lastAdmin ? (
-                          <span className="text-[11px] text-muted-foreground">
-                            Last: {lastAdmin.status}
-                            {lastAdmin.administered_at
-                              ? ` · ${new Date(
-                                  lastAdmin.administered_at,
-                                ).toLocaleString()}`
-                              : ""}
-                          </span>
-                        ) : null}
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 flex-wrap gap-2">
-                      {MAR_ACTIONS.map((a) => (
-                        <Button
-                          key={a.status}
-                          size="sm"
-                          variant={a.status === "given" ? "default" : "outline"}
-                          onClick={() =>
-                            handleRecord(p.id, a.status, dose.nextDueAt)
-                          }
-                        >
-                          {a.label}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="flex flex-col gap-8">
+          {inpatient.length > 0 ? (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <BedDouble className="size-4 text-muted-foreground" />
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  Inpatient · by ward
+                </h2>
+                <span className="text-[11px] tabular-nums text-muted-foreground/70">
+                  {inpatient.length}
+                </span>
+              </div>
+              <div className="flex flex-col gap-3">
+                {inpatient.map((row) => (
+                  <WorklistCard
+                    key={row.prescription.id}
+                    row={row}
+                    now={now}
+                    onRecord={handleRecord}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {ambulatory.length > 0 ? (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <DoorOpen className="size-4 text-muted-foreground" />
+                <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  Outpatient & ED
+                </h2>
+                <span className="text-[11px] tabular-nums text-muted-foreground/70">
+                  {ambulatory.length}
+                </span>
+              </div>
+              <div className="flex flex-col gap-3">
+                {ambulatory.map((row) => (
+                  <WorklistCard
+                    key={row.prescription.id}
+                    row={row}
+                    now={now}
+                    onRecord={handleRecord}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       )}
     </div>
