@@ -64,7 +64,7 @@ function isoDay(ms: number): string {
 export default function ReportsPage() {
   const [data, setData] = useState<ReportData | null>(null);
   const [nowMs, setNowMs] = useState(0);
-  const [preset, setPreset] = useState<RangePreset>("30d");
+  const [preset, setPreset] = useState<RangePreset>("90d");
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
 

@@ -55,8 +55,9 @@ import type {
   Ward,
   WardId,
 } from "@/types/healthcare";
+import { clearOutbox, enqueueChanges, type NewChange } from "@/services/syncQueue";
 
-const STORAGE_KEY = "careflow_db_v3";
+const STORAGE_KEY = "careflow_db_v4";
 
 interface Database {
   departments: Department[];
@@ -119,7 +120,7 @@ function loadDatabase(): Database {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) {
     const seeded = seedDatabaseObject();
-    persist(seeded);
+    persist(seeded, { track: false });
     return seeded;
   }
 
@@ -127,13 +128,16 @@ function loadDatabase(): Database {
     const parsed = JSON.parse(raw) as Partial<Database>;
     const normalized = normalizeDatabase(parsed);
     // Heal the persisted shape so a DB saved by an older build (missing newer
-    // collections like `allergies`/`transfers`) doesn't crash accessors.
-    persist(normalized);
+    // collections like `allergies`/`transfers`) doesn't crash accessors. This is
+    // not a user mutation, so it is untracked — but it refreshes the outbox
+    // baseline (`lastPersisted`) to the current stored state, so the next real
+    // mutation diffs against an accurate pre-image.
+    persist(normalized, { track: false });
     return normalized;
   } catch {
     // Corrupt payload — reset to a clean seed rather than crashing the UI.
     const seeded = seedDatabaseObject();
-    persist(seeded);
+    persist(seeded, { track: false });
     return seeded;
   }
 }
@@ -177,10 +181,97 @@ export function normalizeDatabase(parsed: Partial<Database>): Database {
   return db;
 }
 
-function persist(db: Database): void {
-  if (isBrowser()) {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+/**
+ * The last database state written to storage, kept in memory so the next
+ * `persist` can diff against it and capture exactly which rows changed. Refreshed
+ * on every write (tracked or not) and on every `loadDatabase` heal, so it always
+ * mirrors what is on disk immediately before a mutation runs.
+ */
+let lastPersisted: Database | null = null;
+
+/**
+ * Map each in-memory collection (camelCase) to its Supabase table name
+ * (snake_case) so captured changes carry the real Postgres table — letting the
+ * future sync seam do `supabase.from(change.table)…` with no translation.
+ */
+const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
+  departments: "departments",
+  wards: "wards",
+  beds: "beds",
+  staff: "staff",
+  patients: "patients",
+  allergies: "allergies",
+  visits: "visits",
+  consultations: "consultations",
+  diagnoses: "diagnoses",
+  orders: "orders",
+  results: "results",
+  prescriptions: "prescriptions",
+  medicationAdministrations: "medication_administrations",
+  treatmentRecords: "treatment_records",
+  admissions: "admissions",
+  transfers: "transfers",
+};
+
+interface Identified {
+  id: string;
+}
+
+/**
+ * Diff two database snapshots at the row level, producing one outbox change per
+ * affected row across every collection: `insert` for a new id, `delete` for a
+ * dropped id, and `update` when a shared id's row content changed. Pure — no
+ * storage access — so it is unit-testable in the node environment.
+ */
+export function diffDatabases(pre: Database, post: Database): NewChange[] {
+  const changes: NewChange[] = [];
+
+  for (const collection of DB_COLLECTIONS) {
+    const table = COLLECTION_TO_TABLE[collection];
+    const preRows = (pre[collection] ?? []) as unknown as Identified[];
+    const postRows = (post[collection] ?? []) as unknown as Identified[];
+
+    const preById = new Map(preRows.map((r) => [r.id, r]));
+    const postById = new Map(postRows.map((r) => [r.id, r]));
+
+    for (const [id, row] of postById) {
+      const before = preById.get(id);
+      if (!before) {
+        changes.push({ table, op: "insert", row_id: id, payload: { ...row } });
+      } else if (JSON.stringify(before) !== JSON.stringify(row)) {
+        changes.push({ table, op: "update", row_id: id, payload: { ...row } });
+      }
+    }
+
+    for (const [id] of preById) {
+      if (!postById.has(id)) {
+        changes.push({ table, op: "delete", row_id: id, payload: { id } });
+      }
+    }
   }
+
+  return changes;
+}
+
+/**
+ * Write the database to storage. The single integration point for the outbox:
+ * a *tracked* persist (the default — used by every mutation) diffs the new state
+ * against {@link lastPersisted} and enqueues a change per affected row. Seeding,
+ * healing and reset pass `{ track: false }` so they don't flood the queue with
+ * non-mutations. On the server (no localStorage) this is a no-op, leaving the
+ * node test path untouched.
+ */
+function persist(db: Database, opts: { track?: boolean } = {}): void {
+  if (!isBrowser()) return;
+
+  const track = opts.track ?? true;
+  if (track && lastPersisted) {
+    const changes = diffDatabases(lastPersisted, db);
+    if (changes.length > 0) enqueueChanges(changes);
+  }
+
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  lastPersisted = structuredClone(db);
 }
 
 // ---------------------------------------------------------------------------
@@ -1848,7 +1939,11 @@ export function reconcileAnonymousProfile(
 /** Wipe and re-seed the store. Useful during testing/demoing. */
 export function resetDatabase(): Database {
   const seeded = seedDatabaseObject();
-  persist(seeded);
+  // A fresh seed is not a set of user mutations and there is nothing to upload
+  // for it, so don't track it — and discard any changes still queued from the
+  // store we just threw away.
+  clearOutbox();
+  persist(seeded, { track: false });
   return seeded;
 }
 

@@ -24,6 +24,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { RoleSwitcher } from "@/components/role-switcher";
+import { SyncStatus } from "@/components/pwa/sync-status";
 import { ROLE_LABEL, staffInitials, useRole } from "@/components/role-provider";
 import {
   Sheet,
@@ -210,6 +211,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </span>
             <Separator orientation="vertical" className="hidden h-5 sm:block" />
+            <SyncStatus />
             <RoleSwitcher />
             <ThemeToggle />
           </div>

@@ -5,6 +5,7 @@ import {
   assignBedToAdmission,
   computeWardOccupancy,
   countVisitsByDepartment,
+  diffDatabases,
   evaluateDischargeReadiness,
   filterVisitsByDepartment,
   generateMrn,
@@ -333,5 +334,87 @@ describe("normalizeDatabase", () => {
   it("defaults a missing mrnCounter to the patient count", () => {
     const db = normalizeDatabase({ patients: [makePatient(), makePatient()] });
     expect(db.mrnCounter).toBe(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// diffDatabases — the pure change-capture that feeds the outbox. Compares two
+// DB snapshots row-by-row and emits insert/update/delete per affected row, with
+// the Postgres (snake_case) table name so each change maps onto a Supabase write.
+// ---------------------------------------------------------------------------
+
+describe("diffDatabases", () => {
+  it("emits no changes for identical snapshots", () => {
+    const db = normalizeDatabase({ patients: [makePatient({ id: "p1" })] });
+    expect(diffDatabases(db, structuredClone(db))).toEqual([]);
+  });
+
+  it("detects an inserted row", () => {
+    const pre = normalizeDatabase({});
+    const post = normalizeDatabase({ patients: [makePatient({ id: "p1" })] });
+    const changes = diffDatabases(pre, post);
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toMatchObject({
+      table: "patients",
+      op: "insert",
+      row_id: "p1",
+    });
+    expect(changes[0].payload).toMatchObject({ id: "p1" });
+  });
+
+  it("detects an updated row when its JSON differs", () => {
+    const pre = normalizeDatabase({
+      patients: [makePatient({ id: "p1", full_name: "Old Name" })],
+    });
+    const post = normalizeDatabase({
+      patients: [makePatient({ id: "p1", full_name: "New Name" })],
+    });
+    const changes = diffDatabases(pre, post);
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toMatchObject({ op: "update", row_id: "p1" });
+    expect(changes[0].payload).toMatchObject({ full_name: "New Name" });
+  });
+
+  it("detects a deleted row with an id-only payload", () => {
+    const pre = normalizeDatabase({ patients: [makePatient({ id: "p1" })] });
+    const post = normalizeDatabase({});
+    const changes = diffDatabases(pre, post);
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toMatchObject({
+      table: "patients",
+      op: "delete",
+      row_id: "p1",
+      payload: { id: "p1" },
+    });
+  });
+
+  it("maps camelCase collections onto snake_case Postgres tables", () => {
+    const pre = normalizeDatabase({});
+    const post = normalizeDatabase({});
+    post.medicationAdministrations = [
+      { id: "ma1" } as unknown as (typeof post.medicationAdministrations)[number],
+    ];
+    const changes = diffDatabases(pre, post);
+    expect(changes).toHaveLength(1);
+    expect(changes[0].table).toBe("medication_administrations");
+  });
+
+  it("captures a multi-row, multi-table mutation as one change per row", () => {
+    const pre = normalizeDatabase({
+      patients: [makePatient({ id: "p1" })],
+      wards: [makeWard("w1")],
+    });
+    const post = normalizeDatabase({
+      // p1 deleted, p2 inserted, ward updated
+      patients: [makePatient({ id: "p2" })],
+      wards: [{ ...makeWard("w1"), name: "Renamed Ward" }],
+    });
+    const changes = diffDatabases(pre, post);
+    const ops = changes.map((c) => `${c.table}:${c.op}:${c.row_id}`).sort();
+    expect(ops).toEqual([
+      "patients:delete:p1",
+      "patients:insert:p2",
+      "wards:update:w1",
+    ]);
   });
 });

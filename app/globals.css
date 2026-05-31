@@ -54,6 +54,7 @@
   --color-status-discharge-foreground: var(--status-discharge-foreground);
   --color-status-clearance: var(--status-clearance);
   --color-status-clearance-foreground: var(--status-clearance-foreground);
+  --color-status-warning: var(--status-warning);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -133,6 +134,7 @@
   --status-discharge-foreground: oklch(0.208 0.042 265.755);
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
+  --status-warning: oklch(0.705 0.16 70.0);
 }
 
 .dark {
@@ -181,6 +183,7 @@
   --status-discharge-foreground: oklch(0.208 0.042 265.755);
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
+  --status-warning: oklch(0.769 0.16 70.0);
 }
 
 @layer base {
