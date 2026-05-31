@@ -444,7 +444,27 @@ do $$ begin
     foreign key (current_admission_id) references admissions(id) on delete set null;
 exception when duplicate_object then null; end $$;
 
--- ---- 4f. Audit log ----------------------------------------------------------
+-- ---- 4f. Transfers (ward / bed / doctor moves as first-class events) --------
+-- Append-only history of a patient moving during an admission. The admission
+-- row always reflects the *current* placement; this table records each move so
+-- bed history and attending-doctor changes are auditable. A null from/to pair
+-- for a dimension means that dimension was unchanged by the move.
+create table if not exists transfers (
+  id                uuid primary key default gen_random_uuid(),
+  admission_id      uuid not null references admissions(id) on delete cascade,
+  patient_id        uuid not null references patients(id) on delete restrict,
+  from_ward_id      uuid references wards(id) on delete set null,
+  to_ward_id        uuid references wards(id) on delete set null,
+  from_bed_id       uuid references beds(id) on delete set null,
+  to_bed_id         uuid references beds(id) on delete set null,
+  from_doctor_id    uuid references staff(id) on delete set null,
+  to_doctor_id      uuid references staff(id) on delete set null,
+  reason            text,
+  transferred_by_id uuid references staff(id) on delete set null,
+  created_at        timestamptz not null default now()
+);
+
+-- ---- 4g. Audit log ----------------------------------------------------------
 
 create table if not exists audit_log (
   id               bigint generated always as identity primary key,
@@ -476,6 +496,8 @@ create index if not exists idx_treatment_visit        on treatment_records(visit
 create index if not exists idx_admissions_visit       on admissions(visit_id);
 create index if not exists idx_admissions_status      on admissions(status);
 create index if not exists idx_admissions_bed         on admissions(bed_id);
+create index if not exists idx_transfers_admission    on transfers(admission_id);
+create index if not exists idx_transfers_patient      on transfers(patient_id);
 create index if not exists idx_allergies_patient      on allergies(patient_id);
 create index if not exists idx_beds_ward              on beds(ward_id);
 create index if not exists idx_beds_status            on beds(status);
@@ -512,7 +534,7 @@ begin
   foreach t in array array[
     'patients','visits','consultations','diagnoses','orders','results',
     'prescriptions','medication_administrations','treatment_records',
-    'admissions','beds','wards','departments','staff','allergies'
+    'admissions','transfers','beds','wards','departments','staff','allergies'
   ]
   loop
     execute format('drop trigger if exists trg_%I_audit on %I;', t, t);
@@ -643,8 +665,8 @@ begin
   foreach t in array array[
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
-    'medication_administrations','treatment_records','admissions','allergies',
-    'audit_log'
+    'medication_administrations','treatment_records','admissions','transfers',
+    'allergies','audit_log'
   ]
   loop
     execute format('alter table %I enable row level security;', t);
@@ -658,7 +680,8 @@ begin
   foreach t in array array[
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
-    'medication_administrations','treatment_records','admissions','allergies'
+    'medication_administrations','treatment_records','admissions','transfers',
+    'allergies'
   ]
   loop
     execute format('drop policy if exists "read for staff" on %I;', t);
@@ -734,6 +757,13 @@ create policy "clinical write allergies" on allergies
 drop policy if exists "nurse update admissions" on admissions;
 create policy "nurse update admissions" on admissions
   for update to authenticated
+  using (current_staff_role() in ('nurse','doctor','admin'))
+  with check (current_staff_role() in ('nurse','doctor','admin'));
+
+-- Bed/ward/doctor moves are logged by the clinician making the move.
+drop policy if exists "clinical write transfers" on transfers;
+create policy "clinical write transfers" on transfers
+  for all to authenticated
   using (current_staff_role() in ('nurse','doctor','admin'))
   with check (current_staff_role() in ('nurse','doctor','admin'));
 

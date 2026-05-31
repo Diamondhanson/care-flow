@@ -35,6 +35,7 @@ export type PrescriptionId = string;
 export type MedicationAdministrationId = string;
 export type TreatmentRecordId = string;
 export type AdmissionId = string;
+export type TransferId = string;
 export type AllergyId = string;
 export type AuditLogId = number;
 
@@ -425,6 +426,28 @@ export interface Admission {
   admitted_at: ISODateString;
   discharged_at: ISODateString | null;
   updated_at: ISODateString;
+}
+
+/**
+ * `transfers` — an append-only event recording a patient moving wards, beds, or
+ * attending doctors during an admission. The admission row always holds the
+ * *current* placement; transfers hold the history (bed-movement audit + the
+ * "ICU → general ward" / change-of-doctor trail). Null from/to fields mean that
+ * dimension did not change in this move.
+ */
+export interface Transfer {
+  id: TransferId;
+  admission_id: AdmissionId;
+  patient_id: PatientId;
+  from_ward_id: WardId | null;
+  to_ward_id: WardId | null;
+  from_bed_id: BedId | null;
+  to_bed_id: BedId | null;
+  from_doctor_id: StaffId | null;
+  to_doctor_id: StaffId | null;
+  reason: string | null;
+  transferred_by_id: StaffId | null;
+  created_at: ISODateString;
 }
 
 // ---------------------------------------------------------------------------

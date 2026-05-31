@@ -2,12 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   ALL_DEPARTMENTS,
+  assignBedToAdmission,
   computeWardOccupancy,
   countVisitsByDepartment,
   evaluateDischargeReadiness,
   filterVisitsByDepartment,
   generateMrn,
   isTerminalStage,
+  transferAdmission,
 } from "@/services/mockStorage";
 import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
 
@@ -241,5 +243,55 @@ describe("countVisitsByDepartment", () => {
 
   it("returns an empty tally for no visits", () => {
     expect(countVisitsByDepartment([])).toEqual({});
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Transfers — exercised against the deterministic seed (each call re-seeds in
+// the node test env, so we assert on the returned admission/transfer).
+// ---------------------------------------------------------------------------
+
+describe("transferAdmission", () => {
+  it("moves an admission to a free bed and derives the ward from it", () => {
+    const { admission, transfer } = transferAdmission("adm_idris", {
+      to_bed_id: "bed_medb_09",
+      reason: "Step-down from ICU",
+    });
+    expect(admission.bed_id).toBe("bed_medb_09");
+    expect(admission.ward_id).toBe("ward_medb");
+    expect(transfer.from_bed_id).toBe("bed_icu_04");
+    expect(transfer.to_bed_id).toBe("bed_medb_09");
+    expect(transfer.from_ward_id).toBe("ward_icu");
+    expect(transfer.to_ward_id).toBe("ward_medb");
+    expect(transfer.reason).toBe("Step-down from ICU");
+  });
+
+  it("changes the attending doctor while leaving the bed unchanged", () => {
+    const { admission, transfer } = transferAdmission("adm_idris", {
+      to_doctor_id: "staff_okafor",
+    });
+    expect(admission.attending_doctor_id).toBe("staff_okafor");
+    expect(transfer.from_doctor_id).toBe("staff_chen");
+    expect(transfer.to_doctor_id).toBe("staff_okafor");
+    expect(transfer.from_bed_id).toBe("bed_icu_04");
+    expect(transfer.to_bed_id).toBe("bed_icu_04");
+  });
+
+  it("refuses a bed already held by another admission", () => {
+    expect(() =>
+      transferAdmission("adm_idris", { to_bed_id: "bed_medb_11" }),
+    ).toThrow(/occupied/i);
+  });
+
+  it("throws for an unknown admission", () => {
+    expect(() => transferAdmission("nope", {})).toThrow();
+  });
+});
+
+describe("assignBedToAdmission", () => {
+  it("assigns a free bed and derives the ward", () => {
+    const admission = assignBedToAdmission("adm_idris", "bed_er_1");
+    expect(admission.bed_id).toBe("bed_er_1");
+    expect(admission.ward_id).toBe("ward_er");
   });
 });

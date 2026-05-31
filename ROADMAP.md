@@ -190,17 +190,34 @@ foundation everything else depends on.
 * [x] Nurse MAR view (`/medications`): due/overdue/upcoming doses across the active wards, sorted by urgency, with one-tap "given / held / refused" that stamps the time + acting author and re-schedules the next dose.
 * [x] Shift-handover view summarizing outstanding meds per ward (overdue / due / clear) at the top of the MAR page.
 
-## PHASE 11 — Editable Ward / Bed Floor Map & Occupancy 🔜
+## PHASE 11 — Editable Ward / Bed Floor Map & Occupancy ✅ COMPLETE
 
 **Goal:** admin defines the hospital's physical layout; occupancy stays live.
 
-* [ ] Admin CRUD for **Wards** (name, floor, department) and the **Beds** inside each ward — so an
-      admin can manually add the number of wards/floors and how many beds each contains.
-* [ ] Assigning an admitted patient to a bed marks it occupied; discharge/transfer frees it —
-      **automatic in the Supabase schema via the `sync_bed_occupancy` trigger.**
-* [ ] Live floor-map view: per ward/floor, how many beds total / free / occupied, and who's in each
-      occupied bed; block assigning a patient when no free bed exists.
-* [ ] Backed by the `ward_occupancy` reporting view.
+* [x] Admin CRUD for **Wards** (name, floor, department) and the **Beds** inside each ward — the
+      `/floor-map` page lets an admin create wards, pre-fill or append beds (auto-numbered
+      "Bed N"), rename beds, set manual status (free / reserved / cleaning / maintenance), and
+      remove empty beds.
+* [x] Assigning an admitted patient to a bed marks it occupied; transfer/discharge frees the old
+      bed and occupies the new one — `transferAdmission`/`assignBedToAdmission` in the service layer
+      mirror the Supabase `sync_bed_occupancy` trigger.
+* [x] Live floor-map view: wards grouped by floor, per-ward total / free / occupied tallies, and
+      who occupies each bed; occupied beds can't be re-statused or removed.
+* [x] **Transfers** (flagged item #1) folded in: ward/bed/doctor moves are first-class append-only
+      events. The inpatient patient drawer gains a "Placement & transfers" section — assign a bed to
+      a bedless admission, move ward/bed/doctor with a reason, and read the transfer history.
+* [ ] Backed by the `ward_occupancy` reporting view (deferred to Phase 13 with the Supabase cutover;
+      the mock computes occupancy from `beds` directly).
+
+### Update Log
+
+* **MAR split by care setting** (Phase 10): the nurse MAR view (`/medications`) groups due/overdue/
+  upcoming doses and supports one-tap given/held/refused.
+* **Allergies as a standalone safety phase**: patient allergy records drive a drawer banner
+  (no-known / unassessed / has-allergies) and a drug-allergy prescribing caution.
+* **Transfers coupled into Phase 11**: because bed occupancy and ward/doctor transfers are the same
+  underlying state change, transfers ship inside Phase 11 rather than as a separate phase — modeled
+  as append-only `transfers` events with the admission row holding the current placement.
 
 ## PHASE 12 — Reporting, Analytics & Export 🔜
 

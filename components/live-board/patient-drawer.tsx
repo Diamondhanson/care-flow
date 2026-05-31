@@ -19,6 +19,7 @@ import {
   Eye,
   Send,
   Pill,
+  ArrowLeftRight,
 } from "lucide-react";
 
 import {
@@ -46,6 +47,7 @@ import {
   getAdmissionForVisit,
   getAllergiesForPatient,
   getBedById,
+  getBeds,
   getConsultationsForVisit,
   getDepartmentById,
   getDiagnosesForVisit,
@@ -56,14 +58,17 @@ import {
   getPrescriptionsForVisit,
   getStaff,
   getStaffById,
+  getTransfersForAdmission,
   getTreatmentRecordsForVisit,
   getVisitById,
+  getWards,
   addConsultation,
   addDiagnosis,
   addOrder,
   addPrescription,
   addTreatmentLog,
   recordDisposition,
+  transferAdmission,
   updateAdmissionClearances,
   updateVisitStage,
   evaluateDischargeReadiness,
@@ -96,6 +101,7 @@ import { useRole } from "@/components/role-provider";
 import type {
   Admission,
   Allergy,
+  Bed,
   Consultation,
   Diagnosis,
   Order,
@@ -103,8 +109,10 @@ import type {
   Patient,
   Prescription,
   Result,
+  Transfer,
   TreatmentRecord,
   Visit,
+  Ward,
 } from "@/types/healthcare";
 
 /** Lightweight ICD-10 quick-pick suggestions surfaced via a native datalist. */
@@ -131,6 +139,9 @@ const DISPOSITIONS: {
   { value: "observation", label: "Observation", icon: Eye },
   { value: "refer", label: "Refer", icon: Send },
 ];
+
+const NO_BED = "__none__";
+const NO_DOCTOR = "__none__";
 
 const CLEARANCE_FIELDS = [
   { key: "is_medical_cleared", label: "Medical cleared" },
@@ -163,6 +174,15 @@ export function PatientDrawer({
   const [verified, setVerified] = useState<Patient[]>([]);
   const [allergies, setAllergies] = useState<Allergy[]>([]);
   const [location, setLocation] = useState<string | null>(null);
+
+  // Placement & transfers (inpatient admissions)
+  const [wards, setWards] = useState<Ward[]>([]);
+  const [beds, setBeds] = useState<Bed[]>([]);
+  const [transfers, setTransfers] = useState<Transfer[]>([]);
+  const [transferBedId, setTransferBedId] = useState<string>(NO_BED);
+  const [transferDoctorId, setTransferDoctorId] = useState<string>(NO_DOCTOR);
+  const [transferReason, setTransferReason] = useState("");
+  const [transferError, setTransferError] = useState<string | null>(null);
 
   // SOAP consultation form
   const [subjective, setSubjective] = useState("");
@@ -224,6 +244,13 @@ export function PatientDrawer({
     setResults(getResultsForVisit(visitId));
     setPrescriptions(getPrescriptionsForVisit(visitId));
     setAllergies(getAllergiesForPatient(v.patient_id));
+    setWards(getWards());
+    setBeds(getBeds());
+    setTransfers(adm ? getTransfersForAdmission(adm.id) : []);
+    setTransferBedId(adm?.bed_id ?? NO_BED);
+    setTransferDoctorId(adm?.attending_doctor_id ?? NO_DOCTOR);
+    setTransferReason("");
+    setTransferError(null);
     setVerified(
       getPatients().filter(
         (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
@@ -294,6 +321,32 @@ export function PatientDrawer({
   );
   const worstAllergy = highestSeverity(allergies);
   const drugAllergies = sortedAllergies.filter((a) => a.category === "drug");
+
+  // Placement & transfers — lookup maps + selectable options.
+  const wardById = new Map(wards.map((w) => [w.id, w]));
+  const bedById = new Map(beds.map((b) => [b.id, b]));
+  const doctors = getStaff().filter((s) => s.role === "doctor" && s.is_active);
+  const staffById = new Map(getStaff().map((s) => [s.id, s]));
+  const assignableBeds = admission
+    ? beds
+        .filter((b) => b.status === "free" || b.id === admission.bed_id)
+        .map((b) => ({
+          bed: b,
+          label: `${wardById.get(b.ward_id)?.name ?? "Ward"} · ${b.label}`,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }))
+    : [];
+  const hasBed = Boolean(admission?.bed_id);
+
+  function bedLabel(id: string | null): string {
+    if (!id) return "—";
+    const b = bedById.get(id);
+    if (!b) return "—";
+    return `${wardById.get(b.ward_id)?.name ?? "Ward"} · ${b.label}`;
+  }
+  function staffName(id: string | null): string {
+    return id ? (staffById.get(id)?.full_name ?? "—") : "—";
+  }
 
   function num(v: NumField): number | null {
     if (v.trim() === "") return null;
@@ -410,6 +463,39 @@ export function PatientDrawer({
     reconcileAnonymousProfile(patient!.id, reconcileTarget);
     onMutate();
     onOpenChange(false);
+  }
+
+  function handleTransfer() {
+    if (!admission) return;
+    setTransferError(null);
+    const currentBed = admission.bed_id ?? NO_BED;
+    const currentDoctor = admission.attending_doctor_id ?? NO_DOCTOR;
+    const bedChanged = transferBedId !== currentBed;
+    const doctorChanged = transferDoctorId !== currentDoctor;
+    if (!bedChanged && !doctorChanged) {
+      setTransferError("Choose a different bed or doctor to record a move.");
+      return;
+    }
+    try {
+      transferAdmission(admission.id, {
+        ...(bedChanged
+          ? { to_bed_id: transferBedId === NO_BED ? null : transferBedId }
+          : {}),
+        ...(doctorChanged
+          ? {
+              to_doctor_id:
+                transferDoctorId === NO_DOCTOR ? null : transferDoctorId,
+            }
+          : {}),
+        reason: transferReason,
+        transferred_by_id: recorderId,
+      });
+      refresh();
+    } catch (e) {
+      setTransferError(
+        e instanceof Error ? e.message : "Could not record the transfer.",
+      );
+    }
   }
 
   return (
@@ -1105,6 +1191,166 @@ export function PatientDrawer({
                   </label>
                 ))}
               </div>
+            </section>
+          ) : null}
+
+          {admission ? <Separator /> : null}
+
+          {/* Placement & transfers — inpatient admissions only */}
+          {admission ? (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <ArrowLeftRight className="size-4 text-muted-foreground" />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  Placement &amp; transfers
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 rounded-md border border-border px-3 py-2.5 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Ward
+                  </span>
+                  <span>
+                    {admission.ward_id
+                      ? (wardById.get(admission.ward_id)?.name ?? "—")
+                      : "—"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Bed
+                  </span>
+                  <span className="font-mono">
+                    {admission.bed_id
+                      ? (bedById.get(admission.bed_id)?.label ?? "—")
+                      : "Unassigned"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="transfer-bed" className="text-xs">
+                  Bed
+                </Label>
+                <Select
+                  items={{
+                    [NO_BED]: "No bed",
+                    ...Object.fromEntries(
+                      assignableBeds.map((o) => [o.bed.id, o.label]),
+                    ),
+                  }}
+                  value={transferBedId}
+                  onValueChange={(v) => setTransferBedId(v as string)}
+                >
+                  <SelectTrigger id="transfer-bed" className="w-full">
+                    <SelectValue placeholder="Select a bed" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_BED}>No bed</SelectItem>
+                    {assignableBeds.map((o) => (
+                      <SelectItem key={o.bed.id} value={o.bed.id}>
+                        {o.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="transfer-doctor" className="text-xs">
+                  Attending doctor
+                </Label>
+                <Select
+                  items={{
+                    [NO_DOCTOR]: "Unassigned",
+                    ...Object.fromEntries(
+                      doctors.map((d) => [d.id, d.full_name]),
+                    ),
+                  }}
+                  value={transferDoctorId}
+                  onValueChange={(v) => setTransferDoctorId(v as string)}
+                >
+                  <SelectTrigger id="transfer-doctor" className="w-full">
+                    <SelectValue placeholder="Select a doctor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={NO_DOCTOR}>Unassigned</SelectItem>
+                    {doctors.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.full_name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="transfer-reason" className="text-xs">
+                  Reason
+                </Label>
+                <Input
+                  id="transfer-reason"
+                  value={transferReason}
+                  onChange={(e) => setTransferReason(e.target.value)}
+                  placeholder="Optional — e.g. Step-down from ICU"
+                />
+              </div>
+
+              {transferError ? (
+                <p className="text-xs text-destructive">{transferError}</p>
+              ) : null}
+
+              <Button onClick={handleTransfer} className="self-end">
+                <ArrowLeftRight className="size-4" />
+                {hasBed ? "Record transfer" : "Assign bed"}
+              </Button>
+
+              {transfers.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Transfer history
+                  </span>
+                  <ul className="flex flex-col gap-2">
+                    {transfers.map((t) => {
+                      const lines: string[] = [];
+                      if (t.from_bed_id !== t.to_bed_id) {
+                        lines.push(
+                          `Bed ${bedLabel(t.from_bed_id)} → ${bedLabel(t.to_bed_id)}`,
+                        );
+                      }
+                      if (t.from_doctor_id !== t.to_doctor_id) {
+                        lines.push(
+                          `Doctor ${staffName(t.from_doctor_id)} → ${staffName(t.to_doctor_id)}`,
+                        );
+                      }
+                      return (
+                        <li
+                          key={t.id}
+                          className="flex flex-col gap-1 rounded-md border border-border p-3 text-xs"
+                        >
+                          <span className="font-mono text-muted-foreground">
+                            {new Date(t.created_at).toLocaleString()}
+                          </span>
+                          {lines.map((l) => (
+                            <span key={l}>{l}</span>
+                          ))}
+                          {t.reason ? (
+                            <span className="text-muted-foreground">
+                              {t.reason}
+                            </span>
+                          ) : null}
+                          {t.transferred_by_id ? (
+                            <span className="text-muted-foreground">
+                              by {staffName(t.transferred_by_id)}
+                            </span>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
             </section>
           ) : null}
 

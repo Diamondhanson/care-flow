@@ -10,6 +10,7 @@ import {
   FlaskConical,
   GitMerge,
   LayoutDashboard,
+  LayoutGrid,
   Menu,
   Pill,
   Users,
@@ -43,6 +44,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "Medications", href: "/medications", icon: Pill },
   { title: "Reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "Departments", href: "/departments", icon: Building2 },
+  { title: "Floor Map", href: "/floor-map", icon: LayoutGrid },
   { title: "Staff Directory", href: "/staff", icon: Users },
 ];
 

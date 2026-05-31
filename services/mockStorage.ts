@@ -23,6 +23,7 @@ import type {
   AllergySeverity,
   Bed,
   BedId,
+  BedStatus,
   CareStage,
   Consultation,
   ConsultationId,
@@ -45,6 +46,8 @@ import type {
   ResultId,
   Staff,
   StaffId,
+  Transfer,
+  TransferId,
   TreatmentRecord,
   Visit,
   VisitId,
@@ -71,6 +74,7 @@ interface Database {
   medicationAdministrations: MedicationAdministration[];
   treatmentRecords: TreatmentRecord[];
   admissions: Admission[];
+  transfers: Transfer[];
   /** Last MRN sequence value issued (drives `generate_mrn()` parity). */
   mrnCounter: number;
 }
@@ -196,6 +200,34 @@ export interface UpdateDepartmentInput {
   code?: string | null;
   description?: string | null;
   is_active?: boolean;
+}
+
+export interface CreateWardInput {
+  name: string;
+  department_id?: DepartmentId | null;
+  floor_label?: string | null;
+  /** Optionally seed the ward with N sequentially-labelled beds on creation. */
+  bed_count?: number;
+}
+
+export interface UpdateWardInput {
+  name?: string;
+  department_id?: DepartmentId | null;
+  floor_label?: string | null;
+  is_active?: boolean;
+}
+
+export interface UpdateBedInput {
+  label?: string;
+  status?: BedStatus;
+}
+
+export interface TransferAdmissionInput {
+  to_ward_id?: WardId | null;
+  to_bed_id?: BedId | null;
+  to_doctor_id?: StaffId | null;
+  reason?: string | null;
+  transferred_by_id?: StaffId | null;
 }
 
 export interface AddConsultationInput {
@@ -555,6 +587,20 @@ export function getActiveAdmissions(): Admission[] {
     .sort((a, b) => b.admitted_at.localeCompare(a.admitted_at));
 }
 
+/** The move history for an admission, most recent first. */
+export function getTransfersForAdmission(admissionId: AdmissionId): Transfer[] {
+  return loadDatabase()
+    .transfers.filter((t) => t.admission_id === admissionId)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
+/** The move history for a patient across all admissions, most recent first. */
+export function getTransfersForPatient(patientId: PatientId): Transfer[] {
+  return loadDatabase()
+    .transfers.filter((t) => t.patient_id === patientId)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
+}
+
 // ---------------------------------------------------------------------------
 // Occupancy
 // ---------------------------------------------------------------------------
@@ -644,6 +690,251 @@ export function setDepartmentActive(
   isActive: boolean
 ): Department {
   return updateDepartment(id, { is_active: isActive });
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — wards & beds (admin floor map)
+// ---------------------------------------------------------------------------
+
+/**
+ * Next "Bed N" labels continuing past the highest existing numeric label, so
+ * appended beds never collide. Private mirror of the UI's `nextBedLabels`.
+ */
+function nextBedLabelsInternal(existing: string[], count: number): string[] {
+  let max = 0;
+  for (const label of existing) {
+    const m = label.match(/(\d+)\s*$/);
+    if (m) max = Math.max(max, Number.parseInt(m[1], 10));
+  }
+  const labels: string[] = [];
+  for (let i = 1; i <= Math.max(0, Math.floor(count)); i++) {
+    labels.push(`Bed ${max + i}`);
+  }
+  return labels;
+}
+
+function makeBed(wardId: WardId, label: string, timestamp: string): Bed {
+  return {
+    id: generateId(),
+    ward_id: wardId,
+    label,
+    status: "free",
+    current_admission_id: null,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+}
+
+/** Create a ward, optionally pre-filling it with `bed_count` free beds. */
+export function createWard(input: CreateWardInput): Ward {
+  const db = loadDatabase();
+  const timestamp = nowISO();
+  const ward: Ward = {
+    id: generateId(),
+    department_id: input.department_id ?? null,
+    name: input.name.trim(),
+    floor_label: input.floor_label?.trim() || null,
+    is_active: true,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+  db.wards.push(ward);
+
+  for (const label of nextBedLabelsInternal([], input.bed_count ?? 0)) {
+    db.beds.push(makeBed(ward.id, label, timestamp));
+  }
+
+  persist(db);
+  return ward;
+}
+
+/** Patch a ward (name / department / floor / active flag). */
+export function updateWard(id: WardId, patch: UpdateWardInput): Ward {
+  const db = loadDatabase();
+  const ward = db.wards.find((w) => w.id === id);
+  if (!ward) throw new Error(`updateWard: ward "${id}" not found`);
+  if (patch.name !== undefined) ward.name = patch.name.trim();
+  if (patch.department_id !== undefined) {
+    ward.department_id = patch.department_id ?? null;
+  }
+  if (patch.floor_label !== undefined) {
+    ward.floor_label = patch.floor_label?.trim() || null;
+  }
+  if (patch.is_active !== undefined) ward.is_active = patch.is_active;
+  ward.updated_at = nowISO();
+  persist(db);
+  return ward;
+}
+
+/** Soft-archive / restore a ward (never hard-deleted). */
+export function setWardActive(id: WardId, isActive: boolean): Ward {
+  return updateWard(id, { is_active: isActive });
+}
+
+/** Append `count` new free beds to a ward, continuing its numbering. */
+export function addBedsToWard(wardId: WardId, count: number): Bed[] {
+  const db = loadDatabase();
+  const ward = db.wards.find((w) => w.id === wardId);
+  if (!ward) throw new Error(`addBedsToWard: ward "${wardId}" not found`);
+  const timestamp = nowISO();
+  const existing = db.beds
+    .filter((b) => b.ward_id === wardId)
+    .map((b) => b.label);
+  const created = nextBedLabelsInternal(existing, count).map((label) =>
+    makeBed(wardId, label, timestamp)
+  );
+  db.beds.push(...created);
+  persist(db);
+  return created;
+}
+
+/** Rename a bed or set a manual status (free / cleaning / maintenance / reserved). */
+export function updateBed(bedId: BedId, patch: UpdateBedInput): Bed {
+  const db = loadDatabase();
+  const bed = db.beds.find((b) => b.id === bedId);
+  if (!bed) throw new Error(`updateBed: bed "${bedId}" not found`);
+  if (bed.current_admission_id && patch.status !== undefined) {
+    throw new Error(
+      "Cannot change the status of a bed that holds a patient — discharge or transfer first"
+    );
+  }
+  if (patch.label !== undefined) bed.label = patch.label.trim();
+  if (patch.status !== undefined) bed.status = patch.status;
+  bed.updated_at = nowISO();
+  persist(db);
+  return bed;
+}
+
+/** Permanently remove a bed — only allowed when it holds no patient. */
+export function removeBed(bedId: BedId): void {
+  const db = loadDatabase();
+  const bed = db.beds.find((b) => b.id === bedId);
+  if (!bed) throw new Error(`removeBed: bed "${bedId}" not found`);
+  if (bed.status === "occupied" || bed.current_admission_id) {
+    throw new Error("Cannot remove a bed that holds a patient");
+  }
+  db.beds = db.beds.filter((b) => b.id !== bedId);
+  persist(db);
+}
+
+/**
+ * Move an active admission to a new ward, bed, and/or attending doctor, logging
+ * the change as an append-only Transfer event. Frees the previously-occupied bed
+ * and occupies the new one (mirrors the `sync_bed_occupancy` trigger on a bed
+ * change). A provided bed implies its ward unless a ward is given explicitly.
+ *
+ * `undefined` on a field means "leave unchanged"; an explicit `null` clears it.
+ * Throws if the admission is not active or the target bed is taken by someone
+ * else. Also used for the initial bed assignment of a bedless admission.
+ */
+export function transferAdmission(
+  admissionId: AdmissionId,
+  input: TransferAdmissionInput
+): { admission: Admission; transfer: Transfer } {
+  const db = loadDatabase();
+  const admission = db.admissions.find((a) => a.id === admissionId);
+  if (!admission) {
+    throw new Error(`transferAdmission: admission "${admissionId}" not found`);
+  }
+  if (admission.status !== "active") {
+    throw new Error("Cannot transfer a discharged admission");
+  }
+
+  const timestamp = nowISO();
+  const fromWard = admission.ward_id;
+  const fromBed = admission.bed_id;
+  const fromDoctor = admission.attending_doctor_id;
+
+  const bedProvided = input.to_bed_id !== undefined;
+  const toBed = bedProvided ? input.to_bed_id ?? null : fromBed;
+  const toDoctor =
+    input.to_doctor_id !== undefined ? input.to_doctor_id : fromDoctor;
+  let toWard: WardId | null;
+  if (input.to_ward_id !== undefined) {
+    toWard = input.to_ward_id;
+  } else if (bedProvided && toBed) {
+    toWard = db.beds.find((b) => b.id === toBed)?.ward_id ?? fromWard;
+  } else {
+    toWard = fromWard;
+  }
+
+  // Validate the target bed before mutating anything.
+  if (toBed && toBed !== fromBed) {
+    const target = db.beds.find((b) => b.id === toBed);
+    if (!target) throw new Error(`transferAdmission: bed "${toBed}" not found`);
+    if (
+      target.current_admission_id &&
+      target.current_admission_id !== admissionId
+    ) {
+      throw new Error("Target bed is already occupied");
+    }
+  }
+
+  // Free the old bed when the bed changed.
+  if (fromBed && fromBed !== toBed) {
+    const old = db.beds.find((b) => b.id === fromBed);
+    if (old) {
+      old.status = "free";
+      old.current_admission_id = null;
+      old.updated_at = timestamp;
+    }
+  }
+  // Occupy the new bed.
+  if (toBed && toBed !== fromBed) {
+    const next = db.beds.find((b) => b.id === toBed);
+    if (next) {
+      next.status = "occupied";
+      next.current_admission_id = admissionId;
+      next.updated_at = timestamp;
+    }
+  }
+
+  admission.ward_id = toWard;
+  admission.bed_id = toBed;
+  admission.attending_doctor_id = toDoctor ?? null;
+  admission.updated_at = timestamp;
+
+  // Keep the visit's attending doctor in lock-step on a doctor change.
+  if (toDoctor !== fromDoctor) {
+    const visit = db.visits.find((v) => v.id === admission.visit_id);
+    if (visit) {
+      visit.attending_doctor_id = toDoctor ?? null;
+      visit.updated_at = timestamp;
+    }
+  }
+
+  const transfer: Transfer = {
+    id: generateId(),
+    admission_id: admissionId,
+    patient_id: admission.patient_id,
+    from_ward_id: fromWard,
+    to_ward_id: toWard,
+    from_bed_id: fromBed,
+    to_bed_id: toBed,
+    from_doctor_id: fromDoctor,
+    to_doctor_id: toDoctor ?? null,
+    reason: input.reason?.trim() || null,
+    transferred_by_id: input.transferred_by_id ?? null,
+    created_at: timestamp,
+  };
+  db.transfers.push(transfer);
+
+  persist(db);
+  return { admission, transfer };
+}
+
+/** Assign a free bed to an admission that doesn't have one yet (logs a Transfer). */
+export function assignBedToAdmission(
+  admissionId: AdmissionId,
+  bedId: BedId,
+  byId: StaffId | null = null
+): Admission {
+  const { admission } = transferAdmission(admissionId, {
+    to_bed_id: bedId,
+    reason: "Bed assignment",
+    transferred_by_id: byId,
+  });
+  return admission;
 }
 
 // ---------------------------------------------------------------------------
@@ -1469,6 +1760,13 @@ export function reconcileAnonymousProfile(
     }
   }
 
+  // Re-point transfer history (it carries its own patient_id).
+  for (const transfer of db.transfers) {
+    if (transfer.patient_id === anonymous.id) {
+      transfer.patient_id = realPatient.id;
+    }
+  }
+
   realPatient.updated_at = timestamp;
 
   // Drop the anonymous placeholder now that its clinical history is merged.
@@ -1625,6 +1923,12 @@ function seedDatabaseObject(): Database {
     { id: "adm_bello", visit_id: "vis_bello", patient_id: "pat_bello", attending_doctor_id: "staff_okafor", ward_id: "ward_medb", bed_id: "bed_medb_11", status: "active", stage: "discharge_planning", reason: "Community-acquired pneumonia, responding to treatment", is_medical_cleared: true, is_financial_cleared: false, is_pharmacy_ready: true, admitted_at: day(96), discharged_at: null, updated_at: day(12) },
   ];
 
+  // History: Idris deteriorated post-op and was escalated from Medical Ward B
+  // to ICU, with his attending changing from the medic to the surgeon.
+  const transfers: Transfer[] = [
+    { id: "trf_idris_icu", admission_id: "adm_idris", patient_id: "pat_idris", from_ward_id: "ward_medb", to_ward_id: "ward_icu", from_bed_id: "bed_medb_09", to_bed_id: "bed_icu_04", from_doctor_id: "staff_okafor", to_doctor_id: "staff_chen", reason: "Post-op deterioration — escalated to critical care", transferred_by_id: "staff_patel", created_at: day(20) },
+  ];
+
   return {
     departments,
     wards,
@@ -1641,6 +1945,7 @@ function seedDatabaseObject(): Database {
     medicationAdministrations,
     treatmentRecords,
     admissions,
+    transfers,
     mrnCounter: patients.length,
   };
 }
