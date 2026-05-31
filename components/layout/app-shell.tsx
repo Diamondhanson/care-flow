@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  BarChart3,
   Building2,
   ClipboardPlus,
   FlaskConical,
@@ -45,6 +46,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "Reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "Departments", href: "/departments", icon: Building2 },
   { title: "Floor Map", href: "/floor-map", icon: LayoutGrid },
+  { title: "Reports", href: "/reports", icon: BarChart3 },
   { title: "Staff Directory", href: "/staff", icon: Users },
 ];
 

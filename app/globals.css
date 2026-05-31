@@ -18,6 +18,9 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-chart-8: var(--chart-8);
+  --color-chart-7: var(--chart-7);
+  --color-chart-6: var(--chart-6);
   --color-chart-5: var(--chart-5);
   --color-chart-4: var(--chart-4);
   --color-chart-3: var(--chart-3);
@@ -98,12 +101,16 @@
   --input: oklch(0.929 0.013 255.508);
   --ring: oklch(0.704 0.04 256.788);
 
-  /* charts: muted slate-blue → violet → green spread */
-  --chart-1: oklch(0.554 0.118 258.0);
+  /* charts: an 8-hue categorical palette — distinct in light & dark, kept
+     clinical (no neon). Blue · violet · green · amber · teal · rose · orange · magenta. */
+  --chart-1: oklch(0.588 0.156 256.0);
   --chart-2: oklch(0.606 0.18 296.0);
   --chart-3: oklch(0.723 0.176 149.0);
-  --chart-4: oklch(0.704 0.04 256.788);
-  --chart-5: oklch(0.279 0.041 260.031);
+  --chart-4: oklch(0.769 0.151 80.0);
+  --chart-5: oklch(0.668 0.124 200.0);
+  --chart-6: oklch(0.637 0.208 18.0);
+  --chart-7: oklch(0.705 0.17 49.0);
+  --chart-8: oklch(0.652 0.196 340.0);
 
   /* sidebar: white shell with slate accents */
   --sidebar: oklch(1 0 0);
@@ -147,11 +154,15 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.554 0.046 257.417);
-  --chart-1: oklch(0.554 0.118 258.0);
-  --chart-2: oklch(0.606 0.18 296.0);
-  --chart-3: oklch(0.723 0.176 149.0);
-  --chart-4: oklch(0.704 0.04 256.788);
-  --chart-5: oklch(0.929 0.013 255.508);
+  /* charts: same 8-hue categorical palette, nudged lighter for dark surfaces. */
+  --chart-1: oklch(0.648 0.156 256.0);
+  --chart-2: oklch(0.672 0.18 296.0);
+  --chart-3: oklch(0.745 0.176 149.0);
+  --chart-4: oklch(0.806 0.151 80.0);
+  --chart-5: oklch(0.715 0.124 200.0);
+  --chart-6: oklch(0.687 0.208 18.0);
+  --chart-7: oklch(0.745 0.17 49.0);
+  --chart-8: oklch(0.708 0.196 340.0);
   --sidebar: oklch(0.208 0.042 265.755);
   --sidebar-foreground: oklch(0.984 0.003 247.858);
   --sidebar-primary: oklch(0.929 0.013 255.508);
