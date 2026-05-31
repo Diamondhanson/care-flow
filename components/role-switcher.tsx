@@ -8,10 +8,12 @@
 
 import { UserCog } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -43,14 +45,11 @@ export function RoleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        render={
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            aria-label="Switch acting role (dev)"
-          />
-        }
+        className={cn(
+          buttonVariants({ variant: "outline", size: "sm" }),
+          "gap-2",
+        )}
+        aria-label="Switch acting role (dev)"
       >
         <UserCog className="size-4 text-muted-foreground" />
         <span className="hidden text-xs font-medium sm:inline">
@@ -60,12 +59,14 @@ export function RoleSwitcher() {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
-        <DropdownMenuLabel className="flex items-center justify-between">
-          <span>Acting as (dev)</span>
-          <span className="text-[10px] font-normal uppercase tracking-wide text-muted-foreground/70">
-            no auth
-          </span>
-        </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex items-center justify-between">
+            <span>Acting as (dev)</span>
+            <span className="text-[10px] font-normal uppercase tracking-wide text-muted-foreground/70">
+              no auth
+            </span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup
           value={actingStaffId ?? undefined}
