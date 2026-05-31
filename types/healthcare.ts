@@ -35,6 +35,7 @@ export type PrescriptionId = string;
 export type MedicationAdministrationId = string;
 export type TreatmentRecordId = string;
 export type AdmissionId = string;
+export type AllergyId = string;
 export type AuditLogId = number;
 
 /** Supabase `auth.users(id)` — the authenticated user a Staff row links to. */
@@ -108,6 +109,19 @@ export type PrescriptionStatus = "active" | "completed" | "discontinued";
  * bedside for a single scheduled dose.
  */
 export type MarStatus = "given" | "held" | "refused" | "missed";
+
+/** `allergy_category` — what kind of substance the patient reacts to. */
+export type AllergyCategory = "drug" | "food" | "environmental" | "other";
+
+/**
+ * `allergy_severity` — clinical seriousness, worst-first when displayed.
+ * `life_threatening` covers anaphylaxis and must never be buried in a list.
+ */
+export type AllergySeverity =
+  | "mild"
+  | "moderate"
+  | "severe"
+  | "life_threatening";
 
 // ---------------------------------------------------------------------------
 // 4a. Reference / structural data (the editable "floor map")
@@ -197,6 +211,33 @@ export interface Patient {
   is_emergency_anonymous: boolean;
   anonymous_identifier: string | null;
 
+  /**
+   * Set true only when a clinician has actively confirmed the patient has no
+   * known allergies. A patient with an empty allergy list AND this flag false
+   * means "not yet asked" — clinically very different from "confirmed none".
+   */
+  no_known_allergies: boolean;
+
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+/**
+ * `allergies` — a patient-level safety record. Surfaced wherever a clinician
+ * might prescribe, so a known reaction is never missed. Keyed to the patient
+ * (not the visit) because an allergy persists across every encounter.
+ */
+export interface Allergy {
+  id: AllergyId;
+  patient_id: PatientId;
+  /** The offending substance, e.g. "Penicillin", "Peanuts". */
+  substance: string;
+  category: AllergyCategory;
+  severity: AllergySeverity;
+  /** The reaction it provokes, e.g. "Anaphylaxis", "Rash". */
+  reaction: string | null;
+  /** Who documented it. */
+  noted_by_id: StaffId | null;
   created_at: ISODateString;
   updated_at: ISODateString;
 }

@@ -84,6 +84,16 @@ do $$ begin
   create type mar_status as enum ('given', 'held', 'refused', 'missed');
 exception when duplicate_object then null; end $$;
 
+-- Allergy category — the kind of substance the patient reacts to.
+do $$ begin
+  create type allergy_category as enum ('drug', 'food', 'environmental', 'other');
+exception when duplicate_object then null; end $$;
+
+-- Allergy severity — clinical seriousness; 'life_threatening' = anaphylaxis.
+do $$ begin
+  create type allergy_severity as enum ('mild', 'moderate', 'severe', 'life_threatening');
+exception when duplicate_object then null; end $$;
+
 
 -- =============================================================================
 -- 3. HELPER FUNCTIONS
@@ -267,8 +277,25 @@ create table if not exists patients (
   -- Emergency anonymous intake (unconscious / unidentified patient).
   is_emergency_anonymous boolean not null default false,
   anonymous_identifier   text,           -- e.g. "John Doe - Gamma - 20260531"
+  -- True only once a clinician confirms no allergies; distinguishes "confirmed
+  -- none" from an empty list that simply hasn't been asked yet.
+  no_known_allergies     boolean not null default false,
   created_at             timestamptz not null default now(),
   updated_at             timestamptz not null default now()
+);
+
+-- A patient-level safety record. Keyed to the patient (not a visit) because an
+-- allergy persists across every encounter. Surfaced wherever a doctor prescribes.
+create table if not exists allergies (
+  id           uuid primary key default gen_random_uuid(),
+  patient_id   uuid not null references patients(id) on delete cascade,
+  substance    text not null,                 -- e.g. "Penicillin", "Peanuts"
+  category     allergy_category not null default 'drug',
+  severity     allergy_severity not null default 'moderate',
+  reaction     text,                          -- e.g. "Anaphylaxis", "Rash"
+  noted_by_id  uuid references staff(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
 );
 
 -- ---- 4c. The visit (record spine) ------------------------------------------
@@ -449,6 +476,7 @@ create index if not exists idx_treatment_visit        on treatment_records(visit
 create index if not exists idx_admissions_visit       on admissions(visit_id);
 create index if not exists idx_admissions_status      on admissions(status);
 create index if not exists idx_admissions_bed         on admissions(bed_id);
+create index if not exists idx_allergies_patient      on allergies(patient_id);
 create index if not exists idx_beds_ward              on beds(ward_id);
 create index if not exists idx_beds_status            on beds(status);
 create index if not exists idx_wards_department       on wards(department_id);
@@ -467,7 +495,7 @@ declare t text;
 begin
   foreach t in array array[
     'departments','wards','beds','staff','patients','visits',
-    'consultations','orders','prescriptions','admissions'
+    'consultations','orders','prescriptions','admissions','allergies'
   ]
   loop
     execute format('drop trigger if exists trg_%I_updated_at on %I;', t, t);
@@ -484,7 +512,7 @@ begin
   foreach t in array array[
     'patients','visits','consultations','diagnoses','orders','results',
     'prescriptions','medication_administrations','treatment_records',
-    'admissions','beds','wards','departments','staff'
+    'admissions','beds','wards','departments','staff','allergies'
   ]
   loop
     execute format('drop trigger if exists trg_%I_audit on %I;', t, t);
@@ -615,7 +643,8 @@ begin
   foreach t in array array[
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
-    'medication_administrations','treatment_records','admissions','audit_log'
+    'medication_administrations','treatment_records','admissions','allergies',
+    'audit_log'
   ]
   loop
     execute format('alter table %I enable row level security;', t);
@@ -629,7 +658,7 @@ begin
   foreach t in array array[
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
-    'medication_administrations','treatment_records','admissions'
+    'medication_administrations','treatment_records','admissions','allergies'
   ]
   loop
     execute format('drop policy if exists "read for staff" on %I;', t);
@@ -689,6 +718,14 @@ create policy "nurse write vitals" on treatment_records
 
 drop policy if exists "nurse write mar" on medication_administrations;
 create policy "nurse write mar" on medication_administrations
+  for all to authenticated
+  using (current_staff_role() in ('nurse','doctor','admin'))
+  with check (current_staff_role() in ('nurse','doctor','admin'));
+
+-- Allergies are safety-critical and recorded at the point of care by either a
+-- nurse (intake) or a doctor (consultation).
+drop policy if exists "clinical write allergies" on allergies;
+create policy "clinical write allergies" on allergies
   for all to authenticated
   using (current_staff_role() in ('nurse','doctor','admin'))
   with check (current_staff_role() in ('nurse','doctor','admin'));

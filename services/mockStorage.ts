@@ -17,6 +17,10 @@
 import type {
   Admission,
   AdmissionId,
+  Allergy,
+  AllergyCategory,
+  AllergyId,
+  AllergySeverity,
   Bed,
   BedId,
   CareStage,
@@ -57,6 +61,7 @@ interface Database {
   beds: Bed[];
   staff: Staff[];
   patients: Patient[];
+  allergies: Allergy[];
   visits: Visit[];
   consultations: Consultation[];
   diagnoses: Diagnosis[];
@@ -245,6 +250,14 @@ export interface RecordAdministrationInput {
   notes?: string | null;
 }
 
+export interface AddAllergyInput {
+  substance: string;
+  category?: AllergyCategory;
+  severity?: AllergySeverity;
+  reaction?: string | null;
+  noted_by_id?: StaffId | null;
+}
+
 // ---------------------------------------------------------------------------
 // Emergency-intake helpers
 // ---------------------------------------------------------------------------
@@ -366,6 +379,13 @@ export function getPatients(): Patient[] {
 
 export function getPatientById(id: PatientId): Patient | undefined {
   return loadDatabase().patients.find((p) => p.id === id);
+}
+
+/** A patient's allergy records, most-recently noted first. */
+export function getAllergiesForPatient(patientId: PatientId): Allergy[] {
+  return loadDatabase()
+    .allergies.filter((a) => a.patient_id === patientId)
+    .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 // ---------------------------------------------------------------------------
@@ -656,6 +676,7 @@ export function createNewVisit(
     national_id: patientData.national_id ?? null,
     is_emergency_anonymous: isAnonymous,
     anonymous_identifier: anonymousIdentifier,
+    no_known_allergies: false,
     created_at: timestamp,
     updated_at: timestamp,
   };
@@ -1100,6 +1121,81 @@ export function recordMedicationAdministration(
 }
 
 // ---------------------------------------------------------------------------
+// Mutations — allergies (patient-level safety record)
+// ---------------------------------------------------------------------------
+
+/**
+ * Record an allergy against a patient. Recording any allergy clears the
+ * "no known allergies" flag — the two states are mutually exclusive. Returns
+ * the created record.
+ */
+export function addAllergy(
+  patientId: PatientId,
+  input: AddAllergyInput
+): Allergy {
+  const db = loadDatabase();
+  const patient = db.patients.find((p) => p.id === patientId);
+  if (!patient) {
+    throw new Error(`addAllergy: patient "${patientId}" not found`);
+  }
+  const substance = input.substance.trim();
+  if (!substance) {
+    throw new Error("addAllergy: a substance is required");
+  }
+
+  const timestamp = nowISO();
+  const allergy: Allergy = {
+    id: generateId() as AllergyId,
+    patient_id: patientId,
+    substance,
+    category: input.category ?? "drug",
+    severity: input.severity ?? "moderate",
+    reaction: input.reaction?.trim() || null,
+    noted_by_id: input.noted_by_id ?? null,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+
+  db.allergies.push(allergy);
+  // An actual allergy and "no known allergies" cannot coexist.
+  patient.no_known_allergies = false;
+  patient.updated_at = timestamp;
+  persist(db);
+  return allergy;
+}
+
+/** Remove an allergy record (e.g. entered in error). */
+export function removeAllergy(allergyId: AllergyId): void {
+  const db = loadDatabase();
+  const allergy = db.allergies.find((a) => a.id === allergyId);
+  if (!allergy) return;
+  db.allergies = db.allergies.filter((a) => a.id !== allergyId);
+  const patient = db.patients.find((p) => p.id === allergy.patient_id);
+  if (patient) patient.updated_at = nowISO();
+  persist(db);
+}
+
+/**
+ * Mark a patient as having no known allergies — an active clinical confirmation,
+ * distinct from an empty list that simply hasn't been asked. Clearing the flag
+ * returns the patient to the "not yet assessed" state. Returns the patient.
+ */
+export function markNoKnownAllergies(
+  patientId: PatientId,
+  value = true
+): Patient {
+  const db = loadDatabase();
+  const patient = db.patients.find((p) => p.id === patientId);
+  if (!patient) {
+    throw new Error(`markNoKnownAllergies: patient "${patientId}" not found`);
+  }
+  patient.no_known_allergies = value;
+  patient.updated_at = nowISO();
+  persist(db);
+  return patient;
+}
+
+// ---------------------------------------------------------------------------
 // Mutations — admissions (inpatient bed assignment + occupancy sync)
 // ---------------------------------------------------------------------------
 
@@ -1365,6 +1461,14 @@ export function reconcileAnonymousProfile(
     }
   }
 
+  // Carry any allergies recorded under the placeholder onto the real profile.
+  for (const allergy of db.allergies) {
+    if (allergy.patient_id === anonymous.id) {
+      allergy.patient_id = realPatient.id;
+      allergy.updated_at = timestamp;
+    }
+  }
+
   realPatient.updated_at = timestamp;
 
   // Drop the anonymous placeholder now that its clinical history is merged.
@@ -1437,11 +1541,19 @@ function seedDatabaseObject(): Database {
   ];
 
   const patients: Patient[] = [
-    { id: "pat_mensah", mrn: generateMrn(2026, 1), full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", is_emergency_anonymous: false, anonymous_identifier: null, created_at: day(3), updated_at: day(3) },
-    { id: "pat_idris", mrn: generateMrn(2026, 2), full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", is_emergency_anonymous: false, anonymous_identifier: null, created_at: day(28), updated_at: day(6) },
-    { id: "pat_anon_gamma", mrn: generateMrn(2026, 3), full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", created_at: day(5), updated_at: day(1) },
-    { id: "pat_bello", mrn: generateMrn(2026, 4), full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", is_emergency_anonymous: false, anonymous_identifier: null, created_at: day(96), updated_at: day(12) },
-    { id: "pat_owusu", mrn: generateMrn(2026, 5), full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", is_emergency_anonymous: false, anonymous_identifier: null, created_at: day(720), updated_at: day(2) },
+    { id: "pat_mensah", mrn: generateMrn(2026, 1), full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(3), updated_at: day(3) },
+    { id: "pat_idris", mrn: generateMrn(2026, 2), full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(28), updated_at: day(6) },
+    { id: "pat_anon_gamma", mrn: generateMrn(2026, 3), full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, created_at: day(5), updated_at: day(1) },
+    { id: "pat_bello", mrn: generateMrn(2026, 4), full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: true, created_at: day(96), updated_at: day(12) },
+    { id: "pat_owusu", mrn: generateMrn(2026, 5), full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(720), updated_at: day(2) },
+  ];
+
+  // Mensah & Idris carry documented allergies; Bello is confirmed no-known
+  // (flag above); Owusu and the anonymous ICU patient are not yet assessed.
+  const allergies: Allergy[] = [
+    { id: "alg_mensah_pen", patient_id: "pat_mensah", substance: "Penicillin", category: "drug", severity: "severe", reaction: "Widespread rash and facial swelling", noted_by_id: "staff_romero", created_at: day(3), updated_at: day(3) },
+    { id: "alg_idris_asa", patient_id: "pat_idris", substance: "Aspirin", category: "drug", severity: "moderate", reaction: "Gastric bleeding", noted_by_id: "staff_chen", created_at: day(28), updated_at: day(28) },
+    { id: "alg_idris_peanut", patient_id: "pat_idris", substance: "Peanuts", category: "food", severity: "mild", reaction: "Hives", noted_by_id: "staff_patel", created_at: day(28), updated_at: day(28) },
   ];
 
   const visits: Visit[] = [
@@ -1519,6 +1631,7 @@ function seedDatabaseObject(): Database {
     beds,
     staff,
     patients,
+    allergies,
     visits,
     consultations,
     diagnoses,

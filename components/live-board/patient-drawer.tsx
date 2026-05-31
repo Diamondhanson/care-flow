@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/select";
 import {
   getAdmissionForVisit,
+  getAllergiesForPatient,
   getBedById,
   getConsultationsForVisit,
   getDepartmentById,
@@ -83,9 +84,18 @@ import {
   PRESCRIPTION_STATUS_TOKEN,
   ROUTE_OPTIONS,
 } from "@/components/medications/prescriptions";
+import {
+  ALLERGY_CATEGORY_LABEL,
+  ALLERGY_SEVERITY_LABEL,
+  ALLERGY_SEVERITY_TOKEN,
+  allergyDisplayState,
+  highestSeverity,
+  sortAllergiesBySeverity,
+} from "@/components/allergies/allergies";
 import { useRole } from "@/components/role-provider";
 import type {
   Admission,
+  Allergy,
   Consultation,
   Diagnosis,
   Order,
@@ -151,6 +161,7 @@ export function PatientDrawer({
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [verified, setVerified] = useState<Patient[]>([]);
+  const [allergies, setAllergies] = useState<Allergy[]>([]);
   const [location, setLocation] = useState<string | null>(null);
 
   // SOAP consultation form
@@ -212,6 +223,7 @@ export function PatientDrawer({
     setOrders(getOrdersForVisit(visitId));
     setResults(getResultsForVisit(visitId));
     setPrescriptions(getPrescriptionsForVisit(visitId));
+    setAllergies(getAllergiesForPatient(v.patient_id));
     setVerified(
       getPatients().filter(
         (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
@@ -274,6 +286,14 @@ export function PatientDrawer({
     : { ready: true, blockers: [] as string[] };
   const advancingToDischarge = target === "discharged";
   const dischargeBlocked = advancingToDischarge && !readiness.ready;
+
+  const sortedAllergies = sortAllergiesBySeverity(allergies);
+  const allergyState = allergyDisplayState(
+    patient.no_known_allergies,
+    allergies.length,
+  );
+  const worstAllergy = highestSeverity(allergies);
+  const drugAllergies = sortedAllergies.filter((a) => a.category === "drug");
 
   function num(v: NumField): number | null {
     if (v.trim() === "") return null;
@@ -433,6 +453,64 @@ export function PatientDrawer({
         </SheetHeader>
 
         <div className="flex flex-col gap-6 p-4">
+          {/* Allergy safety banner — always visible, top of the record */}
+          {allergyState === "has-allergies" ? (
+            <section
+              className="flex flex-col gap-2 rounded-md border p-3"
+              style={{
+                borderColor: `var(--status-${worstAllergy ? ALLERGY_SEVERITY_TOKEN[worstAllergy] : "treatment"})`,
+                backgroundColor: "color-mix(in oklab, var(--status-treatment) 8%, transparent)",
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <AlertTriangle
+                  className="size-4"
+                  style={{ color: "var(--status-treatment)" }}
+                />
+                <h3 className="text-sm font-semibold">
+                  Allergies ({allergies.length})
+                </h3>
+              </div>
+              <ul className="flex flex-col gap-1.5">
+                {sortedAllergies.map((a) => (
+                  <li
+                    key={a.id}
+                    className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs"
+                  >
+                    <Badge
+                      variant="outline"
+                      className="border-transparent text-[10px] uppercase"
+                      style={{
+                        backgroundColor: `var(--status-${ALLERGY_SEVERITY_TOKEN[a.severity]})`,
+                        color: `var(--status-${ALLERGY_SEVERITY_TOKEN[a.severity]}-foreground)`,
+                      }}
+                    >
+                      {ALLERGY_SEVERITY_LABEL[a.severity]}
+                    </Badge>
+                    <span className="font-medium">{a.substance}</span>
+                    <span className="text-muted-foreground">
+                      {ALLERGY_CATEGORY_LABEL[a.category]}
+                      {a.reaction ? ` · ${a.reaction}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : allergyState === "none" ? (
+            <section className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+              <CheckCircle2
+                className="size-4"
+                style={{ color: "var(--status-clearance)" }}
+              />
+              No known allergies
+            </section>
+          ) : (
+            <section className="flex items-center gap-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
+              <AlertTriangle className="size-4" />
+              Allergies not assessed
+            </section>
+          )}
+
           {/* Reconciliation — anonymous patients only */}
           {patient.is_emergency_anonymous ? (
             <section className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
@@ -784,6 +862,36 @@ export function PatientDrawer({
                   <Pill className="size-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Prescriptions</span>
                 </div>
+
+                {drugAllergies.length > 0 ? (
+                  <div
+                    className="flex items-start gap-2 rounded-md border p-2.5 text-xs"
+                    style={{
+                      borderColor: "var(--status-treatment)",
+                      backgroundColor:
+                        "color-mix(in oklab, var(--status-treatment) 8%, transparent)",
+                    }}
+                  >
+                    <AlertTriangle
+                      className="mt-0.5 size-3.5 shrink-0"
+                      style={{ color: "var(--status-treatment)" }}
+                    />
+                    <span>
+                      <span className="font-medium">Drug allergies:</span>{" "}
+                      {drugAllergies
+                        .map(
+                          (a) =>
+                            `${a.substance} (${ALLERGY_SEVERITY_LABEL[a.severity].toLowerCase()})`,
+                        )
+                        .join(", ")}
+                      . Review before prescribing.
+                    </span>
+                  </div>
+                ) : allergyState === "unassessed" ? (
+                  <p className="text-xs text-muted-foreground">
+                    Allergies not assessed — confirm before prescribing.
+                  </p>
+                ) : null}
 
                 {prescriptions.length > 0 ? (
                   <ul className="flex flex-col gap-2">
