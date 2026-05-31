@@ -18,6 +18,7 @@ import {
   BedDouble,
   Eye,
   Send,
+  Pill,
 } from "lucide-react";
 
 import {
@@ -51,6 +52,7 @@ import {
   getResultsForVisit,
   getPatientById,
   getPatients,
+  getPrescriptionsForVisit,
   getStaff,
   getStaffById,
   getTreatmentRecordsForVisit,
@@ -58,6 +60,7 @@ import {
   addConsultation,
   addDiagnosis,
   addOrder,
+  addPrescription,
   addTreatmentLog,
   recordDisposition,
   updateAdmissionClearances,
@@ -73,6 +76,13 @@ import {
   ORDER_STATUS_TOKEN,
   ORDER_TYPE_LABEL,
 } from "@/components/diagnostics/orders";
+import {
+  COMMON_DRUGS,
+  FREQUENCY_OPTIONS,
+  PRESCRIPTION_STATUS_LABEL,
+  PRESCRIPTION_STATUS_TOKEN,
+  ROUTE_OPTIONS,
+} from "@/components/medications/prescriptions";
 import { useRole } from "@/components/role-provider";
 import type {
   Admission,
@@ -81,6 +91,7 @@ import type {
   Order,
   OrderType,
   Patient,
+  Prescription,
   Result,
   TreatmentRecord,
   Visit,
@@ -159,6 +170,15 @@ export function PatientDrawer({
   const [orderType, setOrderType] = useState<OrderType>("lab");
   const [orderDescription, setOrderDescription] = useState("");
 
+  // Prescriptions
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [rxDrug, setRxDrug] = useState("");
+  const [rxDose, setRxDose] = useState("");
+  const [rxRoute, setRxRoute] = useState("");
+  const [rxFrequency, setRxFrequency] = useState("");
+  const [rxDuration, setRxDuration] = useState("");
+  const [rxInstructions, setRxInstructions] = useState("");
+
   // Vitals / GCS / notes form
   const [spo2, setSpo2] = useState<NumField>("");
   const [sys, setSys] = useState<NumField>("");
@@ -191,6 +211,7 @@ export function PatientDrawer({
     setDiagnoses(getDiagnosesForVisit(visitId));
     setOrders(getOrdersForVisit(visitId));
     setResults(getResultsForVisit(visitId));
+    setPrescriptions(getPrescriptionsForVisit(visitId));
     setVerified(
       getPatients().filter(
         (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
@@ -222,6 +243,12 @@ export function PatientDrawer({
     setDxPrimary(false);
     setOrderType("lab");
     setOrderDescription("");
+    setRxDrug("");
+    setRxDose("");
+    setRxRoute("");
+    setRxFrequency("");
+    setRxDuration("");
+    setRxInstructions("");
   }, [open, visitId, tick]);
 
   if (!visit || !patient) {
@@ -316,6 +343,20 @@ export function PatientDrawer({
       ordered_by_id: recorderId,
       order_type: orderType,
       description: orderDescription,
+    });
+    refresh();
+  }
+
+  function handleAddPrescription() {
+    if (!rxDrug.trim()) return;
+    addPrescription(visit!.id, {
+      prescribed_by_id: recorderId,
+      drug_name: rxDrug,
+      dose: rxDose,
+      route: rxRoute,
+      frequency: rxFrequency,
+      duration: rxDuration,
+      instructions: rxInstructions,
     });
     refresh();
   }
@@ -732,6 +773,176 @@ export function PatientDrawer({
                 >
                   <Plus className="size-4" />
                   Order test
+                </Button>
+              </div>
+
+              <Separator />
+
+              {/* Prescriptions */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <Pill className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Prescriptions</span>
+                </div>
+
+                {prescriptions.length > 0 ? (
+                  <ul className="flex flex-col gap-2">
+                    {prescriptions.map((p) => {
+                      const token = PRESCRIPTION_STATUS_TOKEN[p.status];
+                      const detail = [p.dose, p.route, p.frequency, p.duration]
+                        .filter(Boolean)
+                        .join(" · ");
+                      return (
+                        <li
+                          key={p.id}
+                          className="flex flex-col gap-1 rounded-md border border-border bg-muted/40 p-3"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-sm font-medium">
+                              {p.drug_name}
+                            </span>
+                            <Badge
+                              variant="outline"
+                              className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
+                              style={
+                                token === "muted"
+                                  ? undefined
+                                  : {
+                                      backgroundColor: `var(--status-${token})`,
+                                      color: `var(--status-${token}-foreground)`,
+                                    }
+                              }
+                            >
+                              {PRESCRIPTION_STATUS_LABEL[p.status]}
+                            </Badge>
+                          </div>
+                          {detail ? (
+                            <span className="text-xs text-muted-foreground">
+                              {detail}
+                            </span>
+                          ) : null}
+                          {p.instructions ? (
+                            <span className="text-xs text-muted-foreground">
+                              {p.instructions}
+                            </span>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Nothing prescribed on this visit yet.
+                  </p>
+                )}
+
+                {/* New prescription */}
+                <datalist id="drug-options">
+                  {COMMON_DRUGS.map((d) => (
+                    <option key={d.name} value={d.name} />
+                  ))}
+                </datalist>
+                <datalist id="route-options">
+                  {ROUTE_OPTIONS.map((r) => (
+                    <option key={r} value={r} />
+                  ))}
+                </datalist>
+                <datalist id="frequency-options">
+                  {FREQUENCY_OPTIONS.map((f) => (
+                    <option key={f} value={f} />
+                  ))}
+                </datalist>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="rx-drug" className="text-xs">
+                    Drug
+                  </Label>
+                  <Input
+                    id="rx-drug"
+                    list="drug-options"
+                    value={rxDrug}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setRxDrug(next);
+                      const match = COMMON_DRUGS.find(
+                        (d) =>
+                          d.name.toLowerCase() === next.trim().toLowerCase(),
+                      );
+                      if (match) {
+                        if (!rxDose.trim()) setRxDose(match.dose);
+                        if (!rxRoute.trim()) setRxRoute(match.route);
+                      }
+                    }}
+                    placeholder="e.g. Amoxicillin-clavulanate"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="rx-dose" className="text-xs">
+                      Dose
+                    </Label>
+                    <Input
+                      id="rx-dose"
+                      value={rxDose}
+                      onChange={(e) => setRxDose(e.target.value)}
+                      placeholder="e.g. 625 mg"
+                      className="font-mono"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="rx-route" className="text-xs">
+                      Route
+                    </Label>
+                    <Input
+                      id="rx-route"
+                      list="route-options"
+                      value={rxRoute}
+                      onChange={(e) => setRxRoute(e.target.value)}
+                      placeholder="e.g. oral"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="rx-freq" className="text-xs">
+                      Frequency
+                    </Label>
+                    <Input
+                      id="rx-freq"
+                      list="frequency-options"
+                      value={rxFrequency}
+                      onChange={(e) => setRxFrequency(e.target.value)}
+                      placeholder="e.g. every 8 hours"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="rx-dur" className="text-xs">
+                      Duration
+                    </Label>
+                    <Input
+                      id="rx-dur"
+                      value={rxDuration}
+                      onChange={(e) => setRxDuration(e.target.value)}
+                      placeholder="e.g. 5 days"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="rx-instr" className="text-xs">
+                    Instructions
+                  </Label>
+                  <Input
+                    id="rx-instr"
+                    value={rxInstructions}
+                    onChange={(e) => setRxInstructions(e.target.value)}
+                    placeholder="Optional — e.g. take with meals"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleAddPrescription}
+                  disabled={!rxDrug.trim()}
+                  className="self-end"
+                >
+                  <Plus className="size-4" />
+                  Prescribe
                 </Button>
               </div>
 

@@ -11,6 +11,7 @@ import {
   GitMerge,
   LayoutDashboard,
   Menu,
+  Pill,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -39,6 +40,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "Live Board", href: "/", icon: LayoutDashboard },
   { title: "Patient Intake", href: "/intake", icon: ClipboardPlus },
   { title: "Diagnostics", href: "/diagnostics", icon: FlaskConical },
+  { title: "Medications", href: "/medications", icon: Pill },
   { title: "Reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "Departments", href: "/departments", icon: Building2 },
   { title: "Staff Directory", href: "/staff", icon: Users },
