@@ -124,13 +124,57 @@ function loadDatabase(): Database {
   }
 
   try {
-    return JSON.parse(raw) as Database;
+    const parsed = JSON.parse(raw) as Partial<Database>;
+    const normalized = normalizeDatabase(parsed);
+    // Heal the persisted shape so a DB saved by an older build (missing newer
+    // collections like `allergies`/`transfers`) doesn't crash accessors.
+    persist(normalized);
+    return normalized;
   } catch {
     // Corrupt payload — reset to a clean seed rather than crashing the UI.
     const seeded = seedDatabaseObject();
     persist(seeded);
     return seeded;
   }
+}
+
+/** Collections every Database holds — used to backfill stale persisted shapes. */
+const DB_COLLECTIONS = [
+  "departments",
+  "wards",
+  "beds",
+  "staff",
+  "patients",
+  "allergies",
+  "visits",
+  "consultations",
+  "diagnoses",
+  "orders",
+  "results",
+  "prescriptions",
+  "medicationAdministrations",
+  "treatmentRecords",
+  "admissions",
+  "transfers",
+] as const satisfies readonly (keyof Database)[];
+
+/**
+ * Backfill any collection a stale persisted DB is missing. New top-level arrays
+ * were added across phases (allergies, transfers) without bumping the storage
+ * key, so a DB written by an earlier build can lack them — default those to `[]`
+ * rather than crashing. Never reseeds existing data.
+ */
+export function normalizeDatabase(parsed: Partial<Database>): Database {
+  const db = { ...parsed } as Database;
+  for (const key of DB_COLLECTIONS) {
+    if (!Array.isArray(db[key])) {
+      (db[key] as unknown[]) = [];
+    }
+  }
+  if (typeof db.mrnCounter !== "number") {
+    db.mrnCounter = db.patients.length;
+  }
+  return db;
 }
 
 function persist(db: Database): void {

@@ -9,6 +9,7 @@ import {
   filterVisitsByDepartment,
   generateMrn,
   isTerminalStage,
+  normalizeDatabase,
   transferAdmission,
 } from "@/services/mockStorage";
 import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
@@ -293,5 +294,44 @@ describe("assignBedToAdmission", () => {
     const admission = assignBedToAdmission("adm_idris", "bed_er_1");
     expect(admission.bed_id).toBe("bed_er_1");
     expect(admission.ward_id).toBe("ward_er");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// normalizeDatabase — heals stale persisted DBs written by earlier builds that
+// predate newer top-level collections (added without bumping the storage key).
+// ---------------------------------------------------------------------------
+
+describe("normalizeDatabase", () => {
+  it("backfills collections a stale DB is missing", () => {
+    const stale = {
+      patients: [makePatient()],
+      mrnCounter: 1,
+      // allergies + transfers absent, as in a pre-Phase-11 persisted DB
+    };
+    const db = normalizeDatabase(stale);
+    expect(Array.isArray(db.allergies)).toBe(true);
+    expect(db.allergies).toEqual([]);
+    expect(Array.isArray(db.transfers)).toBe(true);
+    expect(db.transfers).toEqual([]);
+  });
+
+  it("preserves existing data instead of reseeding", () => {
+    const patient = makePatient();
+    const db = normalizeDatabase({ patients: [patient], mrnCounter: 7 });
+    expect(db.patients).toEqual([patient]);
+    expect(db.mrnCounter).toBe(7);
+  });
+
+  it("replaces a non-array collection with an empty array", () => {
+    const db = normalizeDatabase({
+      allergies: "corrupt" as unknown as [],
+    });
+    expect(db.allergies).toEqual([]);
+  });
+
+  it("defaults a missing mrnCounter to the patient count", () => {
+    const db = normalizeDatabase({ patients: [makePatient(), makePatient()] });
+    expect(db.mrnCounter).toBe(2);
   });
 });
