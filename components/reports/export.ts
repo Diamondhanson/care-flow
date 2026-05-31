@@ -239,19 +239,11 @@ export function exportReportPdf(report: FullReport): void {
         `${w.pct}%`,
       ]),
     },
-    { title: "Bed status", head: ["Status", "Beds"], body: sliceRows(report.bedStatusMix) },
     {
       title: "Open visits by care stage",
       head: ["Stage", "Visits"],
       body: sliceRows(report.stageDistribution),
     },
-    {
-      title: "Medication administrations",
-      head: ["Outcome", "Doses"],
-      body: sliceRows(report.medsByStatus),
-    },
-    { title: "Top prescribed drugs", head: ["Drug", "Scripts"], body: sliceRows(report.topDrugs) },
-    { title: "Diagnostic orders", head: ["Type", "Orders"], body: sliceRows(report.ordersByType) },
     {
       title: "Abnormal results",
       head: ["Outcome", "Count"],
@@ -263,13 +255,6 @@ export function exportReportPdf(report: FullReport): void {
     },
     { title: "Patients by sex", head: ["Sex", "Patients"], body: sliceRows(report.sexMix) },
     { title: "Patients by age", head: ["Age band", "Patients"], body: sliceRows(report.ageDistribution) },
-    { title: "Clinician workload", head: ["Clinician", "Visits"], body: sliceRows(report.staffWorkload) },
-    {
-      title: "Allergy coverage",
-      head: ["Assessment", "Patients"],
-      body: sliceRows(report.allergyPrevalence),
-    },
-    { title: "Top allergens", head: ["Substance", "Patients"], body: sliceRows(report.topAllergens) },
     {
       title: "Discharge clearance bottlenecks",
       head: ["Gate", "Pending"],
@@ -376,20 +361,9 @@ export function exportReportXlsx(report: FullReport): void {
     ),
     "Ward occupancy",
   );
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.bedStatusMix, "Beds"), "Bed status");
   XLSX.utils.book_append_sheet(wb, sliceSheet(report.stageDistribution, "Visits"), "Care stages");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.medsByStatus, "Doses"), "Medications");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.topDrugs, "Scripts"), "Top drugs");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.ordersByType, "Orders"), "Order types");
   XLSX.utils.book_append_sheet(wb, sliceSheet(report.sexMix, "Patients"), "Sex mix");
   XLSX.utils.book_append_sheet(wb, sliceSheet(report.ageDistribution, "Patients"), "Age mix");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.staffWorkload, "Visits"), "Clinician workload");
-  XLSX.utils.book_append_sheet(
-    wb,
-    sliceSheet(report.allergyPrevalence, "Patients"),
-    "Allergy coverage",
-  );
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.topAllergens, "Patients"), "Top allergens");
   XLSX.utils.book_append_sheet(
     wb,
     sliceSheet(report.clearanceBottlenecks, "Pending"),

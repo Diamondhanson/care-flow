@@ -4,8 +4,6 @@ import {
   abnormalRate,
   ageDistribution,
   ageOf,
-  allergyPrevalence,
-  bedStatusMix,
   buildReport,
   chartColor,
   CHART_COLORS,
@@ -13,14 +11,9 @@ import {
   computeKpis,
   departmentThroughput,
   lengthOfStay,
-  medsByStatus,
-  ordersByType,
   presetRange,
   stageDistribution,
-  staffWorkload,
-  topAllergens,
   topDiagnoses,
-  topDrugs,
   visitsOverTime,
   visitTypeMix,
   wardOccupancy,
@@ -28,16 +21,11 @@ import {
 } from "@/components/reports/reports";
 import type {
   Admission,
-  Allergy,
   Bed,
   Department,
   Diagnosis,
-  MedicationAdministration,
-  Order,
   Patient,
-  Prescription,
   Result,
-  Staff,
   Visit,
   Ward,
 } from "@/types/healthcare";
@@ -380,14 +368,6 @@ describe("wardOccupancy", () => {
   });
 });
 
-describe("bedStatusMix", () => {
-  it("drops zero-count statuses", () => {
-    const beds = [makeBed("b1", "w", "free"), makeBed("b2", "w", "occupied")];
-    const mix = bedStatusMix(beds);
-    expect(mix.map((s) => s.key).sort()).toEqual(["free", "occupied"]);
-  });
-});
-
 describe("stageDistribution", () => {
   it("counts only open visits, in board order", () => {
     const visits = [
@@ -404,45 +384,8 @@ describe("stageDistribution", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Meds & diagnostics
+// Diagnostics
 // ---------------------------------------------------------------------------
-
-describe("medsByStatus", () => {
-  it("counts MAR rows by status within the range", () => {
-    const mar: MedicationAdministration[] = [
-      { id: "1", prescription_id: "rx", administered_by_id: null, scheduled_for: null, administered_at: daysAgoIso(1), status: "given", notes: null, created_at: daysAgoIso(1) },
-      { id: "2", prescription_id: "rx", administered_by_id: null, scheduled_for: null, administered_at: daysAgoIso(1), status: "given", notes: null, created_at: daysAgoIso(1) },
-      { id: "3", prescription_id: "rx", administered_by_id: null, scheduled_for: null, administered_at: daysAgoIso(1), status: "held", notes: null, created_at: daysAgoIso(1) },
-    ];
-    const mix = medsByStatus(mar, RANGE);
-    expect(mix.find((s) => s.key === "given")!.value).toBe(2);
-    expect(mix.find((s) => s.key === "held")!.value).toBe(1);
-  });
-});
-
-describe("topDrugs", () => {
-  it("ranks prescriptions by drug name", () => {
-    const rx = (id: string, drug_name: string): Prescription => ({
-      id, visit_id: "v", prescribed_by_id: null, drug_name, dose: null, route: null,
-      frequency: null, duration: null, instructions: null, status: "active",
-      created_at: daysAgoIso(1), updated_at: daysAgoIso(1),
-    });
-    const top = topDrugs([rx("1", "Artemether"), rx("2", "Artemether"), rx("3", "Paracetamol")], RANGE);
-    expect(top[0]).toMatchObject({ label: "Artemether", value: 2 });
-  });
-});
-
-describe("ordersByType", () => {
-  it("counts orders by type", () => {
-    const ord = (id: string, order_type: Order["order_type"]): Order => ({
-      id, visit_id: "v", ordered_by_id: null, order_type, description: "x",
-      status: "completed", created_at: daysAgoIso(1), completed_at: null, updated_at: daysAgoIso(1),
-    });
-    const mix = ordersByType([ord("1", "lab"), ord("2", "lab"), ord("3", "imaging")], RANGE);
-    expect(mix.find((s) => s.key === "lab")!.value).toBe(2);
-    expect(mix.find((s) => s.key === "imaging")!.value).toBe(1);
-  });
-});
 
 describe("abnormalRate", () => {
   it("computes the abnormal percentage", () => {
@@ -486,70 +429,6 @@ describe("ageDistribution", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Staff workload
-// ---------------------------------------------------------------------------
-
-describe("staffWorkload", () => {
-  it("counts visits per attending doctor, sorted desc", () => {
-    const staff: Staff[] = [
-      { id: "staff_1", user_id: null, full_name: "Dr A", role: "doctor", department_id: null, email: null, phone: null, is_active: true, created_at: "", updated_at: "" },
-      { id: "staff_2", user_id: null, full_name: "Dr B", role: "doctor", department_id: null, email: null, phone: null, is_active: true, created_at: "", updated_at: "" },
-    ];
-    const visits = [
-      makeVisit({ id: "1", attending_doctor_id: "staff_1" }),
-      makeVisit({ id: "2", attending_doctor_id: "staff_1" }),
-      makeVisit({ id: "3", attending_doctor_id: "staff_2" }),
-      makeVisit({ id: "4", attending_doctor_id: null }),
-    ];
-    const rows = staffWorkload(visits, staff, RANGE);
-    expect(rows[0]).toMatchObject({ label: "Dr A", value: 2 });
-    expect(rows[1]).toMatchObject({ label: "Dr B", value: 1 });
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Allergies
-// ---------------------------------------------------------------------------
-
-describe("allergyPrevalence", () => {
-  it("splits seen patients into documented / confirmed-none / not-assessed", () => {
-    const patients = [
-      makePatient({ id: "p1", no_known_allergies: false }), // has allergy
-      makePatient({ id: "p2", no_known_allergies: true }), // confirmed none
-      makePatient({ id: "p3", no_known_allergies: false }), // not assessed
-    ];
-    const visits = [
-      makeVisit({ id: "v1", patient_id: "p1" }),
-      makeVisit({ id: "v2", patient_id: "p2" }),
-      makeVisit({ id: "v3", patient_id: "p3" }),
-    ];
-    const allergies: Allergy[] = [
-      { id: "a1", patient_id: "p1", substance: "Penicillin", category: "drug", severity: "severe", reaction: null, noted_by_id: null, created_at: "", updated_at: "" },
-    ];
-    const prev = allergyPrevalence(patients, visits, allergies, RANGE);
-    expect(prev.find((s) => s.key === "has")!.value).toBe(1);
-    expect(prev.find((s) => s.key === "none")!.value).toBe(1);
-    expect(prev.find((s) => s.key === "unassessed")!.value).toBe(1);
-  });
-});
-
-describe("topAllergens", () => {
-  it("ranks substances among seen patients", () => {
-    const patients = [makePatient({ id: "p1" }), makePatient({ id: "p2" })];
-    const visits = [makeVisit({ id: "v1", patient_id: "p1" }), makeVisit({ id: "v2", patient_id: "p2" })];
-    const allergy = (id: string, patient_id: string, substance: string): Allergy => ({
-      id, patient_id, substance, category: "drug", severity: "mild", reaction: null, noted_by_id: null, created_at: "", updated_at: "",
-    });
-    const top = topAllergens(patients, visits, [
-      allergy("a1", "p1", "Penicillin"),
-      allergy("a2", "p2", "Penicillin"),
-      allergy("a3", "p1", "Sulfa"),
-    ], RANGE);
-    expect(top[0]).toMatchObject({ label: "Penicillin", value: 2 });
-  });
-});
-
-// ---------------------------------------------------------------------------
 // clearanceBottlenecks
 // ---------------------------------------------------------------------------
 
@@ -579,12 +458,7 @@ describe("buildReport", () => {
         patients: [makePatient()],
         admissions: [makeAdmission()],
         diagnoses: [makeDiagnosis()],
-        prescriptions: [],
-        mar: [],
-        orders: [],
         results: [],
-        allergies: [],
-        staff: [],
         departments: [],
         wards: [makeWard("ward_a")],
         beds: [makeBed("b1", "ward_a", "free")],

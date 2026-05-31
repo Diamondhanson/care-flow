@@ -17,16 +17,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   getAdmissions,
-  getAllAllergies,
   getAllDiagnoses,
-  getAllMedicationAdministrations,
-  getAllOrders,
-  getAllPrescriptions,
   getAllResults,
   getBeds,
   getDepartments,
   getPatients,
-  getStaff,
   getVisits,
   getWards,
 } from "@/services/mockStorage";
@@ -53,12 +48,7 @@ function loadReportData(): ReportData {
     patients: getPatients(),
     admissions: getAdmissions(),
     diagnoses: getAllDiagnoses(),
-    prescriptions: getAllPrescriptions(),
-    mar: getAllMedicationAdministrations(),
-    orders: getAllOrders(),
     results: getAllResults(),
-    allergies: getAllAllergies(),
-    staff: getStaff(),
     departments: getDepartments(),
     wards: getWards(),
     beds: getBeds(),
@@ -230,22 +220,8 @@ export default function ReportsPage() {
             categorical
           />
         </ChartCard>
-        <ChartCard title="Bed status">
-          <Donut data={report.bedStatusMix} />
-        </ChartCard>
-
         <ChartCard title="Open visits by care stage">
           <VerticalBars data={report.stageDistribution} colorIndex={1} />
-        </ChartCard>
-        <ChartCard title="Medication administrations">
-          <Donut data={report.medsByStatus} />
-        </ChartCard>
-
-        <ChartCard title="Top prescribed drugs">
-          <HorizontalBars data={report.topDrugs} categorical />
-        </ChartCard>
-        <ChartCard title="Diagnostic orders">
-          <Donut data={report.ordersByType} />
         </ChartCard>
 
         <ChartCard title="Patients by sex">
@@ -255,16 +231,6 @@ export default function ReportsPage() {
           <VerticalBars data={report.ageDistribution} colorIndex={4} />
         </ChartCard>
 
-        <ChartCard title="Clinician workload" description="Visits by attending doctor.">
-          <HorizontalBars data={report.staffWorkload} categorical />
-        </ChartCard>
-        <ChartCard title="Allergy coverage">
-          <Donut data={report.allergyPrevalence} />
-        </ChartCard>
-
-        <ChartCard title="Top allergens">
-          <HorizontalBars data={report.topAllergens} categorical />
-        </ChartCard>
         <ChartCard
           title="Discharge clearance bottlenecks"
           description="Active admissions still pending each gate."

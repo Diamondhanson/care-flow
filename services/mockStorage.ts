@@ -650,28 +650,12 @@ export function getTransfersForPatient(patientId: PatientId): Transfer[] {
 // every row (not just the per-visit/per-patient slices above) to aggregate.
 // ---------------------------------------------------------------------------
 
-export function getAllAllergies(): Allergy[] {
-  return loadDatabase().allergies;
-}
-
 export function getAllDiagnoses(): Diagnosis[] {
   return loadDatabase().diagnoses;
 }
 
-export function getAllOrders(): Order[] {
-  return loadDatabase().orders;
-}
-
 export function getAllResults(): Result[] {
   return loadDatabase().results;
-}
-
-export function getAllPrescriptions(): Prescription[] {
-  return loadDatabase().prescriptions;
-}
-
-export function getAllMedicationAdministrations(): MedicationAdministration[] {
-  return loadDatabase().medicationAdministrations;
 }
 
 export function getAllTreatmentRecords(): TreatmentRecord[] {

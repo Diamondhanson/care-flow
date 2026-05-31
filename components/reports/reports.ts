@@ -10,21 +10,13 @@
 
 import type {
   Admission,
-  Allergy,
   Bed,
-  BedStatus,
   CareStage,
   Department,
   Diagnosis,
-  MarStatus,
-  MedicationAdministration,
-  Order,
-  OrderType,
   Patient,
-  Prescription,
   Result,
   Sex,
-  Staff,
   Visit,
   VisitType,
   Ward,
@@ -81,27 +73,6 @@ export const CARE_STAGE_LABEL: Record<CareStage, string> = {
   discharge_planning: "Discharge planning",
   discharged: "Discharged",
   followed_up: "Followed up",
-};
-
-export const BED_STATUS_LABEL: Record<BedStatus, string> = {
-  free: "Free",
-  occupied: "Occupied",
-  reserved: "Reserved",
-  cleaning: "Cleaning",
-  maintenance: "Maintenance",
-};
-
-export const MAR_STATUS_LABEL: Record<MarStatus, string> = {
-  given: "Given",
-  held: "Held",
-  refused: "Refused",
-  missed: "Missed",
-};
-
-export const ORDER_TYPE_LABEL: Record<OrderType, string> = {
-  lab: "Laboratory",
-  imaging: "Imaging",
-  procedure: "Procedure",
 };
 
 const SEX_LABEL: Record<Sex, string> = {
@@ -425,13 +396,6 @@ export function wardOccupancy(wards: Ward[], beds: Bed[]): WardOccupancyRow[] {
   });
 }
 
-export function bedStatusMix(beds: Bed[]): CountSlice[] {
-  const counts = tally(beds, (b) => b.status);
-  return (Object.keys(BED_STATUS_LABEL) as BedStatus[])
-    .map((s) => ({ key: s, label: BED_STATUS_LABEL[s], value: counts.get(s) ?? 0 }))
-    .filter((slice) => slice.value > 0);
-}
-
 /** Open visits grouped by care stage, in board order (the live funnel). */
 export function stageDistribution(visits: Visit[]): CountSlice[] {
   const open = visits.filter((v) => v.status === "open");
@@ -442,40 +406,8 @@ export function stageDistribution(visits: Visit[]): CountSlice[] {
 }
 
 // ---------------------------------------------------------------------------
-// Medications & diagnostics
+// Diagnostics
 // ---------------------------------------------------------------------------
-
-export function medsByStatus(
-  mar: MedicationAdministration[],
-  range: DateRange,
-): CountSlice[] {
-  const ranged = mar.filter((m) => inRange(m.administered_at ?? m.created_at, range));
-  const counts = tally(ranged, (m) => m.status);
-  return (Object.keys(MAR_STATUS_LABEL) as MarStatus[])
-    .map((s) => ({ key: s, label: MAR_STATUS_LABEL[s], value: counts.get(s) ?? 0 }))
-    .filter((slice) => slice.value > 0);
-}
-
-export function topDrugs(
-  prescriptions: Prescription[],
-  range: DateRange,
-  limit = 8,
-): CountSlice[] {
-  const ranged = prescriptions.filter((p) => inRange(p.created_at, range));
-  const counts = tally(ranged, (p) => p.drug_name);
-  return [...counts.entries()]
-    .map(([drug, value]) => ({ key: drug, label: drug, value }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, limit);
-}
-
-export function ordersByType(orders: Order[], range: DateRange): CountSlice[] {
-  const ranged = orders.filter((o) => inRange(o.created_at, range));
-  const counts = tally(ranged, (o) => o.order_type);
-  return (Object.keys(ORDER_TYPE_LABEL) as OrderType[])
-    .map((t) => ({ key: t, label: ORDER_TYPE_LABEL[t], value: counts.get(t) ?? 0 }))
-    .filter((slice) => slice.value > 0);
-}
 
 export interface AbnormalRate {
   abnormal: number;
@@ -548,65 +480,8 @@ export function ageDistribution(
 }
 
 // ---------------------------------------------------------------------------
-// Staff workload, allergies, clearance bottlenecks
+// Clearance bottlenecks
 // ---------------------------------------------------------------------------
-
-export function staffWorkload(
-  visits: Visit[],
-  staff: Staff[],
-  range: DateRange,
-  limit = 8,
-): CountSlice[] {
-  const name = new Map(staff.map((s) => [s.id, s.full_name]));
-  const ranged = visits.filter(
-    (v) => inRange(v.arrived_at, range) && v.attending_doctor_id,
-  );
-  const counts = tally(ranged, (v) => v.attending_doctor_id as string);
-  return [...counts.entries()]
-    .map(([id, value]) => ({ key: id, label: name.get(id) ?? "Unknown", value }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, limit);
-}
-
-export function allergyPrevalence(
-  patients: Patient[],
-  visits: Visit[],
-  allergies: Allergy[],
-  range: DateRange,
-): CountSlice[] {
-  const seen = patientsSeen(visits, range);
-  const withAllergy = new Set(allergies.map((a) => a.patient_id));
-  let has = 0;
-  let none = 0;
-  let unassessed = 0;
-  for (const p of patients) {
-    if (!seen.has(p.id)) continue;
-    if (withAllergy.has(p.id)) has += 1;
-    else if (p.no_known_allergies) none += 1;
-    else unassessed += 1;
-  }
-  return [
-    { key: "has", label: "Documented allergy", value: has },
-    { key: "none", label: "Confirmed none", value: none },
-    { key: "unassessed", label: "Not assessed", value: unassessed },
-  ].filter((slice) => slice.value > 0);
-}
-
-export function topAllergens(
-  patients: Patient[],
-  visits: Visit[],
-  allergies: Allergy[],
-  range: DateRange,
-  limit = 6,
-): CountSlice[] {
-  const seen = patientsSeen(visits, range);
-  const ranged = allergies.filter((a) => seen.has(a.patient_id));
-  const counts = tally(ranged, (a) => a.substance);
-  return [...counts.entries()]
-    .map(([substance, value]) => ({ key: substance, label: substance, value }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, limit);
-}
 
 /** Current active admissions still waiting on each discharge clearance gate. */
 export function clearanceBottlenecks(admissions: Admission[]): CountSlice[] {
@@ -640,12 +515,7 @@ export interface ReportData {
   patients: Patient[];
   admissions: Admission[];
   diagnoses: Diagnosis[];
-  prescriptions: Prescription[];
-  mar: MedicationAdministration[];
-  orders: Order[];
   results: Result[];
-  allergies: Allergy[];
-  staff: Staff[];
   departments: Department[];
   wards: Ward[];
   beds: Bed[];
@@ -661,17 +531,10 @@ export interface FullReport {
   topDiagnoses: CountSlice[];
   los: LosReport;
   wardOccupancy: WardOccupancyRow[];
-  bedStatusMix: CountSlice[];
   stageDistribution: CountSlice[];
-  medsByStatus: CountSlice[];
-  topDrugs: CountSlice[];
-  ordersByType: CountSlice[];
   abnormal: AbnormalRate;
   sexMix: CountSlice[];
   ageDistribution: CountSlice[];
-  staffWorkload: CountSlice[];
-  allergyPrevalence: CountSlice[];
-  topAllergens: CountSlice[];
   clearanceBottlenecks: CountSlice[];
 }
 
@@ -690,17 +553,10 @@ export function buildReport(
     topDiagnoses: topDiagnoses(data.diagnoses, range),
     los: lengthOfStay(data.admissions, range),
     wardOccupancy: wardOccupancy(data.wards, data.beds),
-    bedStatusMix: bedStatusMix(data.beds),
     stageDistribution: stageDistribution(data.visits),
-    medsByStatus: medsByStatus(data.mar, range),
-    topDrugs: topDrugs(data.prescriptions, range),
-    ordersByType: ordersByType(data.orders, range),
     abnormal: abnormalRate(data.results, range),
     sexMix: sexMix(data.patients, data.visits, range),
     ageDistribution: ageDistribution(data.patients, data.visits, range, nowMs),
-    staffWorkload: staffWorkload(data.visits, data.staff, range),
-    allergyPrevalence: allergyPrevalence(data.patients, data.visits, data.allergies, range),
-    topAllergens: topAllergens(data.patients, data.visits, data.allergies, range),
     clearanceBottlenecks: clearanceBottlenecks(data.admissions),
   };
 }
