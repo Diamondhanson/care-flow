@@ -28,11 +28,14 @@ import type {
   MedicationAdministration,
   Order,
   OrderId,
+  OrderStatus,
+  OrderType,
   Patient,
   PatientId,
   Prescription,
   PrescriptionId,
   Result,
+  ResultId,
   Staff,
   StaffId,
   TreatmentRecord,
@@ -201,6 +204,22 @@ export interface AddDiagnosisInput {
   icd10_code?: string | null;
   description: string;
   is_primary?: boolean;
+}
+
+export interface AddOrderInput {
+  ordered_by_id?: StaffId | null;
+  order_type: OrderType;
+  description: string;
+}
+
+export interface AddResultInput {
+  recorded_by_id?: StaffId | null;
+  summary?: string | null;
+  value?: string | null;
+  reference_range?: string | null;
+  is_abnormal?: boolean;
+  /** Mock attachment reference (filename); no binary is stored in this phase. */
+  attachment_path?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -395,6 +414,32 @@ export function getResultsForOrder(orderId: OrderId): Result[] {
   return loadDatabase()
     .results.filter((r) => r.order_id === orderId)
     .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+}
+
+/** All results recorded against any order belonging to a visit. */
+export function getResultsForVisit(visitId: VisitId): Result[] {
+  const db = loadDatabase();
+  const orderIds = new Set(
+    db.orders.filter((o) => o.visit_id === visitId).map((o) => o.id)
+  );
+  return db.results
+    .filter((r) => orderIds.has(r.order_id))
+    .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+}
+
+/**
+ * The diagnostics work queue — every order still awaiting a result
+ * ("requested" or "in_progress"), oldest first so the longest-waiting test is
+ * actioned next. Optionally narrowed to a single order type (lab / imaging).
+ */
+export function getOpenOrders(orderType?: OrderType): Order[] {
+  return loadDatabase()
+    .orders.filter(
+      (o) =>
+        (o.status === "requested" || o.status === "in_progress") &&
+        (orderType ? o.order_type === orderType : true)
+    )
+    .sort((a, b) => a.created_at.localeCompare(b.created_at));
 }
 
 export function getPrescriptionsForVisit(visitId: VisitId): Prescription[] {
@@ -785,6 +830,112 @@ export function recordDisposition(
 }
 
 // ---------------------------------------------------------------------------
+// Mutations — orders & results (diagnostics loop, Phase 9)
+// ---------------------------------------------------------------------------
+
+/**
+ * Order a diagnostic test (lab / imaging / procedure) against a visit. New
+ * orders start "requested" and surface in the diagnostics queue. Ordering a
+ * test nudges a still-in-consultation visit into the "diagnostics" stage so the
+ * board reflects that a workup is pending. Returns the created order.
+ */
+export function addOrder(visitId: VisitId, input: AddOrderInput): Order {
+  const db = loadDatabase();
+  const visit = db.visits.find((v) => v.id === visitId);
+  if (!visit) {
+    throw new Error(`addOrder: visit "${visitId}" not found`);
+  }
+  const description = input.description.trim();
+  if (!description) {
+    throw new Error("addOrder: an order description is required");
+  }
+
+  const timestamp = nowISO();
+  const order: Order = {
+    id: generateId(),
+    visit_id: visitId,
+    ordered_by_id: input.ordered_by_id ?? visit.attending_doctor_id ?? null,
+    order_type: input.order_type,
+    description,
+    status: "requested",
+    created_at: timestamp,
+    completed_at: null,
+    updated_at: timestamp,
+  };
+
+  db.orders.push(order);
+
+  // A pending workup belongs in diagnostics — advance from consultation only.
+  if (visit.stage === "consultation") {
+    visit.stage = "diagnostics";
+  }
+  visit.updated_at = timestamp;
+
+  persist(db);
+  return order;
+}
+
+/**
+ * Move an order along its lifecycle. Setting it "completed" stamps
+ * `completed_at`; any other status clears it. Used by the lab tech to "start"
+ * (in_progress) or cancel an order. Returns the updated order.
+ */
+export function updateOrderStatus(
+  orderId: OrderId,
+  status: OrderStatus
+): Order {
+  const db = loadDatabase();
+  const order = db.orders.find((o) => o.id === orderId);
+  if (!order) {
+    throw new Error(`updateOrderStatus: order "${orderId}" not found`);
+  }
+
+  const timestamp = nowISO();
+  order.status = status;
+  order.completed_at = status === "completed" ? timestamp : null;
+  order.updated_at = timestamp;
+
+  persist(db);
+  return order;
+}
+
+/**
+ * Record a result against an order — the lab tech closing the loop. The parent
+ * order is marked "completed" (with `completed_at`) so it leaves the queue and
+ * the result surfaces back on the visit for doctor review. Returns the result.
+ */
+export function addResult(orderId: OrderId, input: AddResultInput): Result {
+  const db = loadDatabase();
+  const order = db.orders.find((o) => o.id === orderId);
+  if (!order) {
+    throw new Error(`addResult: order "${orderId}" not found`);
+  }
+
+  const timestamp = nowISO();
+  const result: Result = {
+    id: generateId() as ResultId,
+    order_id: orderId,
+    recorded_by_id: input.recorded_by_id ?? null,
+    summary: input.summary?.trim() || null,
+    value: input.value?.trim() || null,
+    reference_range: input.reference_range?.trim() || null,
+    is_abnormal: input.is_abnormal ?? false,
+    attachment_path: input.attachment_path?.trim() || null,
+    recorded_at: timestamp,
+  };
+
+  db.results.push(result);
+
+  // Closing the loop: the order is now complete.
+  order.status = "completed";
+  order.completed_at = timestamp;
+  order.updated_at = timestamp;
+
+  persist(db);
+  return result;
+}
+
+// ---------------------------------------------------------------------------
 // Mutations — admissions (inpatient bed assignment + occupancy sync)
 // ---------------------------------------------------------------------------
 
@@ -1159,11 +1310,14 @@ function seedDatabaseObject(): Database {
     { id: "ord_owusu_hba1c", visit_id: "vis_owusu", ordered_by_id: "staff_okafor", order_type: "lab", description: "HbA1c", status: "completed", created_at: day(2), completed_at: day(1), updated_at: day(1) },
     { id: "ord_bello_cxr", visit_id: "vis_bello", ordered_by_id: "staff_okafor", order_type: "imaging", description: "Chest X-ray (PA)", status: "completed", created_at: day(90), completed_at: day(88), updated_at: day(88) },
     { id: "ord_anon_ct", visit_id: "vis_anon", ordered_by_id: "staff_okafor", order_type: "imaging", description: "CT head (non-contrast)", status: "in_progress", created_at: day(5), completed_at: null, updated_at: day(4) },
+    // Fresh, unactioned orders — populate the diagnostics queue on first load.
+    { id: "ord_mensah_trop", visit_id: "vis_mensah", ordered_by_id: "staff_okafor", order_type: "lab", description: "Troponin I", status: "requested", created_at: day(3), completed_at: null, updated_at: day(3) },
+    { id: "ord_owusu_lipids", visit_id: "vis_owusu", ordered_by_id: "staff_okafor", order_type: "lab", description: "Fasting lipid panel", status: "requested", created_at: day(2), completed_at: null, updated_at: day(2) },
   ];
 
   const results: Result[] = [
-    { id: "res_owusu_hba1c", order_id: "ord_owusu_hba1c", recorded_by_id: "staff_boateng", summary: "Moderately elevated — reinforce adherence.", value: "7.8%", reference_range: "< 7.0%", attachment_path: null, recorded_at: day(1) },
-    { id: "res_bello_cxr", order_id: "ord_bello_cxr", recorded_by_id: "staff_boateng", summary: "Right lower lobe consolidation, consistent with pneumonia.", value: "Abnormal", reference_range: null, attachment_path: null, recorded_at: day(88) },
+    { id: "res_owusu_hba1c", order_id: "ord_owusu_hba1c", recorded_by_id: "staff_boateng", summary: "Moderately elevated — reinforce adherence.", value: "7.8%", reference_range: "< 7.0%", is_abnormal: true, attachment_path: null, recorded_at: day(1) },
+    { id: "res_bello_cxr", order_id: "ord_bello_cxr", recorded_by_id: "staff_boateng", summary: "Right lower lobe consolidation, consistent with pneumonia.", value: "Abnormal", reference_range: null, is_abnormal: true, attachment_path: "bello-cxr-pa.jpg", recorded_at: day(88) },
   ];
 
   const prescriptions: Prescription[] = [

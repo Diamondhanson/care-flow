@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   Lock,
   FileText,
+  FlaskConical,
+  AlertTriangle,
   Plus,
   Home,
   BedDouble,
@@ -45,6 +47,8 @@ import {
   getConsultationsForVisit,
   getDepartmentById,
   getDiagnosesForVisit,
+  getOrdersForVisit,
+  getResultsForVisit,
   getPatientById,
   getPatients,
   getStaff,
@@ -53,6 +57,7 @@ import {
   getVisitById,
   addConsultation,
   addDiagnosis,
+  addOrder,
   addTreatmentLog,
   recordDisposition,
   updateAdmissionClearances,
@@ -62,12 +67,21 @@ import {
   type Disposition,
 } from "@/services/mockStorage";
 import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
+import {
+  COMMON_ORDERS,
+  ORDER_STATUS_LABEL,
+  ORDER_STATUS_TOKEN,
+  ORDER_TYPE_LABEL,
+} from "@/components/diagnostics/orders";
 import { useRole } from "@/components/role-provider";
 import type {
   Admission,
   Consultation,
   Diagnosis,
+  Order,
+  OrderType,
   Patient,
+  Result,
   TreatmentRecord,
   Visit,
 } from "@/types/healthcare";
@@ -139,6 +153,12 @@ export function PatientDrawer({
   const [dxDescription, setDxDescription] = useState("");
   const [dxPrimary, setDxPrimary] = useState(false);
 
+  // Diagnostic orders + their results
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
+  const [orderType, setOrderType] = useState<OrderType>("lab");
+  const [orderDescription, setOrderDescription] = useState("");
+
   // Vitals / GCS / notes form
   const [spo2, setSpo2] = useState<NumField>("");
   const [sys, setSys] = useState<NumField>("");
@@ -169,6 +189,8 @@ export function PatientDrawer({
     setRecords(getTreatmentRecordsForVisit(visitId));
     setConsultations(getConsultationsForVisit(visitId));
     setDiagnoses(getDiagnosesForVisit(visitId));
+    setOrders(getOrdersForVisit(visitId));
+    setResults(getResultsForVisit(visitId));
     setVerified(
       getPatients().filter(
         (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
@@ -198,6 +220,8 @@ export function PatientDrawer({
     setDxCode("");
     setDxDescription("");
     setDxPrimary(false);
+    setOrderType("lab");
+    setOrderDescription("");
   }, [open, visitId, tick]);
 
   if (!visit || !patient) {
@@ -282,6 +306,16 @@ export function PatientDrawer({
       icd10_code: dxCode,
       description: dxDescription,
       is_primary: dxPrimary,
+    });
+    refresh();
+  }
+
+  function handleAddOrder() {
+    if (!orderDescription.trim()) return;
+    addOrder(visit!.id, {
+      ordered_by_id: recorderId,
+      order_type: orderType,
+      description: orderDescription,
     });
     refresh();
   }
@@ -547,6 +581,157 @@ export function PatientDrawer({
                 >
                   <Plus className="size-4" />
                   Add diagnosis
+                </Button>
+              </div>
+
+              <Separator />
+
+              {/* Diagnostic orders & results */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <FlaskConical className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Orders &amp; results</span>
+                </div>
+
+                {orders.length > 0 ? (
+                  <ul className="flex flex-col gap-2">
+                    {orders.map((o) => {
+                      const orderResults = results.filter(
+                        (r) => r.order_id === o.id,
+                      );
+                      const token = ORDER_STATUS_TOKEN[o.status];
+                      return (
+                        <li
+                          key={o.id}
+                          className="flex flex-col gap-2 rounded-md border border-border bg-muted/40 p-3"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex min-w-0 flex-col">
+                              <span className="text-sm font-medium">
+                                {o.description}
+                              </span>
+                              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                                {ORDER_TYPE_LABEL[o.order_type]}
+                              </span>
+                            </div>
+                            <Badge
+                              variant="outline"
+                              className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
+                              style={
+                                token === "muted"
+                                  ? undefined
+                                  : {
+                                      backgroundColor: `var(--status-${token})`,
+                                      color: `var(--status-${token}-foreground)`,
+                                    }
+                              }
+                            >
+                              {ORDER_STATUS_LABEL[o.status]}
+                            </Badge>
+                          </div>
+
+                          {orderResults.map((r) => (
+                            <div
+                              key={r.id}
+                              className="flex flex-col gap-1 rounded-md border border-border bg-background p-2.5"
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-mono text-sm">
+                                  {r.value ?? "—"}
+                                  {r.reference_range ? (
+                                    <span className="ml-1.5 text-xs text-muted-foreground">
+                                      (ref {r.reference_range})
+                                    </span>
+                                  ) : null}
+                                </span>
+                                {r.is_abnormal ? (
+                                  <Badge
+                                    variant="outline"
+                                    className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
+                                    style={{
+                                      backgroundColor: "var(--status-treatment)",
+                                      color:
+                                        "var(--status-treatment-foreground)",
+                                    }}
+                                  >
+                                    <AlertTriangle className="size-3" />
+                                    Abnormal
+                                  </Badge>
+                                ) : null}
+                              </div>
+                              {r.summary ? (
+                                <p className="text-xs text-muted-foreground">
+                                  {r.summary}
+                                </p>
+                              ) : null}
+                              {r.attachment_path ? (
+                                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
+                                  <FileText className="size-3" />
+                                  {r.attachment_path}
+                                </span>
+                              ) : null}
+                            </div>
+                          ))}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    No tests ordered on this visit yet.
+                  </p>
+                )}
+
+                {/* New order */}
+                <datalist id="order-options">
+                  {COMMON_ORDERS[orderType].map((label) => (
+                    <option key={label} value={label} />
+                  ))}
+                </datalist>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="order-type" className="text-xs">
+                    Test type
+                  </Label>
+                  <Select
+                    items={ORDER_TYPE_LABEL}
+                    value={orderType}
+                    onValueChange={(v) => {
+                      setOrderType(v as OrderType);
+                      setOrderDescription("");
+                    }}
+                  >
+                    <SelectTrigger id="order-type" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((t) => (
+                        <SelectItem key={t} value={t}>
+                          {ORDER_TYPE_LABEL[t]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="order-desc" className="text-xs">
+                    Test
+                  </Label>
+                  <Input
+                    id="order-desc"
+                    list="order-options"
+                    value={orderDescription}
+                    onChange={(e) => setOrderDescription(e.target.value)}
+                    placeholder="e.g. Full Blood Count"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleAddOrder}
+                  disabled={!orderDescription.trim()}
+                  className="self-end"
+                >
+                  <Plus className="size-4" />
+                  Order test
                 </Button>
               </div>
 

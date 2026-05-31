@@ -7,6 +7,7 @@ import {
   Activity,
   Building2,
   ClipboardPlus,
+  FlaskConical,
   GitMerge,
   LayoutDashboard,
   Menu,
@@ -37,6 +38,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { title: "Live Board", href: "/", icon: LayoutDashboard },
   { title: "Patient Intake", href: "/intake", icon: ClipboardPlus },
+  { title: "Diagnostics", href: "/diagnostics", icon: FlaskConical },
   { title: "Reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "Departments", href: "/departments", icon: Building2 },
   { title: "Staff Directory", href: "/staff", icon: Users },

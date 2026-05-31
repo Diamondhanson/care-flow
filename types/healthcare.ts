@@ -289,6 +289,8 @@ export interface Result {
   /** Numeric or text result value. */
   value: string | null;
   reference_range: string | null;
+  /** Flagged out-of-range / clinically significant; drives review highlighting. */
+  is_abnormal: boolean;
   attachment_path: string | null;
   recorded_at: ISODateString;
 }
