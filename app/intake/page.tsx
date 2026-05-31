@@ -164,10 +164,12 @@ export default function IntakePage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Patient Intake</h1>
-        <p className="text-sm text-muted-foreground">
+    <div className="mx-auto flex max-w-4xl flex-col gap-8">
+      <header className="flex flex-col gap-2">
+        <h1 className="text-3xl font-semibold tracking-tight lg:text-4xl">
+          Patient Intake
+        </h1>
+        <p className="text-base text-muted-foreground">
           Open a new visit on the Live Status Board.
         </p>
       </header>

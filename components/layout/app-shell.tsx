@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity,
+  Building2,
   ClipboardPlus,
   GitMerge,
   LayoutDashboard,
@@ -35,6 +36,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "Live Board", href: "/", icon: LayoutDashboard },
   { title: "Patient Intake", href: "/intake", icon: ClipboardPlus },
   { title: "Reconciliation", href: "/reconciliation", icon: GitMerge },
+  { title: "Departments", href: "/departments", icon: Building2 },
   { title: "Staff Directory", href: "/staff", icon: Users },
 ];
 
@@ -134,15 +136,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-svh bg-background text-foreground">
-      {/* Desktop sidebar */}
+    <div className="flex h-svh overflow-hidden bg-background text-foreground">
+      {/* Desktop sidebar — fixed; never scrolls with the content */}
       <aside className="hidden w-64 shrink-0 border-r border-sidebar-border bg-sidebar md:flex md:flex-col">
         <SidebarBody />
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Sticky top navbar */}
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-sm md:px-8">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {/* Top navbar — stays put; only the content below scrolls */}
+        <header className="z-30 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-sm md:px-8">
           {/* Mobile: hamburger + brand */}
           <div className="flex items-center gap-2 md:hidden">
             <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -188,7 +190,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
+        <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
       </div>
     </div>
   );

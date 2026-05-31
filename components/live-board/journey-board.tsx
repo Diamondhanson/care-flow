@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import {
-  getActiveVisits,
+  getActiveVisitsForDepartment,
   getAdmissionForVisit,
   getBedById,
   getDepartmentById,
@@ -35,9 +35,9 @@ function locationLabel(visitId: string, departmentId: string | null): string | n
   return null;
 }
 
-function buildColumns(): Columns {
+function buildColumns(departmentId: string): Columns {
   const columns = emptyColumns();
-  for (const visit of getActiveVisits()) {
+  for (const visit of getActiveVisitsForDepartment(departmentId)) {
     const column = columnForStage(visit.stage);
     if (!column) continue; // terminal stage — off the board
 
@@ -64,14 +64,14 @@ function buildColumns(): Columns {
   return columns;
 }
 
-export function JourneyBoard() {
+export function JourneyBoard({ departmentId }: { departmentId: string }) {
   const [columns, setColumns] = useState<Columns | null>(null);
   const [version, setVersion] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    setColumns(buildColumns());
-  }, [version]);
+    setColumns(buildColumns(departmentId));
+  }, [version, departmentId]);
 
   const refresh = () => setVersion((v) => v + 1);
 

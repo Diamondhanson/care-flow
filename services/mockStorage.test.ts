@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  ALL_DEPARTMENTS,
   computeWardOccupancy,
+  countVisitsByDepartment,
   evaluateDischargeReadiness,
+  filterVisitsByDepartment,
   generateMrn,
   isTerminalStage,
 } from "@/services/mockStorage";
@@ -189,5 +192,53 @@ describe("computeWardOccupancy", () => {
   it("reports zero totals for a ward with no beds", () => {
     const occupancy = computeWardOccupancy([makeWard("empty")], []);
     expect(occupancy[0]).toMatchObject({ total: 0, occupied: 0, free: 0 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Department routing helpers
+// ---------------------------------------------------------------------------
+
+const VISITS: { id: string; department_id: string | null }[] = [
+  { id: "v1", department_id: "dept_a" },
+  { id: "v2", department_id: "dept_a" },
+  { id: "v3", department_id: "dept_b" },
+  { id: "v4", department_id: null },
+];
+
+describe("filterVisitsByDepartment", () => {
+  it("narrows to a single department", () => {
+    expect(filterVisitsByDepartment(VISITS, "dept_a").map((v) => v.id)).toEqual([
+      "v1",
+      "v2",
+    ]);
+    expect(filterVisitsByDepartment(VISITS, "dept_b").map((v) => v.id)).toEqual([
+      "v3",
+    ]);
+  });
+
+  it("returns everything for the all-departments sentinel or nullish filter", () => {
+    expect(filterVisitsByDepartment(VISITS, ALL_DEPARTMENTS)).toHaveLength(4);
+    expect(filterVisitsByDepartment(VISITS, null)).toHaveLength(4);
+    expect(filterVisitsByDepartment(VISITS, undefined)).toHaveLength(4);
+  });
+
+  it("returns an empty list for a department with no visits", () => {
+    expect(filterVisitsByDepartment(VISITS, "dept_unknown")).toEqual([]);
+  });
+});
+
+describe("countVisitsByDepartment", () => {
+  it("tallies visits per department and buckets unrouted under the sentinel", () => {
+    const counts = countVisitsByDepartment(VISITS);
+    expect(counts).toEqual({
+      dept_a: 2,
+      dept_b: 1,
+      [ALL_DEPARTMENTS]: 1,
+    });
+  });
+
+  it("returns an empty tally for no visits", () => {
+    expect(countVisitsByDepartment([])).toEqual({});
   });
 });

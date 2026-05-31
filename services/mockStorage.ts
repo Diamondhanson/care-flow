@@ -173,6 +173,19 @@ export interface CreateAdmissionInput {
   is_pharmacy_ready?: boolean;
 }
 
+export interface CreateDepartmentInput {
+  name: string;
+  code?: string | null;
+  description?: string | null;
+}
+
+export interface UpdateDepartmentInput {
+  name?: string;
+  code?: string | null;
+  description?: string | null;
+  is_active?: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Emergency-intake helpers
 // ---------------------------------------------------------------------------
@@ -211,6 +224,41 @@ export function generateAnonymousIdentifier(seedIndex?: number): string {
 /** A visit has left the floor once it reaches one of these stages. */
 export function isTerminalStage(stage: CareStage): boolean {
   return stage === "discharged" || stage === "followed_up";
+}
+
+// ---------------------------------------------------------------------------
+// Department routing helpers (pure — drive the board filter & per-unit views)
+// ---------------------------------------------------------------------------
+
+/** Sentinel meaning "no filter" — the admin / all-departments view. */
+export const ALL_DEPARTMENTS = "all";
+
+/**
+ * Narrow a list of visits to a single department. A `null`/`undefined` or the
+ * {@link ALL_DEPARTMENTS} sentinel returns the list untouched (admin view).
+ * Pure — no storage access, so it is unit-testable.
+ */
+export function filterVisitsByDepartment<T extends { department_id: DepartmentId | null }>(
+  visits: T[],
+  departmentId: DepartmentId | null | undefined
+): T[] {
+  if (!departmentId || departmentId === ALL_DEPARTMENTS) return visits;
+  return visits.filter((v) => v.department_id === departmentId);
+}
+
+/**
+ * Tally visits per department id. Visits with no department are bucketed under
+ * the {@link ALL_DEPARTMENTS} key. Pure — used for directory + nav badges.
+ */
+export function countVisitsByDepartment<T extends { department_id: DepartmentId | null }>(
+  visits: T[]
+): Record<string, number> {
+  const tally: Record<string, number> = {};
+  for (const v of visits) {
+    const key = v.department_id ?? ALL_DEPARTMENTS;
+    tally[key] = (tally[key] ?? 0) + 1;
+  }
+  return tally;
 }
 
 // ---------------------------------------------------------------------------
@@ -281,6 +329,18 @@ export function getActiveVisits(): Visit[] {
   return loadDatabase()
     .visits.filter((v) => v.status === "open")
     .sort((a, b) => b.arrived_at.localeCompare(a.arrived_at));
+}
+
+/** Active visits routed to a given department (or all, for the admin view). */
+export function getActiveVisitsForDepartment(
+  departmentId: DepartmentId | null | undefined
+): Visit[] {
+  return filterVisitsByDepartment(getActiveVisits(), departmentId);
+}
+
+/** Per-department tally of active visits, keyed by department id. */
+export function getActiveVisitCountsByDepartment(): Record<string, number> {
+  return countVisitsByDepartment(getActiveVisits());
 }
 
 /** Visits whose patient is still flagged as an anonymous emergency. */
@@ -405,6 +465,60 @@ export function getWardOccupancy(): WardOccupancy[] {
  * permanent MRN (`CF-YYYY-NNNNNN`). For emergency anonymous intakes an anonymous
  * identifier is generated if the caller did not supply one.
  */
+// ---------------------------------------------------------------------------
+// Mutations — departments (admin management)
+// ---------------------------------------------------------------------------
+
+/** Register a new department. Returns the created record. */
+export function createDepartment(input: CreateDepartmentInput): Department {
+  const db = loadDatabase();
+  const timestamp = nowISO();
+  const department: Department = {
+    id: generateId(),
+    name: input.name.trim(),
+    code: input.code?.trim() || null,
+    description: input.description?.trim() || null,
+    is_active: true,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+  db.departments.push(department);
+  persist(db);
+  return department;
+}
+
+/** Patch an existing department (name / code / description / active flag). */
+export function updateDepartment(
+  id: DepartmentId,
+  patch: UpdateDepartmentInput
+): Department {
+  const db = loadDatabase();
+  const department = db.departments.find((d) => d.id === id);
+  if (!department) {
+    throw new Error(`updateDepartment: department "${id}" not found`);
+  }
+  if (patch.name !== undefined) department.name = patch.name.trim();
+  if (patch.code !== undefined) department.code = patch.code?.trim() || null;
+  if (patch.description !== undefined)
+    department.description = patch.description?.trim() || null;
+  if (patch.is_active !== undefined) department.is_active = patch.is_active;
+  department.updated_at = nowISO();
+  persist(db);
+  return department;
+}
+
+/** Toggle a department's active flag (soft archive — never hard-deleted). */
+export function setDepartmentActive(
+  id: DepartmentId,
+  isActive: boolean
+): Department {
+  return updateDepartment(id, { is_active: isActive });
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — visits
+// ---------------------------------------------------------------------------
+
 export function createNewVisit(
   patientData: CreatePatientInput,
   visitData: CreateVisitInput
