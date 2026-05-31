@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Activity,
   ShieldAlert,
@@ -10,6 +10,12 @@ import {
   ArrowRight,
   CheckCircle2,
   Lock,
+  FileText,
+  Plus,
+  Home,
+  BedDouble,
+  Eye,
+  Send,
 } from "lucide-react";
 
 import {
@@ -36,21 +42,60 @@ import {
 import {
   getAdmissionForVisit,
   getBedById,
+  getConsultationsForVisit,
   getDepartmentById,
+  getDiagnosesForVisit,
   getPatientById,
   getPatients,
   getStaff,
   getStaffById,
   getTreatmentRecordsForVisit,
   getVisitById,
+  addConsultation,
+  addDiagnosis,
   addTreatmentLog,
+  recordDisposition,
   updateAdmissionClearances,
   updateVisitStage,
   evaluateDischargeReadiness,
   reconcileAnonymousProfile,
+  type Disposition,
 } from "@/services/mockStorage";
 import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
-import type { Admission, Patient, TreatmentRecord, Visit } from "@/types/healthcare";
+import { useRole } from "@/components/role-provider";
+import type {
+  Admission,
+  Consultation,
+  Diagnosis,
+  Patient,
+  TreatmentRecord,
+  Visit,
+} from "@/types/healthcare";
+
+/** Lightweight ICD-10 quick-pick suggestions surfaced via a native datalist. */
+const COMMON_ICD10: { code: string; label: string }[] = [
+  { code: "E11.9", label: "Type 2 diabetes mellitus without complications" },
+  { code: "I10", label: "Essential (primary) hypertension" },
+  { code: "J18.9", label: "Pneumonia, unspecified organism" },
+  { code: "J45.909", label: "Unspecified asthma, uncomplicated" },
+  { code: "A09", label: "Infectious gastroenteritis and colitis" },
+  { code: "B54", label: "Unspecified malaria" },
+  { code: "N39.0", label: "Urinary tract infection, site not specified" },
+  { code: "S06.9", label: "Intracranial injury, unspecified" },
+  { code: "R07.9", label: "Chest pain, unspecified" },
+  { code: "K35.80", label: "Unspecified acute appendicitis" },
+];
+
+const DISPOSITIONS: {
+  value: Disposition;
+  label: string;
+  icon: typeof Home;
+}[] = [
+  { value: "discharge_home", label: "Discharge home", icon: Home },
+  { value: "admit", label: "Admit", icon: BedDouble },
+  { value: "observation", label: "Observation", icon: Eye },
+  { value: "refer", label: "Refer", icon: Send },
+];
 
 const CLEARANCE_FIELDS = [
   { key: "is_medical_cleared", label: "Medical cleared" },
@@ -71,13 +116,28 @@ export function PatientDrawer({
   onOpenChange: (open: boolean) => void;
   onMutate: () => void;
 }) {
+  const { actingStaff, actingRole } = useRole();
+
   const [tick, setTick] = useState(0);
   const [visit, setVisit] = useState<Visit | null>(null);
   const [admission, setAdmission] = useState<Admission | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [records, setRecords] = useState<TreatmentRecord[]>([]);
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [verified, setVerified] = useState<Patient[]>([]);
   const [location, setLocation] = useState<string | null>(null);
+
+  // SOAP consultation form
+  const [subjective, setSubjective] = useState("");
+  const [examination, setExamination] = useState("");
+  const [assessment, setAssessment] = useState("");
+  const [plan, setPlan] = useState("");
+
+  // Structured diagnosis form
+  const [dxCode, setDxCode] = useState("");
+  const [dxDescription, setDxDescription] = useState("");
+  const [dxPrimary, setDxPrimary] = useState(false);
 
   // Vitals / GCS / notes form
   const [spo2, setSpo2] = useState<NumField>("");
@@ -89,10 +149,14 @@ export function PatientDrawer({
   const [notes, setNotes] = useState("");
   const [reconcileTarget, setReconcileTarget] = useState("");
 
-  const recorderId = useMemo(() => {
-    const doctor = getStaff().find((s) => s.role === "doctor");
-    return doctor?.id ?? getStaff()[0]?.id ?? null;
-  }, []);
+  // The acting staff member records the entry; fall back to a doctor so logging
+  // still works before the role context has hydrated.
+  const recorderId =
+    actingStaff?.id ??
+    getStaff().find((s) => s.role === "doctor")?.id ??
+    getStaff()[0]?.id ??
+    null;
+  const isDoctor = actingRole === "doctor";
 
   useEffect(() => {
     if (!open || !visitId) return;
@@ -103,6 +167,8 @@ export function PatientDrawer({
     setAdmission(adm);
     setPatient(getPatientById(v.patient_id) ?? null);
     setRecords(getTreatmentRecordsForVisit(visitId));
+    setConsultations(getConsultationsForVisit(visitId));
+    setDiagnoses(getDiagnosesForVisit(visitId));
     setVerified(
       getPatients().filter(
         (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
@@ -124,6 +190,14 @@ export function PatientDrawer({
     setGcs("");
     setNotes("");
     setReconcileTarget("");
+    // Reset the doctor consultation forms too.
+    setSubjective("");
+    setExamination("");
+    setAssessment("");
+    setPlan("");
+    setDxCode("");
+    setDxDescription("");
+    setDxPrimary(false);
   }, [open, visitId, tick]);
 
   if (!visit || !patient) {
@@ -179,6 +253,41 @@ export function PatientDrawer({
       ...fields,
       notes: notes.trim() || null,
     });
+    refresh();
+  }
+
+  function handleSaveConsultation() {
+    if (
+      !subjective.trim() &&
+      !examination.trim() &&
+      !assessment.trim() &&
+      !plan.trim()
+    ) {
+      return;
+    }
+    addConsultation(visit!.id, {
+      doctor_id: recorderId,
+      subjective,
+      examination,
+      assessment,
+      plan,
+    });
+    refresh();
+  }
+
+  function handleAddDiagnosis() {
+    if (!dxDescription.trim()) return;
+    addDiagnosis(visit!.id, {
+      diagnosed_by_id: recorderId,
+      icd10_code: dxCode,
+      description: dxDescription,
+      is_primary: dxPrimary,
+    });
+    refresh();
+  }
+
+  function handleDisposition(disposition: Disposition) {
+    recordDisposition(visit!.id, disposition, recorderId);
     refresh();
   }
 
@@ -289,6 +398,188 @@ export function PatientDrawer({
               </div>
             </section>
           ) : null}
+
+          {/* Doctor consultation console — doctor role only */}
+          {isDoctor ? (
+            <section className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <Stethoscope
+                  className="size-4"
+                  style={{ color: "var(--status-diagnostics)" }}
+                />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  Doctor console
+                </h3>
+              </div>
+
+              {/* Prior clinical record */}
+              {diagnoses.length > 0 || consultations.length > 0 ? (
+                <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                    Prior record
+                  </span>
+                  {diagnoses.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {diagnoses.map((d) => (
+                        <Badge
+                          key={d.id}
+                          variant={d.is_primary ? "default" : "outline"}
+                          className="gap-1 text-[11px]"
+                        >
+                          {d.icd10_code ? (
+                            <span className="font-mono">{d.icd10_code}</span>
+                          ) : null}
+                          {d.description}
+                          {d.is_primary ? (
+                            <span className="opacity-70">· primary</span>
+                          ) : null}
+                        </Badge>
+                      ))}
+                    </div>
+                  ) : null}
+                  {consultations.length > 0 ? (
+                    <ConsultationNote consultation={consultations[0]} />
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      No consultation note recorded yet.
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  No prior consultations or diagnoses on this visit.
+                </p>
+              )}
+
+              {/* SOAP note entry */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="size-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">New consultation (SOAP)</span>
+                </div>
+                <FieldArea
+                  label="Subjective"
+                  id="soap-s"
+                  value={subjective}
+                  onChange={setSubjective}
+                  placeholder="What the patient reports"
+                />
+                <FieldArea
+                  label="Examination"
+                  id="soap-o"
+                  value={examination}
+                  onChange={setExamination}
+                  placeholder="Objective exam findings"
+                />
+                <FieldArea
+                  label="Assessment"
+                  id="soap-a"
+                  value={assessment}
+                  onChange={setAssessment}
+                  placeholder="Clinical impression"
+                />
+                <FieldArea
+                  label="Plan"
+                  id="soap-p"
+                  value={plan}
+                  onChange={setPlan}
+                  placeholder="Tests, treatment, follow-up"
+                />
+                <Button onClick={handleSaveConsultation} className="self-end">
+                  Save consultation
+                </Button>
+              </div>
+
+              <Separator />
+
+              {/* Structured diagnosis entry */}
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-medium">Add diagnosis</span>
+                <datalist id="icd10-options">
+                  {COMMON_ICD10.map((o) => (
+                    <option key={o.code} value={o.code}>
+                      {o.label}
+                    </option>
+                  ))}
+                </datalist>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="dx-code" className="text-xs">
+                    ICD-10 code
+                  </Label>
+                  <Input
+                    id="dx-code"
+                    list="icd10-options"
+                    value={dxCode}
+                    onChange={(e) => {
+                      const next = e.target.value;
+                      setDxCode(next);
+                      const match = COMMON_ICD10.find(
+                        (o) => o.code.toLowerCase() === next.trim().toLowerCase(),
+                      );
+                      if (match && !dxDescription.trim()) {
+                        setDxDescription(match.label);
+                      }
+                    }}
+                    placeholder="e.g. J18.9"
+                    className="font-mono"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="dx-desc" className="text-xs">
+                    Description
+                  </Label>
+                  <Input
+                    id="dx-desc"
+                    value={dxDescription}
+                    onChange={(e) => setDxDescription(e.target.value)}
+                    placeholder="Diagnosis description"
+                  />
+                </div>
+                <label className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3">
+                  <span className="text-sm">Primary diagnosis</span>
+                  <Switch checked={dxPrimary} onCheckedChange={setDxPrimary} />
+                </label>
+                <Button
+                  variant="outline"
+                  onClick={handleAddDiagnosis}
+                  disabled={!dxDescription.trim()}
+                  className="self-end"
+                >
+                  <Plus className="size-4" />
+                  Add diagnosis
+                </Button>
+              </div>
+
+              <Separator />
+
+              {/* Disposition decision */}
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-medium">Disposition</span>
+                <p className="text-xs text-muted-foreground">
+                  Decide where the patient goes next. Admit opens an inpatient
+                  stay; the choice is logged to the treatment record.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {DISPOSITIONS.map((d) => {
+                    const Icon = d.icon;
+                    return (
+                      <Button
+                        key={d.value}
+                        variant="outline"
+                        onClick={() => handleDisposition(d.value)}
+                        className="justify-start"
+                      >
+                        <Icon className="size-4" />
+                        {d.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {isDoctor ? <Separator /> : null}
 
           {/* Clearance gates — inpatient admissions only */}
           {admission ? (
@@ -488,6 +779,64 @@ function FieldNum({
         onChange={(e) => onChange(e.target.value)}
         className="font-mono"
       />
+    </div>
+  );
+}
+
+function FieldArea({
+  label,
+  id,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={id} className="text-xs">
+        {label}
+      </Label>
+      <Textarea
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="min-h-16"
+      />
+    </div>
+  );
+}
+
+function ConsultationNote({ consultation }: { consultation: Consultation }) {
+  const rows: { label: string; value: string | null }[] = [
+    { label: "S", value: consultation.subjective },
+    { label: "O", value: consultation.examination },
+    { label: "A", value: consultation.assessment },
+    { label: "P", value: consultation.plan },
+  ].filter((r) => r.value);
+
+  return (
+    <div className="flex flex-col gap-1.5 text-xs">
+      <span className="font-mono text-[11px] text-muted-foreground">
+        {new Date(consultation.created_at).toLocaleString()}
+      </span>
+      {rows.length === 0 ? (
+        <span className="text-muted-foreground">Empty note.</span>
+      ) : (
+        rows.map((r) => (
+          <div key={r.label} className="flex gap-2">
+            <span className="font-mono font-semibold text-muted-foreground">
+              {r.label}
+            </span>
+            <span>{r.value}</span>
+          </div>
+        ))
+      )}
     </div>
   );
 }

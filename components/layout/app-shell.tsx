@@ -19,6 +19,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { RoleSwitcher } from "@/components/role-switcher";
+import { ROLE_LABEL, staffInitials, useRole } from "@/components/role-provider";
 import {
   Sheet,
   SheetContent,
@@ -114,19 +116,33 @@ function SidebarBody({ onNavigate }: { onNavigate?: () => void }) {
 
       <Separator />
 
-      <div className="flex items-center gap-3 p-4">
-        <Avatar className="size-9 border border-border">
-          <AvatarFallback className="bg-secondary text-xs font-semibold">
-            AO
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex min-w-0 flex-col leading-tight">
-          <span className="truncate text-sm font-medium">Dr. A. Okafor</span>
-          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className="size-1.5 rounded-full bg-[var(--status-clearance)]" />
-            On shift · Doctor
-          </span>
-        </div>
+      <ActingStaffCard />
+    </div>
+  );
+}
+
+function ActingStaffCard() {
+  const { mounted, actingStaff } = useRole();
+
+  // Keep markup stable until hydration; the seeded default matches this.
+  const name = mounted && actingStaff ? actingStaff.full_name : "Dr. A. Okafor";
+  const roleLabel =
+    mounted && actingStaff ? ROLE_LABEL[actingStaff.role] : "Doctor";
+  const initials = staffInitials(name);
+
+  return (
+    <div className="flex items-center gap-3 p-4">
+      <Avatar className="size-9 border border-border">
+        <AvatarFallback className="bg-secondary text-xs font-semibold">
+          {initials}
+        </AvatarFallback>
+      </Avatar>
+      <div className="flex min-w-0 flex-col leading-tight">
+        <span className="truncate text-sm font-medium">{name}</span>
+        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-[var(--status-clearance)]" />
+          On shift · {roleLabel}
+        </span>
       </div>
     </div>
   );
@@ -186,6 +202,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               })}
             </span>
             <Separator orientation="vertical" className="hidden h-5 sm:block" />
+            <RoleSwitcher />
             <ThemeToggle />
           </div>
         </header>

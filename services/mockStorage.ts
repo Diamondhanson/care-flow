@@ -21,6 +21,7 @@ import type {
   BedId,
   CareStage,
   Consultation,
+  ConsultationId,
   Department,
   DepartmentId,
   Diagnosis,
@@ -184,6 +185,22 @@ export interface UpdateDepartmentInput {
   code?: string | null;
   description?: string | null;
   is_active?: boolean;
+}
+
+export interface AddConsultationInput {
+  doctor_id?: StaffId | null;
+  subjective?: string | null;
+  examination?: string | null;
+  assessment?: string | null;
+  plan?: string | null;
+}
+
+export interface AddDiagnosisInput {
+  consultation_id?: ConsultationId | null;
+  diagnosed_by_id?: StaffId | null;
+  icd10_code?: string | null;
+  description: string;
+  is_primary?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -610,6 +627,161 @@ export function addTreatmentLog(
   persist(db);
 
   return record;
+}
+
+// ---------------------------------------------------------------------------
+// Mutations — clinical encounter (doctor consultation, Phase 8)
+// ---------------------------------------------------------------------------
+
+/**
+ * Record a doctor's SOAP-style consultation note against a visit. Advances the
+ * visit to the "consultation" stage if it has not progressed past triage yet, so
+ * the encounter is reflected on the board. Returns the created consultation.
+ */
+export function addConsultation(
+  visitId: VisitId,
+  input: AddConsultationInput
+): Consultation {
+  const db = loadDatabase();
+  const visit = db.visits.find((v) => v.id === visitId);
+  if (!visit) {
+    throw new Error(`addConsultation: visit "${visitId}" not found`);
+  }
+
+  const timestamp = nowISO();
+  const consultation: Consultation = {
+    id: generateId(),
+    visit_id: visitId,
+    doctor_id: input.doctor_id ?? visit.attending_doctor_id ?? null,
+    subjective: input.subjective?.trim() || null,
+    examination: input.examination?.trim() || null,
+    assessment: input.assessment?.trim() || null,
+    plan: input.plan?.trim() || null,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+
+  db.consultations.push(consultation);
+
+  // Surface the encounter on the board: a freshly-triaged patient who has just
+  // been seen moves into "consultation".
+  if (visit.stage === "registration" || visit.stage === "triage") {
+    visit.stage = "consultation";
+  }
+  visit.updated_at = timestamp;
+
+  persist(db);
+  return consultation;
+}
+
+/**
+ * Record a structured diagnosis against a visit (ICD-10 where known). Marking a
+ * new diagnosis as primary demotes any existing primary for the same visit so
+ * exactly one diagnosis is flagged primary at a time. Returns the created row.
+ */
+export function addDiagnosis(
+  visitId: VisitId,
+  input: AddDiagnosisInput
+): Diagnosis {
+  const db = loadDatabase();
+  const visit = db.visits.find((v) => v.id === visitId);
+  if (!visit) {
+    throw new Error(`addDiagnosis: visit "${visitId}" not found`);
+  }
+  const description = input.description.trim();
+  if (!description) {
+    throw new Error("addDiagnosis: a diagnosis description is required");
+  }
+
+  const isPrimary = input.is_primary ?? false;
+  if (isPrimary) {
+    for (const existing of db.diagnoses) {
+      if (existing.visit_id === visitId && existing.is_primary) {
+        existing.is_primary = false;
+      }
+    }
+  }
+
+  const timestamp = nowISO();
+  const diagnosis: Diagnosis = {
+    id: generateId(),
+    visit_id: visitId,
+    consultation_id: input.consultation_id ?? null,
+    diagnosed_by_id: input.diagnosed_by_id ?? visit.attending_doctor_id ?? null,
+    icd10_code: input.icd10_code?.trim() || null,
+    description,
+    is_primary: isPrimary,
+    created_at: timestamp,
+  };
+
+  db.diagnoses.push(diagnosis);
+  visit.updated_at = timestamp;
+  persist(db);
+  return diagnosis;
+}
+
+/**
+ * Disposition — the doctor's end-of-consultation decision on where the patient
+ * goes next. Modeled as an orchestration over the existing stage/admission
+ * mutations (no new schema field) plus an audit note in the treatment record so
+ * the choice is visible in history and survives a reload.
+ */
+export type Disposition = "discharge_home" | "admit" | "observation" | "refer";
+
+const DISPOSITION_PLAN: Record<
+  Disposition,
+  { note: string; stage: CareStage; admit: boolean }
+> = {
+  discharge_home: {
+    note: "Disposition: Discharge home",
+    stage: "discharge_planning",
+    admit: false,
+  },
+  admit: {
+    note: "Disposition: Admit to inpatient ward",
+    stage: "treatment",
+    admit: true,
+  },
+  observation: {
+    note: "Disposition: Keep under observation",
+    stage: "treatment",
+    admit: false,
+  },
+  refer: {
+    note: "Disposition: Refer to specialist / external facility",
+    stage: "discharge_planning",
+    admit: false,
+  },
+};
+
+/**
+ * Apply a disposition decision to a visit. For "admit" an inpatient admission is
+ * created if one does not yet exist. The decision is logged as a treatment-record
+ * note and the visit is moved to the corresponding care stage. Returns the visit.
+ */
+export function recordDisposition(
+  visitId: VisitId,
+  disposition: Disposition,
+  decidedById?: StaffId | null
+): Visit {
+  const plan = DISPOSITION_PLAN[disposition];
+  if (!plan) {
+    throw new Error(`recordDisposition: unknown disposition "${disposition}"`);
+  }
+
+  if (plan.admit && !getAdmissionForVisit(visitId)) {
+    createAdmissionForVisit(visitId, {
+      attending_doctor_id: decidedById ?? null,
+      stage: plan.stage,
+    });
+  }
+
+  addTreatmentLog(visitId, {
+    recorded_by_id: decidedById ?? null,
+    notes: plan.note,
+  });
+
+  return updateVisitStage(visitId, plan.stage);
 }
 
 // ---------------------------------------------------------------------------
