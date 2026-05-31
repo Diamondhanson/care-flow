@@ -45,6 +45,8 @@
   --color-status-boarding-foreground: var(--status-boarding-foreground);
   --color-status-treatment: var(--status-treatment);
   --color-status-treatment-foreground: var(--status-treatment-foreground);
+  --color-status-diagnostics: var(--status-diagnostics);
+  --color-status-diagnostics-foreground: var(--status-diagnostics-foreground);
   --color-status-discharge: var(--status-discharge);
   --color-status-discharge-foreground: var(--status-discharge-foreground);
   --color-status-clearance: var(--status-clearance);
@@ -118,6 +120,8 @@
   --status-boarding-foreground: oklch(0.984 0.003 247.858);
   --status-treatment: oklch(0.606 0.18 296.0);
   --status-treatment-foreground: oklch(0.984 0.003 247.858);
+  --status-diagnostics: oklch(0.6 0.12 200.0);
+  --status-diagnostics-foreground: oklch(0.984 0.003 247.858);
   --status-discharge: oklch(0.704 0.04 256.788);
   --status-discharge-foreground: oklch(0.208 0.042 265.755);
   --status-clearance: oklch(0.723 0.176 149.0);
@@ -160,6 +164,8 @@
   --status-boarding-foreground: oklch(0.984 0.003 247.858);
   --status-treatment: oklch(0.606 0.18 296.0);
   --status-treatment-foreground: oklch(0.984 0.003 247.858);
+  --status-diagnostics: oklch(0.68 0.12 200.0);
+  --status-diagnostics-foreground: oklch(0.984 0.003 247.858);
   --status-discharge: oklch(0.704 0.04 256.788);
   --status-discharge-foreground: oklch(0.208 0.042 265.755);
   --status-clearance: oklch(0.723 0.176 149.0);

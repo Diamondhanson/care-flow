@@ -128,30 +128,30 @@ swapped for `supabase-js`; the UI contract is preserved.
 
 ---
 
-## PHASE 6 — Domain Model Expansion (Visit-Centric Refactor) 🔜
+## PHASE 6 — Domain Model Expansion (Visit-Centric Refactor) ✅ COMPLETE
 
 **Goal:** re-center the data model on the Visit, and add the missing clinical entities. This is the
 foundation everything else depends on.
 
-* [ ] Refactor `types/healthcare.ts` to add the entities below (relational, FK-linked):
-  * [ ] `Department` — Maternity, Ophthalmology, Internal Medicine, etc.
-  * [ ] `Visit` — patient_id, visit_type (`outpatient`/`inpatient`/`emergency`), status,
+* [x] Refactor `types/healthcare.ts` to add the entities below (relational, FK-linked):
+  * [x] `Department` — Maternity, Ophthalmology, Internal Medicine, etc.
+  * [x] `Visit` — patient_id, visit_type (`outpatient`/`inpatient`/`emergency`), status,
         department, attending doctor, registered_by, chief complaint, arrived/closed timestamps.
-  * [ ] `Consultation` — doctor's SOAP-style note (subjective / examination / assessment / plan).
-  * [ ] `Diagnosis` — ICD-10 code + description + primary flag (powers "top conditions" reports).
-  * [ ] `Order` — a recommended test (lab / imaging / procedure) with status.
-  * [ ] `Result` — closes the order loop; value, reference range, optional file attachment.
-  * [ ] `Prescription` — drug, dose, route, frequency, duration, instructions, status.
-  * [ ] `MedicationAdministration` (MAR) — one row per dose given/held/refused, by whom, when.
-  * [ ] `VitalSigns` — replaces/extends `TreatmentRecord` vitals (keyed to the visit).
-  * [ ] `Ward` + `Bed` — the editable floor map (see Phase 11).
-  * [ ] Extend `Admission` — link to visit, ward, bed; keep clearance gates.
-  * [ ] Add `mrn` (hospital number) to `Patient`.
-* [ ] Extend `services/mockStorage.ts` with CRUD for every new entity, keeping all mutation logic
+  * [x] `Consultation` — doctor's SOAP-style note (subjective / examination / assessment / plan).
+  * [x] `Diagnosis` — ICD-10 code + description + primary flag (powers "top conditions" reports).
+  * [x] `Order` — a recommended test (lab / imaging / procedure) with status.
+  * [x] `Result` — closes the order loop; value, reference range, optional file attachment.
+  * [x] `Prescription` — drug, dose, route, frequency, duration, instructions, status.
+  * [x] `MedicationAdministration` (MAR) — one row per dose given/held/refused, by whom, when.
+  * [x] `TreatmentRecord` — flat vitals (spo2/pulse/bp/temperature/gcs), keyed to the visit.
+  * [x] `Ward` + `Bed` — the editable floor map (see Phase 11).
+  * [x] Extend `Admission` — link to visit, ward, bed; keep clearance gates.
+  * [x] Add `mrn` (hospital number) to `Patient`.
+* [x] Extend `services/mockStorage.ts` with CRUD for every new entity, keeping all mutation logic
       in the service layer.
-* [ ] Re-seed mock data to include outpatient visits, consultations, orders+results, prescriptions
+* [x] Re-seed mock data to include outpatient visits, consultations, orders+results, prescriptions
       and MAR entries — so the UI has realistic data to render.
-* [ ] **Verify:** unit-test the new pure helpers (discharge gate, MRN format, occupancy math).
+* [x] **Verify:** unit-test the new pure helpers (discharge gate, MRN format, occupancy math).
 
 ## PHASE 7 — Departments & Patient Routing 🔜
 
@@ -303,3 +303,4 @@ When working with Claude Code, log completed steps, timestamps, and architectura
 * 2026-05-31: **Phase 5 complete.** Added verification gates and discharge simulation. `evaluateDischargeReadiness()`, clearance-gated discharge, anonymous-record block, simulated follow-up transmissions. Verified.
 * 2026-05-31: **Roadmap restructured for full EMR scope.** Re-centered the architecture on the **Visit** as the record spine and split **outpatient vs inpatient** paths. Added Phases 6–14 covering departments, clinical encounters + diagnoses, the orders→results loop, prescriptions + MAR, the editable ward/bed floor map with live occupancy, reporting + Excel export, and the Supabase backend cutover (Auth, role-based RLS, audit trail). Locked scope decisions: billing deferred, MRN auto-generated, RLS written now. Flagged omissions (transfers, allergies, triage acuity, deceased outcome, consent capture, concurrency, retention).
 * 2026-05-31: **Supabase schema authored** (`supabase/schema.sql`). Copy-paste-ready: all tables/enums/indexes; updated_at, audit, and bed-occupancy triggers; **auto-generated MRN** (`CF-YYYY-NNNNNN` via `mrn_seq` + `generate_mrn()`); `ward_occupancy` + `admission_report` reporting views; private storage buckets (`lab-results`, `patient-documents`); and full role-based RLS (doctor/nurse/admin/lab_tech/pharmacist/receptionist) with an admin-only, client-tamper-proof audit log.
+* 2026-05-31: **Phase 6 complete.** Re-centered the model on the **Visit**. Rewrote `services/mockStorage.ts` (bumped to `careflow_db_v2`) around the full clinical entity set — departments, wards, beds, staff, patients, visits, consultations, diagnoses, orders, results, prescriptions, MAR, treatment records, admissions — with all mutation logic in the service layer. Added pure helpers: `generateMrn()`, `isTerminalStage()`, `evaluateDischargeReadiness()` (3 clearances + anonymous block), `computeWardOccupancy()`, plus visit-centric mutations (`createNewVisit`, `addTreatmentLog`, `createAdmissionForVisit`, `updateAdmissionClearances`, `updateVisitStage` with terminal-transition cascade, `reconcileAnonymousProfile`). Reseeded a full hospital (7 departments, 3 wards, 8 beds, 8 staff, 5 patients incl. anonymous, 5 visits across outpatient/inpatient/emergency, full clinical records, 3 admissions). Migrated the UI: board now uses **4 grouped columns** (Intake / Consultation / Treatment / Discharge) mapping the 8 `care_stage` values; updated patient card, drawer, stage counts, intake, staff and reconciliation pages to the visit/MRN model. Added the `--status-diagnostics` token (light + dark + `@theme inline`). Added **vitest** (`npm test`) with 18 passing unit tests for the pure helpers. `tsc --noEmit` clean; verified end-to-end in browser (light + dark, discharge gate + cascade confirmed).

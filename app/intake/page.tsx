@@ -18,13 +18,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createNewAdmission, getStaff } from "@/services/mockStorage";
-import type { Sex, Staff } from "@/types/healthcare";
+import { createNewVisit, getDepartments, getStaff } from "@/services/mockStorage";
+import type { Department, Sex, Staff } from "@/types/healthcare";
 
 interface SubmitResult {
   displayName: string;
   isAnonymous: boolean;
-  location: string | null;
+  mrn: string;
 }
 
 const SEX_OPTIONS: { value: Sex; label: string }[] = [
@@ -36,6 +36,7 @@ const SEX_OPTIONS: { value: Sex; label: string }[] = [
 
 export default function IntakePage() {
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [isEmergency, setIsEmergency] = useState(false);
   const [result, setResult] = useState<SubmitResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,25 +48,31 @@ export default function IntakePage() {
   const [phone, setPhone] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [reason, setReason] = useState("");
-  const [location, setLocation] = useState("");
-  const [admittedById, setAdmittedById] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [registeredById, setRegisteredById] = useState("");
   const [attendingId, setAttendingId] = useState("");
 
   useEffect(() => {
     const all = getStaff();
     setStaff(all);
-    const clerk = all.find((s) => s.role === "admin") ?? all[0];
-    if (clerk) setAdmittedById(clerk.id);
+    setDepartments(getDepartments());
+    const clerk =
+      all.find((s) => s.role === "receptionist") ??
+      all.find((s) => s.role === "admin") ??
+      all[0];
+    if (clerk) setRegisteredById(clerk.id);
   }, []);
 
   const doctors = staff.filter((s) => s.role === "doctor");
+  const deptName = (id: string | null) =>
+    id ? (departments.find((d) => d.id === id)?.name ?? "—") : "—";
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
 
-    if (!admittedById) {
-      setError("Select the admitting staff member.");
+    if (!registeredById) {
+      setError("Select the registering staff member.");
       return;
     }
     if (!reason.trim()) {
@@ -77,9 +84,9 @@ export default function IntakePage() {
       return;
     }
 
-    const { patient } = createNewAdmission(
+    const { patient } = createNewVisit(
       isEmergency
-        ? { full_name: "Unidentified", is_emergency_anonymous: true }
+        ? { full_name: "Unidentified Patient", sex: "unknown", is_emergency_anonymous: true }
         : {
             full_name: fullName.trim(),
             sex,
@@ -88,11 +95,12 @@ export default function IntakePage() {
             national_id: nationalId.trim() || null,
           },
       {
-        admitted_by_id: admittedById,
+        visit_type: isEmergency ? "emergency" : "outpatient",
+        stage: isEmergency ? "triage" : "registration",
+        department_id: departmentId || null,
+        registered_by_id: registeredById,
         attending_doctor_id: attendingId || null,
-        reason: reason.trim(),
-        location: location.trim() || null,
-        stage: "boarding",
+        chief_complaint: reason.trim(),
       },
     );
 
@@ -102,7 +110,7 @@ export default function IntakePage() {
           ? patient.anonymous_identifier
           : patient.full_name,
       isAnonymous: patient.is_emergency_anonymous,
-      location: location.trim() || null,
+      mrn: patient.mrn,
     });
   }
 
@@ -115,7 +123,7 @@ export default function IntakePage() {
     setPhone("");
     setNationalId("");
     setReason("");
-    setLocation("");
+    setDepartmentId("");
     setAttendingId("");
     setIsEmergency(false);
   }
@@ -127,9 +135,9 @@ export default function IntakePage() {
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
             <CheckCircle2 className="size-10 text-[var(--status-clearance)]" />
             <div className="flex flex-col gap-1">
-              <p className="text-lg font-semibold">Patient boarded</p>
+              <p className="text-lg font-semibold">Visit opened</p>
               <p className="text-sm text-muted-foreground">
-                Added to the Live Board in the Boarding stage.
+                Added to the Live Board in the Intake stage.
               </p>
             </div>
             <div className="flex w-full flex-col gap-1 rounded-md border border-border bg-muted/40 p-4">
@@ -137,18 +145,16 @@ export default function IntakePage() {
                 {result.isAnonymous ? "Emergency tracking tag" : "Patient"}
               </span>
               <span className="font-mono text-sm">{result.displayName}</span>
-              {result.location ? (
-                <span className="font-mono text-xs text-muted-foreground">
-                  {result.location}
-                </span>
-              ) : null}
+              <span className="font-mono text-xs text-muted-foreground">
+                MRN {result.mrn}
+              </span>
             </div>
             <div className="flex gap-3">
               <Button nativeButton={false} render={<Link href="/" />}>
                 View on board <ArrowRight className="size-4" />
               </Button>
               <Button variant="outline" onClick={resetForm}>
-                Board another
+                Register another
               </Button>
             </div>
           </CardContent>
@@ -162,7 +168,7 @@ export default function IntakePage() {
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Patient Intake</h1>
         <p className="text-sm text-muted-foreground">
-          Board a new patient onto the Live Status Board.
+          Open a new visit on the Live Status Board.
         </p>
       </header>
 
@@ -206,8 +212,8 @@ export default function IntakePage() {
             {isEmergency ? (
               <div className="rounded-md border border-dashed border-border bg-muted/30 p-4 text-sm text-muted-foreground">
                 Personal fields are hidden. A tracking tag (e.g.{" "}
-                <span className="font-mono">John Doe - Gamma - …</span>) will be
-                generated automatically on submit.
+                <span className="font-mono">John Doe - Gamma - …</span>) and a
+                permanent MRN will be generated automatically on submit.
               </div>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2">
@@ -255,12 +261,12 @@ export default function IntakePage() {
                     placeholder="Optional"
                   />
                 </Field>
-                <Field label="National ID / MRN" htmlFor="national_id">
+                <Field label="National ID" htmlFor="national_id">
                   <Input
                     id="national_id"
                     value={nationalId}
                     onChange={(e) => setNationalId(e.target.value)}
-                    placeholder="Optional"
+                    placeholder="Optional — MRN is auto-assigned"
                   />
                 </Field>
               </div>
@@ -271,11 +277,11 @@ export default function IntakePage() {
         <Card>
           <CardHeader className="pb-0">
             <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Admission
+              Visit
             </span>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            <Field label="Presenting reason" htmlFor="reason">
+            <Field label="Presenting reason / chief complaint" htmlFor="reason">
               <Textarea
                 id="reason"
                 value={reason}
@@ -284,23 +290,35 @@ export default function IntakePage() {
               />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Location" htmlFor="location">
-                <Input
-                  id="location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. ER-Bay-2"
-                />
+              <Field label="Department" htmlFor="department">
+                <Select
+                  items={Object.fromEntries(
+                    departments.map((d) => [d.id, d.name]),
+                  )}
+                  value={departmentId}
+                  onValueChange={(v) => setDepartmentId(v as string)}
+                >
+                  <SelectTrigger id="department" className="w-full">
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {departments.map((d) => (
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
-              <Field label="Admitting staff" htmlFor="admitted_by">
+              <Field label="Registering staff" htmlFor="registered_by">
                 <Select
                   items={Object.fromEntries(
                     staff.map((s) => [s.id, `${s.full_name} · ${s.role}`]),
                   )}
-                  value={admittedById}
-                  onValueChange={(v) => setAdmittedById(v as string)}
+                  value={registeredById}
+                  onValueChange={(v) => setRegisteredById(v as string)}
                 >
-                  <SelectTrigger id="admitted_by" className="w-full">
+                  <SelectTrigger id="registered_by" className="w-full">
                     <SelectValue placeholder="Select staff" />
                   </SelectTrigger>
                   <SelectContent>
@@ -319,7 +337,7 @@ export default function IntakePage() {
               >
                 <Select
                   items={Object.fromEntries(
-                    doctors.map((s) => [s.id, `${s.full_name} · ${s.department}`]),
+                    doctors.map((s) => [s.id, `${s.full_name} · ${deptName(s.department_id)}`]),
                   )}
                   value={attendingId}
                   onValueChange={(v) => setAttendingId(v as string)}
@@ -330,7 +348,7 @@ export default function IntakePage() {
                   <SelectContent>
                     {doctors.map((s) => (
                       <SelectItem key={s.id} value={s.id}>
-                        {s.full_name} · {s.department}
+                        {s.full_name} · {deptName(s.department_id)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -356,7 +374,7 @@ export default function IntakePage() {
             Cancel
           </Button>
           <Button type="submit">
-            {isEmergency ? "Board emergency patient" : "Board patient"}
+            {isEmergency ? "Register emergency patient" : "Register patient"}
           </Button>
         </div>
       </form>

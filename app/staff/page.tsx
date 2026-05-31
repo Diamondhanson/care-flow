@@ -1,26 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, Stethoscope, HeartPulse, ShieldCheck } from "lucide-react";
+import {
+  Mail,
+  Stethoscope,
+  HeartPulse,
+  ShieldCheck,
+  FlaskConical,
+  Pill,
+  ConciergeBell,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getStaff, getActiveAdmissions, getPatientById } from "@/services/mockStorage";
+import {
+  getStaff,
+  getDepartments,
+  getActiveVisits,
+  getAdmissionForVisit,
+  getBedById,
+  getPatientById,
+} from "@/services/mockStorage";
 import type { Staff, StaffRole } from "@/types/healthcare";
 
 interface RoleGroup {
   role: StaffRole;
   label: string;
   /** Suffix of the `--status-{token}` CSS variable used as the section accent. */
-  token: "boarding" | "treatment" | "clearance";
+  token: "boarding" | "diagnostics" | "treatment" | "discharge" | "clearance";
   icon: LucideIcon;
 }
 
 const ROLE_GROUPS: readonly RoleGroup[] = [
   { role: "doctor", label: "Doctors", token: "treatment", icon: Stethoscope },
   { role: "nurse", label: "Nursing", token: "boarding", icon: HeartPulse },
+  { role: "lab_tech", label: "Laboratory", token: "diagnostics", icon: FlaskConical },
+  { role: "pharmacist", label: "Pharmacy", token: "discharge", icon: Pill },
+  { role: "receptionist", label: "Front Desk", token: "clearance", icon: ConciergeBell },
   { role: "admin", label: "Administration", token: "clearance", icon: ShieldCheck },
 ] as const;
 
@@ -31,6 +48,8 @@ interface AttendingPatient {
 
 interface DirectoryData {
   staff: Staff[];
+  /** Department name keyed by department id. */
+  departments: Record<string, string>;
   /** Active patients currently attended by each doctor, keyed by staff id. */
   attending: Record<string, AttendingPatient[]>;
 }
@@ -53,20 +72,26 @@ export default function StaffDirectoryPage() {
 
   useEffect(() => {
     const staff = getStaff();
+    const departments: Record<string, string> = {};
+    for (const d of getDepartments()) departments[d.id] = d.name;
+
     const attending: Record<string, AttendingPatient[]> = {};
-    for (const admission of getActiveAdmissions()) {
-      if (!admission.attending_doctor_id) continue;
-      const patient = getPatientById(admission.patient_id);
+    for (const visit of getActiveVisits()) {
+      if (!visit.attending_doctor_id) continue;
+      const patient = getPatientById(visit.patient_id);
       const name =
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
           : (patient?.full_name ?? "Unknown patient");
-      (attending[admission.attending_doctor_id] ??= []).push({
-        name,
-        location: admission.location,
-      });
+      const admission = getAdmissionForVisit(visit.id);
+      const location = admission?.bed_id
+        ? (getBedById(admission.bed_id)?.label ?? null)
+        : visit.department_id
+          ? (departments[visit.department_id] ?? null)
+          : null;
+      (attending[visit.attending_doctor_id] ??= []).push({ name, location });
     }
-    setData({ staff, attending });
+    setData({ staff, departments, attending });
   }, []);
 
   const total = data?.staff.length ?? null;
@@ -129,7 +154,9 @@ export default function StaffDirectoryPage() {
                         <div className="flex min-w-0 flex-1 flex-col gap-1">
                           <span className="truncate font-medium">{s.full_name}</span>
                           <span className="text-xs text-muted-foreground">
-                            {s.department}
+                            {s.department_id
+                              ? (data.departments[s.department_id] ?? "—")
+                              : "—"}
                           </span>
                           <div className="flex items-center gap-1.5 pt-0.5">
                             <span
@@ -148,10 +175,12 @@ export default function StaffDirectoryPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Mail className="size-3.5 shrink-0" />
-                        <span className="truncate font-mono">{s.email}</span>
-                      </div>
+                      {s.email ? (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Mail className="size-3.5 shrink-0" />
+                          <span className="truncate font-mono">{s.email}</span>
+                        </div>
+                      ) : null}
 
                       {group.role === "doctor" ? (
                         <div className="flex flex-col gap-1.5 border-t border-border pt-3">

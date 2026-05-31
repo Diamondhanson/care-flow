@@ -34,20 +34,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  getAdmissionById,
+  getAdmissionForVisit,
+  getBedById,
+  getDepartmentById,
   getPatientById,
   getPatients,
   getStaff,
   getStaffById,
-  getTreatmentRecordsForAdmission,
+  getTreatmentRecordsForVisit,
+  getVisitById,
   addTreatmentLog,
   updateAdmissionClearances,
-  updateAdmissionStage,
+  updateVisitStage,
   evaluateDischargeReadiness,
   reconcileAnonymousProfile,
 } from "@/services/mockStorage";
-import { nextStage, stageConfig } from "@/components/live-board/stages";
-import type { Admission, Patient, TreatmentRecord, Vitals } from "@/types/healthcare";
+import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
+import type { Admission, Patient, TreatmentRecord, Visit } from "@/types/healthcare";
 
 const CLEARANCE_FIELDS = [
   { key: "is_medical_cleared", label: "Medical cleared" },
@@ -58,21 +61,23 @@ const CLEARANCE_FIELDS = [
 type NumField = "" | string;
 
 export function PatientDrawer({
-  admissionId,
+  visitId,
   open,
   onOpenChange,
   onMutate,
 }: {
-  admissionId: string | null;
+  visitId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onMutate: () => void;
 }) {
   const [tick, setTick] = useState(0);
+  const [visit, setVisit] = useState<Visit | null>(null);
   const [admission, setAdmission] = useState<Admission | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [records, setRecords] = useState<TreatmentRecord[]>([]);
   const [verified, setVerified] = useState<Patient[]>([]);
+  const [location, setLocation] = useState<string | null>(null);
 
   // Vitals / GCS / notes form
   const [spo2, setSpo2] = useState<NumField>("");
@@ -82,25 +87,33 @@ export function PatientDrawer({
   const [temp, setTemp] = useState<NumField>("");
   const [gcs, setGcs] = useState<NumField>("");
   const [notes, setNotes] = useState("");
-  const [medication, setMedication] = useState("");
   const [reconcileTarget, setReconcileTarget] = useState("");
 
   const recorderId = useMemo(() => {
     const doctor = getStaff().find((s) => s.role === "doctor");
-    return doctor?.id ?? getStaff()[0]?.id ?? "";
+    return doctor?.id ?? getStaff()[0]?.id ?? null;
   }, []);
 
   useEffect(() => {
-    if (!open || !admissionId) return;
-    const adm = getAdmissionById(admissionId);
-    if (!adm) return;
+    if (!open || !visitId) return;
+    const v = getVisitById(visitId);
+    if (!v) return;
+    const adm = getAdmissionForVisit(visitId) ?? null;
+    setVisit(v);
     setAdmission(adm);
-    setPatient(getPatientById(adm.patient_id) ?? null);
-    setRecords(getTreatmentRecordsForAdmission(admissionId));
+    setPatient(getPatientById(v.patient_id) ?? null);
+    setRecords(getTreatmentRecordsForVisit(visitId));
     setVerified(
       getPatients().filter(
-        (p) => !p.is_emergency_anonymous && p.id !== adm.patient_id,
+        (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
       ),
+    );
+    setLocation(
+      adm?.bed_id
+        ? (getBedById(adm.bed_id)?.label ?? null)
+        : v.department_id
+          ? (getDepartmentById(v.department_id)?.name ?? null)
+          : null,
     );
     // Reset the log entry form on open / after a save.
     setSpo2("");
@@ -110,11 +123,10 @@ export function PatientDrawer({
     setTemp("");
     setGcs("");
     setNotes("");
-    setMedication("");
     setReconcileTarget("");
-  }, [open, admissionId, tick]);
+  }, [open, visitId, tick]);
 
-  if (!admission || !patient) {
+  if (!visit || !patient) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="sm:max-w-md" />
@@ -126,21 +138,22 @@ export function PatientDrawer({
     patient.is_emergency_anonymous && patient.anonymous_identifier
       ? patient.anonymous_identifier
       : patient.full_name;
-  const doctorName = admission.attending_doctor_id
-    ? (getStaffById(admission.attending_doctor_id)?.full_name ?? null)
+  const doctorName = visit.attending_doctor_id
+    ? (getStaffById(visit.attending_doctor_id)?.full_name ?? null)
     : null;
 
-  const currentStage = stageConfig(admission.stage);
-  const target = nextStage(admission.stage);
-  const targetStage = target ? stageConfig(target) : null;
-  const readiness = evaluateDischargeReadiness(admission, patient);
-  const advancingToDischarge = target === "followed_up";
+  const currentToken = tokenForStage(visit.stage);
+  const target = nextStage(visit.stage, visit.visit_type);
+  const readiness = admission
+    ? evaluateDischargeReadiness(admission, patient)
+    : { ready: true, blockers: [] as string[] };
+  const advancingToDischarge = target === "discharged";
   const dischargeBlocked = advancingToDischarge && !readiness.ready;
 
-  function num(v: NumField): number | undefined {
-    if (v.trim() === "") return undefined;
+  function num(v: NumField): number | null {
+    if (v.trim() === "") return null;
     const n = Number(v);
-    return Number.isFinite(n) ? n : undefined;
+    return Number.isFinite(n) ? n : null;
   }
 
   function refresh() {
@@ -149,40 +162,38 @@ export function PatientDrawer({
   }
 
   function handleLog() {
-    const vitals: Vitals = {
+    const fields = {
       spo2: num(spo2),
       bp_systolic: num(sys),
       bp_diastolic: num(dia),
       pulse: num(pulse),
-      temperature: num(temp),
+      temperature_c: num(temp),
+      gcs_score: num(gcs),
     };
-    const hasVitals = Object.values(vitals).some((v) => v !== undefined);
-    const gcsNum = num(gcs) ?? null;
-    if (!hasVitals && gcsNum === null && !notes.trim() && !medication.trim()) {
+    const hasVitals = Object.values(fields).some((v) => v !== null);
+    if (!hasVitals && !notes.trim()) {
       return;
     }
-    addTreatmentLog(admission!.id, {
+    addTreatmentLog(visit!.id, {
       recorded_by_id: recorderId,
-      vitals,
-      gcs_score: gcsNum,
-      notes: notes.trim(),
-      medication: medication.trim() || null,
+      ...fields,
+      notes: notes.trim() || null,
     });
     refresh();
   }
 
   function toggleClearance(key: (typeof CLEARANCE_FIELDS)[number]["key"]) {
-    updateAdmissionClearances(admission!.id, { [key]: !admission![key] });
+    if (!admission) return;
+    updateAdmissionClearances(admission.id, { [key]: !admission[key] });
     refresh();
   }
 
   function handleAdvance() {
-    const target = nextStage(admission!.stage);
     if (!target) return;
-    if (target === "followed_up" && !readiness.ready) return;
-    updateAdmissionStage(admission!.id, target);
-    if (target === "followed_up") {
-      // Discharged — the admission drops off the active board.
+    if (advancingToDischarge && !readiness.ready) return;
+    updateVisitStage(visit!.id, target);
+    if (advancingToDischarge) {
+      // Discharged — the visit closes and drops off the active board.
       onMutate();
       onOpenChange(false);
     } else {
@@ -222,12 +233,12 @@ export function PatientDrawer({
             ) : null}
           </div>
           <SheetDescription className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-            <span>{admission.reason}</span>
+            <span>{visit.chief_complaint ?? "No chief complaint recorded"}</span>
           </SheetDescription>
           <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-[11px] text-muted-foreground">
-            {admission.location ? (
-              <span className="font-mono">{admission.location}</span>
-            ) : null}
+            <span className="font-mono">{patient.mrn}</span>
+            <span className="uppercase tracking-wide">{visit.visit_type}</span>
+            {location ? <span className="font-mono">{location}</span> : null}
             {doctorName ? (
               <span className="inline-flex items-center gap-1">
                 <Stethoscope className="size-3" />
@@ -279,28 +290,30 @@ export function PatientDrawer({
             </section>
           ) : null}
 
-          {/* Clearance gates */}
-          <section className="flex flex-col gap-3">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Clearance gates
-            </h3>
-            <div className="flex flex-col gap-2">
-              {CLEARANCE_FIELDS.map((field) => (
-                <label
-                  key={field.key}
-                  className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3"
-                >
-                  <span className="text-sm">{field.label}</span>
-                  <Switch
-                    checked={admission[field.key]}
-                    onCheckedChange={() => toggleClearance(field.key)}
-                  />
-                </label>
-              ))}
-            </div>
-          </section>
+          {/* Clearance gates — inpatient admissions only */}
+          {admission ? (
+            <section className="flex flex-col gap-3">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                Clearance gates
+              </h3>
+              <div className="flex flex-col gap-2">
+                {CLEARANCE_FIELDS.map((field) => (
+                  <label
+                    key={field.key}
+                    className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3"
+                  >
+                    <span className="text-sm">{field.label}</span>
+                    <Switch
+                      checked={admission[field.key]}
+                      onCheckedChange={() => toggleClearance(field.key)}
+                    />
+                  </label>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
-          <Separator />
+          {admission ? <Separator /> : null}
 
           {/* Care stage progression — Phase 5 verification gate */}
           <section className="flex flex-col gap-3">
@@ -311,9 +324,9 @@ export function PatientDrawer({
               <span
                 aria-hidden
                 className="size-2 rounded-full"
-                style={{ backgroundColor: `var(--status-${currentStage.token})` }}
+                style={{ backgroundColor: `var(--status-${currentToken})` }}
               />
-              <span className="text-sm font-medium">{currentStage.label}</span>
+              <span className="text-sm font-medium">{stageLabel(visit.stage)}</span>
             </div>
 
             {target === null ? (
@@ -322,7 +335,7 @@ export function PatientDrawer({
                   className="size-4 shrink-0"
                   style={{ color: "var(--status-clearance)" }}
                 />
-                Care journey complete — patient followed up.
+                Care journey complete.
               </div>
             ) : (
               <>
@@ -359,7 +372,7 @@ export function PatientDrawer({
                   {advancingToDischarge ? (
                     <>Discharge &amp; follow up</>
                   ) : (
-                    <>Advance to {targetStage?.label}</>
+                    <>Advance to {stageLabel(target)}</>
                   )}
                   {dischargeBlocked ? (
                     <Lock className="size-4" />
@@ -388,15 +401,6 @@ export function PatientDrawer({
               <FieldNum label="BP diastolic" id="dia" value={dia} onChange={setDia} />
               <FieldNum label="Temp (°C)" id="temp" value={temp} onChange={setTemp} step="0.1" />
               <FieldNum label="GCS (3–15)" id="gcs" value={gcs} onChange={setGcs} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="medication">Medication</Label>
-              <Input
-                id="medication"
-                value={medication}
-                onChange={(e) => setMedication(e.target.value)}
-                placeholder="Optional"
-              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="notes">Notes</Label>
@@ -444,12 +448,7 @@ export function PatientDrawer({
                         <span className="font-mono">GCS {r.gcs_score}</span>
                       ) : null}
                     </div>
-                    <VitalsLine vitals={r.vitals} />
-                    {r.medication ? (
-                      <span className="text-muted-foreground">
-                        Rx: {r.medication}
-                      </span>
-                    ) : null}
+                    <VitalsLine record={r} />
                     {r.notes ? <span>{r.notes}</span> : null}
                   </li>
                 ))}
@@ -493,14 +492,13 @@ function FieldNum({
   );
 }
 
-function VitalsLine({ vitals }: { vitals: Vitals }) {
+function VitalsLine({ record }: { record: TreatmentRecord }) {
   const parts: string[] = [];
-  if (vitals.spo2 !== undefined) parts.push(`SpO₂ ${vitals.spo2}%`);
-  if (vitals.bp_systolic !== undefined && vitals.bp_diastolic !== undefined)
-    parts.push(`BP ${vitals.bp_systolic}/${vitals.bp_diastolic}`);
-  if (vitals.pulse !== undefined) parts.push(`HR ${vitals.pulse}`);
-  if (vitals.temperature !== undefined) parts.push(`${vitals.temperature}°C`);
-  if (vitals.respiratory_rate !== undefined) parts.push(`RR ${vitals.respiratory_rate}`);
+  if (record.spo2 !== null) parts.push(`SpO₂ ${record.spo2}%`);
+  if (record.bp_systolic !== null && record.bp_diastolic !== null)
+    parts.push(`BP ${record.bp_systolic}/${record.bp_diastolic}`);
+  if (record.pulse !== null) parts.push(`HR ${record.pulse}`);
+  if (record.temperature_c !== null) parts.push(`${record.temperature_c}°C`);
   if (parts.length === 0) return null;
   return <span className="font-mono text-muted-foreground">{parts.join(" · ")}</span>;
 }

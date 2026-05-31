@@ -3,49 +3,60 @@
 import { useEffect, useState } from "react";
 
 import {
-  getActiveAdmissions,
+  getActiveVisits,
+  getAdmissionForVisit,
+  getBedById,
+  getDepartmentById,
   getPatientById,
   getStaffById,
-  getTreatmentRecordsForAdmission,
+  getTreatmentRecordsForVisit,
 } from "@/services/mockStorage";
-import type { AdmissionStage } from "@/types/healthcare";
-import { STAGE_CONFIG } from "@/components/live-board/stages";
+import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
 import {
   PatientCard,
   type PatientCardData,
 } from "@/components/live-board/patient-card";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
 
-type Columns = Record<AdmissionStage, PatientCardData[]>;
+type Columns = Record<string, PatientCardData[]>;
 
 function emptyColumns(): Columns {
-  return {
-    boarding: [],
-    treatment: [],
-    discharge_planning: [],
-    followed_up: [],
-  };
+  return Object.fromEntries(BOARD_COLUMNS.map((c) => [c.key, []]));
+}
+
+function locationLabel(visitId: string, departmentId: string | null): string | null {
+  const admission = getAdmissionForVisit(visitId);
+  if (admission?.bed_id) {
+    return getBedById(admission.bed_id)?.label ?? null;
+  }
+  if (departmentId) {
+    return getDepartmentById(departmentId)?.name ?? null;
+  }
+  return null;
 }
 
 function buildColumns(): Columns {
   const columns = emptyColumns();
-  for (const admission of getActiveAdmissions()) {
-    const patient = getPatientById(admission.patient_id);
-    const doctor = admission.attending_doctor_id
-      ? getStaffById(admission.attending_doctor_id)
-      : undefined;
-    const latestGcs =
-      getTreatmentRecordsForAdmission(admission.id)[0]?.gcs_score ?? null;
+  for (const visit of getActiveVisits()) {
+    const column = columnForStage(visit.stage);
+    if (!column) continue; // terminal stage — off the board
 
-    columns[admission.stage].push({
-      admissionId: admission.id,
+    const patient = getPatientById(visit.patient_id);
+    const doctor = visit.attending_doctor_id
+      ? getStaffById(visit.attending_doctor_id)
+      : undefined;
+    const latestGcs = getTreatmentRecordsForVisit(visit.id)[0]?.gcs_score ?? null;
+
+    columns[column.key].push({
+      visitId: visit.id,
+      mrn: patient?.mrn ?? "—",
       displayName:
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
           : (patient?.full_name ?? "Unknown patient"),
       isAnonymous: patient?.is_emergency_anonymous ?? false,
-      location: admission.location,
-      reason: admission.reason,
+      location: locationLabel(visit.id, visit.department_id),
+      reason: visit.chief_complaint,
       attendingDoctorName: doctor?.full_name ?? null,
       gcs: latestGcs,
     });
@@ -67,21 +78,21 @@ export function JourneyBoard() {
   return (
     <>
     <div className="-mx-1 flex gap-4 overflow-x-auto px-1 pb-2 lg:grid lg:grid-cols-4 lg:overflow-visible">
-      {STAGE_CONFIG.map((stage) => {
-        const cards = columns?.[stage.stage] ?? [];
+      {BOARD_COLUMNS.map((column) => {
+        const cards = columns?.[column.key] ?? [];
         return (
           <section
-            key={stage.stage}
+            key={column.key}
             className="flex w-72 shrink-0 flex-col gap-3 lg:w-auto"
           >
             <div className="flex items-center gap-2">
               <span
                 aria-hidden
                 className="size-2 rounded-full"
-                style={{ backgroundColor: `var(--status-${stage.token})` }}
+                style={{ backgroundColor: `var(--status-${column.token})` }}
               />
               <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                {stage.label}
+                {column.label}
               </h2>
               <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">
                 {columns ? cards.length : "—"}
@@ -96,9 +107,9 @@ export function JourneyBoard() {
               ) : (
                 cards.map((card) => (
                   <PatientCard
-                    key={card.admissionId}
+                    key={card.visitId}
                     data={card}
-                    stage={stage}
+                    column={column}
                     onSelect={setSelectedId}
                   />
                 ))
@@ -110,7 +121,7 @@ export function JourneyBoard() {
     </div>
 
     <PatientDrawer
-      admissionId={selectedId}
+      visitId={selectedId}
       open={selectedId !== null}
       onOpenChange={(open) => {
         if (!open) setSelectedId(null);

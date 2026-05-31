@@ -19,18 +19,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  getAnonymousAdmissions,
+  getAnonymousVisits,
+  getAdmissionForVisit,
+  getBedById,
+  getDepartmentById,
   getPatientById,
   getPatients,
   getStaffById,
-  getTreatmentRecordsForAdmission,
+  getTreatmentRecordsForVisit,
   reconcileAnonymousProfile,
 } from "@/services/mockStorage";
-import type { Admission, Patient } from "@/types/healthcare";
+import type { Patient, Visit } from "@/types/healthcare";
 
 interface PendingRecord {
-  admission: Admission;
+  visit: Visit;
   identifier: string;
+  mrn: string;
+  reason: string | null;
+  location: string | null;
   doctorName: string | null;
   recordCount: number;
   latestGcs: number | null;
@@ -56,17 +62,26 @@ export default function ReconciliationPage() {
   const [targets, setTargets] = useState<Record<string, string>>({});
 
   function load() {
-    const pending: PendingRecord[] = getAnonymousAdmissions().map((admission) => {
-      const patient = getPatientById(admission.patient_id);
-      const records = getTreatmentRecordsForAdmission(admission.id);
+    const pending: PendingRecord[] = getAnonymousVisits().map((visit) => {
+      const patient = getPatientById(visit.patient_id);
+      const records = getTreatmentRecordsForVisit(visit.id);
       const latestGcs =
         records.find((r) => r.gcs_score !== null)?.gcs_score ?? null;
+      const admission = getAdmissionForVisit(visit.id);
+      const location = admission?.bed_id
+        ? (getBedById(admission.bed_id)?.label ?? null)
+        : visit.department_id
+          ? (getDepartmentById(visit.department_id)?.name ?? null)
+          : null;
       return {
-        admission,
+        visit,
         identifier:
           patient?.anonymous_identifier ?? patient?.full_name ?? "Unidentified",
-        doctorName: admission.attending_doctor_id
-          ? (getStaffById(admission.attending_doctor_id)?.full_name ?? null)
+        mrn: patient?.mrn ?? "—",
+        reason: visit.chief_complaint,
+        location,
+        doctorName: visit.attending_doctor_id
+          ? (getStaffById(visit.attending_doctor_id)?.full_name ?? null)
           : null,
         recordCount: records.length,
         latestGcs,
@@ -80,13 +95,13 @@ export default function ReconciliationPage() {
     load();
   }, []);
 
-  function handleMerge(admission: Admission) {
-    const targetId = targets[admission.id];
+  function handleMerge(visit: Visit) {
+    const targetId = targets[visit.id];
     if (!targetId) return;
-    reconcileAnonymousProfile(admission.patient_id, targetId);
+    reconcileAnonymousProfile(visit.patient_id, targetId);
     setTargets((prev) => {
       const next = { ...prev };
-      delete next[admission.id];
+      delete next[visit.id];
       return next;
     });
     load();
@@ -138,8 +153,8 @@ export default function ReconciliationPage() {
       ) : (
         <div className="flex flex-col gap-4">
           {data.pending.map(
-            ({ admission, identifier, doctorName, recordCount, latestGcs }) => (
-              <Card key={admission.id}>
+            ({ visit, identifier, mrn, reason, location, doctorName, recordCount, latestGcs }) => (
+              <Card key={visit.id}>
                 <CardContent className="flex flex-col gap-5 p-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex min-w-0 flex-col gap-2">
@@ -158,13 +173,14 @@ export default function ReconciliationPage() {
                         <span className="truncate font-mono text-sm font-medium">
                           {identifier}
                         </span>
+                        <span className="font-mono text-[11px] text-muted-foreground">
+                          {mrn}
+                        </span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {admission.reason}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{reason}</p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                        {admission.location ? (
-                          <span className="font-mono">{admission.location}</span>
+                        {location ? (
+                          <span className="font-mono">{location}</span>
                         ) : null}
                         {doctorName ? (
                           <span className="inline-flex items-center gap-1">
@@ -179,7 +195,7 @@ export default function ReconciliationPage() {
                         {latestGcs !== null ? (
                           <span className="font-mono">GCS {latestGcs}</span>
                         ) : null}
-                        <span>Admitted {relativeTime(admission.admitted_at)}</span>
+                        <span>Arrived {relativeTime(visit.arrived_at)}</span>
                       </div>
                     </div>
                   </div>
@@ -193,11 +209,11 @@ export default function ReconciliationPage() {
                         items={Object.fromEntries(
                           data.verified.map((p) => [p.id, p.full_name]),
                         )}
-                        value={targets[admission.id] ?? ""}
+                        value={targets[visit.id] ?? ""}
                         onValueChange={(v) =>
                           setTargets((prev) => ({
                             ...prev,
-                            [admission.id]: v as string,
+                            [visit.id]: v as string,
                           }))
                         }
                       >
@@ -213,8 +229,8 @@ export default function ReconciliationPage() {
                         </SelectContent>
                       </Select>
                       <Button
-                        onClick={() => handleMerge(admission)}
-                        disabled={!targets[admission.id]}
+                        onClick={() => handleMerge(visit)}
+                        disabled={!targets[visit.id]}
                         className="shrink-0"
                       >
                         <Merge className="size-4" />
