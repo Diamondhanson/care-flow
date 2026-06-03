@@ -29,6 +29,7 @@ import {
   getTreatmentRecordsForVisit,
   reconcileAnonymousProfile,
 } from "@/services/mockStorage";
+import { useT, type TFunction } from "@/components/locale-provider";
 import type { Patient, Visit } from "@/types/healthcare";
 
 interface PendingRecord {
@@ -48,16 +49,17 @@ interface ReconciliationData {
   verified: Patient[];
 }
 
-function relativeTime(iso: string): string {
+function relativeTime(iso: string, t: TFunction): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const hours = Math.round(diffMs / 3_600_000);
-  if (hours < 1) return "just now";
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 1) return t("reconciliation.justNow");
+  if (hours < 24) return t("reconciliation.hoursAgo", { count: hours });
   const days = Math.round(hours / 24);
-  return `${days}d ago`;
+  return t("reconciliation.daysAgo", { count: days });
 }
 
 export default function ReconciliationPage() {
+  const { t } = useT();
   const [data, setData] = useState<ReconciliationData | null>(null);
   const [targets, setTargets] = useState<Record<string, string>>({});
 
@@ -76,7 +78,7 @@ export default function ReconciliationPage() {
       return {
         visit,
         identifier:
-          patient?.anonymous_identifier ?? patient?.full_name ?? "Unidentified",
+          patient?.anonymous_identifier ?? patient?.full_name ?? t("reconciliation.unidentified"),
         mrn: patient?.mrn ?? "—",
         reason: visit.chief_complaint,
         location,
@@ -114,20 +116,19 @@ export default function ReconciliationPage() {
       <header className="flex flex-col gap-1">
         <div className="flex items-baseline gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Profile Reconciliation
+            {t("reconciliation.title")}
           </h1>
           <span className="text-sm font-medium tabular-nums text-muted-foreground">
-            {pendingCount ?? "—"} pending
+            {pendingCount ?? "—"} {t("reconciliation.pending")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Match unidentified emergency records to a verified patient profile.
-          Clinical logs are preserved and re-pointed to the merged profile.
+          {t("reconciliation.subtitle")}
         </p>
       </header>
 
       {data === null ? (
-        <p className="text-sm text-muted-foreground">Loading worklist…</p>
+        <p className="text-sm text-muted-foreground">{t("reconciliation.loading")}</p>
       ) : data.pending.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
@@ -143,9 +144,9 @@ export default function ReconciliationPage() {
               <CheckCircle2 className="size-5" />
             </span>
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">All records reconciled</p>
+              <p className="text-sm font-medium">{t("reconciliation.allReconciled")}</p>
               <p className="text-sm text-muted-foreground">
-                No unidentified emergency profiles are awaiting a match.
+                {t("reconciliation.allReconciledHint")}
               </p>
             </div>
           </CardContent>
@@ -190,19 +191,24 @@ export default function ReconciliationPage() {
                         ) : null}
                         <span className="inline-flex items-center gap-1">
                           <ClipboardList className="size-3" />
-                          {recordCount} log{recordCount === 1 ? "" : "s"}
+                          {t(
+                            recordCount === 1
+                              ? "reconciliation.logsOne"
+                              : "reconciliation.logsOther",
+                            { count: recordCount },
+                          )}
                         </span>
                         {latestGcs !== null ? (
                           <span className="font-mono">GCS {latestGcs}</span>
                         ) : null}
-                        <span>Arrived {relativeTime(visit.arrived_at)}</span>
+                        <span>{t("reconciliation.arrived", { time: relativeTime(visit.arrived_at, t) })}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center">
                     <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground sm:w-32 sm:shrink-0">
-                      Merge into
+                      {t("reconciliation.mergeInto")}
                     </span>
                     <div className="flex flex-1 flex-col gap-2 sm:flex-row">
                       <Select
@@ -218,7 +224,7 @@ export default function ReconciliationPage() {
                         }
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select verified patient" />
+                          <SelectValue placeholder={t("reconciliation.selectVerifiedPatient")} />
                         </SelectTrigger>
                         <SelectContent>
                           {data.verified.map((p) => (
@@ -234,7 +240,7 @@ export default function ReconciliationPage() {
                         className="shrink-0"
                       >
                         <Merge className="size-4" />
-                        Merge
+                        {t("reconciliation.merge")}
                       </Button>
                     </div>
                   </div>

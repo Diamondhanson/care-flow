@@ -28,11 +28,14 @@ import {
 import {
   buildReport,
   presetRange,
+  sliceLabel,
   RANGE_PRESET_LABEL,
+  type CountSlice,
   type DateRange,
   type FullReport,
   type RangePreset,
   type ReportData,
+  type Translate,
 } from "@/components/reports/reports";
 import {
   Donut,
@@ -41,6 +44,8 @@ import {
   VerticalBars,
 } from "@/components/reports/charts";
 import { exportReportPdf, exportReportXlsx } from "@/components/reports/export";
+import { useT } from "@/components/locale-provider";
+import { formatDate } from "@/i18n/format";
 
 function loadReportData(): ReportData {
   return {
@@ -62,6 +67,8 @@ function isoDay(ms: number): string {
 }
 
 export default function ReportsPage() {
+  const { t, locale, mounted } = useT();
+  const activeLocale = mounted ? locale : "en";
   const [data, setData] = useState<ReportData | null>(null);
   const [nowMs, setNowMs] = useState(0);
   const [preset, setPreset] = useState<RangePreset>("90d");
@@ -96,29 +103,47 @@ export default function ReportsPage() {
   if (!report) {
     return (
       <div className="mx-auto max-w-6xl">
-        <p className="text-sm text-muted-foreground">Loading reports…</p>
+        <p className="text-sm text-muted-foreground">{t("reports.loading")}</p>
       </div>
     );
   }
+
+  const loc = (slices: CountSlice[]): CountSlice[] =>
+    slices.map((s) => ({ ...s, label: sliceLabel(s, t as Translate) }));
+  const visitsOverTime = report.visitsOverTime.map((b) => ({
+    ...b,
+    label: formatDate(`${b.key}T00:00:00.000Z`, activeLocale, {
+      month: "short",
+      day: "numeric",
+      timeZone: "UTC",
+    }),
+  }));
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Operations &amp; analytics
+            {t("reports.title")}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Hospital-wide activity, occupancy, clinical and pharmacy metrics for
-            the selected period. Export a full snapshot as PDF or Excel.
+            {t("reports.subtitle")}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => exportReportPdf(report)}>
-            <FileText className="size-4" /> PDF
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportReportPdf(report, t as Translate, activeLocale)}
+          >
+            <FileText className="size-4" /> {t("reports.pdf")}
           </Button>
-          <Button variant="outline" size="sm" onClick={() => exportReportXlsx(report)}>
-            <FileSpreadsheet className="size-4" /> Excel
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportReportXlsx(report, t as Translate, activeLocale)}
+          >
+            <FileSpreadsheet className="size-4" /> {t("reports.excel")}
           </Button>
         </div>
       </header>
@@ -133,7 +158,7 @@ export default function ReportsPage() {
               size="sm"
               onClick={() => setPreset(p)}
             >
-              {RANGE_PRESET_LABEL[p]}
+              {t(RANGE_PRESET_LABEL[p])}
             </Button>
           ))}
         </div>
@@ -145,72 +170,72 @@ export default function ReportsPage() {
               max={customEnd || undefined}
               onChange={(e) => setCustomStart(e.target.value)}
               className="h-9 w-40"
-              aria-label="Start date"
+              aria-label={t("reports.startDate")}
             />
-            <span className="text-sm text-muted-foreground">to</span>
+            <span className="text-sm text-muted-foreground">{t("reports.to")}</span>
             <Input
               type="date"
               value={customEnd}
               min={customStart || undefined}
               onChange={(e) => setCustomEnd(e.target.value)}
               className="h-9 w-40"
-              aria-label="End date"
+              aria-label={t("reports.endDate")}
             />
           </div>
         ) : (
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Download className="size-3.5" />
-            Exports reflect this period
+            {t("reports.exportsReflect")}
           </span>
         )}
       </div>
 
       {/* KPI cards */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <Kpi icon={Activity} label="Total visits" value={report.kpis.totalVisits} />
-        <Kpi icon={Stethoscope} label="Unique patients" value={report.kpis.uniquePatients} />
-        <Kpi label="Admissions" value={report.kpis.admissionsStarted} />
-        <Kpi label="Discharges" value={report.kpis.discharges} />
+        <Kpi icon={Activity} label={t("reports.kpi.totalVisits")} value={report.kpis.totalVisits} />
+        <Kpi icon={Stethoscope} label={t("reports.kpi.uniquePatients")} value={report.kpis.uniquePatients} />
+        <Kpi label={t("reports.kpi.admissions")} value={report.kpis.admissionsStarted} />
+        <Kpi label={t("reports.kpi.discharges")} value={report.kpis.discharges} />
         <Kpi
           icon={BedDouble}
-          label="Bed occupancy"
+          label={t("reports.kpi.bedOccupancy")}
           value={`${report.kpis.bedOccupancyPct}%`}
         />
-        <Kpi label="Outpatient" value={report.kpis.outpatient} accent={0} />
-        <Kpi label="Inpatient" value={report.kpis.inpatient} accent={1} />
-        <Kpi label="Emergency" value={report.kpis.emergency} accent={5} />
-        <Kpi label="Current inpatients" value={report.kpis.currentInpatients} />
+        <Kpi label={t("reports.kpi.outpatient")} value={report.kpis.outpatient} accent={0} />
+        <Kpi label={t("reports.kpi.inpatient")} value={report.kpis.inpatient} accent={1} />
+        <Kpi label={t("reports.kpi.emergency")} value={report.kpis.emergency} accent={5} />
+        <Kpi label={t("reports.kpi.currentInpatients")} value={report.kpis.currentInpatients} />
         <Kpi
-          label="Avg length of stay"
+          label={t("reports.kpi.avgLos")}
           value={report.kpis.avgLosDays == null ? "—" : `${report.kpis.avgLosDays}d`}
         />
       </section>
 
       {/* Trend — full width */}
       <ChartCard
-        title="Visit volume over time"
-        description="Daily (or weekly for long spans) arrivals, stacked by visit type."
+        title={t("reports.chart.visitVolume")}
+        description={t("reports.chart.visitVolumeDesc")}
       >
-        <StackedAreaTrend data={report.visitsOverTime} />
+        <StackedAreaTrend data={visitsOverTime} />
       </ChartCard>
 
       {/* Two-column chart grid */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ChartCard title="Visit type mix">
-          <Donut data={report.visitTypeMix} />
+        <ChartCard title={t("reports.chart.visitTypeMix")}>
+          <Donut data={loc(report.visitTypeMix)} />
         </ChartCard>
-        <ChartCard title="Department throughput">
-          <HorizontalBars data={report.departmentThroughput} categorical />
-        </ChartCard>
-
-        <ChartCard title="Top diagnoses">
-          <HorizontalBars data={report.topDiagnoses} categorical />
-        </ChartCard>
-        <ChartCard title="Length of stay" description="Discharged admissions in period.">
-          <VerticalBars data={report.los.buckets} colorIndex={3} />
+        <ChartCard title={t("reports.chart.departmentThroughput")}>
+          <HorizontalBars data={loc(report.departmentThroughput)} categorical />
         </ChartCard>
 
-        <ChartCard title="Ward occupancy">
+        <ChartCard title={t("reports.chart.topDiagnoses")}>
+          <HorizontalBars data={loc(report.topDiagnoses)} categorical />
+        </ChartCard>
+        <ChartCard title={t("reports.chart.lengthOfStay")} description={t("reports.chart.lengthOfStayDesc")}>
+          <VerticalBars data={loc(report.los.buckets)} colorIndex={3} />
+        </ChartCard>
+
+        <ChartCard title={t("reports.chart.wardOccupancy")}>
           <HorizontalBars
             data={report.wardOccupancy.map((w) => ({
               key: w.key,
@@ -220,29 +245,34 @@ export default function ReportsPage() {
             categorical
           />
         </ChartCard>
-        <ChartCard title="Open visits by care stage">
-          <VerticalBars data={report.stageDistribution} colorIndex={1} />
+        <ChartCard title={t("reports.chart.openByStage")}>
+          <VerticalBars data={loc(report.stageDistribution)} colorIndex={1} />
         </ChartCard>
 
-        <ChartCard title="Patients by sex">
-          <Donut data={report.sexMix} />
+        <ChartCard title={t("reports.chart.patientsBySex")}>
+          <Donut data={loc(report.sexMix)} />
         </ChartCard>
-        <ChartCard title="Patients by age">
-          <VerticalBars data={report.ageDistribution} colorIndex={4} />
+        <ChartCard title={t("reports.chart.patientsByAge")}>
+          <VerticalBars data={loc(report.ageDistribution)} colorIndex={4} />
         </ChartCard>
 
         <ChartCard
-          title="Discharge clearance bottlenecks"
-          description="Active admissions still pending each gate."
+          title={t("reports.chart.clearanceBottlenecks")}
+          description={t("reports.chart.clearanceBottlenecksDesc")}
         >
-          <VerticalBars data={report.clearanceBottlenecks} colorIndex={5} />
+          <VerticalBars data={loc(report.clearanceBottlenecks)} colorIndex={5} />
         </ChartCard>
       </div>
 
       {/* Diagnostic abnormal-rate callout */}
       <ChartCard
-        title="Diagnostic results"
-        description={`${report.abnormal.total} result${report.abnormal.total === 1 ? "" : "s"} recorded in period.`}
+        title={t("reports.chart.diagnosticResults")}
+        description={t(
+          report.abnormal.total === 1
+            ? "reports.resultsRecordedOne"
+            : "reports.resultsRecordedOther",
+          { count: report.abnormal.total },
+        )}
       >
         <AbnormalBar
           abnormal={report.abnormal.abnormal}
@@ -323,11 +353,12 @@ function AbnormalBar({
   normal: number;
   pct: number;
 }) {
+  const { t } = useT();
   const total = abnormal + normal;
   if (total === 0) {
     return (
       <p className="py-8 text-center text-xs text-muted-foreground">
-        No results recorded in this period.
+        {t("reports.noResults")}
       </p>
     );
   }
@@ -336,7 +367,7 @@ function AbnormalBar({
       <div className="flex items-end justify-between">
         <span className="font-mono text-3xl font-semibold tabular-nums">{pct}%</span>
         <span className="text-xs text-muted-foreground">
-          {abnormal} abnormal · {normal} normal
+          {t("reports.abnormalNormal", { abnormal, normal })}
         </span>
       </div>
       <div className="flex h-3 w-full overflow-hidden rounded-full bg-muted">

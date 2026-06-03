@@ -11,12 +11,17 @@ import {
   getStaffById,
   getTreatmentRecordsForVisit,
 } from "@/services/mockStorage";
-import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
+import {
+  BOARD_COLUMNS,
+  columnForStage,
+  nextStepLabel,
+} from "@/components/live-board/stages";
 import {
   PatientCard,
   type PatientCardData,
 } from "@/components/live-board/patient-card";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
+import { useT, type TFunction } from "@/components/locale-provider";
 
 type Columns = Record<string, PatientCardData[]>;
 
@@ -35,7 +40,7 @@ function locationLabel(visitId: string, departmentId: string | null): string | n
   return null;
 }
 
-function buildColumns(departmentId: string): Columns {
+function buildColumns(departmentId: string, t: TFunction): Columns {
   const columns = emptyColumns();
   for (const visit of getActiveVisitsForDepartment(departmentId)) {
     const column = columnForStage(visit.stage);
@@ -53,25 +58,28 @@ function buildColumns(departmentId: string): Columns {
       displayName:
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
-          : (patient?.full_name ?? "Unknown patient"),
+          : (patient?.full_name ?? t("liveBoard.unknownPatient")),
       isAnonymous: patient?.is_emergency_anonymous ?? false,
       location: locationLabel(visit.id, visit.department_id),
       reason: visit.chief_complaint,
       attendingDoctorName: doctor?.full_name ?? null,
       gcs: latestGcs,
+      triage: visit.triage_level,
+      nextStepKey: nextStepLabel(visit.stage, visit.visit_type),
     });
   }
   return columns;
 }
 
 export function JourneyBoard({ departmentId }: { departmentId: string }) {
+  const { t } = useT();
   const [columns, setColumns] = useState<Columns | null>(null);
   const [version, setVersion] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   useEffect(() => {
-    setColumns(buildColumns(departmentId));
-  }, [version, departmentId]);
+    setColumns(buildColumns(departmentId, t));
+  }, [version, departmentId, t]);
 
   const refresh = () => setVersion((v) => v + 1);
 
@@ -91,8 +99,8 @@ export function JourneyBoard({ departmentId }: { departmentId: string }) {
                 className="size-2 rounded-full"
                 style={{ backgroundColor: `var(--status-${column.token})` }}
               />
-              <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                {column.label}
+              <h2 className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                {t(column.label)}
               </h2>
               <span className="ml-auto font-mono text-xs tabular-nums text-muted-foreground">
                 {columns ? cards.length : "—"}
@@ -101,8 +109,8 @@ export function JourneyBoard({ departmentId }: { departmentId: string }) {
 
             <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border bg-muted/30 p-2">
               {columns && cards.length === 0 ? (
-                <p className="px-1 py-6 text-center text-xs text-muted-foreground">
-                  No patients
+                <p className="px-1 py-6 text-center text-[13px] text-muted-foreground">
+                  {t("liveBoard.noPatients")}
                 </p>
               ) : (
                 cards.map((card) => (

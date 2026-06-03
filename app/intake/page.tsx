@@ -19,7 +19,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createNewVisit, getDepartments, getStaff } from "@/services/mockStorage";
-import type { Department, Sex, Staff } from "@/types/healthcare";
+import { useT } from "@/components/locale-provider";
+import type { Department, Sex, Staff, TriageLevel } from "@/types/healthcare";
 
 interface SubmitResult {
   displayName: string;
@@ -27,14 +28,27 @@ interface SubmitResult {
   mrn: string;
 }
 
-const SEX_OPTIONS: { value: Sex; label: string }[] = [
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
-  { value: "other", label: "Other" },
-  { value: "unknown", label: "Unknown" },
+const SEX_OPTIONS: { value: Sex; labelKey: string }[] = [
+  { value: "male", labelKey: "sex.male" },
+  { value: "female", labelKey: "sex.female" },
+  { value: "other", labelKey: "sex.other" },
+  { value: "unknown", labelKey: "sex.unknown" },
 ];
 
+/**
+ * Turn an approximate age in years into a placeholder date of birth (Jan 1 of
+ * the implied year) so a patient who doesn't know their exact birthday still
+ * gets an age on file. Returns null for blank/invalid input.
+ */
+function approximateDob(age: string): string | null {
+  const years = Number(age);
+  if (!Number.isFinite(years) || years <= 0 || years > 130) return null;
+  const birthYear = new Date().getFullYear() - Math.floor(years);
+  return `${birthYear}-01-01`;
+}
+
 export default function IntakePage() {
+  const { t } = useT();
   const [staff, setStaff] = useState<Staff[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [isEmergency, setIsEmergency] = useState(false);
@@ -45,12 +59,18 @@ export default function IntakePage() {
   const [fullName, setFullName] = useState("");
   const [sex, setSex] = useState<Sex>("unknown");
   const [dob, setDob] = useState("");
+  // When the exact birth date is unknown (common when patients have no records),
+  // staff can enter an approximate age in years instead.
+  const [dobUnknown, setDobUnknown] = useState(false);
+  const [approxAge, setApproxAge] = useState("");
   const [phone, setPhone] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [reason, setReason] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [registeredById, setRegisteredById] = useState("");
   const [attendingId, setAttendingId] = useState("");
+  // "" = not triaged yet; otherwise a 1–5 acuity level.
+  const [triageLevel, setTriageLevel] = useState<"" | `${TriageLevel}`>("");
 
   useEffect(() => {
     const all = getStaff();
@@ -72,15 +92,15 @@ export default function IntakePage() {
     setError(null);
 
     if (!registeredById) {
-      setError("Select the registering staff member.");
+      setError(t("intake.selectStaffError"));
       return;
     }
     if (!reason.trim()) {
-      setError("A presenting reason is required.");
+      setError(t("intake.reasonRequired"));
       return;
     }
     if (!isEmergency && !fullName.trim()) {
-      setError("Patient name is required for a standard intake.");
+      setError(t("intake.nameRequired"));
       return;
     }
 
@@ -90,7 +110,9 @@ export default function IntakePage() {
         : {
             full_name: fullName.trim(),
             sex,
-            date_of_birth: dob || null,
+            date_of_birth: dobUnknown
+              ? approximateDob(approxAge)
+              : dob || null,
             phone: phone.trim() || null,
             national_id: nationalId.trim() || null,
           },
@@ -101,6 +123,7 @@ export default function IntakePage() {
         registered_by_id: registeredById,
         attending_doctor_id: attendingId || null,
         chief_complaint: reason.trim(),
+        triage_level: triageLevel ? (Number(triageLevel) as TriageLevel) : null,
       },
     );
 
@@ -120,11 +143,14 @@ export default function IntakePage() {
     setFullName("");
     setSex("unknown");
     setDob("");
+    setDobUnknown(false);
+    setApproxAge("");
     setPhone("");
     setNationalId("");
     setReason("");
     setDepartmentId("");
     setAttendingId("");
+    setTriageLevel("");
     setIsEmergency(false);
   }
 
@@ -135,14 +161,14 @@ export default function IntakePage() {
           <CardContent className="flex flex-col items-center gap-4 py-12 text-center">
             <CheckCircle2 className="size-10 text-[var(--status-clearance)]" />
             <div className="flex flex-col gap-1">
-              <p className="text-lg font-semibold">Visit opened</p>
+              <p className="text-lg font-semibold">{t("intake.visitOpened")}</p>
               <p className="text-sm text-muted-foreground">
-                Added to the Live Board in the Intake stage.
+                {t("intake.visitOpenedHint")}
               </p>
             </div>
             <div className="flex w-full flex-col gap-1 rounded-md border border-border bg-muted/40 p-4">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                {result.isAnonymous ? "Emergency tracking tag" : "Patient"}
+                {result.isAnonymous ? t("intake.emergencyTag") : t("intake.patient")}
               </span>
               <span className="font-mono text-sm">{result.displayName}</span>
               <span className="font-mono text-xs text-muted-foreground">
@@ -151,10 +177,10 @@ export default function IntakePage() {
             </div>
             <div className="flex gap-3">
               <Button nativeButton={false} render={<Link href="/" />}>
-                View on board <ArrowRight className="size-4" />
+                {t("intake.viewOnBoard")} <ArrowRight className="size-4" />
               </Button>
               <Button variant="outline" onClick={resetForm}>
-                Register another
+                {t("intake.registerAnother")}
               </Button>
             </div>
           </CardContent>
@@ -167,10 +193,10 @@ export default function IntakePage() {
     <div className="mx-auto flex max-w-4xl flex-col gap-8">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight lg:text-4xl">
-          Patient Intake
+          {t("intake.title")}
         </h1>
         <p className="text-base text-muted-foreground">
-          Open a new visit on the Live Status Board.
+          {t("intake.subtitle")}
         </p>
       </header>
 
@@ -189,10 +215,10 @@ export default function IntakePage() {
               />
               <div className="flex flex-col gap-0.5">
                 <Label htmlFor="emergency" className="text-sm font-medium">
-                  Emergency Unconscious Intake
+                  {t("intake.emergencyToggle")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Skip identity paperwork and assign an anonymous tracking tag.
+                  {t("intake.emergencyToggleHint")}
                 </p>
               </div>
             </div>
@@ -207,30 +233,30 @@ export default function IntakePage() {
         <Card>
           <CardHeader className="pb-0">
             <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              {isEmergency ? "Emergency record" : "Patient details"}
+              {isEmergency ? t("intake.emergencyRecord") : t("intake.patientDetails")}
             </span>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
             {isEmergency ? (
               <div className="rounded-md border border-dashed border-border bg-muted/30 p-4 text-sm text-muted-foreground">
-                Personal fields are hidden. A tracking tag (e.g.{" "}
-                <span className="font-mono">John Doe - Gamma - …</span>) and a
-                permanent MRN will be generated automatically on submit.
+                {t("intake.emergencyFieldsHidden")}{" "}
+                <span className="font-mono">John Doe - Gamma - …</span>
+                {t("intake.emergencyFieldsHiddenSuffix")}
               </div>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label="Full name" htmlFor="full_name" className="sm:col-span-2">
+                <Field label={t("intake.fullName")} htmlFor="full_name" className="sm:col-span-2">
                   <Input
                     id="full_name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="e.g. Ada Mensah"
+                    placeholder={t("intake.fullNamePlaceholder")}
                   />
                 </Field>
-                <Field label="Sex" htmlFor="sex">
+                <Field label={t("intake.sex")} htmlFor="sex">
                   <Select
                     items={Object.fromEntries(
-                      SEX_OPTIONS.map((o) => [o.value, o.label]),
+                      SEX_OPTIONS.map((o) => [o.value, t(o.labelKey)]),
                     )}
                     value={sex}
                     onValueChange={(v) => setSex(v as Sex)}
@@ -241,34 +267,57 @@ export default function IntakePage() {
                     <SelectContent>
                       {SEX_OPTIONS.map((o) => (
                         <SelectItem key={o.value} value={o.value}>
-                          {o.label}
+                          {t(o.labelKey)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Date of birth" htmlFor="dob">
-                  <Input
-                    id="dob"
-                    type="date"
-                    value={dob}
-                    onChange={(e) => setDob(e.target.value)}
-                  />
+                <Field
+                  label={dobUnknown ? t("intake.approxAge") : t("intake.dob")}
+                  htmlFor={dobUnknown ? "approx_age" : "dob"}
+                >
+                  {dobUnknown ? (
+                    <Input
+                      id="approx_age"
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      max={130}
+                      value={approxAge}
+                      onChange={(e) => setApproxAge(e.target.value)}
+                      placeholder={t("intake.approxAgePlaceholder")}
+                    />
+                  ) : (
+                    <Input
+                      id="dob"
+                      type="date"
+                      value={dob}
+                      onChange={(e) => setDob(e.target.value)}
+                    />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setDobUnknown((v) => !v)}
+                    className="self-start text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  >
+                    {dobUnknown ? t("intake.useExactDob") : t("intake.dobUnknown")}
+                  </button>
                 </Field>
-                <Field label="Phone" htmlFor="phone">
+                <Field label={t("intake.phone")} htmlFor="phone">
                   <Input
                     id="phone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Optional"
+                    placeholder={t("intake.phonePlaceholder")}
                   />
                 </Field>
-                <Field label="National ID" htmlFor="national_id">
+                <Field label={t("intake.nationalId")} htmlFor="national_id">
                   <Input
                     id="national_id"
                     value={nationalId}
                     onChange={(e) => setNationalId(e.target.value)}
-                    placeholder="Optional — MRN is auto-assigned"
+                    placeholder={t("intake.nationalIdPlaceholder")}
                   />
                 </Field>
               </div>
@@ -279,20 +328,59 @@ export default function IntakePage() {
         <Card>
           <CardHeader className="pb-0">
             <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Visit
+              {t("intake.visit")}
             </span>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            <Field label="Presenting reason / chief complaint" htmlFor="reason">
+            <Field label={t("intake.reason")} htmlFor="reason">
               <Textarea
                 id="reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="e.g. Head trauma following road traffic accident"
+                placeholder={t("intake.reasonPlaceholder")}
               />
             </Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Department" htmlFor="department">
+              <Field
+                label={t("intake.triage")}
+                htmlFor="triage"
+                className="sm:col-span-2"
+              >
+                <Select
+                  items={{
+                    "": t("intake.triageNone"),
+                    ...Object.fromEntries(
+                      ([1, 2, 3, 4, 5] as const).map((n) => [
+                        String(n),
+                        `${t("liveBoard.triage.label", { level: String(n) })} · ${t(`liveBoard.triage.${n}`)}`,
+                      ]),
+                    ),
+                  }}
+                  value={triageLevel}
+                  onValueChange={(v) => setTriageLevel(v as "" | `${TriageLevel}`)}
+                >
+                  <SelectTrigger id="triage" className="w-full">
+                    <SelectValue placeholder={t("intake.triageNone")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">{t("intake.triageNone")}</SelectItem>
+                    {([1, 2, 3, 4, 5] as const).map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        <span className="inline-flex items-center gap-2">
+                          <span
+                            aria-hidden
+                            className="size-2 rounded-full"
+                            style={{ backgroundColor: `var(--triage-${n})` }}
+                          />
+                          {t("liveBoard.triage.label", { level: String(n) })} ·{" "}
+                          {t(`liveBoard.triage.${n}`)}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field label={t("intake.department")} htmlFor="department">
                 <Select
                   items={Object.fromEntries(
                     departments.map((d) => [d.id, d.name]),
@@ -301,7 +389,7 @@ export default function IntakePage() {
                   onValueChange={(v) => setDepartmentId(v as string)}
                 >
                   <SelectTrigger id="department" className="w-full">
-                    <SelectValue placeholder="Select department" />
+                    <SelectValue placeholder={t("intake.selectDepartment")} />
                   </SelectTrigger>
                   <SelectContent>
                     {departments.map((d) => (
@@ -312,7 +400,7 @@ export default function IntakePage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Registering staff" htmlFor="registered_by">
+              <Field label={t("intake.registeringStaff")} htmlFor="registered_by">
                 <Select
                   items={Object.fromEntries(
                     staff.map((s) => [s.id, `${s.full_name} · ${s.role}`]),
@@ -321,7 +409,7 @@ export default function IntakePage() {
                   onValueChange={(v) => setRegisteredById(v as string)}
                 >
                   <SelectTrigger id="registered_by" className="w-full">
-                    <SelectValue placeholder="Select staff" />
+                    <SelectValue placeholder={t("intake.selectStaff")} />
                   </SelectTrigger>
                   <SelectContent>
                     {staff.map((s) => (
@@ -333,7 +421,7 @@ export default function IntakePage() {
                 </Select>
               </Field>
               <Field
-                label="Attending doctor"
+                label={t("intake.attendingDoctor")}
                 htmlFor="attending"
                 className="sm:col-span-2"
               >
@@ -345,7 +433,7 @@ export default function IntakePage() {
                   onValueChange={(v) => setAttendingId(v as string)}
                 >
                   <SelectTrigger id="attending" className="w-full">
-                    <SelectValue placeholder="Unassigned" />
+                    <SelectValue placeholder={t("intake.unassigned")} />
                   </SelectTrigger>
                   <SelectContent>
                     {doctors.map((s) => (
@@ -373,10 +461,10 @@ export default function IntakePage() {
             nativeButton={false}
             render={<Link href="/" />}
           >
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button type="submit">
-            {isEmergency ? "Register emergency patient" : "Register patient"}
+            {isEmergency ? t("intake.registerEmergency") : t("intake.register")}
           </Button>
         </div>
       </form>

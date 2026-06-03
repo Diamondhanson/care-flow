@@ -234,32 +234,214 @@ foundation everything else depends on.
 * [ ] Backed by the `admission_report` view + new aggregate queries (deferred to Phase 13 cutover;
       aggregation currently runs client-side over the mock store).
 
-## PHASE 13 — Backend Cutover: Supabase, Auth, RBAC & Audit 🔜
+> **UX phases (13–16) come BEFORE the backend.** These lower the learning curve for low-tech-literacy
+> staff in the target market (small/medium hospitals in Douala) and make live demos easy to follow.
+> All are **frontend + copy only** — none require Supabase. Work them one at a time; the backend
+> cutover (Phase 17) stays the final phase.
 
-**Goal:** swap the mock for a real, secure, multi-user backend.
+## PHASE 13 — Localization (French/English) & Plain Language ✅ COMPLETE
+
+**Goal:** the single highest-leverage adoption change for a francophone market — the UI speaks French,
+and every label reads like a clinic worker talks, not like the database. An English-only, jargon-heavy
+UI is a wall in front of every other feature, and a French demo lands completely differently.
+
+* [x] Added a **homegrown** i18n layer (no new dependency) with an **FR/EN toggle** (Cameroon is
+      bilingual). Persist the choice (localStorage now; user profile after Phase 17). **English is the
+      default/SSR locale**; French is opt-in via the toggle (both fully translated).
+* [x] Externalized **every** UI string — nav, page titles, buttons, form labels, empty states, errors —
+      into `fr` / `en` dictionaries typed as `Messages` so `tsc` fails on any missing key. No
+      hard-coded copy left in components (incl. the shared `ui/sheet` close label + dev role switcher).
+* [x] Replaced data-model jargon with plain primary labels (technical term kept as muted secondary):
+  * [x] "Patient Intake" → **Enregistrer un patient** / "Register a patient"
+  * [x] "Diagnostics" → **Tests & résultats** / "Tests & results"
+  * [x] "Reconciliation" → **Associer un patient d'urgence** / "Match emergency patient"
+  * [x] "Floor Map" → **Lits** / "Beds"
+  * [x] "MRN" → **Numéro d'hôpital** / "Hospital number" (MRN kept small/secondary)
+  * [x] "Chief complaint" → **Motif de consultation**; "Disposition" → **Suite à donner**
+  * [x] keep GCS / SpO₂ but add a plain hint on first use.
+* [x] Localized dates/numbers and the navbar date to the active locale (`i18n/format.ts` over `Intl`).
+* [x] **Verified:** switched to FR and walked reception → doctor → nurse flows with no English leaking
+      through; `tsc`/tests green.
+
+### Scope boundary
+Clinical reference *values* stay canonical/untranslated — drug names (`Amoxicillin`), ICD-10 code
+descriptions, preserved abbreviations (`GCS`, `SpO₂`, `IV`, `IM`), free-text chief complaints, and the
+parseable `ROUTE_OPTIONS`/`FREQUENCY_OPTIONS`. Page `metadata` stays English (server-only, can't read
+the client locale without cookies/middleware).
+
+## PHASE 14 — Role-Based, Task-Focused Simplification ✅ COMPLETE
+
+**Goal:** each user sees only what their job needs, in plain language — cutting perceived complexity
+roughly in half without removing any capability.
+
+**Today:** the nav is a flat 9-item menu and the `PatientDrawer` (~1,600 lines) shows almost every
+section to everyone (only two small `isDoctor` gates), so a receptionist sees a doctor's workspace.
+This builds on the existing `RoleProvider` / dev role switcher (no auth needed yet).
+
+* [x] Drive `NAV_ITEMS` (`components/layout/app-shell.tsx`) off the acting role via a `ROLE_NAV`
+      map (hydration-safe: the full menu renders until mount, then narrows). Menus shipped:
+  * **Reception:** Board · Register · Beds · Match emergency
+  * **Nurse:** Board · Medications · Beds
+  * **Doctor:** Board · Tests & results · Medications
+  * **Pharmacist:** Board · Medications · Tests & results · **Lab tech:** Board · Tests & results
+  * **Admin:** everything (current full menu). Routes are hidden from nav, never blocked.
+* [x] Restructured `PatientDrawer` into a **role-led primary action + a single collapsed "More"**
+      expander. Each section carries a stable key; the acting role's lead sections render first and
+      expanded (doctor → consult console + care stage; nurse → vitals + care stage; reception →
+      reconcile + placement + care stage), the rest fold under "More options". Implemented with
+      per-section flex `order` + a `hidden` toggle (no JSX moved); unmapped roles (admin/pharmacist/
+      lab_tech) see every section. `careStage` is in every lead set so the drawer is never empty.
+* [x] Led the Live Board with one obvious primary action — a prominent **Register a patient** CTA in
+      the board header (the filter select is demoted beside it).
+* [x] Surfaced **triage priority** (flagged item #3) — added a `TriageLevel` (1 critical … 5
+      non-urgent) field on `Visit`, seeded clinically-sensible values (DB bumped to `careflow_db_v5`),
+      a colored acuity badge on every board card, and a triage selector on the intake form. New
+      `--triage-1..5` tokens defined in both light/dark blocks of `globals.css`.
+* [x] **Verified:** as doctor/nurse/reception the menu + drawer show only that role's tasks (lead
+      sections expanded, rest under "More"); admin reaches everything (full nav, all sections, no
+      collapse). Triage badges render in FR & EN; `tsc` clean, 131 tests green, no hydration errors.
+
+## PHASE 15 — "Find My Patient" Front Door ✅ COMPLETE
+
+**Goal:** match how staff actually think — "find Mr. Mbella / patient 00123" — instead of navigating a
+menu.
+
+* [x] Add a **global patient search** (by name or hospital number / MRN) pinned to the top of every
+      screen. *(`GlobalSearch` trigger lives in the app-shell header — present on every page — plus a
+      ⌘K / Ctrl+K shortcut. Backed by `searchPatients()` matching name, MRN, national ID, phone, and
+      the emergency anonymous identifier, ranked exact/prefix-first.)*
+* [x] Make the booklet-number → hospital-number lookup obvious (the bridge between paper and digital).
+      *(MRN **is** the hospital/booklet number; the input placeholder reads "Search by name or hospital
+      number" / "Rechercher par nom ou numéro d'hôpital" and each result shows the `CF-YYYY-NNNNNN`
+      number in mono.)*
+* [x] Search results open straight into the patient/visit drawer. *(A result resolves to a visit via
+      `getLatestVisitForPatient()` — open visit preferred, else most recent — and opens the existing
+      `PatientDrawer`.)*
+* [x] **Verify:** find a seeded patient by partial name and by MRN in ≤2 taps from any page. *(Verified
+      in-browser EN + FR: "mensah" → Grace Mensah, "CF-2026-000002" → Samuel Idris; result opens the
+      drawer; ⌘K works; FR strings + translated visit-type badge ("Hospitalisé") + no-results message
+      all clean; no hydration warnings. 140 vitest tests pass, tsc clean.)*
+
+## PHASE 16 — Comprehension, Guidance & Demo-Readiness ✅ COMPLETE
+
+**Goal:** make the first five minutes teach themselves — for real onboarding and for live demos in
+front of skeptical, low-tech-literacy staff. (Absorbs the frontend items of the former "Hardening"
+phase: empty/loading states, accessibility, demo seed.)
+
+* [x] **Legibility pass:** raise base font sizes + contrast (much metadata is 10–11px muted today);
+      pair every icon-only control with a word; keep the existing color-bar / large-tap-target wins.
+      *(Done 2026-06-02. Lifted `--muted-foreground` contrast in both light & dark blocks of
+      `globals.css`; bumped the smallest board fonts — patient-card MRN/meta/reason, journey + stage
+      column headers — up a step; icon-only navbar controls already carry `aria-label` + `title`.)*
+* [x] **Guided tour** on first load (3–4 callouts: this is the board, tap a patient, register here,
+      switch role/language). *(Done 2026-06-02. `components/onboarding/guided-tour.tsx` — a centered,
+      mount-guarded, localStorage-dismissed 4-step overlay wired into `AppShell`; a "?" navbar button
+      replays it any time via a window event. FR/EN `tour` namespace.)*
+* [x] **"Next step" nudges** on board cards (e.g. a triage card shows "→ Send to doctor") so the
+      workflow teaches itself. *(Done 2026-06-02. `nextStepLabel(stage, visitType)` in
+      `live-board/stages.ts` returns the action that advances the visit — keyed off the next stage so
+      it respects the outpatient short-circuit — rendered as an accented pill on each `PatientCard`.
+      FR/EN `nextStep` namespace; 4 vitest cases added.)*
+* [x] **Friendlier empty states** ("No patients waiting. Tap *Register a patient* to start.").
+      *(Done 2026-06-02. Board columns now read "No patients waiting here" / "Aucun patient en attente
+      ici"; the board header already carries the prominent Register CTA. The medications / diagnostics /
+      reconciliation / floor-map pages already shipped guiding empty-state hints in Phase 12–14.)*
+* [x] **Print a visit slip / patient summary** — bridges paper ↔ digital (staff tuck it into the
+      existing booklet); a strong demo moment. *(Done 2026-06-02, pulled forward. A **Download patient
+      report** button in the `PatientDrawer` header generates a comprehensive single-visit PDF —
+      patient + visit identifiers, allergies, vitals, doctor's SOAP notes, diagnoses, tests + results,
+      medications + doses given, admission + length of stay + transfers — fully FR/EN localized. See the
+      Phase 16 (pulled forward) Update Log entry.)*
+* [x] **Intake simplifications:** offer **approximate age** when DOB is unknown; plain-language
+      confirmations for discharge/transfer (state the outcome) and sentence-style errors; reassuring
+      offline messaging ("Saved. Will sync when internet returns.") on the existing PWA. *(The
+      "Registering staff" dropdown drops out automatically once Phase 17 auth supplies the logged-in
+      user.)* *(Done 2026-06-02. Intake DOB field gains an "Exact date unknown? Enter age instead"
+      toggle that stores an approximate `YYYY-01-01` DOB; the `PatientDrawer` now shows plain-language
+      transfer confirmations ("Moved to {placement}.", "Now under {doctor}.") and a discharge confirm
+      step that states the outcome before closing the visit; `SyncStatus` is fully localized, with a
+      reassuring offline line ("Saved on this device. Will sync when the internet returns."). Discharge
+      blockers moved to i18n keys (`drawer.blocker*`) — a Phase-13 leak fix. FR/EN mirrored.)*
+* [x] **Demo mode:** one-click reset to a clean, realistic sample hospital for repeatable demos.
+      *(Done 2026-06-02. `components/demo/reset-demo.tsx` — a confirm-gated card on the Staff page that
+      calls `resetDatabase()` (wipe + reseed + clear sync outbox) and hard-reloads to a known clean
+      state. FR/EN `demo` namespace.)*
+* [x] **Verify:** a first-time user, given no instructions, can register a patient and advance them
+      through the board using only on-screen guidance. *(Verified 2026-06-02 in the browser: registered
+      a patient via the board's Register CTA, followed the per-card "next step" nudges through triage →
+      consultation → diagnostics → discharge using only on-screen guidance, hit the discharge confirm
+      step, and completed the visit. Transfer confirmation, demo reset, and FR locale spot-checked.)*
+
+## PHASE 16.5 — Demo-Readiness QA Pass ✅ COMPLETE
+
+**Goal:** the last polish before the backend — confirm the role-led drawer actually feels simple to a
+non-doctor, and that nothing breaks when the UI is rendered in French. Frontend + copy only.
+
+### Drawer simplification — finish & confirm
+
+The `PatientDrawer` was restructured (Phase 14) to lead with each role's primary action and fold the
+rest under "More". Verify it lands in practice rather than just in markup:
+
+* [x] Open a patient **as a nurse** and confirm the drawer opens to *Record vitals* + *Medications /
+      care stage* with everything else collapsed — not a long scroll of doctor sections.
+* [x] Repeat **as reception** (identity + reconcile/placement lead) and **as doctor** (consult console
+      leads). Admin still sees every section expanded.
+* [x] If any role still has to scroll past sections it doesn't use, tighten the lead-section set or the
+      "More" boundary in `patient-drawer.tsx` until the first screen shows only that role's task.
+      *(No change needed — `PRIMARY_BY_ROLE` lead sets already surface each role's task first; the
+      Allergies safety banner is deliberately pinned first for every role.)*
+* [x] Check the collapsed "More" expander is obvious and reachable with a large tap target on mobile.
+      *(Full-width 44px-tall expander — good mobile target.)*
+* [x] **Verify:** for each role, the *first thing visible* in the drawer is the action that role came
+      to do; `tsc` clean, tests green.
+
+### French browser pass (layout / overflow)
+
+French text runs ~15–20% longer than English, so the risk is visual overflow, not missing strings.
+
+* [x] Switch the UI to **FR** and walk every page (board, intake, diagnostics, medications,
+      reconciliation, departments, floor map, reports, staff) at **desktop and mobile widths**.
+* [x] Watch for: nav labels wrapping/truncating, button text overflowing, triage/emergency badges
+      clipping, patient-card "next step" pills wrapping awkwardly, table headers on `/reports`, and the
+      guided-tour overlay copy fitting its box. *(All clean. Two fixes made — see below.)*
+* [x] Fix overflows with wrapping/min-width/`truncate` tweaks — don't shorten the French copy just to
+      fit. *(1) Header facility title: added `truncate` so it can't spill onto the global search at
+      tight widths. (2) Floor-map ward-card header: the tally chips + edit button now wrap below the
+      ward name on narrow cards via a `@container` query — was squeezing the ward name to a single
+      letter. This bug was locale-independent (worse in EN) but surfaced during the FR pass.)*
+* [x] Add an **en/fr key-parity test** (assert both dictionaries expose the identical key set) so a
+      missing French key fails CI instead of silently falling back to English in a demo.
+      *(`i18n/parity.test.ts`, 3 tests.)*
+* [x] **Housekeeping:** remove the `@rollup/rollup-linux-arm64-gnu` and
+      `@oxc-parser/binding-linux-arm64-gnu` entries from `package.json` / the lockfile — they are
+      Linux-arm64-specific binaries added only to run tests in a sandbox and should not be committed
+      (they can break `npm install` on macOS / CI).
+* [x] **Verify:** a full FR walkthrough at mobile + desktop with no clipped or overflowing UI; parity
+      test green; `tsc` clean. *(153/153 tests pass; `tsc --noEmit` exit 0; floor-map clean at 390 /
+      768 / 1280 in both locales.)*
+
+## PHASE 17 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
+
+**Goal:** swap the mock for a real, secure, multi-user backend — the last phase, after the UX is
+demo-ready.
 
 * [ ] Provision the database — **`supabase/schema.sql` is written and ready to copy-paste** (all
       tables, enums, indexes, triggers, MRN generator, occupancy sync, reporting views, storage
       buckets, and RLS).
-* [ ] **Role-based access (implemented at this step, with the backend):** real Supabase Auth login;
-      "locked in as a doctor/nurse/admin" enforced by the **RLS policies already defined** in the
-      schema (doctors author consultations/orders/prescriptions; nurses record vitals + MAR; lab
-      techs enter results; pharmacists update fulfilment; admin manages structure; everyone reads
-      the operational record).
-* [ ] **Audit trail (implemented at this step):** every change to a sensitive table records *who*
-      and *when* plus before/after snapshots — **already wired** via the `audit_trigger` +
-      append-only `audit_log` (admin-readable, client-tamper-proof) in the schema.
+* [ ] **Role-based access (enforced at this step):** real Supabase Auth login; "locked in as a
+      doctor/nurse/admin" enforced by the **RLS policies already defined** in the schema (doctors
+      author consultations/orders/prescriptions; nurses record vitals + MAR; lab techs enter results;
+      pharmacists update fulfilment; admin manages structure; everyone reads the operational record).
+      The dev role switcher (Phase 8) is removed here.
+* [ ] **Audit trail (enforced at this step):** every change to a sensitive table records *who* and
+      *when* plus before/after snapshots — **already wired** via the `audit_trigger` + append-only
+      `audit_log` (admin-readable, client-tamper-proof) in the schema.
 * [ ] Replace `services/mockStorage.ts` internals with `supabase-js` calls; keep the UI contract
-      identical.
+      identical and flip the `isSyncConfigured()` seam so the offline outbox drains automatically.
 * [ ] File storage: lab results / imaging / scanned documents in the private storage buckets.
-
-## PHASE 14 — Hardening & Compliance 🔜
-
-* [ ] Unit/integration tests for gate logic, occupancy, reconciliation, MRN, RLS policy behavior.
-* [ ] Data-privacy review (patient data is sensitive — encryption at rest/in transit, access
-      logging, retention policy, backups).
-* [ ] Error handling, loading/empty states, accessibility pass.
-* [ ] Seed/demo + admin onboarding (creating the first admin, departments, wards, beds, staff).
+* [ ] **Compliance hardening (folded in from the former Phase 14):** integration tests for RLS policy
+      behavior; data-privacy review (encryption at rest/in transit, access logging, **retention
+      policy**, backups); concurrency strategy for simultaneous edits (flagged item #7).
 
 ---
 
@@ -289,8 +471,10 @@ them before they become expensive to retrofit:
    patient drawer (severity-ranked, worst-first) and a drug-allergy caution inside the prescribing
    form. Deliberately a **visible warning the doctor reads**, not an auto-blocking interaction check.
    Current-medications view is covered by the existing prescriptions/MAR list.
-3. **Triage acuity / priority.** Who gets seen first? An emergency-severity level (e.g.
-   1=critical … 5=non-urgent) on the visit makes the queue meaningful. *Cheap to add now.*
+3. ~~**Triage acuity / priority.** Who gets seen first? An emergency-severity level (e.g.
+   1=critical … 5=non-urgent) on the visit makes the queue meaningful.~~ ✅ **Done (2026-06-02, Phase
+   14.)** `TriageLevel` (1 critical … 5 non-urgent) on `Visit`, seeded per visit type, shown as a
+   colored acuity badge on board cards and settable at intake.
 4. **"Came only for medication / never admitted" path.** You mentioned this explicitly — it's the
    outpatient path in Phase 6/8. Make sure the board and reports count these separately from
    admissions, or your numbers will be wrong.
@@ -323,6 +507,187 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-02: **Phase 16.5 COMPLETE — demo-readiness QA pass (drawer confirm + FR layout sweep).**
+  The last polish before the backend. **(1) Role-led drawer confirmed:** verified in-browser that the
+  `PatientDrawer` opens to each role's primary action with everything else folded under "More"
+  (nurse → vitals/care-stage, reception → reconcile/placement, doctor → consult console; admin sees all
+  expanded). No code change needed — the Phase-14 `PRIMARY_BY_ROLE` lead sets already land in practice,
+  the Allergies safety banner stays pinned first for every role, and the full-width 44px-tall "More"
+  expander is a good mobile tap target. **(2) French layout/overflow sweep:** walked all 9 pages in FR
+  at desktop (1280) and mobile (390) — strings are complete (FR runs ~15–20% longer, so the risk was
+  visual, not missing keys). Two layout fixes: (a) the header facility title (`app-shell.tsx`) gained
+  `truncate` so "General Hospital" / "Hôpital Général" can't spill onto the global-search button when
+  the header is tight; (b) the floor-map ward-card header (`app/floor-map/page.tsx`) now wraps the
+  tally chips + edit button *below* the ward name on narrow cards via a `@container` query
+  (`@[30rem]:flex-1`) — previously the title column collapsed to ~27px and truncated "Emergency Bays"
+  to a single letter on mobile. That bug was locale-independent (the overflow was actually *worse* in
+  EN) but surfaced during the FR pass; the container query keeps the inline shared-row layout on wide
+  cards while wrapping on narrow ones, correct at every width regardless of the surrounding grid.
+  **(3) en/fr key-parity test:** `i18n/parity.test.ts` (3 tests) fails CI with a readable diff if the
+  dictionaries ever drift, so a missing French string surfaces as a test failure rather than a silent
+  English fallback mid-demo. **(4) Housekeeping:** removed the `@rollup/rollup-linux-arm64-gnu` and
+  `@oxc-parser/binding-linux-arm64-gnu` devDependencies (Linux-arm64-only sandbox binaries that break
+  `npm install` on macOS / CI). **Verify:** 153/153 tests pass; `tsc --noEmit` exit 0; floor-map clean
+  at 390 / 768 / 1280 in both locales. Frontend-only — Phase 17 (Supabase backend) is next and final.
+* 2026-06-02: **Phase 16 COMPLETE — intake simplifications, demo mode & the no-instructions
+  walkthrough.** Closed the final three guidance items. **(1) Intake simplifications:** the intake DOB
+  field gains an "Exact date unknown? Enter age instead" toggle (`app/intake/page.tsx`) — entering an
+  approximate age stores a `YYYY-01-01` DOB via a small `approximateDob(years)` helper (0 < years ≤
+  130). The `PatientDrawer` now states outcomes in plain language: transfers confirm with "Moved to
+  {placement}." / "Now under {doctor}." (green success line), and discharge gets an explicit confirm
+  step ("This closes {name}'s visit and moves them off the board. Their record stays on file.") before
+  it fires. `SyncStatus` is fully localized, including the reassuring offline copy "Saved on this
+  device. Will sync when the internet returns." Discharge blockers moved from hardcoded English to
+  i18n keys (`drawer.blocker*`) in `evaluateDischargeReadiness` — a Phase-13 leak fix; the rendering
+  component resolves them with `t()`. **(2) Demo mode:** `components/demo/reset-demo.tsx` — a
+  confirm-gated card on the Staff page that calls `resetDatabase()` (wipe + reseed + clear the sync
+  outbox) and hard-reloads to a known clean state for repeatable demos. New FR/EN `demo` namespace.
+  **(3) Verify walkthrough:** browser-confirmed a first-time user can register a patient via the board
+  CTA and advance them through triage → consultation → diagnostics → discharge using only the on-card
+  "next step" nudges and the discharge confirm step — no instructions needed. New/extended FR/EN
+  `intake`, `drawer`, `sync`, `demo` keys (`fr satisfies Messages` enforces parity). Updated 2
+  `mockStorage` test expectations to the new blocker keys (**150 pass total**); `tsc --noEmit` clean.
+  Fixed one bug found in verification: the drawer's tick-scoped reset effect was wiping the transfer
+  confirmation the instant the post-transfer `refresh()` bumped `tick` — split the confirmation/
+  confirm-step resets into an `[open, visitId]`-scoped effect. Re-verified EN + FR in-browser (transfer
+  confirmation renders, demo reset reseeds to 51 patients with an empty outbox, intake age toggle + sync
+  chip + discharge confirm all localized). Frontend-only — no Supabase yet.
+* 2026-06-02: **Phase 16 — comprehension & demo-readiness (4 of the guidance items).** Made the
+  board teach itself. **(1) Next-step nudges:** `nextStepLabel(stage, visitType)` in
+  `components/live-board/stages.ts` returns the i18n key for the action that advances a visit — keyed
+  off the *next* stage so it honours the outpatient short-circuit (diagnostics → discharge) — surfaced
+  as an accent-colored "→ action" pill on every `PatientCard` (e.g. a triaged patient shows "Send to
+  doctor" / "Envoyer au médecin"). **(2) Guided tour:** new `components/onboarding/guided-tour.tsx` — a
+  centered, mount-guarded, localStorage-dismissed 4-step overlay (board → tap a patient → register →
+  switch role/language) wired into `AppShell`; a "?" navbar button replays it mid-demo via the
+  `careflow:open-tour` window event. **(3) Legibility pass:** lifted `--muted-foreground` contrast in
+  both light & dark blocks of `globals.css` and bumped the smallest board fonts (card MRN/meta/reason,
+  journey + stat-column headers) up a step. **(4) Friendlier empty states:** board columns now read
+  "No patients waiting here" / "Aucun patient en attente ici" (the prominent Register CTA already lives
+  in the board header). New FR/EN `nextStep` + `tour` namespaces (`fr satisfies Messages` keeps them in
+  sync). Added 4 `nextStepLabel` vitest cases (**150 pass total**); `tsc --noEmit` clean. Browser-verified
+  EN + FR: tour shows on first load, steps through, "Got it" persists, "?" replays; nudges render per
+  stage; live DOM carries the bumped sizes. *(Remaining Phase 16 items — intake simplifications, one-click
+  demo-mode reset, and the final no-instructions walkthrough — are still open.)* Frontend-only — no
+  Supabase yet.
+* 2026-06-02: **Full patient history report (separate download).** Added a distinct lifetime-record
+  export alongside the single-visit report (by explicit request: "full patient history as a separate
+  report download option, not an extension of the visit report"). **Data layer:** added
+  `getVisitsForPatient(patientId)` to `services/mockStorage.ts` and `buildPatientHistory(patientId)` +
+  `PatientHistoryData` to `components/reports/visit-summary.ts` — assembles every encounter
+  chronologically (oldest → newest) by reusing the per-visit aggregator, with patient-level allergies
+  shown once, total-visit count, and first/last arrival bookends. **PDF:** refactored
+  `visit-summary-export.ts` into composable section renderers (header, patient, allergies, visit,
+  clinical) shared by both exporters; new `exportPatientHistoryPdf(data, t, locale)` adds a history
+  overview block and a filled per-visit banner ("Visit N of M · date · type") introducing each
+  encounter. **UI:** a second **Download full history** button in the `PatientDrawer` header next to the
+  visit report; both lazy-import the exporter. New `visitReport.history` i18n keys (EN + FR). **Verified**
+  in-browser EN + FR for Samuel Idris (seeded inpatient): both produce valid `%PDF-1.3` ~29 KB blobs;
+  FR carries "Visite N sur M" / "Aperçu des antécédents" / "Nombre de visites" with no English leaks.
+  Added 2 vitest cases (146 pass total); `tsc --noEmit` clean. Frontend-only — no Supabase yet.
+* 2026-06-02: **Phase 16 item pulled forward — take-home patient visit report (PDF).** A patient can
+  now leave with a comprehensive record of their encounter (and carry it to another facility). **Data
+  layer:** `components/reports/visit-summary.ts` — `buildVisitSummary(visitId)` assembles one visit's
+  whole record from the existing read queries (patient + visit identifiers, allergies, vitals sorted
+  chronologically, doctor SOAP consultations, diagnoses sorted primary-first, orders joined to their
+  results, prescriptions joined to MAR administrations, admission + transfers + computed length of
+  stay) and exposes staff/ward/bed name resolvers so the renderer stays join-free. **PDF:**
+  `components/reports/visit-summary-export.ts` — `exportVisitSummaryPdf(data, t, locale)` renders a
+  clean clinical document via the same jsPDF + autotable stack as the ops report (sectioned layout,
+  key/value blocks, tables, wrapped SOAP paragraphs, abnormal-result flags, dose-administration
+  summaries, page numbers + a hand-off disclaimer), lazy-imported so the heavy libs only load on click.
+  **UI:** a **Download patient report** button in the `PatientDrawer` header (reachable from the board
+  and from Phase 15 search). New `visitReport` i18n namespace (EN + FR) covers every section title,
+  field label, and value; per the Phase 13 scope boundary, clinical *values* (drug names, ICD-10
+  descriptions, free-text notes, dose/route/frequency, GCS/SpO₂) stay canonical. **Verified**
+  in-browser EN + FR: opened Samuel Idris (seeded inpatient) via search → clicked the report button →
+  a valid `%PDF-1.3`, ~27 KB blob is produced containing all sections (title, patient, hospital number,
+  doctor's notes, diagnoses, tests, medications, admission, disclaimer); FR build carries French
+  section titles + disclaimer; no code errors. Added 4 vitest cases (148 pass total); `tsc --noEmit`
+  clean. Frontend-only — no Supabase yet. *(Single-visit scope by decision; a full cross-visit history
+  report is a natural follow-on.)*
+* 2026-06-02: **Phase 15 complete.** "Find My Patient" front door — a global patient search pinned to
+  every screen. **Data layer:** added `searchPatients(query, limit=8)` to `services/mockStorage.ts`
+  (case-insensitive substring over name, MRN/hospital number, national ID, phone, and the emergency
+  anonymous identifier; ranked exact → prefix → mid-string, name-alphabetical tiebreak) and
+  `getLatestVisitForPatient(patientId)` (resolves a patient to the visit to open — open visit
+  preferred, else most recent by `created_at`). **UI:** new `components/search/global-search.tsx` — a
+  trigger in the app-shell header (wide search box on desktop with a ⌘K hint, icon-only on mobile) plus
+  a window-level ⌘K / Ctrl+K shortcut, opening a centered command dialog built directly on
+  `@base-ui/react/dialog` (no Command/cmdk primitive exists). Live results show name (or anonymous
+  identifier), the `CF-YYYY-NNNNNN` hospital number in mono + phone, and a translated visit-type badge;
+  clicking a result resolves the visit and opens the existing `PatientDrawer` (reused as-is). Wired
+  into `components/layout/app-shell.tsx`; new `search` i18n namespace added to `en.ts`/`fr.ts`
+  (placeholder, description, type-to-search, no-results with `{query}`, hospital-no, no-visit). **Verified**
+  in-browser EN + FR: "mensah" → Grace Mensah and "CF-2026-000002" → Samuel Idris each in ≤2 taps from
+  any page, result opens the drawer, ⌘K opens search, FR strings + translated badge ("Hospitalisé") +
+  no-results message all clean; no hydration warnings. Added 9 vitest cases (140 pass total); `tsc
+  --noEmit` clean. Frontend-only — no Supabase yet.
+* 2026-06-02: **Phase 14 complete.** Role-based, task-focused simplification (no auth yet — rides the
+  Phase 8 dev `RoleProvider`). **(1) Role-driven nav:** a `ROLE_NAV` map in
+  `components/layout/app-shell.tsx` narrows the flat 9-item menu to each acting role's routes
+  (reception → board/register/beds/match; nurse → board/meds/beds; doctor → board/tests/meds;
+  pharmacist & lab_tech subsets; admin → full). Hydration-safe — the full menu renders until mount,
+  then narrows, so SSR/first paint stay stable; routes are only hidden, never blocked. **(2) Role-led
+  `PatientDrawer`:** each section got a stable `SectionKey`; the acting role's lead sections render
+  first/expanded (`PRIMARY_BY_ROLE`: doctor → console + care stage; nurse → vitals + care stage;
+  reception → reconcile + placement + care stage) and everything else folds under one "More options"
+  expander. Done with per-section flex `order` + a `hidden` toggle (no JSX relocated, low risk);
+  unmapped roles (admin/pharmacist/lab_tech) see all sections; `careStage` is in every lead set so the
+  drawer is never empty for outpatient/non-anonymous visits. **(3) Primary action:** the Live Board
+  header now leads with a prominent **Register a patient** CTA, the department filter demoted beside it.
+  **(4) Triage acuity (flagged item #3):** new `TriageLevel` (1 critical … 5 non-urgent) on `Visit`,
+  threaded through `CreateVisitInput`/`createNewVisit`, seeded with clinically-sensible values per
+  visit type (DB version bumped `careflow_db_v4` → `careflow_db_v5` to force a fresh seed), surfaced as
+  a colored acuity badge on every board card (`--triage-1..5` tokens added to both light & dark blocks
+  of `globals.css` + `@theme inline`) and settable on the intake form. All new strings localized FR/EN.
+  **Verified** in-browser across doctor/nurse/reception (menu + drawer show only that role's tasks,
+  "More" reveals the rest) and admin (full nav, all sections, no collapse); triage badges render in
+  both locales; EN/FR toggle clean; `tsc --noEmit` clean; 131 vitest pass; no hydration errors.
+* 2026-06-02: **Phase 13 complete.** Localization (FR/EN) & plain language. Built a zero-dependency
+  homegrown i18n core: `i18n/en.ts` (source-of-truth dictionary, `type Messages = typeof en`),
+  `i18n/fr.ts` (`satisfies Messages` → `tsc` fails on any missing/renamed key, the compile-time
+  "no English leaks" guarantee), `i18n/index.ts` (`translate(locale, key, params?)` — dot-path lookup,
+  `{param}` interpolation, en-fallback then raw-key fallback), and `i18n/format.ts` (locale-aware
+  `formatDate/DateTime/Number/Percent` over `Intl`, `en-US`/`fr-FR`). A `LocaleProvider` mirroring
+  `RoleProvider` (localStorage `careflow_locale`, hydration-guarded `useT()`/`useLocale()` resolving
+  against `mounted ? locale : "en"`, sets `document.documentElement.lang`) wired into `app/layout.tsx`;
+  an FR/EN navbar toggle modeled on `ThemeToggle`. **English is the default/SSR locale**, French opt-in.
+  Converted every `Record<Enum,string>` label map to return **message keys** (role/allergy/order/
+  prescription/MAR/bed-status/visit-type/care-stage/range-preset), resolved with `t()` at call sites;
+  pure modules (`reports.ts`/`export.ts`) keep returning keys and the render/export layer localizes via
+  `sliceLabel`/threaded `t`+`locale` (PDF & Excel exporters now emit fully localized chrome). Swept all
+  `app/*/page.tsx` + the ~1,600-line `PatientDrawer` + live-board + app-shell; plain-language relabels
+  (Intake→"Enregistrer un patient", Diagnostics→"Tests & résultats", Floor Map→"Lits", MRN→"Numéro
+  d'hôpital", etc.). Caught two non-key leaks the type-check can't see — the dev `RoleSwitcher`
+  (rendered raw `ROLE_LABEL` keys) and the shared `ui/sheet` sr-only "Close" — now both localized.
+  **Scope boundary:** clinical values stay canonical (drug names, ICD-10 descriptions, `GCS`/`SpO₂`/
+  `IV`/`IM`, free-text complaints, parseable route/frequency options); page `metadata` stays English
+  (server-only). 131 vitest cases pass (added `i18n/i18n.test.ts`: `translate` dot-path/interpolation/
+  fallbacks + `format.ts` fr-FR vs en-US); `tsc --noEmit` clean. Verified in browser: toggled FR,
+  `document.documentElement.lang === "fr"`, navbar date reads `mar. 2 juin`, walked reception → doctor
+  (PatientDrawer console) → nurse and all eight pages + the drawer with **zero English leaks** and **no
+  hydration warnings/console errors**; EN toggle restores English everywhere. (NB: this app's PWA
+  service worker caches the JS bundle — had to unregister it + clear caches to see edits in dev.)
+* 2026-06-02: **Added Phase 16.5 — Demo-Readiness QA Pass.** A frontend-only polish step before the
+  backend, capturing two follow-ups: (1) **finish & confirm the drawer simplification** — verify the
+  role-led `PatientDrawer` opens each role to its primary action with the rest collapsed (tighten the
+  lead-section set if a role still has to scroll); (2) a **French browser pass** for layout/overflow
+  (FR runs ~15–20% longer than EN) at mobile + desktop, plus an en/fr key-parity test and removal of
+  the sandbox-only `@rollup/...-linux-arm64-gnu` / `@oxc-parser/...-linux-arm64-gnu` deps from
+  `package.json`. No code changed.
+
+* 2026-06-02: **Roadmap re-sequenced for adoption (UX before backend).** Added four frontend-only
+  phases ahead of the backend cutover, targeting low-tech-literacy staff at small/medium hospitals in
+  Douala: **Phase 13** Localization (French-primary + FR/EN toggle) & plain-language relabeling;
+  **Phase 14** role-based, task-focused simplification (role-driven nav + splitting the ~1,600-line
+  `PatientDrawer` into a role-led primary action with the rest collapsed); **Phase 15** global
+  "find my patient" search by name / hospital number; **Phase 16** comprehension, guidance &
+  demo-readiness (legibility pass, guided tour, next-step nudges, friendlier empty states, print a
+  visit slip, approximate-age intake, plain confirmations/errors, demo-reset). The backend cutover is
+  **renumbered to Phase 17 and remains the final phase**; the former "Phase 14 — Hardening &
+  Compliance" is folded into Phase 17 (its frontend items moved into Phase 16). No code changed.
 
 * 2026-05-31: **Reports trim.** Removed 7 presentations from `/reports` *and everything that fed them* — top allergens, allergy coverage, clinician workload, diagnostic orders, top prescribed drugs, medication administrations, and bed status. Deleted the backing aggregators (`topAllergens`, `allergyPrevalence`, `staffWorkload`, `ordersByType`, `topDrugs`, `medsByStatus`, `bedStatusMix`) and their label maps from `components/reports/reports.ts`, slimmed `ReportData`/`FullReport`/`buildReport`, dropped the matching PDF tables + XLSX sheets in `export.ts`, removed the four now-dead service getters (`getAllAllergies/Orders/Prescriptions/MedicationAdministrations`), and pruned the vitest blocks/fixtures. Surviving sections: KPIs, visit trend, visit-type mix, department throughput, top diagnoses, length of stay, ward occupancy, care-stage distribution, sex/age demographics, abnormal-result rate, clearance bottlenecks. 106 vitest cases pass; `tsc --noEmit` clean; verified in browser (light + dark) — the 7 charts are gone, the rest render.
 

@@ -21,6 +21,21 @@ import type {
   VisitType,
   Ward,
 } from "@/types/healthcare";
+import { translate } from "@/i18n";
+
+/** Minimal translator shape (matches `useT().t`) used by the render/export layer. */
+export type Translate = (key: string, params?: Record<string, string | number>) => string;
+
+/** Resolve a slice's display label: a localized `labelKey` wins over raw data. */
+export function sliceLabel(slice: CountSlice, t: Translate): string {
+  return slice.labelKey ? t(slice.labelKey) : slice.label;
+}
+
+/** English label baked from the dictionary — kept so the screen/export have a
+ *  sensible fallback and the pure tests can assert without a translator. */
+function en(key: string): string {
+  return translate("en", key);
+}
 
 // ---------------------------------------------------------------------------
 // Palette — the categorical chart colors, paired so the screen (CSS vars) and
@@ -58,28 +73,29 @@ export function chartColor(index: number): string {
 // Label maps
 // ---------------------------------------------------------------------------
 
+// i18n message keys — resolve with the active `t` (or `en()` for a fallback).
 export const VISIT_TYPE_LABEL: Record<VisitType, string> = {
-  outpatient: "Outpatient",
-  inpatient: "Inpatient",
-  emergency: "Emergency",
+  outpatient: "visitType.outpatient",
+  inpatient: "visitType.inpatient",
+  emergency: "visitType.emergency",
 };
 
 export const CARE_STAGE_LABEL: Record<CareStage, string> = {
-  registration: "Registration",
-  triage: "Triage",
-  consultation: "Consultation",
-  diagnostics: "Diagnostics",
-  treatment: "Treatment",
-  discharge_planning: "Discharge planning",
-  discharged: "Discharged",
-  followed_up: "Followed up",
+  registration: "stage.registration",
+  triage: "stage.triage",
+  consultation: "stage.consultation",
+  diagnostics: "stage.diagnostics",
+  treatment: "stage.treatment",
+  discharge_planning: "stage.discharge_planning",
+  discharged: "stage.discharged",
+  followed_up: "stage.followed_up",
 };
 
 const SEX_LABEL: Record<Sex, string> = {
-  male: "Male",
-  female: "Female",
-  other: "Other",
-  unknown: "Unknown",
+  male: "sex.male",
+  female: "sex.female",
+  other: "sex.other",
+  unknown: "sex.unknown",
 };
 
 // ---------------------------------------------------------------------------
@@ -89,11 +105,11 @@ const SEX_LABEL: Record<Sex, string> = {
 export type RangePreset = "7d" | "30d" | "90d" | "all" | "custom";
 
 export const RANGE_PRESET_LABEL: Record<RangePreset, string> = {
-  "7d": "Last 7 days",
-  "30d": "Last 30 days",
-  "90d": "Last 90 days",
-  all: "All time",
-  custom: "Custom range",
+  "7d": "rangePreset.7d",
+  "30d": "rangePreset.30d",
+  "90d": "rangePreset.90d",
+  all: "rangePreset.all",
+  custom: "rangePreset.custom",
 };
 
 export interface DateRange {
@@ -135,7 +151,10 @@ function inRange(iso: string | null, range: DateRange): boolean {
 
 export interface CountSlice {
   key: string;
+  /** English fallback label (from the dictionary or raw data). */
   label: string;
+  /** Optional i18n key; when set, the render/export layer localizes it. */
+  labelKey?: string;
   value: number;
 }
 
@@ -279,7 +298,8 @@ export function visitTypeMix(visits: Visit[], range: DateRange): CountSlice[] {
   const counts = tally(ranged, (v) => v.visit_type);
   return (["outpatient", "inpatient", "emergency"] as VisitType[]).map((t) => ({
     key: t,
-    label: VISIT_TYPE_LABEL[t],
+    label: en(VISIT_TYPE_LABEL[t]),
+    labelKey: VISIT_TYPE_LABEL[t],
     value: counts.get(t) ?? 0,
   }));
 }
@@ -293,11 +313,15 @@ export function departmentThroughput(
   const ranged = visits.filter((v) => inRange(v.arrived_at, range));
   const counts = tally(ranged, (v) => v.department_id ?? "__none__");
   return [...counts.entries()]
-    .map(([id, value]) => ({
-      key: id,
-      label: id === "__none__" ? "Unassigned" : name.get(id) ?? "Unknown",
-      value,
-    }))
+    .map(([id, value]) => {
+      if (id === "__none__") {
+        return { key: id, label: en("reports.unassigned"), labelKey: "reports.unassigned", value };
+      }
+      const resolved = name.get(id);
+      return resolved
+        ? { key: id, label: resolved, value }
+        : { key: id, label: en("reports.unknown"), labelKey: "reports.unknown", value };
+    })
     .sort((a, b) => b.value - a.value);
 }
 
@@ -334,13 +358,13 @@ export interface LosReport {
   count: number;
 }
 
-const LOS_BUCKETS: { key: string; label: string; test: (d: number) => boolean }[] = [
-  { key: "lt1", label: "< 1 day", test: (d) => d < 1 },
-  { key: "1-2", label: "1–2 days", test: (d) => d >= 1 && d < 3 },
-  { key: "3-4", label: "3–4 days", test: (d) => d >= 3 && d < 5 },
-  { key: "5-7", label: "5–7 days", test: (d) => d >= 5 && d < 8 },
-  { key: "8-14", label: "8–14 days", test: (d) => d >= 8 && d < 15 },
-  { key: "15+", label: "15+ days", test: (d) => d >= 15 },
+const LOS_BUCKETS: { key: string; labelKey: string; test: (d: number) => boolean }[] = [
+  { key: "lt1", labelKey: "reports.los.lt1", test: (d) => d < 1 },
+  { key: "1-2", labelKey: "reports.los.d1_2", test: (d) => d >= 1 && d < 3 },
+  { key: "3-4", labelKey: "reports.los.d3_4", test: (d) => d >= 3 && d < 5 },
+  { key: "5-7", labelKey: "reports.los.d5_7", test: (d) => d >= 5 && d < 8 },
+  { key: "8-14", labelKey: "reports.los.d8_14", test: (d) => d >= 8 && d < 15 },
+  { key: "15+", labelKey: "reports.los.d15", test: (d) => d >= 15 },
 ];
 
 export function lengthOfStay(admissions: Admission[], range: DateRange): LosReport {
@@ -352,7 +376,8 @@ export function lengthOfStay(admissions: Admission[], range: DateRange): LosRepo
   }
   const buckets = LOS_BUCKETS.map((b) => ({
     key: b.key,
-    label: b.label,
+    label: en(b.labelKey),
+    labelKey: b.labelKey,
     value: stays.filter((d) => b.test(d)).length,
   }));
   const avgDays = stays.length
@@ -401,7 +426,12 @@ export function stageDistribution(visits: Visit[]): CountSlice[] {
   const open = visits.filter((v) => v.status === "open");
   const counts = tally(open, (v) => v.stage);
   return (Object.keys(CARE_STAGE_LABEL) as CareStage[])
-    .map((s) => ({ key: s, label: CARE_STAGE_LABEL[s], value: counts.get(s) ?? 0 }))
+    .map((s) => ({
+      key: s,
+      label: en(CARE_STAGE_LABEL[s]),
+      labelKey: CARE_STAGE_LABEL[s],
+      value: counts.get(s) ?? 0,
+    }))
     .filter((slice) => slice.value > 0);
 }
 
@@ -441,7 +471,12 @@ export function sexMix(
   const ranged = patients.filter((p) => seen.has(p.id));
   const counts = tally(ranged, (p) => p.sex);
   return (Object.keys(SEX_LABEL) as Sex[])
-    .map((s) => ({ key: s, label: SEX_LABEL[s], value: counts.get(s) ?? 0 }))
+    .map((s) => ({
+      key: s,
+      label: en(SEX_LABEL[s]),
+      labelKey: SEX_LABEL[s],
+      value: counts.get(s) ?? 0,
+    }))
     .filter((slice) => slice.value > 0);
 }
 
@@ -489,17 +524,20 @@ export function clearanceBottlenecks(admissions: Admission[]): CountSlice[] {
   return [
     {
       key: "medical",
-      label: "Medical clearance",
+      label: en("reports.clearance.medical"),
+      labelKey: "reports.clearance.medical",
       value: active.filter((a) => !a.is_medical_cleared).length,
     },
     {
       key: "financial",
-      label: "Financial clearance",
+      label: en("reports.clearance.financial"),
+      labelKey: "reports.clearance.financial",
       value: active.filter((a) => !a.is_financial_cleared).length,
     },
     {
       key: "pharmacy",
-      label: "Pharmacy ready",
+      label: en("reports.clearance.pharmacy"),
+      labelKey: "reports.clearance.pharmacy",
       value: active.filter((a) => !a.is_pharmacy_ready).length,
     },
   ];

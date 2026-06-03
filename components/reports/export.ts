@@ -14,31 +14,37 @@ import * as XLSX from "xlsx";
 
 import {
   CHART_RGB,
+  sliceLabel,
   type CountSlice,
   type FullReport,
   type TimeBucket,
+  type Translate,
   type WardOccupancyRow,
 } from "./reports";
+import { formatDate, formatDateTime } from "@/i18n/format";
+import type { Locale } from "@/i18n";
 
 // jsPDF gains `lastAutoTable` once the autotable plugin draws a table.
 type DocWithAutoTable = jsPDF & { lastAutoTable?: { finalY: number } };
 
 const PAGE_MARGIN = 40;
 
-function fmtDateTime(ms: number): string {
-  return new Date(ms).toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+function fmtDateTime(ms: number, locale: Locale): string {
+  return formatDateTime(ms, locale, { dateStyle: "medium", timeStyle: "short" });
 }
 
-function fmtDate(ms: number): string {
-  return new Date(ms).toLocaleDateString("en-US", { dateStyle: "medium" });
+function fmtDate(ms: number, locale: Locale): string {
+  return formatDate(ms, locale, { dateStyle: "medium" });
 }
 
-function rangeText(report: FullReport): string {
-  if (report.range.startMs === 0) return "All time";
-  return `${fmtDate(report.range.startMs)} – ${fmtDate(report.range.endMs)}`;
+function rangeText(report: FullReport, t: Translate, locale: Locale): string {
+  if (report.range.startMs === 0) return t("reports.allTime");
+  return `${fmtDate(report.range.startMs, locale)} – ${fmtDate(report.range.endMs, locale)}`;
+}
+
+/** Localize a slice array's labels for export tables/charts. */
+function locSlices(slices: CountSlice[], t: Translate): CountSlice[] {
+  return slices.map((s) => ({ ...s, label: sliceLabel(s, t) }));
 }
 
 function fileStamp(ms: number): string {
@@ -54,19 +60,19 @@ interface KpiCell {
   value: string;
 }
 
-function kpiCells(report: FullReport): KpiCell[] {
+function kpiCells(report: FullReport, t: Translate): KpiCell[] {
   const k = report.kpis;
   return [
-    { label: "Total visits", value: String(k.totalVisits) },
-    { label: "Unique patients", value: String(k.uniquePatients) },
-    { label: "Outpatient", value: String(k.outpatient) },
-    { label: "Inpatient", value: String(k.inpatient) },
-    { label: "Emergency", value: String(k.emergency) },
-    { label: "Admissions", value: String(k.admissionsStarted) },
-    { label: "Discharges", value: String(k.discharges) },
-    { label: "Current inpatients", value: String(k.currentInpatients) },
-    { label: "Bed occupancy", value: `${k.bedOccupancyPct}%` },
-    { label: "Avg length of stay", value: k.avgLosDays == null ? "—" : `${k.avgLosDays}d` },
+    { label: t("reports.kpi.totalVisits"), value: String(k.totalVisits) },
+    { label: t("reports.kpi.uniquePatients"), value: String(k.uniquePatients) },
+    { label: t("reports.kpi.outpatient"), value: String(k.outpatient) },
+    { label: t("reports.kpi.inpatient"), value: String(k.inpatient) },
+    { label: t("reports.kpi.emergency"), value: String(k.emergency) },
+    { label: t("reports.kpi.admissions"), value: String(k.admissionsStarted) },
+    { label: t("reports.kpi.discharges"), value: String(k.discharges) },
+    { label: t("reports.kpi.currentInpatients"), value: String(k.currentInpatients) },
+    { label: t("reports.kpi.bedOccupancy"), value: `${k.bedOccupancyPct}%` },
+    { label: t("reports.kpi.avgLos"), value: k.avgLosDays == null ? "—" : `${k.avgLosDays}d` },
   ];
 }
 
@@ -178,45 +184,55 @@ function sectionTitle(doc: jsPDF, text: string, y: number): number {
   return y + 16;
 }
 
-function sliceRows(slices: CountSlice[]): (string | number)[][] {
-  return slices.map((s) => [s.label, s.value]);
+function sliceRows(slices: CountSlice[], t: Translate): (string | number)[][] {
+  return slices.map((s) => [sliceLabel(s, t), s.value]);
 }
 
-export function exportReportPdf(report: FullReport): void {
+export function exportReportPdf(report: FullReport, t: Translate, locale: Locale): void {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
 
   // Header
   doc.setFontSize(20);
   doc.setTextColor(15, 23, 42);
-  doc.text("CareFlow — Hospital Operations Report", PAGE_MARGIN, 50);
+  doc.text(t("reports.exportTitle"), PAGE_MARGIN, 50);
   doc.setFontSize(10);
   doc.setTextColor(100, 116, 139);
   doc.text(
-    `Reporting period: ${rangeText(report)}  ·  Generated ${fmtDateTime(report.generatedAtMs)}`,
+    `${t("reports.reportingPeriod")}: ${rangeText(report, t, locale)}  ·  ${t("reports.generated")} ${fmtDateTime(report.generatedAtMs, locale)}`,
     PAGE_MARGIN,
     68,
   );
   doc.setDrawColor(226, 232, 240);
   doc.line(PAGE_MARGIN, 78, pageW - PAGE_MARGIN, 78);
 
-  let y = drawKpiGrid(doc, kpiCells(report), 92) + 24;
+  let y = drawKpiGrid(doc, kpiCells(report, t), 92) + 24;
 
   // Visual breakdowns (colored bars)
   y = ensureSpace(doc, y, 120);
-  y = drawBarChart(doc, "Visits by type", report.visitTypeMix, y) + 8;
+  y = drawBarChart(doc, t("reports.visitsByType"), locSlices(report.visitTypeMix, t), y) + 8;
   y = ensureSpace(doc, y, 140);
-  y = drawBarChart(doc, "Department throughput", report.departmentThroughput, y) + 8;
+  y = drawBarChart(doc, t("reports.chart.departmentThroughput"), locSlices(report.departmentThroughput, t), y) + 8;
   y = ensureSpace(doc, y, 160);
-  y = drawBarChart(doc, "Top diagnoses", report.topDiagnoses, y) + 12;
+  y = drawBarChart(doc, t("reports.chart.topDiagnoses"), locSlices(report.topDiagnoses, t), y) + 12;
 
   // Tabular detail
   const sections: { title: string; head: string[]; body: (string | number)[][] }[] = [
     {
-      title: "Visits over time",
-      head: ["Period", "Outpatient", "Inpatient", "Emergency", "Total"],
+      title: t("reports.sheet.visitsOverTime"),
+      head: [
+        t("reports.table.period"),
+        t("reports.table.outpatient"),
+        t("reports.table.inpatient"),
+        t("reports.table.emergency"),
+        t("reports.table.total"),
+      ],
       body: report.visitsOverTime.map((b: TimeBucket) => [
-        b.label,
+        formatDate(`${b.key}T00:00:00.000Z`, locale, {
+          month: "short",
+          day: "numeric",
+          timeZone: "UTC",
+        }),
         b.outpatient,
         b.inpatient,
         b.emergency,
@@ -224,13 +240,19 @@ export function exportReportPdf(report: FullReport): void {
       ]),
     },
     {
-      title: "Length of stay",
-      head: ["Band", "Discharges"],
-      body: sliceRows(report.los.buckets),
+      title: t("reports.chart.lengthOfStay"),
+      head: [t("reports.table.band"), t("reports.table.discharges")],
+      body: sliceRows(report.los.buckets, t),
     },
     {
-      title: "Ward occupancy",
-      head: ["Ward", "Total beds", "Occupied", "Free", "Occupancy %"],
+      title: t("reports.chart.wardOccupancy"),
+      head: [
+        t("reports.table.ward"),
+        t("reports.table.totalBeds"),
+        t("reports.table.occupied"),
+        t("reports.table.free"),
+        t("reports.table.occupancyPct"),
+      ],
       body: report.wardOccupancy.map((w: WardOccupancyRow) => [
         w.ward,
         w.total,
@@ -240,25 +262,33 @@ export function exportReportPdf(report: FullReport): void {
       ]),
     },
     {
-      title: "Open visits by care stage",
-      head: ["Stage", "Visits"],
-      body: sliceRows(report.stageDistribution),
+      title: t("reports.chart.openByStage"),
+      head: [t("reports.table.stage"), t("reports.table.visits")],
+      body: sliceRows(report.stageDistribution, t),
     },
     {
-      title: "Abnormal results",
-      head: ["Outcome", "Count"],
+      title: t("reports.table.abnormal"),
+      head: [t("reports.table.outcome"), t("reports.table.count")],
       body: [
-        ["Abnormal", report.abnormal.abnormal],
-        ["Normal", report.abnormal.normal],
-        ["Abnormal rate", `${report.abnormal.pct}%`],
+        [t("reports.table.abnormal"), report.abnormal.abnormal],
+        [t("reports.table.normal"), report.abnormal.normal],
+        [t("reports.table.abnormalRate"), `${report.abnormal.pct}%`],
       ],
     },
-    { title: "Patients by sex", head: ["Sex", "Patients"], body: sliceRows(report.sexMix) },
-    { title: "Patients by age", head: ["Age band", "Patients"], body: sliceRows(report.ageDistribution) },
     {
-      title: "Discharge clearance bottlenecks",
-      head: ["Gate", "Pending"],
-      body: sliceRows(report.clearanceBottlenecks),
+      title: t("reports.chart.patientsBySex"),
+      head: [t("reports.table.sex"), t("reports.table.patients")],
+      body: sliceRows(report.sexMix, t),
+    },
+    {
+      title: t("reports.chart.patientsByAge"),
+      head: [t("reports.table.ageBand"), t("reports.table.patients")],
+      body: sliceRows(report.ageDistribution, t),
+    },
+    {
+      title: t("reports.chart.clearanceBottlenecks"),
+      head: [t("reports.table.gate"), t("reports.table.pending")],
+      body: sliceRows(report.clearanceBottlenecks, t),
     },
   ];
 
@@ -276,7 +306,7 @@ export function exportReportPdf(report: FullReport): void {
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
     doc.text(
-      `Page ${p} of ${pages}`,
+      t("reports.pageOf", { p, total: pages }),
       pageW - PAGE_MARGIN,
       doc.internal.pageSize.getHeight() - 20,
       { align: "right" },
@@ -290,84 +320,117 @@ export function exportReportPdf(report: FullReport): void {
 // Excel (SheetJS)
 // ---------------------------------------------------------------------------
 
-function sliceSheet(slices: CountSlice[], valueHeader = "Count"): XLSX.WorkSheet {
+function sliceSheet(
+  slices: CountSlice[],
+  t: Translate,
+  valueHeader: string,
+): XLSX.WorkSheet {
+  const category = t("reports.table.category");
   return XLSX.utils.json_to_sheet(
-    slices.map((s) => ({ Category: s.label, [valueHeader]: s.value })),
+    slices.map((s) => ({ [category]: sliceLabel(s, t), [valueHeader]: s.value })),
   );
 }
 
-export function exportReportXlsx(report: FullReport): void {
+export function exportReportXlsx(report: FullReport, t: Translate, locale: Locale): void {
   const wb = XLSX.utils.book_new();
 
   // Summary
   const k = report.kpis;
   const summary = [
-    ["CareFlow — Hospital Operations Report"],
-    ["Reporting period", rangeText(report)],
-    ["Generated", fmtDateTime(report.generatedAtMs)],
+    [t("reports.exportTitle")],
+    [t("reports.reportingPeriod"), rangeText(report, t, locale)],
+    [t("reports.generated"), fmtDateTime(report.generatedAtMs, locale)],
     [],
-    ["Metric", "Value"],
-    ["Total visits", k.totalVisits],
-    ["Unique patients", k.uniquePatients],
-    ["Outpatient", k.outpatient],
-    ["Inpatient", k.inpatient],
-    ["Emergency", k.emergency],
-    ["Admissions started", k.admissionsStarted],
-    ["Discharges", k.discharges],
-    ["Current inpatients", k.currentInpatients],
-    ["Bed occupancy %", k.bedOccupancyPct],
-    ["Avg length of stay (days)", k.avgLosDays ?? "—"],
-    ["Median length of stay (days)", report.los.medianDays ?? "—"],
+    [t("reports.metric"), t("reports.value")],
+    [t("reports.kpi.totalVisits"), k.totalVisits],
+    [t("reports.kpi.uniquePatients"), k.uniquePatients],
+    [t("reports.kpi.outpatient"), k.outpatient],
+    [t("reports.kpi.inpatient"), k.inpatient],
+    [t("reports.kpi.emergency"), k.emergency],
+    [t("reports.kpi.admissionsStarted"), k.admissionsStarted],
+    [t("reports.kpi.discharges"), k.discharges],
+    [t("reports.kpi.currentInpatients"), k.currentInpatients],
+    [`${t("reports.kpi.bedOccupancy")} %`, k.bedOccupancyPct],
+    [t("reports.kpi.avgLos"), k.avgLosDays ?? "—"],
+    [t("reports.kpi.medianLos"), report.los.medianDays ?? "—"],
   ];
   XLSX.utils.book_append_sheet(
     wb,
     XLSX.utils.aoa_to_sheet(summary),
-    "Summary",
+    t("reports.sheet.summary"),
   );
 
   XLSX.utils.book_append_sheet(
     wb,
     XLSX.utils.json_to_sheet(
       report.visitsOverTime.map((b) => ({
-        Period: b.label,
-        Outpatient: b.outpatient,
-        Inpatient: b.inpatient,
-        Emergency: b.emergency,
-        Total: b.total,
+        [t("reports.table.period")]: formatDate(`${b.key}T00:00:00.000Z`, locale, {
+          month: "short",
+          day: "numeric",
+          timeZone: "UTC",
+        }),
+        [t("reports.table.outpatient")]: b.outpatient,
+        [t("reports.table.inpatient")]: b.inpatient,
+        [t("reports.table.emergency")]: b.emergency,
+        [t("reports.table.total")]: b.total,
       })),
     ),
-    "Visits over time",
+    t("reports.sheet.visitsOverTime"),
   );
 
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.visitTypeMix, "Visits"), "Visit types");
   XLSX.utils.book_append_sheet(
     wb,
-    sliceSheet(report.departmentThroughput, "Visits"),
-    "Departments",
+    sliceSheet(report.visitTypeMix, t, t("reports.table.visits")),
+    t("reports.sheet.visitTypes"),
   );
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.topDiagnoses, "Cases"), "Top diagnoses");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.los.buckets, "Discharges"), "Length of stay");
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.departmentThroughput, t, t("reports.table.visits")),
+    t("reports.sheet.departments"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.topDiagnoses, t, t("reports.table.cases")),
+    t("reports.sheet.topDiagnoses"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.los.buckets, t, t("reports.table.discharges")),
+    t("reports.sheet.lengthOfStay"),
+  );
 
   XLSX.utils.book_append_sheet(
     wb,
     XLSX.utils.json_to_sheet(
       report.wardOccupancy.map((w) => ({
-        Ward: w.ward,
-        "Total beds": w.total,
-        Occupied: w.occupied,
-        Free: w.free,
-        "Occupancy %": w.pct,
+        [t("reports.table.ward")]: w.ward,
+        [t("reports.table.totalBeds")]: w.total,
+        [t("reports.table.occupied")]: w.occupied,
+        [t("reports.table.free")]: w.free,
+        [t("reports.table.occupancyPct")]: w.pct,
       })),
     ),
-    "Ward occupancy",
+    t("reports.sheet.wardOccupancy"),
   );
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.stageDistribution, "Visits"), "Care stages");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.sexMix, "Patients"), "Sex mix");
-  XLSX.utils.book_append_sheet(wb, sliceSheet(report.ageDistribution, "Patients"), "Age mix");
   XLSX.utils.book_append_sheet(
     wb,
-    sliceSheet(report.clearanceBottlenecks, "Pending"),
-    "Clearance gates",
+    sliceSheet(report.stageDistribution, t, t("reports.table.visits")),
+    t("reports.sheet.careStages"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.sexMix, t, t("reports.table.patients")),
+    t("reports.sheet.sexMix"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.ageDistribution, t, t("reports.table.patients")),
+    t("reports.sheet.ageMix"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.clearanceBottlenecks, t, t("reports.table.pending")),
+    t("reports.sheet.clearanceGates"),
   );
 
   XLSX.writeFile(wb, `careflow-report-${fileStamp(report.generatedAtMs)}.xlsx`);

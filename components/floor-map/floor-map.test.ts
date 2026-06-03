@@ -10,6 +10,7 @@ import {
   nextBedLabels,
   tallyBeds,
 } from "./floor-map";
+import { translate } from "@/i18n";
 
 function bed(status: BedStatus): { status: BedStatus } {
   return { status };
@@ -17,8 +18,8 @@ function bed(status: BedStatus): { status: BedStatus } {
 
 describe("label & token maps", () => {
   it("labels and tokenizes every bed status", () => {
-    expect(BED_STATUS_LABEL.free).toBe("Free");
-    expect(BED_STATUS_LABEL.maintenance).toBe("Maintenance");
+    expect(translate("en", BED_STATUS_LABEL.free)).toBe("Free");
+    expect(translate("en", BED_STATUS_LABEL.maintenance)).toBe("Maintenance");
     expect(BED_STATUS_TOKEN.occupied).toBe("treatment");
     expect(BED_STATUS_TOKEN.free).toBe("clearance");
   });

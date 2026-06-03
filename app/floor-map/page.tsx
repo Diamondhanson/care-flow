@@ -50,6 +50,7 @@ import {
   groupByFloor,
   tallyBeds,
 } from "@/components/floor-map/floor-map";
+import { useT } from "@/components/locale-provider";
 import type {
   Bed,
   BedStatus,
@@ -129,6 +130,7 @@ function load(): WardView[] {
 }
 
 export default function FloorMapPage() {
+  const { t } = useT();
   const [wards, setWards] = useState<WardView[] | null>(null);
   const [editing, setEditing] = useState<Ward | "new" | null>(null);
 
@@ -154,28 +156,27 @@ export default function FloorMapPage() {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">Floor map</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("floorMap.title")}</h1>
             <span className="text-sm font-medium tabular-nums text-muted-foreground">
-              {wards?.length ?? "—"} ward{wards?.length === 1 ? "" : "s"}
+              {wards?.length ?? "—"} {t(wards?.length === 1 ? "floorMap.wardOne" : "floorMap.wardOther")}
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Live bed occupancy by floor and ward. Add wards and beds, set bed
-            status, and see who occupies each bed.
+            {t("floorMap.subtitle")}
           </p>
         </div>
         <Button onClick={() => setEditing("new")}>
-          <Plus className="size-4" /> New ward
+          <Plus className="size-4" /> {t("floorMap.newWard")}
         </Button>
       </header>
 
       {wards === null ? (
-        <p className="text-sm text-muted-foreground">Loading floor map…</p>
+        <p className="text-sm text-muted-foreground">{t("floorMap.loading")}</p>
       ) : wards.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-border bg-muted/30 px-6 py-12 text-center">
           <LayoutGrid className="size-6 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            No wards yet. Create your first ward to start mapping beds.
+            {t("floorMap.noWards")}
           </p>
         </div>
       ) : (
@@ -220,18 +221,24 @@ function WardCard({
   view: WardView;
   onEdit: () => void;
 }) {
+  const { t } = useT();
   const { ward, departmentName, beds } = view;
   const tally = tallyBeds(beds.map((b) => b.bed));
 
   return (
     <Card className={ward.is_active ? "" : "opacity-70"}>
-      <CardContent className="flex flex-col gap-4 p-5">
+      <CardContent className="@container flex flex-col gap-4 p-5">
         <div className="flex flex-wrap items-start gap-3">
-          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          {/* Full-width until the *card itself* is wide enough to share the row,
+              so the tally chips + edit button wrap below the title instead of
+              squeezing the ward name to a single letter. A container query (not
+              a viewport breakpoint) is used because the card's width depends on
+              the grid/stack it sits in, not on the screen width. */}
+          <div className="flex min-w-0 basis-full flex-col gap-0.5 @[30rem]:flex-1 @[30rem]:basis-0">
             <div className="flex items-center gap-2">
               <span className="truncate font-medium">{ward.name}</span>
               {!ward.is_active ? (
-                <Badge variant="outline">Archived</Badge>
+                <Badge variant="outline">{t("departments.archived")}</Badge>
               ) : null}
             </div>
             {departmentName ? (
@@ -241,12 +248,12 @@ function WardCard({
             ) : null}
           </div>
           <div className="flex items-center gap-1.5">
-            <TallyChip token="treatment" label="Occupied" value={tally.occupied} />
-            <TallyChip token="clearance" label="Free" value={tally.available} />
-            <TallyChip token="muted" label="Other" value={tally.unavailable} />
+            <TallyChip token="treatment" label={t("floorMap.occupied")} value={tally.occupied} />
+            <TallyChip token="clearance" label={t("floorMap.free")} value={tally.available} />
+            <TallyChip token="muted" label={t("floorMap.other")} value={tally.unavailable} />
           </div>
           <Button variant="ghost" size="sm" onClick={onEdit}>
-            <Pencil className="size-3.5" /> Edit
+            <Pencil className="size-3.5" /> {t("floorMap.edit")}
           </Button>
         </div>
 
@@ -254,7 +261,7 @@ function WardCard({
 
         {beds.length === 0 ? (
           <p className="text-xs text-muted-foreground">
-            No beds in this ward yet — edit the ward to add some.
+            {t("floorMap.noBeds")}
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -299,6 +306,7 @@ function BedTile({
   bed: Bed;
   occupantName: string | null;
 }) {
+  const { t } = useT();
   const token = BED_STATUS_TOKEN[bed.status];
   const color = tokenColor(token);
   const isOccupied = bed.status === "occupied";
@@ -324,11 +332,11 @@ function BedTile({
       {isOccupied ? (
         <span className="flex items-center gap-1 truncate text-xs text-muted-foreground">
           <User className="size-3 shrink-0" />
-          {occupantName ?? "Occupied"}
+          {occupantName ?? t("floorMap.occupied")}
         </span>
       ) : (
         <span className="text-xs font-medium" style={{ color }}>
-          {BED_STATUS_LABEL[bed.status]}
+          {t(BED_STATUS_LABEL[bed.status])}
         </span>
       )}
     </div>
@@ -346,6 +354,7 @@ function WardFormSheet({
   onClose: () => void;
   onChanged: () => void;
 }) {
+  const { t } = useT();
   const isNew = target === "new";
   const ward = target && target !== "new" ? target : null;
   const wardView = ward ? wards.find((w) => w.ward.id === ward.id) : null;
@@ -393,7 +402,7 @@ function WardFormSheet({
   function handleSaveWard() {
     setError(null);
     if (!name.trim()) {
-      setError("A ward name is required.");
+      setError(t("floorMap.nameRequired"));
       return;
     }
     commitWardFields();
@@ -405,7 +414,7 @@ function WardFormSheet({
     if (!ward) return;
     const count = Math.max(0, Number.parseInt(addCount, 10) || 0);
     if (count <= 0) {
-      setError("Enter how many beds to add.");
+      setError(t("floorMap.enterBedCount"));
       return;
     }
     addBedsToWard(ward.id, count);
@@ -419,7 +428,7 @@ function WardFormSheet({
       setError(null);
       onChanged();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not update the bed.");
+      setError(e instanceof Error ? e.message : t("floorMap.couldNotUpdate"));
     }
   }
 
@@ -429,7 +438,7 @@ function WardFormSheet({
       setError(null);
       onChanged();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not remove the bed.");
+      setError(e instanceof Error ? e.message : t("floorMap.couldNotRemove"));
     }
   }
 
@@ -445,50 +454,48 @@ function WardFormSheet({
     >
       <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
         <SheetHeader className="border-b border-border">
-          <SheetTitle>{isNew ? "New ward" : "Edit ward"}</SheetTitle>
+          <SheetTitle>{isNew ? t("floorMap.newTitle") : t("floorMap.editTitle")}</SheetTitle>
           <SheetDescription>
-            {isNew
-              ? "Create a ward and optionally pre-fill it with beds."
-              : "Update ward details, add beds, or change bed status."}
+            {isNew ? t("floorMap.newDesc") : t("floorMap.editDesc")}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-5 p-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ward_name">Name</Label>
+            <Label htmlFor="ward_name">{t("floorMap.name")}</Label>
             <Input
               id="ward_name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Medical Ward B"
+              placeholder={t("floorMap.namePlaceholder")}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ward_floor">Floor</Label>
+            <Label htmlFor="ward_floor">{t("floorMap.floor")}</Label>
             <Input
               id="ward_floor"
               value={floor}
               onChange={(e) => setFloor(e.target.value)}
-              placeholder="Optional — e.g. 2nd Floor"
+              placeholder={t("floorMap.floorPlaceholder")}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ward_dept">Department</Label>
+            <Label htmlFor="ward_dept">{t("floorMap.department")}</Label>
             <Select
               items={{
-                [NO_DEPARTMENT]: "No department",
+                [NO_DEPARTMENT]: t("floorMap.noDepartment"),
                 ...Object.fromEntries(departments.map((d) => [d.id, d.name])),
               }}
               value={departmentId}
               onValueChange={(v) => setDepartmentId(v as string)}
             >
               <SelectTrigger id="ward_dept" className="w-full">
-                <SelectValue placeholder="No department" />
+                <SelectValue placeholder={t("floorMap.noDepartment")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={NO_DEPARTMENT}>No department</SelectItem>
+                <SelectItem value={NO_DEPARTMENT}>{t("floorMap.noDepartment")}</SelectItem>
                 {departments.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name}
@@ -500,7 +507,7 @@ function WardFormSheet({
 
           {isNew ? (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="ward_beds">Initial beds</Label>
+              <Label htmlFor="ward_beds">{t("floorMap.initialBeds")}</Label>
               <Input
                 id="ward_beds"
                 type="number"
@@ -509,7 +516,7 @@ function WardFormSheet({
                 onChange={(e) => setBedCount(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Beds are labelled “Bed 1”, “Bed 2”, … and start free.
+                {t("floorMap.initialBedsHint")}
               </p>
             </div>
           ) : null}
@@ -520,7 +527,7 @@ function WardFormSheet({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">
-                    Beds
+                    {t("floorMap.beds")}
                     <span className="ml-2 font-mono text-xs tabular-nums text-muted-foreground">
                       {liveBeds.length}
                     </span>
@@ -532,17 +539,17 @@ function WardFormSheet({
                       value={addCount}
                       onChange={(e) => setAddCount(e.target.value)}
                       className="h-8 w-16"
-                      aria-label="Number of beds to add"
+                      aria-label={t("floorMap.addCountLabel")}
                     />
                     <Button variant="outline" size="sm" onClick={handleAddBeds}>
-                      <Plus className="size-3.5" /> Add
+                      <Plus className="size-3.5" /> {t("floorMap.add")}
                     </Button>
                   </div>
                 </div>
 
                 {liveBeds.length === 0 ? (
                   <p className="text-xs text-muted-foreground">
-                    No beds yet. Add some above.
+                    {t("floorMap.noBedsYet")}
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-2">
@@ -559,7 +566,7 @@ function WardFormSheet({
                             </span>
                             {occupied ? (
                               <span className="truncate text-xs text-muted-foreground">
-                                {occupantName ?? "Occupied"}
+                                {occupantName ?? t("floorMap.occupied")}
                               </span>
                             ) : null}
                           </span>
@@ -569,14 +576,14 @@ function WardFormSheet({
                               variant="secondary"
                               className="shrink-0"
                             >
-                              Occupied
+                              {t("floorMap.occupied")}
                             </Badge>
                           ) : (
                             <Select
                               items={Object.fromEntries(
                                 MANUAL_BED_STATUSES.map((s) => [
                                   s,
-                                  BED_STATUS_LABEL[s],
+                                  t(BED_STATUS_LABEL[s]),
                                 ]),
                               )}
                               value={bed.status}
@@ -590,7 +597,7 @@ function WardFormSheet({
                               <SelectContent>
                                 {MANUAL_BED_STATUSES.map((s) => (
                                   <SelectItem key={s} value={s}>
-                                    {BED_STATUS_LABEL[s]}
+                                    {t(BED_STATUS_LABEL[s])}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -603,7 +610,7 @@ function WardFormSheet({
                             className="size-8 shrink-0"
                             disabled={occupied}
                             onClick={() => handleRemoveBed(bed.id)}
-                            aria-label={`Remove ${bed.label}`}
+                            aria-label={t("floorMap.removeBed", { label: bed.label })}
                           >
                             <Trash2 className="size-3.5" />
                           </Button>
@@ -621,10 +628,10 @@ function WardFormSheet({
 
         <SheetFooter className="mt-auto flex-row justify-end gap-3 border-t border-border">
           <Button variant="ghost" onClick={onClose}>
-            {isNew ? "Cancel" : "Done"}
+            {isNew ? t("floorMap.cancel") : t("floorMap.done")}
           </Button>
           <Button onClick={handleSaveWard}>
-            {isNew ? "Create ward" : "Save ward"}
+            {isNew ? t("floorMap.create") : t("floorMap.saveWard")}
           </Button>
         </SheetFooter>
       </SheetContent>

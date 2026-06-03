@@ -9,6 +9,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useT } from "@/components/locale-provider";
 import { OUTBOX_EVENT, pendingCount } from "@/services/syncQueue";
 
 /**
@@ -20,6 +21,7 @@ import { OUTBOX_EVENT, pendingCount } from "@/services/syncQueue";
  * it adapts to light and dark.
  */
 export function SyncStatus() {
+  const { t } = useT();
   const [mounted, setMounted] = useState(false);
   const [online, setOnline] = useState(true);
   const [pending, setPending] = useState(0);
@@ -58,18 +60,22 @@ export function SyncStatus() {
   const hasPending = pending > 0;
 
   let Icon = Wifi;
-  let label = "Online · all changes saved";
+  let label = t("sync.online");
   let tone = "text-muted-foreground";
 
   if (!online) {
     Icon = hasPending ? CloudOff : WifiOff;
     tone = "text-status-warning";
     label = hasPending
-      ? `Offline · ${pending} change${pending === 1 ? "" : "s"} saved on this device, will sync when back online`
-      : "Offline · changes are saved on this device";
+      ? t(pending === 1 ? "sync.offlinePendingOne" : "sync.offlinePendingMany", {
+          count: pending,
+        })
+      : t("sync.offlineSaved");
   } else if (hasPending) {
     Icon = RefreshCw;
-    label = `${pending} change${pending === 1 ? "" : "s"} queued to sync`;
+    label = t(pending === 1 ? "sync.queuedOne" : "sync.queuedMany", {
+      count: pending,
+    });
   }
 
   return (

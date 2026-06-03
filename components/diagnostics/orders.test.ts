@@ -8,6 +8,7 @@ import {
   hasAbnormalResult,
   isOrderOpen,
 } from "@/components/diagnostics/orders";
+import { translate } from "@/i18n";
 import type { Result } from "@/types/healthcare";
 
 function result(partial: Partial<Result>): Result {
@@ -27,16 +28,16 @@ function result(partial: Partial<Result>): Result {
 
 describe("order label maps", () => {
   it("labels every order type", () => {
-    expect(ORDER_TYPE_LABEL.lab).toBe("Lab");
-    expect(ORDER_TYPE_LABEL.imaging).toBe("Imaging");
-    expect(ORDER_TYPE_LABEL.procedure).toBe("Procedure");
+    expect(translate("en", ORDER_TYPE_LABEL.lab)).toBe("Lab");
+    expect(translate("en", ORDER_TYPE_LABEL.imaging)).toBe("Imaging");
+    expect(translate("en", ORDER_TYPE_LABEL.procedure)).toBe("Procedure");
   });
 
   it("labels every order status", () => {
-    expect(ORDER_STATUS_LABEL.requested).toBe("Requested");
-    expect(ORDER_STATUS_LABEL.in_progress).toBe("In progress");
-    expect(ORDER_STATUS_LABEL.completed).toBe("Completed");
-    expect(ORDER_STATUS_LABEL.cancelled).toBe("Cancelled");
+    expect(translate("en", ORDER_STATUS_LABEL.requested)).toBe("Requested");
+    expect(translate("en", ORDER_STATUS_LABEL.in_progress)).toBe("In progress");
+    expect(translate("en", ORDER_STATUS_LABEL.completed)).toBe("Completed");
+    expect(translate("en", ORDER_STATUS_LABEL.cancelled)).toBe("Cancelled");
   });
 
   it("maps each status to a theme token", () => {

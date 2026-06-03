@@ -24,6 +24,7 @@ import {
 } from "recharts";
 
 import { CHART_COLORS, type CountSlice, type TimeBucket } from "./reports";
+import { useT } from "@/components/locale-provider";
 
 const AXIS_TICK = { fill: "var(--muted-foreground)", fontSize: 11 };
 const GRID_STROKE = "var(--border)";
@@ -41,12 +42,13 @@ const TOOLTIP_ITEM = { color: "var(--popover-foreground)" } as const;
 const TOOLTIP_LABEL = { color: "var(--muted-foreground)", marginBottom: 2 } as const;
 
 function EmptyChart({ height }: { height: number }) {
+  const { t } = useT();
   return (
     <div
       className="flex items-center justify-center rounded-md border border-dashed border-border bg-muted/20 text-xs text-muted-foreground"
       style={{ height }}
     >
-      No data in this period
+      {t("reports.noData")}
     </div>
   );
 }
@@ -59,6 +61,7 @@ export function StackedAreaTrend({
   data: TimeBucket[];
   height?: number;
 }) {
+  const { t } = useT();
   if (data.every((b) => b.total === 0)) return <EmptyChart height={height} />;
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -89,7 +92,7 @@ export function StackedAreaTrend({
         <Area
           type="monotone"
           dataKey="outpatient"
-          name="Outpatient"
+          name={t("visitType.outpatient")}
           stackId="1"
           stroke={CHART_COLORS[0]}
           fill="url(#area-0)"
@@ -97,7 +100,7 @@ export function StackedAreaTrend({
         <Area
           type="monotone"
           dataKey="inpatient"
-          name="Inpatient"
+          name={t("visitType.inpatient")}
           stackId="1"
           stroke={CHART_COLORS[1]}
           fill="url(#area-1)"
@@ -105,7 +108,7 @@ export function StackedAreaTrend({
         <Area
           type="monotone"
           dataKey="emergency"
-          name="Emergency"
+          name={t("visitType.emergency")}
           stackId="1"
           stroke={CHART_COLORS[5]}
           fill="url(#area-2)"
@@ -169,6 +172,7 @@ export function HorizontalBars({
   height?: number;
   categorical?: boolean;
 }) {
+  const { t } = useT();
   if (data.length === 0 || data.every((d) => d.value === 0)) {
     return <EmptyChart height={height} />;
   }
@@ -194,7 +198,7 @@ export function HorizontalBars({
           labelStyle={TOOLTIP_LABEL}
           cursor={{ fill: "var(--accent)", opacity: 0.4 }}
         />
-        <Bar dataKey="value" name="Count" radius={[0, 4, 4, 0]} maxBarSize={26}>
+        <Bar dataKey="value" name={t("reports.seriesCount")} radius={[0, 4, 4, 0]} maxBarSize={26}>
           {data.map((slice, i) => (
             <Cell
               key={slice.key}
@@ -217,6 +221,7 @@ export function VerticalBars({
   height?: number;
   colorIndex?: number;
 }) {
+  const { t } = useT();
   if (data.length === 0 || data.every((d) => d.value === 0)) {
     return <EmptyChart height={height} />;
   }
@@ -233,7 +238,7 @@ export function VerticalBars({
         />
         <Bar
           dataKey="value"
-          name="Count"
+          name={t("reports.seriesCount")}
           radius={[4, 4, 0, 0]}
           maxBarSize={48}
           fill={CHART_COLORS[colorIndex % CHART_COLORS.length]}

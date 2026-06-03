@@ -7,18 +7,20 @@
 
 import type { Allergy, AllergyCategory, AllergySeverity } from "@/types/healthcare";
 
+/** i18n keys — resolve with `t(ALLERGY_CATEGORY_LABEL[category])`. */
 export const ALLERGY_CATEGORY_LABEL: Record<AllergyCategory, string> = {
-  drug: "Drug",
-  food: "Food",
-  environmental: "Environmental",
-  other: "Other",
+  drug: "allergyCategory.drug",
+  food: "allergyCategory.food",
+  environmental: "allergyCategory.environmental",
+  other: "allergyCategory.other",
 };
 
+/** i18n keys — resolve with `t(ALLERGY_SEVERITY_LABEL[severity])`. */
 export const ALLERGY_SEVERITY_LABEL: Record<AllergySeverity, string> = {
-  mild: "Mild",
-  moderate: "Moderate",
-  severe: "Severe",
-  life_threatening: "Life-threatening",
+  mild: "allergySeverity.mild",
+  moderate: "allergySeverity.moderate",
+  severe: "allergySeverity.severe",
+  life_threatening: "allergySeverity.life_threatening",
 };
 
 /** Maps each severity to a clinical `--status-*` token (worst = alert purple). */

@@ -20,6 +20,8 @@ import {
   Send,
   Pill,
   ArrowLeftRight,
+  ChevronDown,
+  FileDown,
 } from "lucide-react";
 
 import {
@@ -97,7 +99,15 @@ import {
   highestSeverity,
   sortAllergiesBySeverity,
 } from "@/components/allergies/allergies";
+import { cn } from "@/lib/utils";
 import { useRole } from "@/components/role-provider";
+import { useT, useLocale } from "@/components/locale-provider";
+import { formatDateTime } from "@/i18n/format";
+import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
+import {
+  buildVisitSummary,
+  buildPatientHistory,
+} from "@/components/reports/visit-summary";
 import type {
   Admission,
   Allergy,
@@ -109,6 +119,7 @@ import type {
   Patient,
   Prescription,
   Result,
+  StaffRole,
   Transfer,
   TreatmentRecord,
   Visit,
@@ -131,25 +142,63 @@ const COMMON_ICD10: { code: string; label: string }[] = [
 
 const DISPOSITIONS: {
   value: Disposition;
-  label: string;
+  labelKey: string;
   icon: typeof Home;
 }[] = [
-  { value: "discharge_home", label: "Discharge home", icon: Home },
-  { value: "admit", label: "Admit", icon: BedDouble },
-  { value: "observation", label: "Observation", icon: Eye },
-  { value: "refer", label: "Refer", icon: Send },
+  { value: "discharge_home", labelKey: "drawer.dispositionDischargeHome", icon: Home },
+  { value: "admit", labelKey: "drawer.dispositionAdmit", icon: BedDouble },
+  { value: "observation", labelKey: "drawer.dispositionObservation", icon: Eye },
+  { value: "refer", labelKey: "drawer.dispositionRefer", icon: Send },
 ];
 
 const NO_BED = "__none__";
 const NO_DOCTOR = "__none__";
 
 const CLEARANCE_FIELDS = [
-  { key: "is_medical_cleared", label: "Medical cleared" },
-  { key: "is_financial_cleared", label: "Financial cleared" },
-  { key: "is_pharmacy_ready", label: "Pharmacy ready" },
+  { key: "is_medical_cleared", labelKey: "drawer.clearanceMedical" },
+  { key: "is_financial_cleared", labelKey: "drawer.clearanceFinancial" },
+  { key: "is_pharmacy_ready", labelKey: "drawer.clearancePharmacy" },
 ] as const;
 
 type NumField = "" | string;
+
+/**
+ * Phase 14 — role-led drawer. Each collapsible section has a stable key. The
+ * sections a role *leads* with stay expanded at the top (in the listed order);
+ * everything else folds under a single "More" expander so each user meets their
+ * own task first without losing any capability. `careStage` is in every role's
+ * lead set so the drawer always has at least one visible primary section
+ * (reconcile/placement can be null for outpatient/non-anonymous visits). Roles
+ * absent from this map (admin, pharmacist, lab_tech) see every section expanded.
+ */
+type SectionKey =
+  | "reconcile"
+  | "doctor"
+  | "clearances"
+  | "placement"
+  | "careStage"
+  | "vitals"
+  | "history";
+
+/** Natural top-to-bottom order used for admins and for the "More" group. */
+const SECTION_ORDER: Record<SectionKey, number> = {
+  reconcile: 1,
+  doctor: 2,
+  clearances: 3,
+  placement: 4,
+  careStage: 5,
+  vitals: 6,
+  history: 7,
+};
+
+const PRIMARY_BY_ROLE: Partial<Record<StaffRole, SectionKey[]>> = {
+  // Doctor: assess, order, prescribe — then move the visit forward.
+  doctor: ["doctor", "careStage"],
+  // Nurse: record vitals/GCS and advance the journey.
+  nurse: ["vitals", "careStage"],
+  // Reception: match an emergency record, place the patient, move it forward.
+  receptionist: ["reconcile", "placement", "careStage"],
+};
 
 export function PatientDrawer({
   visitId,
@@ -163,6 +212,9 @@ export function PatientDrawer({
   onMutate: () => void;
 }) {
   const { actingStaff, actingRole } = useRole();
+  const { t } = useT();
+  const { mounted, locale } = useLocale();
+  const activeLocale = mounted ? locale : "en";
 
   const [tick, setTick] = useState(0);
   const [visit, setVisit] = useState<Visit | null>(null);
@@ -183,6 +235,11 @@ export function PatientDrawer({
   const [transferDoctorId, setTransferDoctorId] = useState<string>(NO_DOCTOR);
   const [transferReason, setTransferReason] = useState("");
   const [transferError, setTransferError] = useState<string | null>(null);
+  // Plain-language confirmation of the last completed move ("Moved to … · …").
+  const [transferDone, setTransferDone] = useState<string | null>(null);
+  // Discharge is a closing action, so it's gated behind an explicit confirm step
+  // that states the outcome before the visit drops off the board.
+  const [confirmingDischarge, setConfirmingDischarge] = useState(false);
 
   // SOAP consultation form
   const [subjective, setSubjective] = useState("");
@@ -219,6 +276,7 @@ export function PatientDrawer({
   const [gcs, setGcs] = useState<NumField>("");
   const [notes, setNotes] = useState("");
   const [reconcileTarget, setReconcileTarget] = useState("");
+  const [showMore, setShowMore] = useState(false);
 
   // The acting staff member records the entry; fall back to a doctor so logging
   // still works before the role context has hydrated.
@@ -228,6 +286,23 @@ export function PatientDrawer({
     getStaff()[0]?.id ??
     null;
   const isDoctor = actingRole === "doctor";
+
+  // Role-led layout: the acting role's lead sections render first, expanded;
+  // the rest fold under a single "More" expander. Unmapped roles (admin/
+  // pharmacist/lab_tech) get `undefined` → every section stays expanded.
+  const leadSections = actingRole ? PRIMARY_BY_ROLE[actingRole] : undefined;
+  const collapsible = leadSections !== undefined;
+  const isLead = (k: SectionKey) => !leadSections || leadSections.includes(k);
+  const orderFor = (k: SectionKey) => {
+    if (!leadSections) return SECTION_ORDER[k];
+    const i = leadSections.indexOf(k);
+    return i >= 0 ? i : 100 + SECTION_ORDER[k];
+  };
+  // Per-section flex `order` reorders without moving any JSX; secondary
+  // sections collapse out of flow until "More" is opened.
+  const secStyle = (k: SectionKey) => ({ order: orderFor(k) });
+  const secCls = (k: SectionKey, base: string) =>
+    cn(base, collapsible && !isLead(k) && !showMore && "hidden");
 
   useEffect(() => {
     if (!open || !visitId) return;
@@ -272,6 +347,7 @@ export function PatientDrawer({
     setGcs("");
     setNotes("");
     setReconcileTarget("");
+    setShowMore(false);
     // Reset the doctor consultation forms too.
     setSubjective("");
     setExamination("");
@@ -289,6 +365,14 @@ export function PatientDrawer({
     setRxDuration("");
     setRxInstructions("");
   }, [open, visitId, tick]);
+
+  // The transfer confirmation and the discharge confirm step are tied to the
+  // open patient, not to each data refresh — clearing them on every `tick` would
+  // wipe the confirmation the instant a transfer's refresh fires.
+  useEffect(() => {
+    setTransferDone(null);
+    setConfirmingDischarge(false);
+  }, [open, visitId]);
 
   if (!visit || !patient) {
     return (
@@ -332,7 +416,7 @@ export function PatientDrawer({
         .filter((b) => b.status === "free" || b.id === admission.bed_id)
         .map((b) => ({
           bed: b,
-          label: `${wardById.get(b.ward_id)?.name ?? "Ward"} · ${b.label}`,
+          label: `${wardById.get(b.ward_id)?.name ?? t("drawer.ward")} · ${b.label}`,
         }))
         .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }))
     : [];
@@ -342,7 +426,7 @@ export function PatientDrawer({
     if (!id) return "—";
     const b = bedById.get(id);
     if (!b) return "—";
-    return `${wardById.get(b.ward_id)?.name ?? "Ward"} · ${b.label}`;
+    return `${wardById.get(b.ward_id)?.name ?? t("drawer.ward")} · ${b.label}`;
   }
   function staffName(id: string | null): string {
     return id ? (staffById.get(id)?.full_name ?? "—") : "—";
@@ -473,7 +557,7 @@ export function PatientDrawer({
     const bedChanged = transferBedId !== currentBed;
     const doctorChanged = transferDoctorId !== currentDoctor;
     if (!bedChanged && !doctorChanged) {
-      setTransferError("Choose a different bed or doctor to record a move.");
+      setTransferError(t("drawer.transferNoChange"));
       return;
     }
     try {
@@ -490,12 +574,54 @@ export function PatientDrawer({
         reason: transferReason,
         transferred_by_id: recorderId,
       });
+      // Plain-language confirmation that names the new placement / doctor.
+      const parts: string[] = [];
+      if (bedChanged) {
+        parts.push(
+          transferBedId === NO_BED
+            ? t("drawer.transferDoneNoBed")
+            : t("drawer.transferDoneBed", {
+                placement: bedLabel(transferBedId),
+              }),
+        );
+      }
+      if (doctorChanged) {
+        parts.push(
+          transferDoctorId === NO_DOCTOR
+            ? t("drawer.transferDoneNoDoctor")
+            : t("drawer.transferDoneDoctor", {
+                doctor: staffName(transferDoctorId),
+              }),
+        );
+      }
+      setTransferDone(parts.join(" "));
+      setTransferReason("");
       refresh();
     } catch (e) {
       setTransferError(
-        e instanceof Error ? e.message : "Could not record the transfer.",
+        e instanceof Error ? e.message : t("drawer.transferFailed"),
       );
     }
+  }
+
+  async function handleDownloadReport() {
+    if (!visit) return;
+    const data = buildVisitSummary(visit.id);
+    if (!data) return;
+    const { exportVisitSummaryPdf } = await import(
+      "@/components/reports/visit-summary-export"
+    );
+    exportVisitSummaryPdf(data, t, activeLocale);
+  }
+
+  async function handleDownloadHistory() {
+    if (!patient) return;
+    const data = buildPatientHistory(patient.id);
+    if (!data) return;
+    const { exportPatientHistoryPdf } = await import(
+      "@/components/reports/visit-summary-export"
+    );
+    exportPatientHistoryPdf(data, t, activeLocale);
   }
 
   return (
@@ -518,16 +644,16 @@ export function PatientDrawer({
                 }}
               >
                 <ShieldAlert className="size-3" />
-                Emergency
+                {t("drawer.emergency")}
               </Badge>
             ) : null}
           </div>
           <SheetDescription className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-            <span>{visit.chief_complaint ?? "No chief complaint recorded"}</span>
+            <span>{visit.chief_complaint ?? t("drawer.noChiefComplaint")}</span>
           </SheetDescription>
           <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-[11px] text-muted-foreground">
             <span className="font-mono">{patient.mrn}</span>
-            <span className="uppercase tracking-wide">{visit.visit_type}</span>
+            <span className="uppercase tracking-wide">{t(VISIT_TYPE_LABEL[visit.visit_type])}</span>
             {location ? <span className="font-mono">{location}</span> : null}
             {doctorName ? (
               <span className="inline-flex items-center gap-1">
@@ -536,10 +662,31 @@ export function PatientDrawer({
               </span>
             ) : null}
           </div>
+          <div className="mt-1 flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadReport}
+              className="w-fit gap-2"
+            >
+              <FileDown className="size-4" />
+              {t("visitReport.buttonLong")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadHistory}
+              className="w-fit gap-2"
+            >
+              <FileDown className="size-4" />
+              {t("visitReport.history.buttonLong")}
+            </Button>
+          </div>
         </SheetHeader>
 
         <div className="flex flex-col gap-6 p-4">
-          {/* Allergy safety banner — always visible, top of the record */}
+          {/* Allergy safety banner — always visible, pinned to the top */}
+          <div style={{ order: -10 }}>
           {allergyState === "has-allergies" ? (
             <section
               className="flex flex-col gap-2 rounded-md border p-3"
@@ -554,7 +701,7 @@ export function PatientDrawer({
                   style={{ color: "var(--status-treatment)" }}
                 />
                 <h3 className="text-sm font-semibold">
-                  Allergies ({allergies.length})
+                  {t("drawer.allergiesCount", { count: allergies.length })}
                 </h3>
               </div>
               <ul className="flex flex-col gap-1.5">
@@ -571,11 +718,11 @@ export function PatientDrawer({
                         color: `var(--status-${ALLERGY_SEVERITY_TOKEN[a.severity]}-foreground)`,
                       }}
                     >
-                      {ALLERGY_SEVERITY_LABEL[a.severity]}
+                      {t(ALLERGY_SEVERITY_LABEL[a.severity])}
                     </Badge>
                     <span className="font-medium">{a.substance}</span>
                     <span className="text-muted-foreground">
-                      {ALLERGY_CATEGORY_LABEL[a.category]}
+                      {t(ALLERGY_CATEGORY_LABEL[a.category])}
                       {a.reaction ? ` · ${a.reaction}` : ""}
                     </span>
                   </li>
@@ -588,25 +735,31 @@ export function PatientDrawer({
                 className="size-4"
                 style={{ color: "var(--status-clearance)" }}
               />
-              No known allergies
+              {t("drawer.noKnownAllergies")}
             </section>
           ) : (
             <section className="flex items-center gap-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
               <AlertTriangle className="size-4" />
-              Allergies not assessed
+              {t("drawer.allergiesNotAssessed")}
             </section>
           )}
+          </div>
 
           {/* Reconciliation — anonymous patients only */}
           {patient.is_emergency_anonymous ? (
-            <section className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
+            <section
+              className={secCls(
+                "reconcile",
+                "flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3",
+              )}
+              style={secStyle("reconcile")}
+            >
               <div className="flex items-center gap-2">
                 <Merge className="size-4" style={{ color: "var(--status-treatment)" }} />
-                <h3 className="text-sm font-medium">Profile reconciliation</h3>
+                <h3 className="text-sm font-medium">{t("drawer.reconcileTitle")}</h3>
               </div>
               <p className="text-xs text-muted-foreground">
-                Match this emergency record to a verified patient. Clinical logs
-                are preserved and re-pointed to the merged profile.
+                {t("drawer.reconcileHint")}
               </p>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Select
@@ -617,7 +770,7 @@ export function PatientDrawer({
                   onValueChange={(v) => setReconcileTarget(v as string)}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select verified patient" />
+                    <SelectValue placeholder={t("drawer.selectVerifiedPatient")} />
                   </SelectTrigger>
                   <SelectContent>
                     {verified.map((p) => (
@@ -632,7 +785,7 @@ export function PatientDrawer({
                   disabled={!reconcileTarget}
                   className="shrink-0"
                 >
-                  Merge
+                  {t("drawer.merge")}
                 </Button>
               </div>
             </section>
@@ -640,14 +793,17 @@ export function PatientDrawer({
 
           {/* Doctor consultation console — doctor role only */}
           {isDoctor ? (
-            <section className="flex flex-col gap-4">
+            <section
+              className={secCls("doctor", "flex flex-col gap-4")}
+              style={secStyle("doctor")}
+            >
               <div className="flex items-center gap-2">
                 <Stethoscope
                   className="size-4"
                   style={{ color: "var(--status-diagnostics)" }}
                 />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Doctor console
+                  {t("drawer.doctorConsole")}
                 </h3>
               </div>
 
@@ -655,7 +811,7 @@ export function PatientDrawer({
               {diagnoses.length > 0 || consultations.length > 0 ? (
                 <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Prior record
+                    {t("drawer.priorRecord")}
                   </span>
                   {diagnoses.length > 0 ? (
                     <div className="flex flex-wrap gap-1.5">
@@ -670,7 +826,7 @@ export function PatientDrawer({
                           ) : null}
                           {d.description}
                           {d.is_primary ? (
-                            <span className="opacity-70">· primary</span>
+                            <span className="opacity-70">· {t("drawer.primaryTag")}</span>
                           ) : null}
                         </Badge>
                       ))}
@@ -680,13 +836,13 @@ export function PatientDrawer({
                     <ConsultationNote consultation={consultations[0]} />
                   ) : (
                     <p className="text-xs text-muted-foreground">
-                      No consultation note recorded yet.
+                      {t("drawer.noConsultationNote")}
                     </p>
                   )}
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground">
-                  No prior consultations or diagnoses on this visit.
+                  {t("drawer.noPriorRecord")}
                 </p>
               )}
 
@@ -694,38 +850,38 @@ export function PatientDrawer({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
                   <FileText className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">New consultation (SOAP)</span>
+                  <span className="text-sm font-medium">{t("drawer.newConsultation")}</span>
                 </div>
                 <FieldArea
-                  label="Subjective"
+                  label={t("drawer.subjective")}
                   id="soap-s"
                   value={subjective}
                   onChange={setSubjective}
-                  placeholder="What the patient reports"
+                  placeholder={t("drawer.subjectivePlaceholder")}
                 />
                 <FieldArea
-                  label="Examination"
+                  label={t("drawer.examination")}
                   id="soap-o"
                   value={examination}
                   onChange={setExamination}
-                  placeholder="Objective exam findings"
+                  placeholder={t("drawer.examinationPlaceholder")}
                 />
                 <FieldArea
-                  label="Assessment"
+                  label={t("drawer.assessment")}
                   id="soap-a"
                   value={assessment}
                   onChange={setAssessment}
-                  placeholder="Clinical impression"
+                  placeholder={t("drawer.assessmentPlaceholder")}
                 />
                 <FieldArea
-                  label="Plan"
+                  label={t("drawer.plan")}
                   id="soap-p"
                   value={plan}
                   onChange={setPlan}
-                  placeholder="Tests, treatment, follow-up"
+                  placeholder={t("drawer.planPlaceholder")}
                 />
                 <Button onClick={handleSaveConsultation} className="self-end">
-                  Save consultation
+                  {t("drawer.saveConsultation")}
                 </Button>
               </div>
 
@@ -733,7 +889,7 @@ export function PatientDrawer({
 
               {/* Structured diagnosis entry */}
               <div className="flex flex-col gap-3">
-                <span className="text-sm font-medium">Add diagnosis</span>
+                <span className="text-sm font-medium">{t("drawer.addDiagnosis")}</span>
                 <datalist id="icd10-options">
                   {COMMON_ICD10.map((o) => (
                     <option key={o.code} value={o.code}>
@@ -743,7 +899,7 @@ export function PatientDrawer({
                 </datalist>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="dx-code" className="text-xs">
-                    ICD-10 code
+                    {t("drawer.icd10Code")}
                   </Label>
                   <Input
                     id="dx-code"
@@ -759,23 +915,23 @@ export function PatientDrawer({
                         setDxDescription(match.label);
                       }
                     }}
-                    placeholder="e.g. J18.9"
+                    placeholder={t("drawer.icd10Placeholder")}
                     className="font-mono"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="dx-desc" className="text-xs">
-                    Description
+                    {t("drawer.description")}
                   </Label>
                   <Input
                     id="dx-desc"
                     value={dxDescription}
                     onChange={(e) => setDxDescription(e.target.value)}
-                    placeholder="Diagnosis description"
+                    placeholder={t("drawer.diagnosisDescPlaceholder")}
                   />
                 </div>
                 <label className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3">
-                  <span className="text-sm">Primary diagnosis</span>
+                  <span className="text-sm">{t("drawer.primaryDiagnosis")}</span>
                   <Switch checked={dxPrimary} onCheckedChange={setDxPrimary} />
                 </label>
                 <Button
@@ -785,7 +941,7 @@ export function PatientDrawer({
                   className="self-end"
                 >
                   <Plus className="size-4" />
-                  Add diagnosis
+                  {t("drawer.addDiagnosis")}
                 </Button>
               </div>
 
@@ -795,7 +951,7 @@ export function PatientDrawer({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
                   <FlaskConical className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Orders &amp; results</span>
+                  <span className="text-sm font-medium">{t("drawer.ordersResults")}</span>
                 </div>
 
                 {orders.length > 0 ? (
@@ -816,7 +972,7 @@ export function PatientDrawer({
                                 {o.description}
                               </span>
                               <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                                {ORDER_TYPE_LABEL[o.order_type]}
+                                {t(ORDER_TYPE_LABEL[o.order_type])}
                               </span>
                             </div>
                             <Badge
@@ -831,7 +987,7 @@ export function PatientDrawer({
                                     }
                               }
                             >
-                              {ORDER_STATUS_LABEL[o.status]}
+                              {t(ORDER_STATUS_LABEL[o.status])}
                             </Badge>
                           </div>
 
@@ -845,7 +1001,7 @@ export function PatientDrawer({
                                   {r.value ?? "—"}
                                   {r.reference_range ? (
                                     <span className="ml-1.5 text-xs text-muted-foreground">
-                                      (ref {r.reference_range})
+                                      {t("drawer.refRange", { range: r.reference_range })}
                                     </span>
                                   ) : null}
                                 </span>
@@ -860,7 +1016,7 @@ export function PatientDrawer({
                                     }}
                                   >
                                     <AlertTriangle className="size-3" />
-                                    Abnormal
+                                    {t("drawer.abnormal")}
                                   </Badge>
                                 ) : null}
                               </div>
@@ -883,7 +1039,7 @@ export function PatientDrawer({
                   </ul>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    No tests ordered on this visit yet.
+                    {t("drawer.noOrders")}
                   </p>
                 )}
 
@@ -895,10 +1051,15 @@ export function PatientDrawer({
                 </datalist>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="order-type" className="text-xs">
-                    Test type
+                    {t("drawer.testType")}
                   </Label>
                   <Select
-                    items={ORDER_TYPE_LABEL}
+                    items={Object.fromEntries(
+                      (Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((ot) => [
+                        ot,
+                        t(ORDER_TYPE_LABEL[ot]),
+                      ]),
+                    )}
                     value={orderType}
                     onValueChange={(v) => {
                       setOrderType(v as OrderType);
@@ -909,9 +1070,9 @@ export function PatientDrawer({
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {ORDER_TYPE_LABEL[t]}
+                      {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((ot) => (
+                        <SelectItem key={ot} value={ot}>
+                          {t(ORDER_TYPE_LABEL[ot])}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -919,14 +1080,14 @@ export function PatientDrawer({
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="order-desc" className="text-xs">
-                    Test
+                    {t("drawer.test")}
                   </Label>
                   <Input
                     id="order-desc"
                     list="order-options"
                     value={orderDescription}
                     onChange={(e) => setOrderDescription(e.target.value)}
-                    placeholder="e.g. Full Blood Count"
+                    placeholder={t("drawer.testPlaceholder")}
                   />
                 </div>
                 <Button
@@ -936,7 +1097,7 @@ export function PatientDrawer({
                   className="self-end"
                 >
                   <Plus className="size-4" />
-                  Order test
+                  {t("drawer.orderTest")}
                 </Button>
               </div>
 
@@ -946,7 +1107,7 @@ export function PatientDrawer({
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
                   <Pill className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Prescriptions</span>
+                  <span className="text-sm font-medium">{t("drawer.prescriptions")}</span>
                 </div>
 
                 {drugAllergies.length > 0 ? (
@@ -963,19 +1124,19 @@ export function PatientDrawer({
                       style={{ color: "var(--status-treatment)" }}
                     />
                     <span>
-                      <span className="font-medium">Drug allergies:</span>{" "}
+                      <span className="font-medium">{t("drawer.drugAllergiesLabel")}</span>{" "}
                       {drugAllergies
                         .map(
                           (a) =>
-                            `${a.substance} (${ALLERGY_SEVERITY_LABEL[a.severity].toLowerCase()})`,
+                            `${a.substance} (${t(ALLERGY_SEVERITY_LABEL[a.severity]).toLowerCase()})`,
                         )
                         .join(", ")}
-                      . Review before prescribing.
+                      . {t("drawer.reviewBeforePrescribing")}
                     </span>
                   </div>
                 ) : allergyState === "unassessed" ? (
                   <p className="text-xs text-muted-foreground">
-                    Allergies not assessed — confirm before prescribing.
+                    {t("drawer.allergiesNotAssessedRx")}
                   </p>
                 ) : null}
 
@@ -1007,7 +1168,7 @@ export function PatientDrawer({
                                     }
                               }
                             >
-                              {PRESCRIPTION_STATUS_LABEL[p.status]}
+                              {t(PRESCRIPTION_STATUS_LABEL[p.status])}
                             </Badge>
                           </div>
                           {detail ? (
@@ -1026,7 +1187,7 @@ export function PatientDrawer({
                   </ul>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    Nothing prescribed on this visit yet.
+                    {t("drawer.noPrescriptions")}
                   </p>
                 )}
 
@@ -1048,7 +1209,7 @@ export function PatientDrawer({
                 </datalist>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="rx-drug" className="text-xs">
-                    Drug
+                    {t("drawer.drug")}
                   </Label>
                   <Input
                     id="rx-drug"
@@ -1066,67 +1227,67 @@ export function PatientDrawer({
                         if (!rxRoute.trim()) setRxRoute(match.route);
                       }
                     }}
-                    placeholder="e.g. Amoxicillin-clavulanate"
+                    placeholder={t("drawer.drugPlaceholder")}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rx-dose" className="text-xs">
-                      Dose
+                      {t("drawer.dose")}
                     </Label>
                     <Input
                       id="rx-dose"
                       value={rxDose}
                       onChange={(e) => setRxDose(e.target.value)}
-                      placeholder="e.g. 625 mg"
+                      placeholder={t("drawer.dosePlaceholder")}
                       className="font-mono"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rx-route" className="text-xs">
-                      Route
+                      {t("drawer.route")}
                     </Label>
                     <Input
                       id="rx-route"
                       list="route-options"
                       value={rxRoute}
                       onChange={(e) => setRxRoute(e.target.value)}
-                      placeholder="e.g. oral"
+                      placeholder={t("drawer.routePlaceholder")}
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rx-freq" className="text-xs">
-                      Frequency
+                      {t("drawer.frequency")}
                     </Label>
                     <Input
                       id="rx-freq"
                       list="frequency-options"
                       value={rxFrequency}
                       onChange={(e) => setRxFrequency(e.target.value)}
-                      placeholder="e.g. every 8 hours"
+                      placeholder={t("drawer.frequencyPlaceholder")}
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="rx-dur" className="text-xs">
-                      Duration
+                      {t("drawer.duration")}
                     </Label>
                     <Input
                       id="rx-dur"
                       value={rxDuration}
                       onChange={(e) => setRxDuration(e.target.value)}
-                      placeholder="e.g. 5 days"
+                      placeholder={t("drawer.durationPlaceholder")}
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="rx-instr" className="text-xs">
-                    Instructions
+                    {t("drawer.instructions")}
                   </Label>
                   <Input
                     id="rx-instr"
                     value={rxInstructions}
                     onChange={(e) => setRxInstructions(e.target.value)}
-                    placeholder="Optional — e.g. take with meals"
+                    placeholder={t("drawer.instructionsPlaceholder")}
                   />
                 </div>
                 <Button
@@ -1136,7 +1297,7 @@ export function PatientDrawer({
                   className="self-end"
                 >
                   <Plus className="size-4" />
-                  Prescribe
+                  {t("drawer.prescribe")}
                 </Button>
               </div>
 
@@ -1144,10 +1305,9 @@ export function PatientDrawer({
 
               {/* Disposition decision */}
               <div className="flex flex-col gap-3">
-                <span className="text-sm font-medium">Disposition</span>
+                <span className="text-sm font-medium">{t("drawer.disposition")}</span>
                 <p className="text-xs text-muted-foreground">
-                  Decide where the patient goes next. Admit opens an inpatient
-                  stay; the choice is logged to the treatment record.
+                  {t("drawer.dispositionHint")}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
                   {DISPOSITIONS.map((d) => {
@@ -1160,7 +1320,7 @@ export function PatientDrawer({
                         className="justify-start"
                       >
                         <Icon className="size-4" />
-                        {d.label}
+                        {t(d.labelKey)}
                       </Button>
                     );
                   })}
@@ -1169,13 +1329,14 @@ export function PatientDrawer({
             </section>
           ) : null}
 
-          {isDoctor ? <Separator /> : null}
-
           {/* Clearance gates — inpatient admissions only */}
           {admission ? (
-            <section className="flex flex-col gap-3">
+            <section
+              className={secCls("clearances", "flex flex-col gap-3")}
+              style={secStyle("clearances")}
+            >
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                Clearance gates
+                {t("drawer.clearanceGates")}
               </h3>
               <div className="flex flex-col gap-2">
                 {CLEARANCE_FIELDS.map((field) => (
@@ -1183,7 +1344,7 @@ export function PatientDrawer({
                     key={field.key}
                     className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3"
                   >
-                    <span className="text-sm">{field.label}</span>
+                    <span className="text-sm">{t(field.labelKey)}</span>
                     <Switch
                       checked={admission[field.key]}
                       onCheckedChange={() => toggleClearance(field.key)}
@@ -1194,22 +1355,23 @@ export function PatientDrawer({
             </section>
           ) : null}
 
-          {admission ? <Separator /> : null}
-
           {/* Placement & transfers — inpatient admissions only */}
           {admission ? (
-            <section className="flex flex-col gap-3">
+            <section
+              className={secCls("placement", "flex flex-col gap-3")}
+              style={secStyle("placement")}
+            >
               <div className="flex items-center gap-2">
                 <ArrowLeftRight className="size-4 text-muted-foreground" />
                 <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Placement &amp; transfers
+                  {t("drawer.placementTransfers")}
                 </h3>
               </div>
 
               <div className="grid grid-cols-2 gap-2 rounded-md border border-border px-3 py-2.5 text-sm">
                 <div className="flex flex-col">
                   <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    Ward
+                    {t("drawer.ward")}
                   </span>
                   <span>
                     {admission.ward_id
@@ -1219,23 +1381,23 @@ export function PatientDrawer({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    Bed
+                    {t("drawer.bed")}
                   </span>
                   <span className="font-mono">
                     {admission.bed_id
                       ? (bedById.get(admission.bed_id)?.label ?? "—")
-                      : "Unassigned"}
+                      : t("drawer.unassigned")}
                   </span>
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="transfer-bed" className="text-xs">
-                  Bed
+                  {t("drawer.bed")}
                 </Label>
                 <Select
                   items={{
-                    [NO_BED]: "No bed",
+                    [NO_BED]: t("drawer.noBed"),
                     ...Object.fromEntries(
                       assignableBeds.map((o) => [o.bed.id, o.label]),
                     ),
@@ -1244,10 +1406,10 @@ export function PatientDrawer({
                   onValueChange={(v) => setTransferBedId(v as string)}
                 >
                   <SelectTrigger id="transfer-bed" className="w-full">
-                    <SelectValue placeholder="Select a bed" />
+                    <SelectValue placeholder={t("drawer.selectBed")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_BED}>No bed</SelectItem>
+                    <SelectItem value={NO_BED}>{t("drawer.noBed")}</SelectItem>
                     {assignableBeds.map((o) => (
                       <SelectItem key={o.bed.id} value={o.bed.id}>
                         {o.label}
@@ -1259,11 +1421,11 @@ export function PatientDrawer({
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="transfer-doctor" className="text-xs">
-                  Attending doctor
+                  {t("drawer.attendingDoctor")}
                 </Label>
                 <Select
                   items={{
-                    [NO_DOCTOR]: "Unassigned",
+                    [NO_DOCTOR]: t("drawer.unassigned"),
                     ...Object.fromEntries(
                       doctors.map((d) => [d.id, d.full_name]),
                     ),
@@ -1272,10 +1434,10 @@ export function PatientDrawer({
                   onValueChange={(v) => setTransferDoctorId(v as string)}
                 >
                   <SelectTrigger id="transfer-doctor" className="w-full">
-                    <SelectValue placeholder="Select a doctor" />
+                    <SelectValue placeholder={t("drawer.selectDoctor")} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={NO_DOCTOR}>Unassigned</SelectItem>
+                    <SelectItem value={NO_DOCTOR}>{t("drawer.unassigned")}</SelectItem>
                     {doctors.map((d) => (
                       <SelectItem key={d.id} value={d.id}>
                         {d.full_name}
@@ -1287,13 +1449,13 @@ export function PatientDrawer({
 
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="transfer-reason" className="text-xs">
-                  Reason
+                  {t("drawer.reason")}
                 </Label>
                 <Input
                   id="transfer-reason"
                   value={transferReason}
                   onChange={(e) => setTransferReason(e.target.value)}
-                  placeholder="Optional — e.g. Step-down from ICU"
+                  placeholder={t("drawer.reasonPlaceholder")}
                 />
               </div>
 
@@ -1301,48 +1463,72 @@ export function PatientDrawer({
                 <p className="text-xs text-destructive">{transferError}</p>
               ) : null}
 
-              <Button onClick={handleTransfer} className="self-end">
+              {transferDone ? (
+                <p
+                  className="flex items-start gap-1.5 text-xs"
+                  style={{ color: "var(--status-clearance)" }}
+                >
+                  <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
+                  <span>{transferDone}</span>
+                </p>
+              ) : null}
+
+              <Button
+                onClick={() => {
+                  setTransferDone(null);
+                  handleTransfer();
+                }}
+                className="self-end"
+              >
                 <ArrowLeftRight className="size-4" />
-                {hasBed ? "Record transfer" : "Assign bed"}
+                {hasBed ? t("drawer.recordTransfer") : t("drawer.assignBed")}
               </Button>
 
               {transfers.length > 0 ? (
                 <div className="flex flex-col gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    Transfer history
+                    {t("drawer.transferHistory")}
                   </span>
                   <ul className="flex flex-col gap-2">
-                    {transfers.map((t) => {
+                    {transfers.map((tr) => {
                       const lines: string[] = [];
-                      if (t.from_bed_id !== t.to_bed_id) {
+                      if (tr.from_bed_id !== tr.to_bed_id) {
                         lines.push(
-                          `Bed ${bedLabel(t.from_bed_id)} → ${bedLabel(t.to_bed_id)}`,
+                          t("drawer.bedMove", {
+                            from: bedLabel(tr.from_bed_id),
+                            to: bedLabel(tr.to_bed_id),
+                          }),
                         );
                       }
-                      if (t.from_doctor_id !== t.to_doctor_id) {
+                      if (tr.from_doctor_id !== tr.to_doctor_id) {
                         lines.push(
-                          `Doctor ${staffName(t.from_doctor_id)} → ${staffName(t.to_doctor_id)}`,
+                          t("drawer.doctorMove", {
+                            from: staffName(tr.from_doctor_id),
+                            to: staffName(tr.to_doctor_id),
+                          }),
                         );
                       }
                       return (
                         <li
-                          key={t.id}
+                          key={tr.id}
                           className="flex flex-col gap-1 rounded-md border border-border p-3 text-xs"
                         >
                           <span className="font-mono text-muted-foreground">
-                            {new Date(t.created_at).toLocaleString()}
+                            {formatDateTime(tr.created_at, activeLocale)}
                           </span>
                           {lines.map((l) => (
                             <span key={l}>{l}</span>
                           ))}
-                          {t.reason ? (
+                          {tr.reason ? (
                             <span className="text-muted-foreground">
-                              {t.reason}
+                              {tr.reason}
                             </span>
                           ) : null}
-                          {t.transferred_by_id ? (
+                          {tr.transferred_by_id ? (
                             <span className="text-muted-foreground">
-                              by {staffName(t.transferred_by_id)}
+                              {t("drawer.byStaff", {
+                                name: staffName(tr.transferred_by_id),
+                              })}
                             </span>
                           ) : null}
                         </li>
@@ -1354,12 +1540,13 @@ export function PatientDrawer({
             </section>
           ) : null}
 
-          {admission ? <Separator /> : null}
-
           {/* Care stage progression — Phase 5 verification gate */}
-          <section className="flex flex-col gap-3">
+          <section
+            className={secCls("careStage", "flex flex-col gap-3")}
+            style={secStyle("careStage")}
+          >
             <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Care stage
+              {t("drawer.careStage")}
             </h3>
             <div className="flex items-center gap-2 rounded-md border border-border px-3 py-2.5">
               <span
@@ -1367,7 +1554,7 @@ export function PatientDrawer({
                 className="size-2 rounded-full"
                 style={{ backgroundColor: `var(--status-${currentToken})` }}
               />
-              <span className="text-sm font-medium">{stageLabel(visit.stage)}</span>
+              <span className="text-sm font-medium">{t(stageLabel(visit.stage))}</span>
             </div>
 
             {target === null ? (
@@ -1376,7 +1563,7 @@ export function PatientDrawer({
                   className="size-4 shrink-0"
                   style={{ color: "var(--status-clearance)" }}
                 />
-                Care journey complete.
+                {t("drawer.journeyComplete")}
               </div>
             ) : (
               <>
@@ -1393,78 +1580,105 @@ export function PatientDrawer({
                         className="size-4 shrink-0"
                         style={{ color: "var(--status-treatment)" }}
                       />
-                      Discharge blocked
+                      {t("drawer.dischargeBlocked")}
                     </div>
                     <ul className="flex flex-col gap-1 text-muted-foreground">
                       {readiness.blockers.map((b) => (
                         <li key={b} className="flex items-start gap-1.5">
                           <Lock className="mt-0.5 size-3 shrink-0" />
-                          <span>{b}</span>
+                          <span>{t(b)}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 ) : null}
-                <Button
-                  onClick={handleAdvance}
-                  disabled={dischargeBlocked}
-                  className="self-end"
-                >
-                  {advancingToDischarge ? (
-                    <>Discharge &amp; follow up</>
-                  ) : (
-                    <>Advance to {stageLabel(target)}</>
-                  )}
-                  {dischargeBlocked ? (
-                    <Lock className="size-4" />
-                  ) : (
-                    <ArrowRight className="size-4" />
-                  )}
-                </Button>
+                {advancingToDischarge && confirmingDischarge && !dischargeBlocked ? (
+                  <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
+                    <p className="text-sm text-muted-foreground">
+                      {t("drawer.dischargeConfirmBody", { name: displayName })}
+                    </p>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setConfirmingDischarge(false)}
+                      >
+                        {t("common.cancel")}
+                      </Button>
+                      <Button size="sm" onClick={handleAdvance}>
+                        <CheckCircle2 className="size-4" />
+                        {t("drawer.dischargeConfirm")}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={
+                      advancingToDischarge
+                        ? () => setConfirmingDischarge(true)
+                        : handleAdvance
+                    }
+                    disabled={dischargeBlocked}
+                    className="self-end"
+                  >
+                    {advancingToDischarge ? (
+                      <>{t("drawer.dischargeFollowUp")}</>
+                    ) : (
+                      <>{t("drawer.advanceTo", { stage: t(stageLabel(target)) })}</>
+                    )}
+                    {dischargeBlocked ? (
+                      <Lock className="size-4" />
+                    ) : (
+                      <ArrowRight className="size-4" />
+                    )}
+                  </Button>
+                )}
               </>
             )}
           </section>
 
-          <Separator />
-
           {/* Vitals + GCS log entry */}
-          <section className="flex flex-col gap-3">
+          <section
+            className={secCls("vitals", "flex flex-col gap-3")}
+            style={secStyle("vitals")}
+          >
             <div className="flex items-center gap-2">
               <Activity className="size-4 text-muted-foreground" />
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                Log vitals & assessment
+                {t("drawer.logVitals")}
               </h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <FieldNum label="SpO₂ (%)" id="spo2" value={spo2} onChange={setSpo2} />
-              <FieldNum label="Pulse (bpm)" id="pulse" value={pulse} onChange={setPulse} />
-              <FieldNum label="BP systolic" id="sys" value={sys} onChange={setSys} />
-              <FieldNum label="BP diastolic" id="dia" value={dia} onChange={setDia} />
-              <FieldNum label="Temp (°C)" id="temp" value={temp} onChange={setTemp} step="0.1" />
-              <FieldNum label="GCS (3–15)" id="gcs" value={gcs} onChange={setGcs} />
+              <FieldNum label={t("drawer.vitalsSpo2")} id="spo2" value={spo2} onChange={setSpo2} />
+              <FieldNum label={t("drawer.vitalsPulse")} id="pulse" value={pulse} onChange={setPulse} />
+              <FieldNum label={t("drawer.vitalsSys")} id="sys" value={sys} onChange={setSys} />
+              <FieldNum label={t("drawer.vitalsDia")} id="dia" value={dia} onChange={setDia} />
+              <FieldNum label={t("drawer.vitalsTemp")} id="temp" value={temp} onChange={setTemp} step="0.1" />
+              <FieldNum label={t("drawer.vitalsGcs")} id="gcs" value={gcs} onChange={setGcs} />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">{t("drawer.notes")}</Label>
               <Textarea
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Clinical observations"
+                placeholder={t("drawer.notesPlaceholder")}
               />
             </div>
             <Button onClick={handleLog} className="self-end">
-              Save log entry
+              {t("drawer.saveLog")}
             </Button>
           </section>
 
-          <Separator />
-
           {/* History */}
-          <section className="flex flex-col gap-3">
+          <section
+            className={secCls("history", "flex flex-col gap-3")}
+            style={secStyle("history")}
+          >
             <div className="flex items-center gap-2">
               <ClipboardList className="size-4 text-muted-foreground" />
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                Treatment history
+                {t("drawer.treatmentHistory")}
               </h3>
               <span className="ml-auto font-mono text-xs text-muted-foreground">
                 {records.length}
@@ -1472,7 +1686,7 @@ export function PatientDrawer({
             </div>
             {records.length === 0 ? (
               <p className="py-4 text-center text-xs text-muted-foreground">
-                No entries logged yet
+                {t("drawer.noEntries")}
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
@@ -1483,7 +1697,7 @@ export function PatientDrawer({
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-muted-foreground">
-                        {new Date(r.recorded_at).toLocaleString()}
+                        {formatDateTime(r.recorded_at, activeLocale)}
                       </span>
                       {r.gcs_score !== null ? (
                         <span className="font-mono">GCS {r.gcs_score}</span>
@@ -1496,6 +1710,27 @@ export function PatientDrawer({
               </ul>
             )}
           </section>
+
+          {/* Single "More" expander holding every non-lead section for the
+              acting role. Sits between the lead sections (order 0–2) and the
+              folded ones (order 100+). Hidden for unmapped roles. */}
+          {collapsible ? (
+            <button
+              type="button"
+              onClick={() => setShowMore((v) => !v)}
+              aria-expanded={showMore}
+              style={{ order: 50 }}
+              className="flex min-h-11 items-center justify-center gap-2 rounded-md border border-dashed border-border text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              {showMore ? t("drawer.showLess") : t("drawer.showMore")}
+              <ChevronDown
+                className={cn(
+                  "size-4 transition-transform",
+                  showMore && "rotate-180",
+                )}
+              />
+            </button>
+          ) : null}
         </div>
       </SheetContent>
     </Sheet>
@@ -1563,6 +1798,8 @@ function FieldArea({
 }
 
 function ConsultationNote({ consultation }: { consultation: Consultation }) {
+  const { t, locale, mounted } = useT();
+  const activeLocale = mounted ? locale : "en";
   const rows: { label: string; value: string | null }[] = [
     { label: "S", value: consultation.subjective },
     { label: "O", value: consultation.examination },
@@ -1573,10 +1810,10 @@ function ConsultationNote({ consultation }: { consultation: Consultation }) {
   return (
     <div className="flex flex-col gap-1.5 text-xs">
       <span className="font-mono text-[11px] text-muted-foreground">
-        {new Date(consultation.created_at).toLocaleString()}
+        {formatDateTime(consultation.created_at, activeLocale)}
       </span>
       {rows.length === 0 ? (
-        <span className="text-muted-foreground">Empty note.</span>
+        <span className="text-muted-foreground">{t("drawer.emptyNote")}</span>
       ) : (
         rows.map((r) => (
           <div key={r.label} className="flex gap-2">

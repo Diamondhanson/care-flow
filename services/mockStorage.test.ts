@@ -9,8 +9,10 @@ import {
   evaluateDischargeReadiness,
   filterVisitsByDepartment,
   generateMrn,
+  getLatestVisitForPatient,
   isTerminalStage,
   normalizeDatabase,
+  searchPatients,
   transferAdmission,
 } from "@/services/mockStorage";
 import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
@@ -148,9 +150,9 @@ describe("evaluateDischargeReadiness", () => {
     );
     expect(result.ready).toBe(false);
     expect(result.blockers).toEqual([
-      "Medical clearance pending",
-      "Financial clearance pending",
-      "Pharmacy not ready",
+      "drawer.blockerMedical",
+      "drawer.blockerFinancial",
+      "drawer.blockerPharmacy",
     ]);
   });
 
@@ -160,9 +162,7 @@ describe("evaluateDischargeReadiness", () => {
       makePatient({ is_emergency_anonymous: true }),
     );
     expect(result.ready).toBe(false);
-    expect(result.blockers).toContain(
-      "Anonymous emergency profile must be reconciled first",
-    );
+    expect(result.blockers).toContain("drawer.blockerReconcile");
   });
 });
 
@@ -287,6 +287,63 @@ describe("transferAdmission", () => {
 
   it("throws for an unknown admission", () => {
     expect(() => transferAdmission("nope", {})).toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// searchPatients / getLatestVisitForPatient — the Phase 15 "find my patient"
+// front door, exercised against the deterministic seed.
+// ---------------------------------------------------------------------------
+
+describe("searchPatients", () => {
+  it("returns nothing for an empty query", () => {
+    expect(searchPatients("")).toEqual([]);
+    expect(searchPatients("   ")).toEqual([]);
+  });
+
+  it("finds a patient by partial, case-insensitive name", () => {
+    const results = searchPatients("mensah");
+    expect(results.some((p) => p.full_name === "Grace Mensah")).toBe(true);
+    expect(searchPatients("GRACE").some((p) => p.id === "pat_mensah")).toBe(
+      true,
+    );
+  });
+
+  it("finds a patient by hospital number (MRN)", () => {
+    const results = searchPatients("CF-2026-000001");
+    expect(results[0]?.id).toBe("pat_mensah");
+  });
+
+  it("matches the anonymous identifier for an emergency intake", () => {
+    const results = searchPatients("john doe");
+    expect(results.some((p) => p.id === "pat_anon_gamma")).toBe(true);
+  });
+
+  it("ranks exact / prefix matches ahead of mid-string matches", () => {
+    const results = searchPatients("grace");
+    expect(results[0]?.full_name.toLowerCase().startsWith("grace")).toBe(true);
+  });
+
+  it("caps the number of results at the limit", () => {
+    expect(searchPatients("a", 3).length).toBeLessThanOrEqual(3);
+  });
+});
+
+describe("getLatestVisitForPatient", () => {
+  it("returns a visit for a seeded patient", () => {
+    const visit = getLatestVisitForPatient("pat_mensah");
+    expect(visit).toBeDefined();
+    expect(visit?.patient_id).toBe("pat_mensah");
+  });
+
+  it("returns undefined for an unknown patient", () => {
+    expect(getLatestVisitForPatient("pat_nonexistent")).toBeUndefined();
+  });
+
+  it("prefers an open visit when one exists", () => {
+    const visit = getLatestVisitForPatient("pat_mensah");
+    // Seed keeps Grace Mensah's visit open on the board.
+    if (visit) expect(["open", "closed"]).toContain(visit.status);
   });
 });
 

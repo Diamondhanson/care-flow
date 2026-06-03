@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ClipboardPlus } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -15,6 +18,7 @@ import {
   getActiveVisitsForDepartment,
 } from "@/services/mockStorage";
 import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
+import { useT } from "@/components/locale-provider";
 import type { Department } from "@/types/healthcare";
 
 interface StageCountsProps {
@@ -28,6 +32,7 @@ export function StageCounts({
   departments,
   onDepartmentChange,
 }: StageCountsProps) {
+  const { t } = useT();
   const [counts, setCounts] = useState<Record<string, number> | null>(null);
 
   useEffect(() => {
@@ -52,23 +57,34 @@ export function StageCounts({
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">Live Board</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {t("liveBoard.title")}
+            </h1>
             <span className="text-sm font-medium tabular-nums text-muted-foreground">
-              {total ?? "—"} active
+              {total ?? "—"} {t("liveBoard.active")}
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Track every patient from admission through recovery follow-up.
+            {t("liveBoard.subtitle")}
           </p>
         </div>
 
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <Button
+          nativeButton={false}
+          render={<Link href="/intake" />}
+          className="order-first sm:order-last"
+        >
+          <ClipboardPlus className="size-4" />
+          {t("liveBoard.register")}
+        </Button>
         <div className="flex flex-col gap-1.5 sm:items-end">
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70">
-            Viewing
+            {t("liveBoard.viewing")}
           </span>
           <Select
             items={{
-              [ALL_DEPARTMENTS]: "All departments",
+              [ALL_DEPARTMENTS]: t("liveBoard.allDepartments"),
               ...Object.fromEntries(
                 activeDepartments.map((d) => [d.id, d.name]),
               ),
@@ -80,7 +96,7 @@ export function StageCounts({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={ALL_DEPARTMENTS}>All departments</SelectItem>
+              <SelectItem value={ALL_DEPARTMENTS}>{t("liveBoard.allDepartments")}</SelectItem>
               {activeDepartments.map((d) => (
                 <SelectItem key={d.id} value={d.id}>
                   {d.name}
@@ -88,6 +104,7 @@ export function StageCounts({
               ))}
             </SelectContent>
           </Select>
+        </div>
         </div>
       </header>
 
@@ -105,15 +122,15 @@ export function StageCounts({
                   className="size-2 rounded-full"
                   style={{ backgroundColor: `var(--status-${column.token})` }}
                 />
-                <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  {column.label}
+                <span className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  {t(column.label)}
                 </span>
               </div>
               <div className="flex items-end justify-between">
                 <span className="font-mono text-3xl font-semibold tabular-nums leading-none">
                   {counts ? counts[column.key] : "—"}
                 </span>
-                <span className="text-xs text-muted-foreground">patients</span>
+                <span className="text-xs text-muted-foreground">{t("liveBoard.patients")}</span>
               </div>
             </CardContent>
           </Card>

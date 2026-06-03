@@ -7,12 +7,13 @@
 
 import type { Bed, BedStatus } from "@/types/healthcare";
 
+/** i18n keys — resolve with `t(BED_STATUS_LABEL[status])`. */
 export const BED_STATUS_LABEL: Record<BedStatus, string> = {
-  free: "Free",
-  occupied: "Occupied",
-  reserved: "Reserved",
-  cleaning: "Cleaning",
-  maintenance: "Maintenance",
+  free: "bedStatus.free",
+  occupied: "bedStatus.occupied",
+  reserved: "bedStatus.reserved",
+  cleaning: "bedStatus.cleaning",
+  maintenance: "bedStatus.maintenance",
 };
 
 /** Maps each bed status to a clinical `--status-*` token. */

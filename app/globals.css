@@ -55,6 +55,12 @@
   --color-status-clearance: var(--status-clearance);
   --color-status-clearance-foreground: var(--status-clearance-foreground);
   --color-status-warning: var(--status-warning);
+  --color-triage-1: var(--triage-1);
+  --color-triage-2: var(--triage-2);
+  --color-triage-3: var(--triage-3);
+  --color-triage-4: var(--triage-4);
+  --color-triage-5: var(--triage-5);
+  --color-triage-foreground: var(--triage-foreground);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -91,7 +97,9 @@
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
+  /* Phase 16 legibility: darkened from 0.554 for stronger contrast on light
+     surfaces — much board/card metadata renders in this muted tone. */
+  --muted-foreground: oklch(0.5 0.044 257.417);
   --accent: oklch(0.968 0.007 247.896);
   --accent-foreground: oklch(0.208 0.042 265.755);
 
@@ -135,6 +143,14 @@
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
   --status-warning: oklch(0.705 0.16 70.0);
+
+  /* Triage acuity (ESI/CTAS): 1 critical → 5 non-urgent */
+  --triage-1: oklch(0.577 0.245 27.325);
+  --triage-2: oklch(0.646 0.222 41.116);
+  --triage-3: oklch(0.705 0.16 70.0);
+  --triage-4: oklch(0.723 0.176 149.0);
+  --triage-5: oklch(0.6 0.118 240.0);
+  --triage-foreground: oklch(0.984 0.003 247.858);
 }
 
 .dark {
@@ -149,7 +165,9 @@
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
+  /* Phase 16 legibility: lightened from 0.704 for stronger contrast on dark
+     surfaces (matches the lift applied to light mode). */
+  --muted-foreground: oklch(0.74 0.04 256.788);
   --accent: oklch(0.279 0.041 260.031);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
@@ -184,6 +202,14 @@
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
   --status-warning: oklch(0.769 0.16 70.0);
+
+  /* Triage acuity (ESI/CTAS): 1 critical → 5 non-urgent */
+  --triage-1: oklch(0.704 0.191 22.216);
+  --triage-2: oklch(0.72 0.18 45.0);
+  --triage-3: oklch(0.769 0.16 70.0);
+  --triage-4: oklch(0.723 0.176 149.0);
+  --triage-5: oklch(0.68 0.12 240.0);
+  --triage-foreground: oklch(0.208 0.042 265.755);
 }
 
 @layer base {

@@ -22,10 +22,11 @@ import type {
 // Label + theme-token maps (mirror the orders.ts convention)
 // ---------------------------------------------------------------------------
 
+/** i18n keys — resolve with `t(PRESCRIPTION_STATUS_LABEL[status])`. */
 export const PRESCRIPTION_STATUS_LABEL: Record<PrescriptionStatus, string> = {
-  active: "Active",
-  completed: "Completed",
-  discontinued: "Discontinued",
+  active: "prescriptionStatus.active",
+  completed: "prescriptionStatus.completed",
+  discontinued: "prescriptionStatus.discontinued",
 };
 
 /** Suffix of the `--status-{token}` CSS variable, or "muted" for a plain chip. */
@@ -38,11 +39,12 @@ export const PRESCRIPTION_STATUS_TOKEN: Record<
   discontinued: "muted",
 };
 
+/** i18n keys — resolve with `t(MAR_STATUS_LABEL[status])`. */
 export const MAR_STATUS_LABEL: Record<MarStatus, string> = {
-  given: "Given",
-  held: "Held",
-  refused: "Refused",
-  missed: "Missed",
+  given: "marStatus.given",
+  held: "marStatus.held",
+  refused: "marStatus.refused",
+  missed: "marStatus.missed",
 };
 
 /** Theme token per MAR outcome. "muted" renders as a plain (un-tinted) chip. */

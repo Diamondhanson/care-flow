@@ -67,6 +67,13 @@ export type Sex = "male" | "female" | "other" | "unknown";
 /** `visit_type` — outpatient (sees a doctor and leaves) vs inpatient vs emergency. */
 export type VisitType = "outpatient" | "inpatient" | "emergency";
 
+/**
+ * `triage_level` — emergency-severity acuity that orders the queue: who is seen
+ * first. 1 = immediate/critical (resuscitation) … 5 = non-urgent. Modeled on the
+ * 5-level Emergency Severity Index. `null` until a nurse triages the visit.
+ */
+export type TriageLevel = 1 | 2 | 3 | 4 | 5;
+
 /** `visit_status` — lifecycle of a single encounter. */
 export type VisitStatus = "open" | "closed" | "cancelled";
 
@@ -265,6 +272,8 @@ export interface Visit {
   chief_complaint: string | null;
   /** Nurse's initial triage notes / observations. */
   triage_notes: string | null;
+  /** Emergency-severity acuity (1 = critical … 5 = non-urgent); null until triaged. */
+  triage_level: TriageLevel | null;
   arrived_at: ISODateString;
   closed_at: ISODateString | null;
   created_at: ISODateString;

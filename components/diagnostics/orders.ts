@@ -1,18 +1,18 @@
 import type { OrderStatus, OrderType, Result } from "@/types/healthcare";
 
-/** Human-readable label for a diagnostic order type. */
+/** i18n key for a diagnostic order type — resolve with `t(ORDER_TYPE_LABEL[type])`. */
 export const ORDER_TYPE_LABEL: Record<OrderType, string> = {
-  lab: "Lab",
-  imaging: "Imaging",
-  procedure: "Procedure",
+  lab: "orderType.lab",
+  imaging: "orderType.imaging",
+  procedure: "orderType.procedure",
 };
 
-/** Human-readable label for an order's lifecycle status. */
+/** i18n key for an order's lifecycle status. */
 export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
-  requested: "Requested",
-  in_progress: "In progress",
-  completed: "Completed",
-  cancelled: "Cancelled",
+  requested: "orderStatus.requested",
+  in_progress: "orderStatus.in_progress",
+  completed: "orderStatus.completed",
+  cancelled: "orderStatus.cancelled",
 };
 
 /**

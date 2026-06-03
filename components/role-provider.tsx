@@ -101,14 +101,14 @@ export function useRole(): RoleContextValue {
   return ctx;
 }
 
-/** Human-readable label for a staff role. */
+/** i18n message key for a staff role — resolve with `t(ROLE_LABEL[role])`. */
 export const ROLE_LABEL: Record<StaffRole, string> = {
-  doctor: "Doctor",
-  nurse: "Nurse",
-  admin: "Administrator",
-  lab_tech: "Lab Technician",
-  pharmacist: "Pharmacist",
-  receptionist: "Receptionist",
+  doctor: "roles.doctor",
+  nurse: "roles.nurse",
+  admin: "roles.admin",
+  lab_tech: "roles.lab_tech",
+  pharmacist: "roles.pharmacist",
+  receptionist: "roles.receptionist",
 };
 
 /** Initials for an avatar fallback, e.g. "Dr. A. Okafor" → "AO". */

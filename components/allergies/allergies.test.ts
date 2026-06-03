@@ -11,6 +11,7 @@ import {
   highestSeverity,
   sortAllergiesBySeverity,
 } from "./allergies";
+import { translate } from "@/i18n";
 
 function alg(
   severity: AllergySeverity,
@@ -21,9 +22,9 @@ function alg(
 
 describe("label & token maps", () => {
   it("labels every category and severity", () => {
-    expect(ALLERGY_CATEGORY_LABEL.drug).toBe("Drug");
-    expect(ALLERGY_CATEGORY_LABEL.environmental).toBe("Environmental");
-    expect(ALLERGY_SEVERITY_LABEL.life_threatening).toBe("Life-threatening");
+    expect(translate("en", ALLERGY_CATEGORY_LABEL.drug)).toBe("Drug");
+    expect(translate("en", ALLERGY_CATEGORY_LABEL.environmental)).toBe("Environmental");
+    expect(translate("en", ALLERGY_SEVERITY_LABEL.life_threatening)).toBe("Life-threatening");
   });
 
   it("escalates the worst severities to the alert token", () => {

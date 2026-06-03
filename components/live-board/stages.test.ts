@@ -4,9 +4,11 @@ import {
   BOARD_COLUMNS,
   columnForStage,
   nextStage,
+  nextStepLabel,
   stageLabel,
   tokenForStage,
 } from "@/components/live-board/stages";
+import { translate } from "@/i18n";
 
 describe("columnForStage", () => {
   it("maps every in-progress stage to exactly one board column", () => {
@@ -56,10 +58,49 @@ describe("nextStage", () => {
   });
 });
 
+describe("nextStepLabel", () => {
+  it("names the action that advances the visit, keyed off the next stage", () => {
+    // registration → triage → "Take vitals & triage"
+    expect(translate("en", nextStepLabel("registration", "inpatient")!)).toBe(
+      "Take vitals & triage",
+    );
+    // triage → consultation → "Send to doctor"
+    expect(translate("en", nextStepLabel("triage", "inpatient")!)).toBe(
+      "Send to doctor",
+    );
+    // treatment → discharge_planning → "Plan discharge"
+    expect(translate("en", nextStepLabel("treatment", "inpatient")!)).toBe(
+      "Plan discharge",
+    );
+  });
+
+  it("respects the outpatient short-circuit (diagnostics → discharge)", () => {
+    // Outpatient diagnostics advances to discharged → "Discharge patient".
+    expect(translate("en", nextStepLabel("diagnostics", "outpatient")!)).toBe(
+      "Discharge patient",
+    );
+    // Inpatient diagnostics advances to treatment → "Start treatment".
+    expect(translate("en", nextStepLabel("diagnostics", "inpatient")!)).toBe(
+      "Start treatment",
+    );
+  });
+
+  it("translates to French", () => {
+    expect(translate("fr", nextStepLabel("triage", "inpatient")!)).toBe(
+      "Envoyer au médecin",
+    );
+  });
+
+  it("returns null once the visit reaches the end of its path", () => {
+    expect(nextStepLabel("followed_up", "inpatient")).toBeNull();
+    expect(nextStepLabel("discharged", "outpatient")).toBeNull();
+  });
+});
+
 describe("stageLabel & tokenForStage", () => {
   it("provides a human label for each stage", () => {
-    expect(stageLabel("discharge_planning")).toBe("Discharge Planning");
-    expect(stageLabel("followed_up")).toBe("Followed Up");
+    expect(translate("en", stageLabel("discharge_planning"))).toBe("Discharge planning");
+    expect(translate("en", stageLabel("followed_up"))).toBe("Followed up");
   });
 
   it("falls back to the intake token for terminal stages", () => {

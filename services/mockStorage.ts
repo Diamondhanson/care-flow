@@ -49,6 +49,7 @@ import type {
   Transfer,
   TransferId,
   TreatmentRecord,
+  TriageLevel,
   Visit,
   VisitId,
   VisitType,
@@ -57,7 +58,7 @@ import type {
 } from "@/types/healthcare";
 import { clearOutbox, enqueueChanges, type NewChange } from "@/services/syncQueue";
 
-const STORAGE_KEY = "careflow_db_v4";
+const STORAGE_KEY = "careflow_db_v5";
 
 interface Database {
   departments: Department[];
@@ -297,6 +298,8 @@ export interface CreateVisitInput {
   registered_by_id?: StaffId | null;
   chief_complaint?: string | null;
   triage_notes?: string | null;
+  /** Emergency-severity acuity (1 = critical … 5 = non-urgent); null if untriaged. */
+  triage_level?: TriageLevel | null;
   /** Defaults to "registration". */
   stage?: CareStage;
 }
@@ -546,6 +549,59 @@ export function getPatients(): Patient[] {
 
 export function getPatientById(id: PatientId): Patient | undefined {
   return loadDatabase().patients.find((p) => p.id === id);
+}
+
+/**
+ * Global patient lookup for the "find my patient" front door. Matches on name,
+ * hospital number (MRN / booklet number), national ID, phone, or the temporary
+ * anonymous identifier — case-insensitive substring. Returns the best matches,
+ * MRN/exact-prefix hits first, capped at `limit`.
+ */
+export function searchPatients(query: string, limit = 8): Patient[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  const matches = loadDatabase().patients.filter((p) => {
+    const haystacks = [
+      p.full_name,
+      p.mrn,
+      p.national_id ?? "",
+      p.phone ?? "",
+      p.anonymous_identifier ?? "",
+    ];
+    return haystacks.some((h) => h.toLowerCase().includes(q));
+  });
+  // Rank: hospital-number / name prefix matches before mid-string matches.
+  const score = (p: Patient): number => {
+    const mrn = p.mrn.toLowerCase();
+    const name = p.full_name.toLowerCase();
+    if (mrn === q || name === q) return 0;
+    if (mrn.startsWith(q) || name.startsWith(q)) return 1;
+    if (mrn.includes(q) || name.includes(q)) return 2;
+    return 3;
+  };
+  return matches
+    .sort((a, b) => score(a) - score(b) || a.full_name.localeCompare(b.full_name))
+    .slice(0, limit);
+}
+
+/** Every visit a patient has ever had, most-recently arrived first. */
+export function getVisitsForPatient(patientId: PatientId): Visit[] {
+  return loadDatabase()
+    .visits.filter((v) => v.patient_id === patientId)
+    .sort((a, b) => b.arrived_at.localeCompare(a.arrived_at));
+}
+
+/**
+ * Resolve a patient to the visit a search result should open: the open visit if
+ * one exists, otherwise the most recently created visit. Undefined if the
+ * patient has never had a visit.
+ */
+export function getLatestVisitForPatient(patientId: PatientId): Visit | undefined {
+  const visits = loadDatabase().visits.filter((v) => v.patient_id === patientId);
+  if (visits.length === 0) return undefined;
+  const open = visits.filter((v) => v.status === "open");
+  const pool = open.length ? open : visits;
+  return [...pool].sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
 }
 
 /** A patient's allergy records, most-recently noted first. */
@@ -1139,6 +1195,7 @@ export function createNewVisit(
     registered_by_id: visitData.registered_by_id ?? null,
     chief_complaint: visitData.chief_complaint ?? null,
     triage_notes: visitData.triage_notes ?? null,
+    triage_level: visitData.triage_level ?? null,
     arrived_at: timestamp,
     closed_at: null,
     created_at: timestamp,
@@ -1741,17 +1798,20 @@ export function updateAdmissionClearances(
  * eligible to be discharged. Discharge is blocked until all three department
  * clearances are granted AND the patient is no longer an unreconciled anonymous
  * emergency record. Pure — safe to call from the UI to drive button state.
+ *
+ * `blockers` are i18n message keys (resolved with `t()` at the render site), not
+ * display text, so the gate stays language-agnostic.
  */
 export function evaluateDischargeReadiness(
   admission: Admission,
   patient: Patient
 ): { ready: boolean; blockers: string[] } {
   const blockers: string[] = [];
-  if (!admission.is_medical_cleared) blockers.push("Medical clearance pending");
-  if (!admission.is_financial_cleared) blockers.push("Financial clearance pending");
-  if (!admission.is_pharmacy_ready) blockers.push("Pharmacy not ready");
+  if (!admission.is_medical_cleared) blockers.push("drawer.blockerMedical");
+  if (!admission.is_financial_cleared) blockers.push("drawer.blockerFinancial");
+  if (!admission.is_pharmacy_ready) blockers.push("drawer.blockerPharmacy");
   if (patient.is_emergency_anonymous) {
-    blockers.push("Anonymous emergency profile must be reconciled first");
+    blockers.push("drawer.blockerReconcile");
   }
   return { ready: blockers.length === 0, blockers };
 }
@@ -2023,15 +2083,15 @@ function seedDatabaseObject(): Database {
 
   const visits: Visit[] = [
     // Intake column (registration/triage) — emergency, just arrived.
-    { id: "vis_mensah", patient_id: "pat_mensah", visit_type: "emergency", status: "open", stage: "triage", department_id: "dept_emergency", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Acute chest pain", triage_notes: "Diaphoretic, BP elevated. ECG ordered. Awaiting cardiac workup.", arrived_at: day(3), closed_at: null, created_at: day(3), updated_at: day(3) },
+    { id: "vis_mensah", patient_id: "pat_mensah", visit_type: "emergency", status: "open", stage: "triage", department_id: "dept_emergency", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Acute chest pain", triage_notes: "Diaphoretic, BP elevated. ECG ordered. Awaiting cardiac workup.", triage_level: 2, arrived_at: day(3), closed_at: null, created_at: day(3), updated_at: day(3) },
     // Consultation column (consultation/diagnostics) — outpatient diabetes follow-up.
-    { id: "vis_owusu", patient_id: "pat_owusu", visit_type: "outpatient", status: "open", stage: "diagnostics", department_id: "dept_medicine", attending_doctor_id: "staff_okafor", registered_by_id: "staff_adebayo", chief_complaint: "Routine diabetes review", triage_notes: "Stable, ambulatory. HbA1c sample taken.", arrived_at: day(2), closed_at: null, created_at: day(2), updated_at: day(2) },
+    { id: "vis_owusu", patient_id: "pat_owusu", visit_type: "outpatient", status: "open", stage: "diagnostics", department_id: "dept_medicine", attending_doctor_id: "staff_okafor", registered_by_id: "staff_adebayo", chief_complaint: "Routine diabetes review", triage_notes: "Stable, ambulatory. HbA1c sample taken.", triage_level: 5, arrived_at: day(2), closed_at: null, created_at: day(2), updated_at: day(2) },
     // Treatment column — inpatient post-op recovery.
-    { id: "vis_idris", patient_id: "pat_idris", visit_type: "inpatient", status: "open", stage: "treatment", department_id: "dept_surgery", attending_doctor_id: "staff_chen", registered_by_id: "staff_adebayo", chief_complaint: "Post-operative recovery, laparotomy", triage_notes: null, arrived_at: day(28), closed_at: null, created_at: day(28), updated_at: day(6) },
+    { id: "vis_idris", patient_id: "pat_idris", visit_type: "inpatient", status: "open", stage: "treatment", department_id: "dept_surgery", attending_doctor_id: "staff_chen", registered_by_id: "staff_adebayo", chief_complaint: "Post-operative recovery, laparotomy", triage_notes: null, triage_level: 3, arrived_at: day(28), closed_at: null, created_at: day(28), updated_at: day(6) },
     // Treatment column — anonymous emergency, head trauma in ICU.
-    { id: "vis_anon", patient_id: "pat_anon_gamma", visit_type: "emergency", status: "open", stage: "treatment", department_id: "dept_icu", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Unconscious on arrival, head trauma — RTA", triage_notes: "Unidentified. GCS 7 on arrival. Neuro protocol initiated.", arrived_at: day(5), closed_at: null, created_at: day(5), updated_at: day(1) },
+    { id: "vis_anon", patient_id: "pat_anon_gamma", visit_type: "emergency", status: "open", stage: "treatment", department_id: "dept_icu", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Unconscious on arrival, head trauma — RTA", triage_notes: "Unidentified. GCS 7 on arrival. Neuro protocol initiated.", triage_level: 1, arrived_at: day(5), closed_at: null, created_at: day(5), updated_at: day(1) },
     // Discharge column — inpatient pneumonia, awaiting financial clearance.
-    { id: "vis_bello", patient_id: "pat_bello", visit_type: "inpatient", status: "open", stage: "discharge_planning", department_id: "dept_medicine", attending_doctor_id: "staff_okafor", registered_by_id: "staff_adebayo", chief_complaint: "Community-acquired pneumonia", triage_notes: null, arrived_at: day(96), closed_at: null, created_at: day(96), updated_at: day(12) },
+    { id: "vis_bello", patient_id: "pat_bello", visit_type: "inpatient", status: "open", stage: "discharge_planning", department_id: "dept_medicine", attending_doctor_id: "staff_okafor", registered_by_id: "staff_adebayo", chief_complaint: "Community-acquired pneumonia", triage_notes: null, triage_level: 3, arrived_at: day(96), closed_at: null, created_at: day(96), updated_at: day(12) },
   ];
 
   const consultations: Consultation[] = [
@@ -2369,6 +2429,11 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
       registered_by_id: "staff_adebayo",
       chief_complaint: pick(complaints),
       triage_notes: null,
+      triage_level: (visitType === "emergency"
+        ? randint(1, 3)
+        : visitType === "inpatient"
+          ? randint(2, 4)
+          : randint(4, 5)) as TriageLevel,
       arrived_at: day(arrivedH),
       closed_at: day(closedH),
       created_at: day(arrivedH),

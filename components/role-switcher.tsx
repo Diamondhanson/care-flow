@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ROLE_LABEL, useRole } from "@/components/role-provider";
+import { useT } from "@/components/locale-provider";
 import type { Staff, StaffRole } from "@/types/healthcare";
 
 const ROLE_ORDER: StaffRole[] = [
@@ -35,6 +36,7 @@ const ROLE_ORDER: StaffRole[] = [
 export function RoleSwitcher() {
   const { mounted, allStaff, actingStaffId, actingStaff, setActingStaffId } =
     useRole();
+  const { t } = useT();
 
   // Group staff by role in a stable, clinically-sensible order.
   const grouped = ROLE_ORDER.map((role) => ({
@@ -49,21 +51,21 @@ export function RoleSwitcher() {
           buttonVariants({ variant: "outline", size: "sm" }),
           "gap-2",
         )}
-        aria-label="Switch acting role (dev)"
+        aria-label={t("shell.switchRole")}
       >
         <UserCog className="size-4 text-muted-foreground" />
         <span className="hidden text-xs font-medium sm:inline">
           {mounted && actingStaff
-            ? ROLE_LABEL[actingStaff.role]
-            : "Acting role"}
+            ? t(ROLE_LABEL[actingStaff.role])
+            : t("shell.actingRole")}
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center justify-between">
-            <span>Acting as (dev)</span>
+            <span>{t("shell.actingAs")}</span>
             <span className="text-[10px] font-normal uppercase tracking-wide text-muted-foreground/70">
-              no auth
+              {t("shell.noAuth")}
             </span>
           </DropdownMenuLabel>
         </DropdownMenuGroup>
@@ -78,7 +80,7 @@ export function RoleSwitcher() {
             <div key={group.role}>
               {index > 0 ? <DropdownMenuSeparator /> : null}
               <DropdownMenuLabel className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground/70">
-                {ROLE_LABEL[group.role]}
+                {t(ROLE_LABEL[group.role])}
               </DropdownMenuLabel>
               {group.members.map((member: Staff) => (
                 <DropdownMenuRadioItem key={member.id} value={member.id}>

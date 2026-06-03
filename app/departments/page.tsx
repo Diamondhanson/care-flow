@@ -27,6 +27,7 @@ import {
   setDepartmentActive,
   updateDepartment,
 } from "@/services/mockStorage";
+import { useT } from "@/components/locale-provider";
 import type { Department } from "@/types/healthcare";
 
 interface DirectoryRow {
@@ -51,6 +52,7 @@ function load(): DirectoryRow[] {
 }
 
 export default function DepartmentsPage() {
+  const { t } = useT();
   const [rows, setRows] = useState<DirectoryRow[] | null>(null);
   const [editing, setEditing] = useState<Department | "new" | null>(null);
 
@@ -75,29 +77,29 @@ export default function DepartmentsPage() {
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-3">
-            <h1 className="text-2xl font-semibold tracking-tight">Departments</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("departments.title")}</h1>
             <span className="text-sm font-medium tabular-nums text-muted-foreground">
-              {total ?? "—"} total
+              {total ?? "—"} {t("departments.total")}
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Manage the clinical and administrative units patients are routed to.
+            {t("departments.subtitle")}
           </p>
         </div>
         <Button onClick={() => setEditing("new")}>
-          <Plus className="size-4" /> New department
+          <Plus className="size-4" /> {t("departments.newDepartment")}
         </Button>
       </header>
 
       {unrouted > 0 ? (
         <div className="rounded-md border border-dashed border-border bg-muted/30 px-4 py-3 text-xs text-muted-foreground">
           <span className="font-mono tabular-nums text-foreground">{unrouted}</span>{" "}
-          active visit{unrouted === 1 ? "" : "s"} not yet routed to a department.
+          {t(unrouted === 1 ? "departments.unroutedOne" : "departments.unroutedOther")}
         </div>
       ) : null}
 
       {rows === null ? (
-        <p className="text-sm text-muted-foreground">Loading departments…</p>
+        <p className="text-sm text-muted-foreground">{t("departments.loading")}</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map(({ department, activeVisits }) => (
@@ -127,7 +129,7 @@ export default function DepartmentsPage() {
                     ) : null}
                   </div>
                   <Badge variant={department.is_active ? "secondary" : "outline"}>
-                    {department.is_active ? "Active" : "Archived"}
+                    {department.is_active ? t("departments.active") : t("departments.archived")}
                   </Badge>
                 </div>
 
@@ -142,7 +144,7 @@ export default function DepartmentsPage() {
                   <span className="font-mono tabular-nums text-foreground">
                     {activeVisits}
                   </span>
-                  active visit{activeVisits === 1 ? "" : "s"}
+                  {t(activeVisits === 1 ? "departments.activeVisitOne" : "departments.activeVisitOther")}
                 </div>
 
                 <Separator />
@@ -155,14 +157,14 @@ export default function DepartmentsPage() {
                         handleToggleActive(department, next)
                       }
                     />
-                    {department.is_active ? "Active" : "Archived"}
+                    {department.is_active ? t("departments.active") : t("departments.archived")}
                   </label>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setEditing(department)}
                   >
-                    <Pencil className="size-3.5" /> Edit
+                    <Pencil className="size-3.5" /> {t("departments.edit")}
                   </Button>
                 </div>
               </CardContent>
@@ -192,6 +194,7 @@ function DepartmentFormSheet({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useT();
   const isNew = target === "new";
   const department = target && target !== "new" ? target : null;
 
@@ -213,7 +216,7 @@ function DepartmentFormSheet({
   function handleSave() {
     setError(null);
     if (!name.trim()) {
-      setError("A department name is required.");
+      setError(t("departments.nameRequired"));
       return;
     }
     if (isNew) {
@@ -242,49 +245,47 @@ function DepartmentFormSheet({
     >
       <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
         <SheetHeader className="border-b border-border">
-          <SheetTitle>{isNew ? "New department" : "Edit department"}</SheetTitle>
+          <SheetTitle>{isNew ? t("departments.newTitle") : t("departments.editTitle")}</SheetTitle>
           <SheetDescription>
-            {isNew
-              ? "Create a unit patients can be routed to at registration."
-              : "Update this unit's details or archive it."}
+            {isNew ? t("departments.newDesc") : t("departments.editDesc")}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-5 p-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="dept_name">Name</Label>
+            <Label htmlFor="dept_name">{t("departments.name")}</Label>
             <Input
               id="dept_name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Maternity"
+              placeholder={t("departments.namePlaceholder")}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="dept_code">Code</Label>
+            <Label htmlFor="dept_code">{t("departments.code")}</Label>
             <Input
               id="dept_code"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Optional — e.g. MAT"
+              placeholder={t("departments.codePlaceholder")}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="dept_desc">Description</Label>
+            <Label htmlFor="dept_desc">{t("departments.description")}</Label>
             <Textarea
               id="dept_desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional — what this unit handles"
+              placeholder={t("departments.descriptionPlaceholder")}
             />
           </div>
 
           {!isNew ? (
             <label className="flex items-center justify-between gap-4 rounded-md border border-border p-3">
               <span className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium">Active</span>
+                <span className="text-sm font-medium">{t("departments.active")}</span>
                 <span className="text-xs text-muted-foreground">
-                  Archived units are hidden from routing &amp; board filters.
+                  {t("departments.activeHint")}
                 </span>
               </span>
               <Switch checked={isActive} onCheckedChange={setIsActive} />
@@ -296,10 +297,10 @@ function DepartmentFormSheet({
 
         <SheetFooter className="mt-auto flex-row justify-end gap-3 border-t border-border">
           <Button variant="ghost" onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleSave}>
-            {isNew ? "Create department" : "Save changes"}
+            {isNew ? t("departments.create") : t("common.saveChanges")}
           </Button>
         </SheetFooter>
       </SheetContent>

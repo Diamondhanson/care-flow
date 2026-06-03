@@ -54,6 +54,7 @@ function makeVisit(overrides: Partial<Visit> = {}): Visit {
     registered_by_id: null,
     chief_complaint: null,
     triage_notes: null,
+    triage_level: null,
     arrived_at: daysAgoIso(1),
     closed_at: null,
     created_at: daysAgoIso(1),

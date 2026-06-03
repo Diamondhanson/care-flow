@@ -34,19 +34,13 @@ import {
   type DoseStatus,
 } from "@/components/medications/prescriptions";
 import { useRole } from "@/components/role-provider";
+import { useT, type TFunction } from "@/components/locale-provider";
+import { formatDateTime } from "@/i18n/format";
 import type {
   MarStatus,
   MedicationAdministration,
   Prescription,
 } from "@/types/healthcare";
-
-const DOSE_STATE_LABEL: Record<DoseState, string> = {
-  overdue: "Overdue",
-  due: "Due now",
-  upcoming: "Upcoming",
-  prn: "PRN",
-  inactive: "Inactive",
-};
 
 const DOSE_STATE_TOKEN: Record<
   DoseState,
@@ -60,11 +54,7 @@ const DOSE_STATE_TOKEN: Record<
 };
 
 /** One-tap bedside actions, in the order a nurse reaches for them. */
-const MAR_ACTIONS: { status: MarStatus; label: string }[] = [
-  { status: "given", label: "Given" },
-  { status: "held", label: "Held" },
-  { status: "refused", label: "Refused" },
-];
+const MAR_ACTIONS: MarStatus[] = ["given", "held", "refused"];
 
 /** Where the dose is administered: a ward bed vs. an outpatient/ED encounter. */
 type CareSetting = "inpatient" | "ambulatory";
@@ -98,7 +88,7 @@ interface Placement {
  * else (clinic, ED, observation without a bed) is ambulatory and grouped by
  * their department instead of a ward.
  */
-function placeVisit(visitId: string): Placement {
+function placeVisit(visitId: string, t: TFunction): Placement {
   const admission = getAdmissionForVisit(visitId);
   if (admission?.status === "active" && admission.bed_id) {
     const bed = getBedById(admission.bed_id);
@@ -110,10 +100,10 @@ function placeVisit(visitId: string): Placement {
     const dept = getDepartmentById(visit.department_id);
     if (dept) return { unit: dept.name, setting: "ambulatory" };
   }
-  return { unit: "Unassigned", setting: "ambulatory" };
+  return { unit: t("meds.unassigned"), setting: "ambulatory" };
 }
 
-function load(now: number): MarRow[] {
+function load(now: number, t: TFunction): MarRow[] {
   return getActivePrescriptions()
     .map((prescription) => {
       const visit = getVisitById(prescription.visit_id);
@@ -122,14 +112,14 @@ function load(now: number): MarRow[] {
       const administrations = getMedicationAdministrationsForPrescription(
         prescription.id,
       );
-      const place = placeVisit(prescription.visit_id);
+      const place = placeVisit(prescription.visit_id, t);
       return {
         prescription,
         patientName: patient
           ? isAnonymous && patient.anonymous_identifier
             ? patient.anonymous_identifier
             : patient.full_name
-          : "Unknown patient",
+          : t("meds.unknownPatient"),
         mrn: patient?.mrn ?? "—",
         isAnonymous,
         unit: place.unit,
@@ -167,7 +157,7 @@ function summarize(rows: MarRow[]): UnitSummary[] {
   });
 }
 
-function relativeToNow(iso: string, now: number): string {
+function relativeToNow(iso: string, now: number, t: TFunction): string {
   const diffMin = Math.round((new Date(iso).getTime() - now) / 60_000);
   const abs = Math.abs(diffMin);
   const span =
@@ -176,8 +166,8 @@ function relativeToNow(iso: string, now: number): string {
       : abs < 1440
         ? `${Math.round(abs / 60)}h`
         : `${Math.round(abs / 1440)}d`;
-  if (diffMin <= 0) return `${span} ago`;
-  return `in ${span}`;
+  if (diffMin <= 0) return t("meds.agoSpan", { span });
+  return t("meds.inSpan", { span });
 }
 
 function WorklistCard({
@@ -193,6 +183,8 @@ function WorklistCard({
     due: string | null,
   ) => void;
 }) {
+  const { t, locale, mounted } = useT();
+  const activeLocale = mounted ? locale : "en";
   const { prescription: p, dose } = row;
   const token = DOSE_STATE_TOKEN[dose.state];
   const detail = [p.dose, p.route, p.frequency].filter(Boolean).join(" · ");
@@ -229,12 +221,12 @@ function WorklistCard({
                         }
                   }
                 >
-                  {DOSE_STATE_LABEL[dose.state]}
+                  {t(`doseState.${dose.state}`)}
                 </Badge>
                 {dose.nextDueAt ? (
                   <span className="text-[11px] tabular-nums text-muted-foreground">
-                    {dose.state === "upcoming" ? "due " : ""}
-                    {relativeToNow(dose.nextDueAt, now)}
+                    {dose.state === "upcoming" ? t("meds.duePrefix") : ""}
+                    {relativeToNow(dose.nextDueAt, now, t)}
                   </span>
                 ) : null}
               </div>
@@ -262,25 +254,25 @@ function WorklistCard({
               </div>
               {lastAdmin ? (
                 <span className="text-[11px] text-muted-foreground">
-                  Last: {lastAdmin.status}
                   {lastAdmin.administered_at
-                    ? ` · ${new Date(
-                        lastAdmin.administered_at,
-                      ).toLocaleString()}`
-                    : ""}
+                    ? t("meds.lastWithTime", {
+                        status: t(`marStatus.${lastAdmin.status}`),
+                        time: formatDateTime(lastAdmin.administered_at, activeLocale),
+                      })
+                    : t("meds.last", { status: t(`marStatus.${lastAdmin.status}`) })}
                 </span>
               ) : null}
             </div>
           </div>
           <div className="flex shrink-0 flex-wrap gap-2">
-            {MAR_ACTIONS.map((a) => (
+            {MAR_ACTIONS.map((status) => (
               <Button
-                key={a.status}
+                key={status}
                 size="sm"
-                variant={a.status === "given" ? "default" : "outline"}
-                onClick={() => onRecord(p.id, a.status, dose.nextDueAt)}
+                variant={status === "given" ? "default" : "outline"}
+                onClick={() => onRecord(p.id, status, dose.nextDueAt)}
               >
-                {a.label}
+                {t(`marStatus.${status}`)}
               </Button>
             ))}
           </div>
@@ -292,19 +284,21 @@ function WorklistCard({
 
 export default function MedicationsPage() {
   const { actingStaff } = useRole();
+  const { t } = useT();
   const [rows, setRows] = useState<MarRow[] | null>(null);
   // `now` is captured per render-cycle so dose math is stable within a refresh.
   const [now, setNow] = useState(() => Date.now());
 
   function refresh() {
-    const t = Date.now();
-    setNow(t);
-    setRows(load(t));
+    const ts = Date.now();
+    setNow(ts);
+    setRows(load(ts, t));
   }
 
   useEffect(() => {
     refresh();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t]);
 
   function handleRecord(
     prescriptionId: string,
@@ -331,16 +325,14 @@ export default function MedicationsPage() {
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-baseline gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Medication round
+            {t("meds.title")}
           </h1>
           <span className="text-sm font-medium tabular-nums text-muted-foreground">
-            {overdue} overdue · {due} due now
+            {t("meds.overdueDueNow", { overdue, due })}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Doses due across the floor. Record each one as given, held or refused
-          — it stamps the time and your name so the next shift knows exactly
-          what was done.
+          {t("meds.subtitle")}
         </p>
       </header>
 
@@ -350,7 +342,7 @@ export default function MedicationsPage() {
           <div className="flex items-center gap-2">
             <ClipboardCheck className="size-4 text-muted-foreground" />
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              Shift handover · outstanding by ward
+              {t("meds.shiftHandover")}
             </h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -360,7 +352,7 @@ export default function MedicationsPage() {
                   <span className="truncate text-sm font-medium">{s.unit}</span>
                   <div className="flex items-center gap-3 text-xs">
                     <span className="tabular-nums text-muted-foreground">
-                      {s.total} active
+                      {t("meds.active", { count: s.total })}
                     </span>
                     {s.overdue > 0 ? (
                       <span
@@ -368,7 +360,7 @@ export default function MedicationsPage() {
                         style={{ color: "var(--status-treatment)" }}
                       >
                         <AlertTriangle className="size-3" />
-                        {s.overdue} overdue
+                        {t("meds.overdue", { count: s.overdue })}
                       </span>
                     ) : null}
                     {s.due > 0 ? (
@@ -377,7 +369,7 @@ export default function MedicationsPage() {
                         style={{ color: "var(--status-boarding)" }}
                       >
                         <Clock className="size-3" />
-                        {s.due} due
+                        {t("meds.due", { count: s.due })}
                       </span>
                     ) : null}
                     {s.overdue === 0 && s.due === 0 ? (
@@ -386,7 +378,7 @@ export default function MedicationsPage() {
                         style={{ color: "var(--status-clearance)" }}
                       >
                         <CheckCircle2 className="size-3" />
-                        clear
+                        {t("meds.clear")}
                       </span>
                     ) : null}
                   </div>
@@ -399,14 +391,14 @@ export default function MedicationsPage() {
 
       {/* Worklist — split by care setting */}
       {rows === null ? (
-        <p className="text-sm text-muted-foreground">Loading medications…</p>
+        <p className="text-sm text-muted-foreground">{t("meds.loading")}</p>
       ) : rows.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
             <Pill className="size-8 text-muted-foreground/60" />
-            <p className="text-sm font-medium">No active medications</p>
+            <p className="text-sm font-medium">{t("meds.noActive")}</p>
             <p className="text-xs text-muted-foreground">
-              No active prescriptions on the floor right now.
+              {t("meds.noActiveHint")}
             </p>
           </CardContent>
         </Card>
@@ -417,7 +409,7 @@ export default function MedicationsPage() {
               <div className="flex items-center gap-2">
                 <BedDouble className="size-4 text-muted-foreground" />
                 <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Inpatient · by ward
+                  {t("meds.inpatientByWard")}
                 </h2>
                 <span className="text-[11px] tabular-nums text-muted-foreground/70">
                   {inpatient.length}
@@ -441,7 +433,7 @@ export default function MedicationsPage() {
               <div className="flex items-center gap-2">
                 <DoorOpen className="size-4 text-muted-foreground" />
                 <h2 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  Outpatient & ED
+                  {t("meds.outpatientEd")}
                 </h2>
                 <span className="text-[11px] tabular-nums text-muted-foreground/70">
                   {ambulatory.length}

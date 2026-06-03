@@ -22,6 +22,8 @@ import {
   getBedById,
   getPatientById,
 } from "@/services/mockStorage";
+import { useT } from "@/components/locale-provider";
+import { ResetDemo } from "@/components/demo/reset-demo";
 import type { Staff, StaffRole } from "@/types/healthcare";
 
 interface RoleGroup {
@@ -33,12 +35,12 @@ interface RoleGroup {
 }
 
 const ROLE_GROUPS: readonly RoleGroup[] = [
-  { role: "doctor", label: "Doctors", token: "treatment", icon: Stethoscope },
-  { role: "nurse", label: "Nursing", token: "boarding", icon: HeartPulse },
-  { role: "lab_tech", label: "Laboratory", token: "diagnostics", icon: FlaskConical },
-  { role: "pharmacist", label: "Pharmacy", token: "discharge", icon: Pill },
-  { role: "receptionist", label: "Front Desk", token: "clearance", icon: ConciergeBell },
-  { role: "admin", label: "Administration", token: "clearance", icon: ShieldCheck },
+  { role: "doctor", label: "staff.groupDoctors", token: "treatment", icon: Stethoscope },
+  { role: "nurse", label: "staff.groupNursing", token: "boarding", icon: HeartPulse },
+  { role: "lab_tech", label: "staff.groupLaboratory", token: "diagnostics", icon: FlaskConical },
+  { role: "pharmacist", label: "staff.groupPharmacy", token: "discharge", icon: Pill },
+  { role: "receptionist", label: "staff.groupFrontDesk", token: "clearance", icon: ConciergeBell },
+  { role: "admin", label: "staff.groupAdministration", token: "clearance", icon: ShieldCheck },
 ] as const;
 
 interface AttendingPatient {
@@ -68,6 +70,7 @@ function initials(name: string): string {
 }
 
 export default function StaffDirectoryPage() {
+  const { t } = useT();
   const [data, setData] = useState<DirectoryData | null>(null);
 
   useEffect(() => {
@@ -82,7 +85,7 @@ export default function StaffDirectoryPage() {
       const name =
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
-          : (patient?.full_name ?? "Unknown patient");
+          : (patient?.full_name ?? t("staff.unknownPatient"));
       const admission = getAdmissionForVisit(visit.id);
       const location = admission?.bed_id
         ? (getBedById(admission.bed_id)?.label ?? null)
@@ -92,7 +95,7 @@ export default function StaffDirectoryPage() {
       (attending[visit.attending_doctor_id] ??= []).push({ name, location });
     }
     setData({ staff, departments, attending });
-  }, []);
+  }, [t]);
 
   const total = data?.staff.length ?? null;
 
@@ -100,18 +103,18 @@ export default function StaffDirectoryPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
       <header className="flex flex-col gap-1">
         <div className="flex items-baseline gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight">Staff Directory</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("staff.title")}</h1>
           <span className="text-sm font-medium tabular-nums text-muted-foreground">
-            {total ?? "—"} members
+            {total ?? "—"} {t("staff.members")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Clinical and administrative staff, grouped by role.
+          {t("staff.subtitle")}
         </p>
       </header>
 
       {data === null ? (
-        <p className="text-sm text-muted-foreground">Loading directory…</p>
+        <p className="text-sm text-muted-foreground">{t("staff.loading")}</p>
       ) : (
         ROLE_GROUPS.map((group) => {
           const members = data.staff.filter((s) => s.role === group.role);
@@ -130,7 +133,7 @@ export default function StaffDirectoryPage() {
                 >
                   <Icon className="size-3.5" />
                 </span>
-                <h2 className="text-sm font-medium">{group.label}</h2>
+                <h2 className="text-sm font-medium">{t(group.label)}</h2>
                 <span className="font-mono text-xs tabular-nums text-muted-foreground">
                   {members.length}
                 </span>
@@ -169,7 +172,7 @@ export default function StaffDirectoryPage() {
                               }}
                             />
                             <span className="text-[11px] text-muted-foreground">
-                              {s.is_active ? "Active" : "Inactive"}
+                              {s.is_active ? t("staff.active") : t("staff.inactive")}
                             </span>
                           </div>
                         </div>
@@ -185,7 +188,7 @@ export default function StaffDirectoryPage() {
                       {group.role === "doctor" ? (
                         <div className="flex flex-col gap-1.5 border-t border-border pt-3">
                           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                            Attending · {data.attending[s.id]?.length ?? 0}
+                            {t("staff.attending", { count: data.attending[s.id]?.length ?? 0 })}
                           </span>
                           {data.attending[s.id]?.length ? (
                             <ul className="flex flex-col gap-1">
@@ -205,7 +208,7 @@ export default function StaffDirectoryPage() {
                             </ul>
                           ) : (
                             <span className="text-xs text-muted-foreground">
-                              No active patients
+                              {t("staff.noActivePatients")}
                             </span>
                           )}
                         </div>
@@ -218,6 +221,11 @@ export default function StaffDirectoryPage() {
           );
         })
       )}
+
+      <section className="flex flex-col gap-4">
+        <h2 className="text-sm font-medium">{t("demo.title")}</h2>
+        <ResetDemo />
+      </section>
     </div>
   );
 }

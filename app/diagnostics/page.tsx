@@ -41,6 +41,7 @@ import {
   ORDER_TYPE_LABEL,
 } from "@/components/diagnostics/orders";
 import { useRole } from "@/components/role-provider";
+import { useT, type TFunction } from "@/components/locale-provider";
 import type { Order, OrderType } from "@/types/healthcare";
 
 const TYPE_ICON: Record<OrderType, LucideIcon> = {
@@ -58,7 +59,7 @@ interface QueueRow {
   orderedBy: string | null;
 }
 
-function load(): QueueRow[] {
+function load(t: TFunction): QueueRow[] {
   return getOpenOrders().map((order) => {
     const visit = getVisitById(order.visit_id);
     const patient = visit ? getPatientById(visit.patient_id) : null;
@@ -69,7 +70,7 @@ function load(): QueueRow[] {
         ? isAnonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
           : patient.full_name
-        : "Unknown patient",
+        : t("diagnostics.unknownPatient"),
       mrn: patient?.mrn ?? "—",
       isAnonymous,
       chiefComplaint: visit?.chief_complaint ?? null,
@@ -81,16 +82,18 @@ function load(): QueueRow[] {
 }
 
 export default function DiagnosticsPage() {
+  const { t } = useT();
   const [rows, setRows] = useState<QueueRow[] | null>(null);
   const [active, setActive] = useState<Order | null>(null);
 
   function refresh() {
-    setRows(load());
+    setRows(load(t));
   }
 
   useEffect(() => {
     refresh();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t]);
 
   const pending = rows?.length ?? null;
 
@@ -99,27 +102,26 @@ export default function DiagnosticsPage() {
       <header className="flex flex-col gap-1">
         <div className="flex items-baseline gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Diagnostics queue
+            {t("diagnostics.title")}
           </h1>
           <span className="text-sm font-medium tabular-nums text-muted-foreground">
-            {pending ?? "—"} awaiting result
+            {pending ?? "—"} {t("diagnostics.awaiting")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground">
-          Tests ordered by clinicians, awaiting a recorded result. Enter a result
-          to close the loop and return it to the patient&apos;s record.
+          {t("diagnostics.subtitle")}
         </p>
       </header>
 
       {rows === null ? (
-        <p className="text-sm text-muted-foreground">Loading queue…</p>
+        <p className="text-sm text-muted-foreground">{t("diagnostics.loading")}</p>
       ) : rows.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-2 py-12 text-center">
             <ClipboardList className="size-8 text-muted-foreground/60" />
-            <p className="text-sm font-medium">Queue clear</p>
+            <p className="text-sm font-medium">{t("diagnostics.queueClear")}</p>
             <p className="text-xs text-muted-foreground">
-              No outstanding lab, imaging or procedure orders.
+              {t("diagnostics.queueClearHint")}
             </p>
           </CardContent>
         </Card>
@@ -154,10 +156,10 @@ export default function DiagnosticsPage() {
                             color: `var(--status-${token}-foreground)`,
                           }}
                         >
-                          {ORDER_STATUS_LABEL[order.status]}
+                          {t(ORDER_STATUS_LABEL[order.status])}
                         </Badge>
                         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                          {ORDER_TYPE_LABEL[order.order_type]}
+                          {t(ORDER_TYPE_LABEL[order.order_type])}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
@@ -189,11 +191,11 @@ export default function DiagnosticsPage() {
                           refresh();
                         }}
                       >
-                        Start
+                        {t("diagnostics.start")}
                       </Button>
                     ) : null}
                     <Button size="sm" onClick={() => setActive(order)}>
-                      Enter result
+                      {t("diagnostics.enterResult")}
                     </Button>
                   </div>
                 </CardContent>
@@ -225,6 +227,7 @@ function ResultFormSheet({
   onSaved: () => void;
 }) {
   const { actingStaff } = useRole();
+  const { t } = useT();
 
   const [value, setValue] = useState("");
   const [referenceRange, setReferenceRange] = useState("");
@@ -265,56 +268,55 @@ function ResultFormSheet({
     >
       <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
         <SheetHeader className="border-b border-border">
-          <SheetTitle>Record result</SheetTitle>
+          <SheetTitle>{t("diagnostics.recordResult")}</SheetTitle>
           <SheetDescription>
             {order
-              ? `${ORDER_TYPE_LABEL[order.order_type]} · ${order.description}`
+              ? `${t(ORDER_TYPE_LABEL[order.order_type])} · ${order.description}`
               : ""}
           </SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-5 p-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="res_value">Result value</Label>
+            <Label htmlFor="res_value">{t("diagnostics.resultValue")}</Label>
             <Input
               id="res_value"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="e.g. 7.8% · Normal · 0.04 ng/mL"
+              placeholder={t("diagnostics.resultValuePlaceholder")}
               className="font-mono"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="res_range">Reference range</Label>
+            <Label htmlFor="res_range">{t("diagnostics.referenceRange")}</Label>
             <Input
               id="res_range"
               value={referenceRange}
               onChange={(e) => setReferenceRange(e.target.value)}
-              placeholder="Optional — e.g. < 7.0%"
+              placeholder={t("diagnostics.referenceRangePlaceholder")}
               className="font-mono"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="res_summary">Summary / interpretation</Label>
+            <Label htmlFor="res_summary">{t("diagnostics.summary")}</Label>
             <Textarea
               id="res_summary"
               value={summary}
               onChange={(e) => setSummary(e.target.value)}
-              placeholder="Optional — narrative findings for the clinician"
+              placeholder={t("diagnostics.summaryPlaceholder")}
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="res_attachment">Attachment</Label>
+            <Label htmlFor="res_attachment">{t("diagnostics.attachment")}</Label>
             <Input
               id="res_attachment"
               value={attachment}
               onChange={(e) => setAttachment(e.target.value)}
-              placeholder="Optional — e.g. chest-xray-pa.jpg"
+              placeholder={t("diagnostics.attachmentPlaceholder")}
               className="font-mono"
             />
             <span className="text-[11px] text-muted-foreground">
-              Filename reference only — files upload to secure storage after the
-              backend cutover.
+              {t("diagnostics.attachmentHint")}
             </span>
           </div>
 
@@ -325,9 +327,9 @@ function ResultFormSheet({
                 style={{ color: "var(--status-treatment)" }}
               />
               <span className="flex flex-col gap-0.5">
-                <span className="text-sm font-medium">Abnormal result</span>
+                <span className="text-sm font-medium">{t("diagnostics.abnormalResult")}</span>
                 <span className="text-xs text-muted-foreground">
-                  Flags this result for clinician review.
+                  {t("diagnostics.abnormalHint")}
                 </span>
               </span>
             </span>
@@ -339,10 +341,10 @@ function ResultFormSheet({
 
         <SheetFooter className="mt-auto flex-row justify-end gap-3 border-t border-border">
           <Button variant="ghost" onClick={onClose}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={!canSave}>
-            Record result
+            {t("diagnostics.recordResult")}
           </Button>
         </SheetFooter>
       </SheetContent>

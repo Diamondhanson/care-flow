@@ -13,6 +13,7 @@ import {
   isPrescriptionActive,
   parseFrequencyHours,
 } from "@/components/medications/prescriptions";
+import { translate } from "@/i18n";
 import type {
   MedicationAdministration,
   Prescription,
@@ -54,9 +55,9 @@ function mar(
 
 describe("status label + token maps", () => {
   it("labels every prescription status", () => {
-    expect(PRESCRIPTION_STATUS_LABEL.active).toBe("Active");
-    expect(PRESCRIPTION_STATUS_LABEL.completed).toBe("Completed");
-    expect(PRESCRIPTION_STATUS_LABEL.discontinued).toBe("Discontinued");
+    expect(translate("en", PRESCRIPTION_STATUS_LABEL.active)).toBe("Active");
+    expect(translate("en", PRESCRIPTION_STATUS_LABEL.completed)).toBe("Completed");
+    expect(translate("en", PRESCRIPTION_STATUS_LABEL.discontinued)).toBe("Discontinued");
   });
 
   it("maps every prescription status to a token", () => {
@@ -66,10 +67,10 @@ describe("status label + token maps", () => {
   });
 
   it("labels and tokenizes every MAR status", () => {
-    expect(MAR_STATUS_LABEL.given).toBe("Given");
-    expect(MAR_STATUS_LABEL.held).toBe("Held");
-    expect(MAR_STATUS_LABEL.refused).toBe("Refused");
-    expect(MAR_STATUS_LABEL.missed).toBe("Missed");
+    expect(translate("en", MAR_STATUS_LABEL.given)).toBe("Given");
+    expect(translate("en", MAR_STATUS_LABEL.held)).toBe("Held");
+    expect(translate("en", MAR_STATUS_LABEL.refused)).toBe("Refused");
+    expect(translate("en", MAR_STATUS_LABEL.missed)).toBe("Missed");
     expect(MAR_STATUS_TOKEN.given).toBe("clearance");
     expect(MAR_STATUS_TOKEN.refused).toBe("treatment");
   });

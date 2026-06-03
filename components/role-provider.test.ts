@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { ROLE_LABEL, staffInitials } from "@/components/role-provider";
+import { translate } from "@/i18n";
 
 describe("staffInitials", () => {
   it("uses first and last name initials", () => {
@@ -25,8 +26,8 @@ describe("staffInitials", () => {
 
 describe("ROLE_LABEL", () => {
   it("provides a human label for every staff role", () => {
-    expect(ROLE_LABEL.doctor).toBe("Doctor");
-    expect(ROLE_LABEL.lab_tech).toBe("Lab Technician");
-    expect(ROLE_LABEL.receptionist).toBe("Receptionist");
+    expect(translate("en", ROLE_LABEL.doctor)).toBe("Doctor");
+    expect(translate("en", ROLE_LABEL.lab_tech)).toBe("Lab Technician");
+    expect(translate("en", ROLE_LABEL.receptionist)).toBe("Receptionist");
   });
 });
