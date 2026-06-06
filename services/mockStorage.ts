@@ -311,6 +311,7 @@ export interface AddTreatmentLogInput {
   bp_systolic?: number | null;
   bp_diastolic?: number | null;
   temperature_c?: number | null;
+  weight_kg?: number | null;
   gcs_score?: number | null;
   notes?: string | null;
   recorded_at?: string;
@@ -1234,6 +1235,7 @@ export function addTreatmentLog(
     bp_systolic: logData.bp_systolic ?? null,
     bp_diastolic: logData.bp_diastolic ?? null,
     temperature_c: logData.temperature_c ?? null,
+    weight_kg: logData.weight_kg ?? null,
     gcs_score: logData.gcs_score ?? null,
     notes: logData.notes ?? null,
     recorded_at: logData.recorded_at ?? timestamp,
@@ -2137,11 +2139,11 @@ function seedDatabaseObject(): Database {
   ];
 
   const treatmentRecords: TreatmentRecord[] = [
-    { id: "trec_mensah_1", visit_id: "vis_mensah", recorded_by_id: "staff_romero", spo2: 96, pulse: 102, bp_systolic: 158, bp_diastolic: 96, temperature_c: 37.0, gcs_score: 15, notes: "Chest pain 7/10. ECG taken, troponin sent.", recorded_at: day(3) },
-    { id: "trec_idris_1", visit_id: "vis_idris", recorded_by_id: "staff_patel", spo2: 97, pulse: 88, bp_systolic: 128, bp_diastolic: 82, temperature_c: 37.4, gcs_score: 15, notes: "Stable post-op. Pain controlled. Mobilizing with assistance.", recorded_at: day(6) },
-    { id: "trec_anon_1", visit_id: "vis_anon", recorded_by_id: "staff_patel", spo2: 94, pulse: 104, bp_systolic: 148, bp_diastolic: 95, temperature_c: 37.9, gcs_score: 7, notes: "Unresponsive to voice, localizes to pain. Pupils equal/reactive. CT head pending.", recorded_at: day(4) },
-    { id: "trec_anon_2", visit_id: "vis_anon", recorded_by_id: "staff_okafor", spo2: 96, pulse: 92, bp_systolic: 138, bp_diastolic: 88, temperature_c: 37.5, gcs_score: 9, notes: "Slight improvement in responsiveness. Continue close monitoring.", recorded_at: day(1) },
-    { id: "trec_bello_1", visit_id: "vis_bello", recorded_by_id: "staff_patel", spo2: 98, pulse: 74, bp_systolic: 118, bp_diastolic: 76, temperature_c: 36.9, gcs_score: 15, notes: "Afebrile 48h. Chest clear on auscultation. Fit for discharge planning.", recorded_at: day(12) },
+    { id: "trec_mensah_1", visit_id: "vis_mensah", recorded_by_id: "staff_romero", spo2: 96, pulse: 102, bp_systolic: 158, bp_diastolic: 96, temperature_c: 37.0, weight_kg: 78.5, gcs_score: 15, notes: "Chest pain 7/10. ECG taken, troponin sent.", recorded_at: day(3) },
+    { id: "trec_idris_1", visit_id: "vis_idris", recorded_by_id: "staff_patel", spo2: 97, pulse: 88, bp_systolic: 128, bp_diastolic: 82, temperature_c: 37.4, weight_kg: 71.0, gcs_score: 15, notes: "Stable post-op. Pain controlled. Mobilizing with assistance.", recorded_at: day(6) },
+    { id: "trec_anon_1", visit_id: "vis_anon", recorded_by_id: "staff_patel", spo2: 94, pulse: 104, bp_systolic: 148, bp_diastolic: 95, temperature_c: 37.9, weight_kg: 82.0, gcs_score: 7, notes: "Unresponsive to voice, localizes to pain. Pupils equal/reactive. CT head pending.", recorded_at: day(4) },
+    { id: "trec_anon_2", visit_id: "vis_anon", recorded_by_id: "staff_okafor", spo2: 96, pulse: 92, bp_systolic: 138, bp_diastolic: 88, temperature_c: 37.5, weight_kg: 82.0, gcs_score: 9, notes: "Slight improvement in responsiveness. Continue close monitoring.", recorded_at: day(1) },
+    { id: "trec_bello_1", visit_id: "vis_bello", recorded_by_id: "staff_patel", spo2: 98, pulse: 74, bp_systolic: 118, bp_diastolic: 76, temperature_c: 36.9, weight_kg: 64.5, gcs_score: 15, notes: "Afebrile 48h. Chest clear on auscultation. Fit for discharge planning.", recorded_at: day(12) },
   ];
 
   const admissions: Admission[] = [
@@ -2546,6 +2548,7 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
         bp_systolic: randint(100, 165),
         bp_diastolic: randint(60, 100),
         temperature_c: Math.round((36 + rng() * 2.5) * 10) / 10,
+        weight_kg: Math.round((55 + rng() * 45) * 10) / 10,
         gcs_score: 15,
         notes: null,
         recorded_at: day(vH),

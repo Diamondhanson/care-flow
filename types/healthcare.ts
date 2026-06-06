@@ -402,6 +402,8 @@ export interface TreatmentRecord {
   bp_diastolic: number | null;
   /** Body temperature, degrees Celsius. */
   temperature_c: number | null;
+  /** Body weight, kilograms. Null when not measured. */
+  weight_kg: number | null;
   /** Glasgow Coma Scale total (3–15). Null when not assessed. */
   gcs_score: number | null;
   notes: string | null;

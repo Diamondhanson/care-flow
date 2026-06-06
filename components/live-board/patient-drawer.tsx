@@ -273,6 +273,7 @@ export function PatientDrawer({
   const [dia, setDia] = useState<NumField>("");
   const [pulse, setPulse] = useState<NumField>("");
   const [temp, setTemp] = useState<NumField>("");
+  const [weight, setWeight] = useState<NumField>("");
   const [gcs, setGcs] = useState<NumField>("");
   const [notes, setNotes] = useState("");
   const [reconcileTarget, setReconcileTarget] = useState("");
@@ -450,6 +451,7 @@ export function PatientDrawer({
       bp_diastolic: num(dia),
       pulse: num(pulse),
       temperature_c: num(temp),
+      weight_kg: num(weight),
       gcs_score: num(gcs),
     };
     const hasVitals = Object.values(fields).some((v) => v !== null);
@@ -845,6 +847,30 @@ export function PatientDrawer({
                   {t("drawer.noPriorRecord")}
                 </p>
               )}
+
+              {/* Latest vitals — read-only, so the doctor sees the patient's
+                  most recent observations (typically taken by a nurse at intake)
+                  without leaving the consultation. */}
+              {records.length > 0 ? (
+                <div className="flex flex-col gap-1.5 rounded-md border border-border bg-muted/40 p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      {t("drawer.latestVitals")}
+                    </span>
+                    <span className="font-mono text-[11px] text-muted-foreground">
+                      {formatDateTime(records[0].recorded_at, activeLocale)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <VitalsLine record={records[0]} />
+                    {records[0].gcs_score !== null ? (
+                      <span className="shrink-0 font-mono text-xs">
+                        GCS {records[0].gcs_score}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
 
               {/* SOAP note entry */}
               <div className="flex flex-col gap-3">
@@ -1654,6 +1680,7 @@ export function PatientDrawer({
               <FieldNum label={t("drawer.vitalsSys")} id="sys" value={sys} onChange={setSys} />
               <FieldNum label={t("drawer.vitalsDia")} id="dia" value={dia} onChange={setDia} />
               <FieldNum label={t("drawer.vitalsTemp")} id="temp" value={temp} onChange={setTemp} step="0.1" />
+              <FieldNum label={t("drawer.vitalsWeight")} id="weight" value={weight} onChange={setWeight} step="0.1" />
               <FieldNum label={t("drawer.vitalsGcs")} id="gcs" value={gcs} onChange={setGcs} />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -1835,6 +1862,7 @@ function VitalsLine({ record }: { record: TreatmentRecord }) {
     parts.push(`BP ${record.bp_systolic}/${record.bp_diastolic}`);
   if (record.pulse !== null) parts.push(`HR ${record.pulse}`);
   if (record.temperature_c !== null) parts.push(`${record.temperature_c}°C`);
+  if (record.weight_kg != null) parts.push(`${record.weight_kg} kg`);
   if (parts.length === 0) return null;
   return <span className="font-mono text-muted-foreground">{parts.join(" · ")}</span>;
 }
