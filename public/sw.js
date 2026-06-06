@@ -14,7 +14,11 @@
  * server — deferred to a later phase).
  */
 
-const CACHE = "careflow-v1";
+// Bumped v1 → v2: forces an SW update on next navigation so the `activate`
+// handler purges the stale v1 cache. This is what lets already-poisoned dev
+// browsers recover — the fresh chunks then carry the dev "unregister" logic in
+// components/pwa/service-worker-register.tsx.
+const CACHE = "careflow-v2";
 const OFFLINE_URL = "/offline";
 
 // App shell precached on install so the very first offline load has something.
