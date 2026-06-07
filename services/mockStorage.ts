@@ -24,6 +24,11 @@ import type {
   Bed,
   BedId,
   BedStatus,
+  CareNeedCategory,
+  CarePlanEntry,
+  CarePlanEntryId,
+  CarePlanItem,
+  CarePlanItemId,
   CareStage,
   Consultation,
   ConsultationId,
@@ -58,7 +63,7 @@ import type {
 } from "@/types/healthcare";
 import { clearOutbox, enqueueChanges, type NewChange } from "@/services/syncQueue";
 
-const STORAGE_KEY = "careflow_db_v5";
+const STORAGE_KEY = "careflow_db_v7";
 
 interface Database {
   departments: Department[];
@@ -77,8 +82,8 @@ interface Database {
   treatmentRecords: TreatmentRecord[];
   admissions: Admission[];
   transfers: Transfer[];
-  /** Last MRN sequence value issued (drives `generate_mrn()` parity). */
-  mrnCounter: number;
+  carePlanItems: CarePlanItem[];
+  carePlanEntries: CarePlanEntry[];
 }
 
 // ---------------------------------------------------------------------------
@@ -101,11 +106,66 @@ function generateId(): string {
 }
 
 /**
- * Format a Medical Record Number, e.g. `CF-2026-000123`. Pure — mirrors the
- * Postgres `generate_mrn()` function so the format survives the backend swap.
+ * Strip diacritics and return the first A–Z letter of a name token, uppercased.
+ * Returns "" when the token has no Latin letter (so the initial is simply
+ * omitted rather than producing a stray character).
  */
-export function generateMrn(year: number, sequence: number): string {
-  return `CF-${year}-${String(sequence).padStart(6, "0")}`;
+function nameInitial(token: string): string {
+  const ascii = token
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase();
+  const match = ascii.match(/[A-Z]/);
+  return match ? match[0] : "";
+}
+
+/**
+ * Build the Cameroon-standard patient ID (Phase 16.7). Pure helper.
+ *
+ *   `YYMMDD` + name initials + ` - ` + mother's-first-name initial
+ *
+ * e.g. Bambot Hanson Ngongmun, born 1998-11-20, mother Ndung → "981120BHN - N".
+ * - `dob` is "YYYY-MM-DD" (may be approximate, e.g. "YYYY-01-01"). When absent
+ *   the date prefix is omitted (an anonymous record has no ID at all — see
+ *   `createNewVisit`).
+ * - initials = first Latin letter of each whitespace-separated name token, in
+ *   order, accents normalized to A–Z.
+ * - mother's initial is appended after " - " only when a mother name is given.
+ *
+ * Uniqueness (clash suffix) is layered on top by `uniquePatientId`.
+ */
+export function generatePatientId(
+  dob: string | null,
+  fullName: string,
+  motherFirstName?: string | null
+): string {
+  let datePart = "";
+  if (dob) {
+    const [y, m, d] = dob.split("-");
+    if (y && m && d) datePart = `${y.slice(-2)}${m}${d}`;
+  }
+  const initials = fullName
+    .trim()
+    .split(/\s+/)
+    .map(nameInitial)
+    .join("");
+  const base = `${datePart}${initials}`;
+  const motherInitial = motherFirstName ? nameInitial(motherFirstName) : "";
+  return motherInitial ? `${base} - ${motherInitial}` : base;
+}
+
+/**
+ * Resolve a patient ID clash by appending `-2`, `-3`, … against the set of IDs
+ * already in use. Returns `base` unchanged when it is free. Empty `base`
+ * (anonymous, no details yet) is returned as-is — those carry no ID.
+ */
+export function uniquePatientId(base: string, existing: Iterable<string>): string {
+  if (base === "") return "";
+  const taken = new Set(existing);
+  if (!taken.has(base)) return base;
+  let n = 2;
+  while (taken.has(`${base}-${n}`)) n += 1;
+  return `${base}-${n}`;
 }
 
 /**
@@ -161,6 +221,8 @@ const DB_COLLECTIONS = [
   "treatmentRecords",
   "admissions",
   "transfers",
+  "carePlanItems",
+  "carePlanEntries",
 ] as const satisfies readonly (keyof Database)[];
 
 /**
@@ -175,9 +237,6 @@ export function normalizeDatabase(parsed: Partial<Database>): Database {
     if (!Array.isArray(db[key])) {
       (db[key] as unknown[]) = [];
     }
-  }
-  if (typeof db.mrnCounter !== "number") {
-    db.mrnCounter = db.patients.length;
   }
   return db;
 }
@@ -212,6 +271,8 @@ const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
   treatmentRecords: "treatment_records",
   admissions: "admissions",
   transfers: "transfers",
+  carePlanItems: "care_plan_items",
+  carePlanEntries: "care_plan_entries",
 };
 
 interface Identified {
@@ -286,6 +347,8 @@ export interface CreatePatientInput {
   phone?: string | null;
   address?: string | null;
   national_id?: string | null;
+  /** Mother's first name — supplies the patient ID's trailing initial. */
+  mother_first_name?: string | null;
   is_emergency_anonymous?: boolean;
   /** If omitted for an emergency intake, one is generated automatically. */
   anonymous_identifier?: string;
@@ -427,6 +490,23 @@ export interface AddAllergyInput {
   severity?: AllergySeverity;
   reaction?: string | null;
   noted_by_id?: StaffId | null;
+}
+
+export interface AddCarePlanItemInput {
+  category: CareNeedCategory;
+  description: string;
+  frequency?: string | null;
+  goal?: string | null;
+  created_by_id?: StaffId | null;
+}
+
+export interface AddCarePlanEntryInput {
+  note: string;
+  /** Tie the note to a specific care need, when applicable. */
+  care_plan_item_id?: CarePlanItemId | null;
+  /** Mark as a shift-handover message for the next nurse. */
+  is_handover?: boolean;
+  recorded_by_id?: StaffId | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -794,6 +874,78 @@ export function getTransfersForPatient(patientId: PatientId): Transfer[] {
 }
 
 // ---------------------------------------------------------------------------
+// Reads — nursing care plan
+// ---------------------------------------------------------------------------
+
+/** Care-plan needs for an admission. Active first, then by creation order. */
+export function getCarePlanItemsForAdmission(
+  admissionId: AdmissionId
+): CarePlanItem[] {
+  return loadDatabase()
+    .carePlanItems.filter((i) => i.admission_id === admissionId)
+    .sort((a, b) => {
+      // Active needs lead; within a status, oldest-first keeps the plan stable.
+      if (a.status !== b.status) return a.status === "active" ? -1 : 1;
+      return a.created_at.localeCompare(b.created_at);
+    });
+}
+
+/** The care log + handover notes for an admission, most recent first. */
+export function getCarePlanEntriesForAdmission(
+  admissionId: AdmissionId
+): CarePlanEntry[] {
+  return loadDatabase()
+    .carePlanEntries.filter((e) => e.admission_id === admissionId)
+    .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+}
+
+/**
+ * The currently admitted patients a nurse manages a care plan for: each active
+ * admission joined to its visit, patient, ward and bed, plus the count of active
+ * care needs and whether a handover note is waiting. Sorted by ward then bed so
+ * the list reads like a ward round.
+ */
+export interface CarePlanPatient {
+  admission: Admission;
+  visit: Visit | undefined;
+  patient: Patient | undefined;
+  ward: Ward | undefined;
+  bed: Bed | undefined;
+  activeNeeds: number;
+  /** The most recent handover note, if any (drives the "handover waiting" cue). */
+  latestHandover: CarePlanEntry | null;
+}
+
+export function getAdmittedPatientsForCarePlan(): CarePlanPatient[] {
+  const db = loadDatabase();
+  return db.admissions
+    .filter((a) => a.status === "active")
+    .map((admission) => {
+      const visit = db.visits.find((v) => v.id === admission.visit_id);
+      const patient = db.patients.find((p) => p.id === admission.patient_id);
+      const ward = admission.ward_id
+        ? db.wards.find((w) => w.id === admission.ward_id)
+        : undefined;
+      const bed = admission.bed_id
+        ? db.beds.find((b) => b.id === admission.bed_id)
+        : undefined;
+      const activeNeeds = db.carePlanItems.filter(
+        (i) => i.admission_id === admission.id && i.status === "active"
+      ).length;
+      const latestHandover =
+        db.carePlanEntries
+          .filter((e) => e.admission_id === admission.id && e.is_handover)
+          .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at))[0] ?? null;
+      return { admission, visit, patient, ward, bed, activeNeeds, latestHandover };
+    })
+    .sort((a, b) => {
+      const wardCmp = (a.ward?.name ?? "").localeCompare(b.ward?.name ?? "");
+      if (wardCmp !== 0) return wardCmp;
+      return (a.bed?.label ?? "").localeCompare(b.bed?.label ?? "");
+    });
+}
+
+// ---------------------------------------------------------------------------
 // Whole-collection reads — used by the reporting/analytics layer, which needs
 // every row (not just the per-visit/per-patient slices above) to aggregate.
 // ---------------------------------------------------------------------------
@@ -1151,6 +1303,79 @@ export function assignBedToAdmission(
 }
 
 // ---------------------------------------------------------------------------
+// Mutations — nursing care plan
+// ---------------------------------------------------------------------------
+
+/** Add a care need to an admission's plan. Returns the created item. */
+export function addCarePlanItem(
+  admissionId: AdmissionId,
+  input: AddCarePlanItemInput
+): CarePlanItem {
+  const db = loadDatabase();
+  const admission = db.admissions.find((a) => a.id === admissionId);
+  if (!admission) {
+    throw new Error(`addCarePlanItem: admission "${admissionId}" not found`);
+  }
+  const timestamp = nowISO();
+  const item: CarePlanItem = {
+    id: generateId(),
+    admission_id: admissionId,
+    patient_id: admission.patient_id,
+    category: input.category,
+    description: input.description.trim(),
+    frequency: input.frequency?.trim() || null,
+    goal: input.goal?.trim() || null,
+    status: "active",
+    created_by_id: input.created_by_id ?? null,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+  db.carePlanItems.push(item);
+  persist(db);
+  return item;
+}
+
+/** Mark a care need as resolved (kept on the record, not deleted). */
+export function resolveCarePlanItem(itemId: CarePlanItemId): CarePlanItem {
+  const db = loadDatabase();
+  const item = db.carePlanItems.find((i) => i.id === itemId);
+  if (!item) {
+    throw new Error(`resolveCarePlanItem: item "${itemId}" not found`);
+  }
+  item.status = "resolved";
+  item.updated_at = nowISO();
+  persist(db);
+  return item;
+}
+
+/**
+ * Append a care-log note or a shift-handover message to an admission. Append-only
+ * (never overwritten), mirroring transfers — so the handover trail is durable.
+ */
+export function addCarePlanEntry(
+  admissionId: AdmissionId,
+  input: AddCarePlanEntryInput
+): CarePlanEntry {
+  const db = loadDatabase();
+  const admission = db.admissions.find((a) => a.id === admissionId);
+  if (!admission) {
+    throw new Error(`addCarePlanEntry: admission "${admissionId}" not found`);
+  }
+  const entry: CarePlanEntry = {
+    id: generateId(),
+    admission_id: admissionId,
+    care_plan_item_id: input.care_plan_item_id ?? null,
+    note: input.note.trim(),
+    is_handover: input.is_handover ?? false,
+    recorded_by_id: input.recorded_by_id ?? null,
+    recorded_at: nowISO(),
+  };
+  db.carePlanEntries.push(entry);
+  persist(db);
+  return entry;
+}
+
+// ---------------------------------------------------------------------------
 // Mutations — visits
 // ---------------------------------------------------------------------------
 
@@ -1166,18 +1391,30 @@ export function createNewVisit(
     ? patientData.anonymous_identifier ?? generateAnonymousIdentifier()
     : null;
 
-  const nextSequence = db.mrnCounter + 1;
-  db.mrnCounter = nextSequence;
+  // Anonymous emergency records get no patient ID until reconciliation supplies
+  // real identity details; everyone else gets a Cameroon booklet ID derived from
+  // birth date + name initials + mother's initial, de-duplicated against peers.
+  const mrn = isAnonymous
+    ? ""
+    : uniquePatientId(
+        generatePatientId(
+          patientData.date_of_birth ?? null,
+          patientData.full_name,
+          patientData.mother_first_name ?? null,
+        ),
+        db.patients.map((p) => p.mrn),
+      );
 
   const patient: Patient = {
     id: generateId(),
-    mrn: generateMrn(new Date(timestamp).getFullYear(), nextSequence),
+    mrn,
     full_name: patientData.full_name,
     date_of_birth: patientData.date_of_birth ?? null,
     sex: patientData.sex ?? "unknown",
     phone: patientData.phone ?? null,
     address: patientData.address ?? null,
     national_id: patientData.national_id ?? null,
+    mother_first_name: patientData.mother_first_name ?? null,
     is_emergency_anonymous: isAnonymous,
     anonymous_identifier: anonymousIdentifier,
     no_known_allergies: false,
@@ -1916,6 +2153,68 @@ export function updateVisitStage(visitId: VisitId, newStage: CareStage): Visit {
 // Reconciliation
 // ---------------------------------------------------------------------------
 
+/** Real identity details captured when an anonymous record is reconciled. */
+export interface CompleteAnonymousInput {
+  full_name: string;
+  sex?: Patient["sex"];
+  date_of_birth?: string | null;
+  phone?: string | null;
+  national_id?: string | null;
+  mother_first_name?: string | null;
+}
+
+/**
+ * Give an unidentified emergency patient their real identity in place — the
+ * common case where the unconscious arrival turns out to be a brand-new patient.
+ *
+ * Unlike {@link reconcileAnonymousProfile} (which folds the record into an
+ * already-registered patient), this keeps the same Patient row — so every visit,
+ * admission and clinical record stays attached untouched — and simply fills in
+ * the real details, mints the Cameroon patient ID, and flips the record from
+ * anonymous to verified. Accepts either the anonymous Patient.id or its
+ * `anonymous_identifier`.
+ */
+export function completeAnonymousProfile(
+  anonymousId: PatientId | string,
+  details: CompleteAnonymousInput
+): Patient {
+  const db = loadDatabase();
+
+  const patient = db.patients.find(
+    (p) =>
+      p.is_emergency_anonymous &&
+      (p.id === anonymousId || p.anonymous_identifier === anonymousId)
+  );
+  if (!patient) {
+    throw new Error(
+      `completeAnonymousProfile: anonymous patient "${anonymousId}" not found`
+    );
+  }
+
+  patient.full_name = details.full_name;
+  patient.sex = details.sex ?? patient.sex;
+  patient.date_of_birth = details.date_of_birth ?? null;
+  patient.phone = details.phone ?? null;
+  patient.national_id = details.national_id ?? null;
+  patient.mother_first_name = details.mother_first_name ?? null;
+  // Now a verified record: mint the human-facing patient ID and drop the
+  // anonymous tracking tag.
+  patient.is_emergency_anonymous = false;
+  patient.anonymous_identifier = null;
+  patient.mrn = uniquePatientId(
+    generatePatientId(
+      patient.date_of_birth,
+      patient.full_name,
+      patient.mother_first_name
+    ),
+    db.patients.filter((p) => p.id !== patient.id).map((p) => p.mrn)
+  );
+  patient.updated_at = nowISO();
+
+  persist(db);
+  return patient;
+}
+
 /**
  * Merge an unidentified emergency patient into a verified permanent profile.
  *
@@ -1983,6 +2282,20 @@ export function reconcileAnonymousProfile(
     if (transfer.patient_id === anonymous.id) {
       transfer.patient_id = realPatient.id;
     }
+  }
+
+  // Standard registration always assigns the verified profile a patient ID, but
+  // if reconciliation ever targets a record that lacks one, mint it now from the
+  // identity details that the merge just confirmed.
+  if (!realPatient.mrn) {
+    realPatient.mrn = uniquePatientId(
+      generatePatientId(
+        realPatient.date_of_birth ?? null,
+        realPatient.full_name,
+        realPatient.mother_first_name ?? null,
+      ),
+      db.patients.filter((p) => p.id !== realPatient.id).map((p) => p.mrn),
+    );
   }
 
   realPatient.updated_at = timestamp;
@@ -2068,11 +2381,11 @@ function seedDatabaseObject(): Database {
   ];
 
   const patients: Patient[] = [
-    { id: "pat_mensah", mrn: generateMrn(2026, 1), full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(3), updated_at: day(3) },
-    { id: "pat_idris", mrn: generateMrn(2026, 2), full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(28), updated_at: day(6) },
-    { id: "pat_anon_gamma", mrn: generateMrn(2026, 3), full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, created_at: day(5), updated_at: day(1) },
-    { id: "pat_bello", mrn: generateMrn(2026, 4), full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: true, created_at: day(96), updated_at: day(12) },
-    { id: "pat_owusu", mrn: generateMrn(2026, 5), full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(720), updated_at: day(2) },
+    { id: "pat_mensah", mrn: "890314GM - A", full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", mother_first_name: "Akosua", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(3), updated_at: day(3) },
+    { id: "pat_idris", mrn: "721102SI - F", full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", mother_first_name: "Fatima", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(28), updated_at: day(6) },
+    { id: "pat_anon_gamma", mrn: "", full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, mother_first_name: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, created_at: day(5), updated_at: day(1) },
+    { id: "pat_bello", mrn: "950721AB - H", full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", mother_first_name: "Hauwa", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: true, created_at: day(96), updated_at: day(12) },
+    { id: "pat_owusu", mrn: "600109DO - A", full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", mother_first_name: "Abena", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(720), updated_at: day(2) },
   ];
 
   // Mensah & Idris carry documented allergies; Bello is confirmed no-known
@@ -2158,6 +2471,40 @@ function seedDatabaseObject(): Database {
     { id: "trf_idris_icu", admission_id: "adm_idris", patient_id: "pat_idris", from_ward_id: "ward_medb", to_ward_id: "ward_icu", from_bed_id: "bed_medb_09", to_bed_id: "bed_icu_04", from_doctor_id: "staff_okafor", to_doctor_id: "staff_chen", reason: "Post-op deterioration — escalated to critical care", transferred_by_id: "staff_patel", created_at: day(20) },
   ];
 
+  // Nursing care plans for the three admitted patients — the individualized,
+  // non-medication care (hygiene, positioning, nutrition…) that fills a shift,
+  // plus an append-only care log with shift-handover notes for the next nurse.
+  const carePlanItems: CarePlanItem[] = [
+    // Samuel Idris — ICU-04, post-op laparotomy.
+    { id: "cpi_idris_hyg", admission_id: "adm_idris", patient_id: "pat_idris", category: "hygiene", description: "Assist with bed bath, keep skin dry", frequency: "Daily", goal: "Skin remains intact", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
+    { id: "cpi_idris_pos", admission_id: "adm_idris", patient_id: "pat_idris", category: "mobility_positioning", description: "Turn every 2h to prevent pressure sores", frequency: "Every 2h", goal: "No pressure injury", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
+    { id: "cpi_idris_temp", admission_id: "adm_idris", patient_id: "pat_idris", category: "temperature", description: "Tepid sponge and review if temp > 38.5°C", frequency: "As needed", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
+    { id: "cpi_idris_nut", admission_id: "adm_idris", patient_id: "pat_idris", category: "nutrition", description: "Soft diet, assist feeding, encourage fluids", frequency: "Each meal", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
+    // Aisha Bello — B-11, pneumonia recovering.
+    { id: "cpi_bello_brt", admission_id: "adm_bello", patient_id: "pat_bello", category: "breathing", description: "Sit upright, encourage deep breathing / chest physio", frequency: "Every 4h", goal: "Clear chest, good air entry", status: "active", created_by_id: "staff_patel", created_at: day(90), updated_at: day(90) },
+    { id: "cpi_bello_hyg", admission_id: "adm_bello", patient_id: "pat_bello", category: "hygiene", description: "Assist shower", frequency: "Daily", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(90), updated_at: day(90) },
+    { id: "cpi_bello_mob", admission_id: "adm_bello", patient_id: "pat_bello", category: "mobility_positioning", description: "Encourage short walks on the ward", frequency: "Twice daily", goal: "Mobilizing independently", status: "active", created_by_id: "staff_patel", created_at: day(90), updated_at: day(90) },
+    // John Doe · Gamma — ICU-02, unconscious head trauma, GCS improving.
+    { id: "cpi_anon_hyg", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "hygiene", description: "Full bed bath + mouth care", frequency: "Daily", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+    { id: "cpi_anon_pos", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "mobility_positioning", description: "Turn every 2h", frequency: "Every 2h", goal: "No pressure injury", status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+    { id: "cpi_anon_elim", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "elimination", description: "Catheter care, monitor output", frequency: "Each shift", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+    { id: "cpi_anon_eye", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "other", description: "Eye care: clean and protect eyes to prevent dryness", frequency: "Every 4h", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+    { id: "cpi_anon_safe", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "safety", description: "Cot sides up, neuro observations", frequency: "Each shift", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+  ];
+
+  const carePlanEntries: CarePlanEntry[] = [
+    // Samuel Idris — care log + a fresh handover for the evening shift.
+    { id: "cpe_idris_1", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_pos", note: "Turned to left side. Temp 37.8°C, settling.", is_handover: false, recorded_by_id: "staff_romero", recorded_at: day(9) },
+    { id: "cpe_idris_2", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_hyg", note: "Bed bath given, skin intact. Ate half of lunch.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(7) },
+    { id: "cpe_idris_ho", admission_id: "adm_idris", care_plan_item_id: null, note: "Anxious about surgery tomorrow — needs reassurance. Watch temperature this evening.", is_handover: true, recorded_by_id: "staff_patel", recorded_at: day(5) },
+    // Aisha Bello — care log + handover.
+    { id: "cpe_bello_1", admission_id: "adm_bello", care_plan_item_id: "cpi_bello_mob", note: "Walked to end of ward and back, tolerated well.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(11) },
+    { id: "cpe_bello_ho", admission_id: "adm_bello", care_plan_item_id: null, note: "Chest clearer, coughing productively. Keep prompting deep breathing.", is_handover: true, recorded_by_id: "staff_patel", recorded_at: day(9) },
+    // John Doe · Gamma — care log + handover.
+    { id: "cpe_anon_1", admission_id: "adm_anon_gamma", care_plan_item_id: "cpi_anon_hyg", note: "Full bed bath and mouth care done. Repositioned. Output adequate.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(3) },
+    { id: "cpe_anon_ho", admission_id: "adm_anon_gamma", care_plan_item_id: null, note: "GCS improving (7→9). Continue 2-hourly turns and eye care. Family visited.", is_handover: true, recorded_by_id: "staff_patel", recorded_at: day(2) },
+  ];
+
   // -------------------------------------------------------------------------
   // Historical caseload — a deterministically generated 60-day back-catalogue of
   // *closed* visits so the reporting dashboard has rich, varied data to chart
@@ -2197,7 +2544,8 @@ function seedDatabaseObject(): Database {
     treatmentRecords,
     admissions,
     transfers,
-    mrnCounter: patients.length,
+    carePlanItems,
+    carePlanEntries,
   };
 }
 
@@ -2389,15 +2737,22 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
     const hasAllergy = chance(0.28);
     const noKnown = !hasAllergy && chance(0.5);
 
+    const fullName = `${pick(firstNames)} ${pick(lastNames)}`;
+    const motherFirstName = pick(firstNames);
+
     ctx.patients.push({
       id: patientId,
-      mrn: generateMrn(2026, 100 + i),
-      full_name: `${pick(firstNames)} ${pick(lastNames)}`,
+      mrn: uniquePatientId(
+        generatePatientId(dob, fullName, motherFirstName),
+        ctx.patients.map((p) => p.mrn),
+      ),
+      full_name: fullName,
       date_of_birth: dob,
       sex,
       phone: `+233 24 555 ${String(2000 + i).slice(-4)}`,
       address: null,
       national_id: null,
+      mother_first_name: motherFirstName,
       is_emergency_anonymous: false,
       anonymous_identifier: null,
       no_known_allergies: noKnown,

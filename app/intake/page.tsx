@@ -65,6 +65,7 @@ export default function IntakePage() {
   const [approxAge, setApproxAge] = useState("");
   const [phone, setPhone] = useState("");
   const [nationalId, setNationalId] = useState("");
+  const [motherFirstName, setMotherFirstName] = useState("");
   const [reason, setReason] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [registeredById, setRegisteredById] = useState("");
@@ -115,6 +116,7 @@ export default function IntakePage() {
               : dob || null,
             phone: phone.trim() || null,
             national_id: nationalId.trim() || null,
+            mother_first_name: motherFirstName.trim() || null,
           },
       {
         visit_type: isEmergency ? "emergency" : "outpatient",
@@ -147,6 +149,7 @@ export default function IntakePage() {
     setApproxAge("");
     setPhone("");
     setNationalId("");
+    setMotherFirstName("");
     setReason("");
     setDepartmentId("");
     setAttendingId("");
@@ -171,9 +174,11 @@ export default function IntakePage() {
                 {result.isAnonymous ? t("intake.emergencyTag") : t("intake.patient")}
               </span>
               <span className="font-mono text-sm">{result.displayName}</span>
-              <span className="font-mono text-xs text-muted-foreground">
-                MRN {result.mrn}
-              </span>
+              {result.mrn ? (
+                <span className="font-mono text-xs text-muted-foreground">
+                  {t("intake.patientIdTag")} {result.mrn}
+                </span>
+              ) : null}
             </div>
             <div className="flex gap-3">
               <Button nativeButton={false} render={<Link href="/" />}>
@@ -319,6 +324,21 @@ export default function IntakePage() {
                     onChange={(e) => setNationalId(e.target.value)}
                     placeholder={t("intake.nationalIdPlaceholder")}
                   />
+                </Field>
+                <Field
+                  label={t("intake.motherFirstName")}
+                  htmlFor="mother_first_name"
+                  className="sm:col-span-2"
+                >
+                  <Input
+                    id="mother_first_name"
+                    value={motherFirstName}
+                    onChange={(e) => setMotherFirstName(e.target.value)}
+                    placeholder={t("intake.motherFirstNamePlaceholder")}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {t("intake.motherFirstNameHint")}
+                  </p>
                 </Field>
               </div>
             )}

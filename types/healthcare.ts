@@ -37,6 +37,8 @@ export type TreatmentRecordId = string;
 export type AdmissionId = string;
 export type TransferId = string;
 export type AllergyId = string;
+export type CarePlanItemId = string;
+export type CarePlanEntryId = string;
 export type AuditLogId = number;
 
 /** Supabase `auth.users(id)` — the authenticated user a Staff row links to. */
@@ -131,6 +133,31 @@ export type AllergySeverity =
   | "severe"
   | "life_threatening";
 
+/**
+ * `care_need_category` — the kind of basic nursing care an admitted patient
+ * needs, based on Virginia Henderson's 14 components of basic nursing care
+ * (named practically for everyday use). Drives the quick-pick on the care-plan
+ * page so categories are chosen, not typed.
+ */
+export type CareNeedCategory =
+  | "breathing"
+  | "nutrition"
+  | "elimination"
+  | "mobility_positioning"
+  | "sleep_rest"
+  | "hygiene"
+  | "temperature"
+  | "dressing"
+  | "safety"
+  | "communication_emotional"
+  | "pain_comfort"
+  | "spiritual"
+  | "wound_skin_care"
+  | "other";
+
+/** `care_plan_item_status` — an active need vs one that has been resolved. */
+export type CarePlanItemStatus = "active" | "resolved";
+
 // ---------------------------------------------------------------------------
 // 4a. Reference / structural data (the editable "floor map")
 // ---------------------------------------------------------------------------
@@ -198,13 +225,22 @@ export interface Staff {
 export interface Patient {
   id: PatientId;
   /**
-   * Permanent hospital number, auto-assigned on registration
-   * (format `CF-YYYY-NNNNNN`, e.g. "CF-2026-000123"). The digital equivalent of
-   * the patient-booklet number — stable across every visit.
+   * Human-facing patient ID — the Cameroon-standard booklet number generated at
+   * registration (Phase 16.7). Format: `YYMMDD` + name initials + ` - ` +
+   * mother's-first-name initial, e.g. "981120BHN - N" (born 1998-11-20, mother
+   * Ndung). On a clash, a counter is appended (`… - N-2`). The field name stays
+   * `mrn` for continuity, but it is no longer the old `CF-YYYY-NNNNNN` sequence.
+   * Empty for an emergency-anonymous record until reconciliation supplies real
+   * details. The patient UUID (`id`) remains the true internal key for all FKs.
    */
   mrn: string;
   full_name: string;
   date_of_birth: ISODate | null;
+  /**
+   * Mother's first name (optional). Used only to derive the patient ID's
+   * trailing initial; blank means the ID has no ` - <initial>` suffix.
+   */
+  mother_first_name: string | null;
   sex: Sex;
   phone: string | null;
   address: string | null;
@@ -462,7 +498,54 @@ export interface Transfer {
 }
 
 // ---------------------------------------------------------------------------
-// 4f. Audit log
+// 4g. Nursing care plan (inpatient — non-medication, needs-based care)
+// ---------------------------------------------------------------------------
+
+/**
+ * `care_plan_items` — the **plan**: a single individualized nursing-care need an
+ * admitted patient has (e.g. "turn every 2h to prevent pressure sores"). The MAR
+ * tracks medication; this tracks the ADL/needs-based care (bathing, feeding,
+ * positioning, temperature control, comfort…) that fills most of a nursing
+ * shift. Keyed to the admission (inpatient stay), with a denormalized
+ * `patient_id` for convenient lookups.
+ */
+export interface CarePlanItem {
+  id: CarePlanItemId;
+  admission_id: AdmissionId;
+  patient_id: PatientId;
+  category: CareNeedCategory;
+  /** What the patient needs, e.g. "Assist with bed bath, keep skin dry". */
+  description: string;
+  /** Free text, e.g. "Every 2h", "Each meal", "As needed". */
+  frequency: string | null;
+  /** Optional target/outcome, e.g. "Skin remains intact". */
+  goal: string | null;
+  status: CarePlanItemStatus;
+  created_by_id: StaffId | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+/**
+ * `care_plan_entries` — the **log + handover**: an append-only note recording
+ * care that was delivered, or a shift-handover message for the next nurse. Never
+ * overwritten (mirrors the `transfers` append-only pattern), so continuity
+ * survives a nurse handover. Optionally tied to a specific care-plan item.
+ */
+export interface CarePlanEntry {
+  id: CarePlanEntryId;
+  admission_id: AdmissionId;
+  /** The need this note relates to, when applicable. */
+  care_plan_item_id: CarePlanItemId | null;
+  note: string;
+  /** True when this is an explicit shift-handover note for the next nurse. */
+  is_handover: boolean;
+  recorded_by_id: StaffId | null;
+  recorded_at: ISODateString;
+}
+
+// ---------------------------------------------------------------------------
+// 4h. Audit log
 // ---------------------------------------------------------------------------
 
 /**

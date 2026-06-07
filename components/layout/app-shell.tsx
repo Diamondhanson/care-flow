@@ -7,6 +7,7 @@ import {
   Activity,
   BarChart3,
   Building2,
+  ClipboardList,
   ClipboardPlus,
   FlaskConical,
   GitMerge,
@@ -51,6 +52,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "nav.intake", href: "/intake", icon: ClipboardPlus },
   { title: "nav.diagnostics", href: "/diagnostics", icon: FlaskConical },
   { title: "nav.medications", href: "/medications", icon: Pill },
+  { title: "nav.carePlans", href: "/care-plans", icon: ClipboardList },
   { title: "nav.reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "nav.departments", href: "/departments", icon: Building2 },
   { title: "nav.floorMap", href: "/floor-map", icon: LayoutGrid },
@@ -68,10 +70,10 @@ const NAV_ITEMS: NavItem[] = [
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
   receptionist: ["/", "/intake", "/floor-map", "/reconciliation"],
-  // Nurse: the board, medications due, and bed/ward status.
-  nurse: ["/", "/medications", "/floor-map"],
-  // Doctor: the board (their patients), tests & results, prescribing.
-  doctor: ["/", "/diagnostics", "/medications"],
+  // Nurse: the board, medications due, care plans, and bed/ward status.
+  nurse: ["/", "/medications", "/care-plans", "/floor-map"],
+  // Doctor: the board (their patients), tests & results, prescribing, care plans.
+  doctor: ["/", "/diagnostics", "/medications", "/care-plans"],
   // Pharmacist: medications and the tests that inform them.
   pharmacist: ["/", "/medications", "/diagnostics"],
   // Lab tech: the diagnostics queue.

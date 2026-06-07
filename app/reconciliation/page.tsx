@@ -1,23 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ShieldAlert,
   Stethoscope,
   ClipboardList,
-  Merge,
   CheckCircle2,
+  Search,
+  UserCheck,
+  X,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import {
   getAnonymousVisits,
   getAdmissionForVisit,
@@ -27,13 +23,17 @@ import {
   getPatients,
   getStaffById,
   getTreatmentRecordsForVisit,
-  reconcileAnonymousProfile,
 } from "@/services/mockStorage";
+import {
+  ReconcileDialog,
+  type ReconcileTarget,
+} from "@/components/reconciliation/reconcile-dialog";
 import { useT, type TFunction } from "@/components/locale-provider";
 import type { Patient, Visit } from "@/types/healthcare";
 
 interface PendingRecord {
   visit: Visit;
+  patientId: string;
   identifier: string;
   mrn: string;
   reason: string | null;
@@ -61,7 +61,9 @@ function relativeTime(iso: string, t: TFunction): string {
 export default function ReconciliationPage() {
   const { t } = useT();
   const [data, setData] = useState<ReconciliationData | null>(null);
-  const [targets, setTargets] = useState<Record<string, string>>({});
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<ReconcileTarget | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   function load() {
     const pending: PendingRecord[] = getAnonymousVisits().map((visit) => {
@@ -77,9 +79,12 @@ export default function ReconciliationPage() {
           : null;
       return {
         visit,
+        patientId: visit.patient_id,
         identifier:
-          patient?.anonymous_identifier ?? patient?.full_name ?? t("reconciliation.unidentified"),
-        mrn: patient?.mrn ?? "—",
+          patient?.anonymous_identifier ??
+          patient?.full_name ??
+          t("reconciliation.unidentified"),
+        mrn: patient?.mrn || "—",
         reason: visit.chief_complaint,
         location,
         doctorName: visit.attending_doctor_id
@@ -97,17 +102,22 @@ export default function ReconciliationPage() {
     load();
   }, []);
 
-  function handleMerge(visit: Visit) {
-    const targetId = targets[visit.id];
-    if (!targetId) return;
-    reconcileAnonymousProfile(visit.patient_id, targetId);
-    setTargets((prev) => {
-      const next = { ...prev };
-      delete next[visit.id];
-      return next;
-    });
+  function handleDone(message: string) {
+    setSelected(null);
+    setSuccess(message);
     load();
   }
+
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const q = query.trim().toLowerCase();
+    if (!q) return data.pending;
+    return data.pending.filter((r) =>
+      [r.identifier, r.mrn, r.reason ?? "", r.location ?? ""].some((h) =>
+        h.toLowerCase().includes(q),
+      ),
+    );
+  }, [data, query]);
 
   const pendingCount = data?.pending.length ?? null;
 
@@ -127,8 +137,22 @@ export default function ReconciliationPage() {
         </p>
       </header>
 
+      {success ? (
+        <div className="flex items-center justify-between gap-3 rounded-md border border-[var(--status-clearance)] bg-[color-mix(in_oklab,var(--status-clearance)_10%,transparent)] px-4 py-3">
+          <span className="inline-flex items-center gap-2 text-sm">
+            <CheckCircle2 className="size-4 text-[var(--status-clearance)]" />
+            {success}
+          </span>
+          <Button variant="ghost" size="icon-sm" onClick={() => setSuccess(null)}>
+            <X className="size-4" />
+          </Button>
+        </div>
+      ) : null}
+
       {data === null ? (
-        <p className="text-sm text-muted-foreground">{t("reconciliation.loading")}</p>
+        <p className="text-sm text-muted-foreground">
+          {t("reconciliation.loading")}
+        </p>
       ) : data.pending.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
@@ -144,7 +168,9 @@ export default function ReconciliationPage() {
               <CheckCircle2 className="size-5" />
             </span>
             <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">{t("reconciliation.allReconciled")}</p>
+              <p className="text-sm font-medium">
+                {t("reconciliation.allReconciled")}
+              </p>
               <p className="text-sm text-muted-foreground">
                 {t("reconciliation.allReconciledHint")}
               </p>
@@ -153,103 +179,103 @@ export default function ReconciliationPage() {
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
-          {data.pending.map(
-            ({ visit, identifier, mrn, reason, location, doctorName, recordCount, latestGcs }) => (
-              <Card key={visit.id}>
-                <CardContent className="flex flex-col gap-5 p-5">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex min-w-0 flex-col gap-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span
-                          aria-hidden
-                          className="flex size-6 items-center justify-center rounded-md"
-                          style={{
-                            backgroundColor:
-                              "color-mix(in oklab, var(--status-treatment) 18%, transparent)",
-                            color: "var(--status-treatment)",
-                          }}
-                        >
-                          <ShieldAlert className="size-3.5" />
-                        </span>
-                        <span className="truncate font-mono text-sm font-medium">
-                          {identifier}
-                        </span>
-                        <span className="font-mono text-[11px] text-muted-foreground">
-                          {mrn}
-                        </span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{reason}</p>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                        {location ? (
-                          <span className="font-mono">{location}</span>
-                        ) : null}
-                        {doctorName ? (
-                          <span className="inline-flex items-center gap-1">
-                            <Stethoscope className="size-3" />
-                            {doctorName}
-                          </span>
-                        ) : null}
+          {/* Search the emergency worklist. */}
+          <div className="relative">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("reconciliation.searchPlaceholder")}
+              className="pl-9"
+            />
+          </div>
+
+          {filtered.length === 0 ? (
+            <p className="px-1 text-sm text-muted-foreground">
+              {t("reconciliation.noMatches")}
+            </p>
+          ) : (
+            filtered.map((record) => (
+              <Card key={record.visit.id}>
+                <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex min-w-0 flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        aria-hidden
+                        className="flex size-6 items-center justify-center rounded-md"
+                        style={{
+                          backgroundColor:
+                            "color-mix(in oklab, var(--status-treatment) 18%, transparent)",
+                          color: "var(--status-treatment)",
+                        }}
+                      >
+                        <ShieldAlert className="size-3.5" />
+                      </span>
+                      <span className="truncate font-mono text-sm font-medium">
+                        {record.identifier}
+                      </span>
+                      <span className="font-mono text-[11px] text-muted-foreground">
+                        {record.mrn}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {record.reason}
+                    </p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      {record.location ? (
+                        <span className="font-mono">{record.location}</span>
+                      ) : null}
+                      {record.doctorName ? (
                         <span className="inline-flex items-center gap-1">
-                          <ClipboardList className="size-3" />
-                          {t(
-                            recordCount === 1
-                              ? "reconciliation.logsOne"
-                              : "reconciliation.logsOther",
-                            { count: recordCount },
-                          )}
+                          <Stethoscope className="size-3" />
+                          {record.doctorName}
                         </span>
-                        {latestGcs !== null ? (
-                          <span className="font-mono">GCS {latestGcs}</span>
-                        ) : null}
-                        <span>{t("reconciliation.arrived", { time: relativeTime(visit.arrived_at, t) })}</span>
-                      </div>
+                      ) : null}
+                      <span className="inline-flex items-center gap-1">
+                        <ClipboardList className="size-3" />
+                        {t(
+                          record.recordCount === 1
+                            ? "reconciliation.logsOne"
+                            : "reconciliation.logsOther",
+                          { count: record.recordCount },
+                        )}
+                      </span>
+                      {record.latestGcs !== null ? (
+                        <span className="font-mono">GCS {record.latestGcs}</span>
+                      ) : null}
+                      <span>
+                        {t("reconciliation.arrived", {
+                          time: relativeTime(record.visit.arrived_at, t),
+                        })}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-2 border-t border-border pt-4 sm:flex-row sm:items-center">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground sm:w-32 sm:shrink-0">
-                      {t("reconciliation.mergeInto")}
-                    </span>
-                    <div className="flex flex-1 flex-col gap-2 sm:flex-row">
-                      <Select
-                        items={Object.fromEntries(
-                          data.verified.map((p) => [p.id, p.full_name]),
-                        )}
-                        value={targets[visit.id] ?? ""}
-                        onValueChange={(v) =>
-                          setTargets((prev) => ({
-                            ...prev,
-                            [visit.id]: v as string,
-                          }))
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder={t("reconciliation.selectVerifiedPatient")} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {data.verified.map((p) => (
-                            <SelectItem key={p.id} value={p.id}>
-                              {p.full_name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        onClick={() => handleMerge(visit)}
-                        disabled={!targets[visit.id]}
-                        className="shrink-0"
-                      >
-                        <Merge className="size-4" />
-                        {t("reconciliation.merge")}
-                      </Button>
-                    </div>
-                  </div>
+                  <Button
+                    className="shrink-0"
+                    onClick={() =>
+                      setSelected({
+                        patientId: record.patientId,
+                        identifier: record.identifier,
+                      })
+                    }
+                  >
+                    <UserCheck className="size-4" />
+                    {t("reconciliation.reconcile")}
+                  </Button>
                 </CardContent>
               </Card>
-            ),
+            ))
           )}
         </div>
       )}
+
+      <ReconcileDialog
+        target={selected}
+        verified={data?.verified ?? []}
+        onClose={() => setSelected(null)}
+        onDone={handleDone}
+      />
     </div>
   );
 }

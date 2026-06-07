@@ -204,7 +204,7 @@ function drawPatientSection(
     doc,
     [
       [t("visitReport.field.name"), displayNameOf(patient)],
-      [t("visitReport.field.hospitalNo"), patient.mrn],
+      [t("visitReport.field.hospitalNo"), patient.mrn || DASH],
       [
         t("visitReport.field.dob"),
         patient.date_of_birth ? fmtDate(patient.date_of_birth, locale) : DASH,
@@ -589,10 +589,10 @@ function fileStamp(ms: number): string {
 }
 
 function fileName(patient: Patient, kind: string, ms: number): string {
-  const base = displayNameOf(patient)
-    .replace(/[^\p{L}\p{N}]+/gu, "-")
-    .replace(/^-+|-+$/g, "");
-  return `careflow-${kind}-${base || patient.mrn}-${fileStamp(ms)}.pdf`;
+  const slug = (s: string) =>
+    s.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
+  const base = slug(displayNameOf(patient));
+  return `careflow-${kind}-${base || slug(patient.mrn) || "patient"}-${fileStamp(ms)}.pdf`;
 }
 
 // ---------------------------------------------------------------------------

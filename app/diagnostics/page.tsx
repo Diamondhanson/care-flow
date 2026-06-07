@@ -71,7 +71,7 @@ function load(t: TFunction): QueueRow[] {
           ? patient.anonymous_identifier
           : patient.full_name
         : t("diagnostics.unknownPatient"),
-      mrn: patient?.mrn ?? "—",
+      mrn: patient?.mrn || "—",
       isAnonymous,
       chiefComplaint: visit?.chief_complaint ?? null,
       orderedBy: order.ordered_by_id

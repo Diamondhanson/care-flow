@@ -22,6 +22,7 @@ import {
   ArrowLeftRight,
   ChevronDown,
   FileDown,
+  HeartHandshake,
 } from "lucide-react";
 
 import {
@@ -50,6 +51,8 @@ import {
   getAllergiesForPatient,
   getBedById,
   getBeds,
+  getCarePlanEntriesForAdmission,
+  getCarePlanItemsForAdmission,
   getConsultationsForVisit,
   getDepartmentById,
   getDiagnosesForVisit,
@@ -99,6 +102,10 @@ import {
   highestSeverity,
   sortAllergiesBySeverity,
 } from "@/components/allergies/allergies";
+import {
+  CARE_NEED_CATEGORY_ICON,
+  CARE_NEED_CATEGORY_LABEL,
+} from "@/components/care-plans/care-plans";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/components/role-provider";
 import { useT, useLocale } from "@/components/locale-provider";
@@ -112,6 +119,8 @@ import type {
   Admission,
   Allergy,
   Bed,
+  CarePlanEntry,
+  CarePlanItem,
   Consultation,
   Diagnosis,
   Order,
@@ -178,6 +187,7 @@ type SectionKey =
   | "placement"
   | "careStage"
   | "vitals"
+  | "carePlan"
   | "history";
 
 /** Natural top-to-bottom order used for admins and for the "More" group. */
@@ -188,7 +198,8 @@ const SECTION_ORDER: Record<SectionKey, number> = {
   placement: 4,
   careStage: 5,
   vitals: 6,
-  history: 7,
+  carePlan: 7,
+  history: 8,
 };
 
 const PRIMARY_BY_ROLE: Partial<Record<StaffRole, SectionKey[]>> = {
@@ -231,6 +242,10 @@ export function PatientDrawer({
   const [wards, setWards] = useState<Ward[]>([]);
   const [beds, setBeds] = useState<Bed[]>([]);
   const [transfers, setTransfers] = useState<Transfer[]>([]);
+
+  // Read-only nursing care-plan summary (inpatient admissions only)
+  const [carePlanItems, setCarePlanItems] = useState<CarePlanItem[]>([]);
+  const [carePlanEntries, setCarePlanEntries] = useState<CarePlanEntry[]>([]);
   const [transferBedId, setTransferBedId] = useState<string>(NO_BED);
   const [transferDoctorId, setTransferDoctorId] = useState<string>(NO_DOCTOR);
   const [transferReason, setTransferReason] = useState("");
@@ -323,6 +338,8 @@ export function PatientDrawer({
     setWards(getWards());
     setBeds(getBeds());
     setTransfers(adm ? getTransfersForAdmission(adm.id) : []);
+    setCarePlanItems(adm ? getCarePlanItemsForAdmission(adm.id) : []);
+    setCarePlanEntries(adm ? getCarePlanEntriesForAdmission(adm.id) : []);
     setTransferBedId(adm?.bed_id ?? NO_BED);
     setTransferDoctorId(adm?.attending_doctor_id ?? NO_DOCTOR);
     setTransferReason("");
@@ -654,7 +671,7 @@ export function PatientDrawer({
             <span>{visit.chief_complaint ?? t("drawer.noChiefComplaint")}</span>
           </SheetDescription>
           <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-[11px] text-muted-foreground">
-            <span className="font-mono">{patient.mrn}</span>
+            <span className="font-mono">{patient.mrn || "—"}</span>
             <span className="uppercase tracking-wide">{t(VISIT_TYPE_LABEL[visit.visit_type])}</span>
             {location ? <span className="font-mono">{location}</span> : null}
             {doctorName ? (
@@ -1696,6 +1713,85 @@ export function PatientDrawer({
               {t("drawer.saveLog")}
             </Button>
           </section>
+
+          {/* Nursing care plan — read-only summary (inpatient only) */}
+          {admission ? (
+            <section
+              className={secCls("carePlan", "flex flex-col gap-3")}
+              style={secStyle("carePlan")}
+            >
+              <div className="flex items-center gap-2">
+                <HeartHandshake className="size-4 text-muted-foreground" />
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  {t("carePlan.needsBlock")}
+                </h3>
+                <span className="ml-auto font-mono text-xs text-muted-foreground">
+                  {carePlanItems.filter((i) => i.status === "active").length}
+                </span>
+              </div>
+              {(() => {
+                const active = carePlanItems.filter(
+                  (i) => i.status === "active",
+                );
+                const handover =
+                  carePlanEntries.find((e) => e.is_handover) ?? null;
+                if (active.length === 0 && !handover) {
+                  return (
+                    <p className="py-2 text-center text-xs text-muted-foreground">
+                      {t("carePlan.noNeeds")}
+                    </p>
+                  );
+                }
+                return (
+                  <div className="flex flex-col gap-2">
+                    {handover ? (
+                      <div
+                        className="flex flex-col gap-1 rounded-md border p-3 text-xs"
+                        style={{
+                          borderColor:
+                            "color-mix(in oklab, var(--status-boarding) 40%, transparent)",
+                        }}
+                      >
+                        <span
+                          className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em]"
+                          style={{ color: "var(--status-boarding)" }}
+                        >
+                          <HeartHandshake className="size-3" />
+                          {t("carePlan.latestHandover")}
+                        </span>
+                        <span>{handover.note}</span>
+                        <span className="font-mono text-muted-foreground">
+                          {formatDateTime(handover.recorded_at, activeLocale)}
+                        </span>
+                      </div>
+                    ) : null}
+                    {active.map((item) => {
+                      const Icon = CARE_NEED_CATEGORY_ICON[item.category];
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex items-start gap-2.5 rounded-md border border-border p-3 text-xs"
+                        >
+                          <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                          <div className="flex min-w-0 flex-col gap-0.5">
+                            <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                              {t(CARE_NEED_CATEGORY_LABEL[item.category])}
+                            </span>
+                            <span>{item.description}</span>
+                            {item.frequency ? (
+                              <span className="text-muted-foreground">
+                                {item.frequency}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+            </section>
+          ) : null}
 
           {/* History */}
           <section

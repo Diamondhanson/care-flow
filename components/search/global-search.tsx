@@ -156,7 +156,7 @@ export function GlobalSearch() {
                                 : patient.full_name}
                             </span>
                             <span className="truncate text-xs text-muted-foreground">
-                              <span className="font-mono">{patient.mrn}</span>
+                              <span className="font-mono">{patient.mrn || "—"}</span>
                               {patient.phone ? ` · ${patient.phone}` : ""}
                             </span>
                           </span>

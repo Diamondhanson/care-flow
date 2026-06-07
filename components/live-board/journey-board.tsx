@@ -54,7 +54,7 @@ function buildColumns(departmentId: string, t: TFunction): Columns {
 
     columns[column.key].push({
       visitId: visit.id,
-      mrn: patient?.mrn ?? "—",
+      mrn: patient?.mrn || "—",
       displayName:
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier

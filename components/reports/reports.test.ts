@@ -66,13 +66,14 @@ function makeVisit(overrides: Partial<Visit> = {}): Visit {
 function makePatient(overrides: Partial<Patient> = {}): Patient {
   return {
     id: "pat_1",
-    mrn: "CF-2026-000001",
+    mrn: "890314TP - A",
     full_name: "Test Patient",
     date_of_birth: null,
     sex: "unknown",
     phone: null,
     address: null,
     national_id: null,
+    mother_first_name: null,
     is_emergency_anonymous: false,
     anonymous_identifier: null,
     no_known_allergies: false,

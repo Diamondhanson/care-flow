@@ -120,7 +120,7 @@ function load(now: number, t: TFunction): MarRow[] {
             ? patient.anonymous_identifier
             : patient.full_name
           : t("meds.unknownPatient"),
-        mrn: patient?.mrn ?? "—",
+        mrn: patient?.mrn || "—",
         isAnonymous,
         unit: place.unit,
         setting: place.setting,

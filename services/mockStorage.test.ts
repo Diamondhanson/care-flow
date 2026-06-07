@@ -8,12 +8,13 @@ import {
   diffDatabases,
   evaluateDischargeReadiness,
   filterVisitsByDepartment,
-  generateMrn,
+  generatePatientId,
   getLatestVisitForPatient,
   isTerminalStage,
   normalizeDatabase,
   searchPatients,
   transferAdmission,
+  uniquePatientId,
 } from "@/services/mockStorage";
 import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
 
@@ -45,13 +46,14 @@ function makeAdmission(overrides: Partial<Admission> = {}): Admission {
 function makePatient(overrides: Partial<Patient> = {}): Patient {
   return {
     id: "pat_1",
-    mrn: "CF-2026-000001",
+    mrn: "890314TP - A",
     full_name: "Test Patient",
     date_of_birth: null,
     sex: "unknown",
     phone: null,
     address: null,
     national_id: null,
+    mother_first_name: null,
     is_emergency_anonymous: false,
     anonymous_identifier: null,
     no_known_allergies: false,
@@ -86,21 +88,74 @@ function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
 }
 
 // ---------------------------------------------------------------------------
-// generateMrn
+// generatePatientId — Cameroon booklet ID: YYMMDD + name initials + " - " + mum
 // ---------------------------------------------------------------------------
 
-describe("generateMrn", () => {
-  it("pads the sequence to six digits with the CF-YYYY- prefix", () => {
-    expect(generateMrn(2026, 1)).toBe("CF-2026-000001");
-    expect(generateMrn(2026, 123)).toBe("CF-2026-000123");
+describe("generatePatientId", () => {
+  it("builds the worked example from the spec", () => {
+    expect(
+      generatePatientId("1998-11-20", "Bambot Hanson Ngongmun", "Ndung"),
+    ).toBe("981120BHN - N");
   });
 
-  it("uses the supplied year", () => {
-    expect(generateMrn(2030, 42)).toBe("CF-2030-000042");
+  it("strips accents/diacritics before taking initials", () => {
+    expect(generatePatientId("2001-04-09", "Éloïse Ndèye", "Ámina")).toBe(
+      "010409EN - A",
+    );
   });
 
-  it("does not truncate sequences beyond six digits", () => {
-    expect(generateMrn(2026, 1234567)).toBe("CF-2026-1234567");
+  it("omits the trailing initial when the mother's name is missing", () => {
+    expect(generatePatientId("1998-11-20", "Bambot Hanson Ngongmun")).toBe(
+      "981120BHN",
+    );
+    expect(
+      generatePatientId("1998-11-20", "Bambot Hanson Ngongmun", null),
+    ).toBe("981120BHN");
+    expect(generatePatientId("1998-11-20", "Bambot Hanson Ngongmun", "")).toBe(
+      "981120BHN",
+    );
+  });
+
+  it("uses an approximate DOB (YYYY-01-01) as recorded", () => {
+    expect(generatePatientId("1980-01-01", "Kofi Annan", "Efua")).toBe(
+      "800101KA - E",
+    );
+  });
+
+  it("collapses extra whitespace between name tokens", () => {
+    expect(generatePatientId("1990-06-15", "  Ada   Lovelace ", "Anne")).toBe(
+      "900615AL - A",
+    );
+  });
+
+  it("yields only the initials when the DOB is unknown", () => {
+    expect(generatePatientId(null, "Jane Doe", "Mary")).toBe("JD - M");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// uniquePatientId — clash suffixing against existing IDs
+// ---------------------------------------------------------------------------
+
+describe("uniquePatientId", () => {
+  it("returns the base unchanged when no clash exists", () => {
+    expect(uniquePatientId("981120BHN - N", [])).toBe("981120BHN - N");
+    expect(uniquePatientId("981120BHN - N", ["721102SI - F"])).toBe(
+      "981120BHN - N",
+    );
+  });
+
+  it("appends -2, -3 … on successive clashes", () => {
+    expect(uniquePatientId("981120BHN - N", ["981120BHN - N"])).toBe(
+      "981120BHN - N-2",
+    );
+    expect(
+      uniquePatientId("981120BHN - N", ["981120BHN - N", "981120BHN - N-2"]),
+    ).toBe("981120BHN - N-3");
+  });
+
+  it("returns an empty string for an empty base (anonymous record)", () => {
+    expect(uniquePatientId("", ["981120BHN - N"])).toBe("");
   });
 });
 
@@ -309,8 +364,8 @@ describe("searchPatients", () => {
     );
   });
 
-  it("finds a patient by hospital number (MRN)", () => {
-    const results = searchPatients("CF-2026-000001");
+  it("finds a patient by their Cameroon patient ID", () => {
+    const results = searchPatients("890314GM");
     expect(results[0]?.id).toBe("pat_mensah");
   });
 
@@ -364,7 +419,6 @@ describe("normalizeDatabase", () => {
   it("backfills collections a stale DB is missing", () => {
     const stale = {
       patients: [makePatient()],
-      mrnCounter: 1,
       // allergies + transfers absent, as in a pre-Phase-11 persisted DB
     };
     const db = normalizeDatabase(stale);
@@ -376,9 +430,8 @@ describe("normalizeDatabase", () => {
 
   it("preserves existing data instead of reseeding", () => {
     const patient = makePatient();
-    const db = normalizeDatabase({ patients: [patient], mrnCounter: 7 });
+    const db = normalizeDatabase({ patients: [patient] });
     expect(db.patients).toEqual([patient]);
-    expect(db.mrnCounter).toBe(7);
   });
 
   it("replaces a non-array collection with an empty array", () => {
@@ -386,11 +439,6 @@ describe("normalizeDatabase", () => {
       allergies: "corrupt" as unknown as [],
     });
     expect(db.allergies).toEqual([]);
-  });
-
-  it("defaults a missing mrnCounter to the patient count", () => {
-    const db = normalizeDatabase({ patients: [makePatient(), makePatient()] });
-    expect(db.mrnCounter).toBe(2);
   });
 });
 

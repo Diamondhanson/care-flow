@@ -420,6 +420,154 @@ French text runs ~15–20% longer than English, so the risk is visual overflow, 
       test green; `tsc` clean. *(153/153 tests pass; `tsc --noEmit` exit 0; floor-map clean at 390 /
       768 / 1280 in both locales.)*
 
+## PHASE 16.6 — Nursing Care Plan (Inpatient) 🔜
+
+**Goal:** give nurses a dedicated place to record the individualized, non-medication care an admitted
+patient needs (bathing, feeding, positioning, temperature control, comfort, etc.) and a running,
+shift-to-shift log — so when one nurse takes over from another, the required care and what's already
+been done are visible without chasing anyone. Based on **Virginia Henderson's 14 components of basic
+nursing care**. This fills a real gap flagged by a practicing nurse: the MAR tracks medication, but
+nothing tracks the ADL/needs-based care that fills most of a nursing shift.
+
+**Why its own page, not just a drawer tab:** the patient drawer already carries vitals, meds, doctor's
+notes, orders, clearances and more — adding care plans there is too much. Nurses need to isolate *just*
+nursing-care activity, so this gets a **dedicated page** (left-nav entry → master/detail), mirroring how
+the `/medications` MAR page works.
+
+**Scope:** patients with an active **admission** (inpatient). *(Open question: also include
+observation / day-case patients receiving nursing care without a full admission? Default for now:
+admitted only; can be extended with a flag later.)*
+
+### Data model (mirror the existing patterns — append-only log, service-layer only)
+
+* [ ] `care_need_category` enum from Henderson's 14, named practically: `breathing`, `nutrition`,
+      `elimination`, `mobility_positioning`, `sleep_rest`, `hygiene`, `temperature`, `dressing`,
+      `safety`, `communication_emotional`, `pain_comfort`, `spiritual`, `wound_skin_care`, `other`.
+* [ ] `CarePlanItem` (the **plan** — what the patient needs): `admission_id`, `patient_id`,
+      `category`, `description`, `frequency` (free text, e.g. "Every 2h"), optional `goal`,
+      `status` (`active` / `resolved`), `created_by_id`, timestamps.
+* [ ] `CarePlanEntry` (the **log + handover** — append-only, never overwritten, like `transfers`):
+      `admission_id` (and optional `care_plan_item_id`), `note`, `is_handover` flag, `recorded_by_id`,
+      `recorded_at`.
+* [ ] Add all three to `types/healthcare.ts`, `services/mockStorage.ts` (CRUD + read queries:
+      `getCarePlanItemsForAdmission`, `getCarePlanEntriesForAdmission`, `addCarePlanItem`,
+      `resolveCarePlanItem`, `addCarePlanEntry`, `getAdmittedPatientsForCarePlan`), and
+      `supabase/schema.sql` (tables + indexes + `updated_at`/audit triggers + nurse/doctor/admin RLS
+      write, all-staff read).
+
+### UI
+
+* [ ] New left-nav entry **"Nursing care plan"** (`/care-plans`), in the **nurse** role's menu
+      (`ROLE_NAV` in `app-shell.tsx`); visible to doctor/admin too (read + write).
+* [ ] **Master/detail page:** left = list of currently admitted patients (name, bed/ward, a count of
+      active care needs, and a **handover-waiting** signal when an unread handover note exists); right =
+      the selected patient's care plan in three blocks — **What is required** (the plan items),
+      **What has been done** (the care log, with handover notes visually highlighted), and actions to
+      **Record care** and **Leave handover**.
+* [ ] A **ward filter** at the top so a nurse can narrow to her ward at shift change.
+* [ ] Low-friction input: category is a **quick-pick** (not free typing); record-care and handover are
+      short forms. (Natural future home for the French voice-to-note AI.)
+* [ ] A compact **read-only** care-plan summary inside the patient drawer (for a doctor's glance), so
+      the drawer references the record without becoming the working surface.
+* [ ] Fully localized (FR/EN) including the category labels.
+
+### Seed sample data (so the panel is populated and demoable)
+
+Seed against the existing admitted patients (bump the mock DB key). Concrete records:
+
+* [ ] **Samuel Idris — ICU-04 (post-op laparotomy).** Needs: Hygiene — "assist with bed bath, keep skin
+      dry" (Daily); Mobility/positioning — "turn every 2h to prevent pressure sores" (Every 2h);
+      Temperature — "tepid sponge and review if temp > 38.5°C" (As needed); Nutrition — "soft diet,
+      assist feeding, encourage fluids" (Each meal). Log: Romero 12:05 "Turned to left side. Temp 37.8°C,
+      settling." · Patel 14:20 "Bed bath given, skin intact. Ate half of lunch." · **Handover** Patel
+      15:00 "Anxious about surgery tomorrow — needs reassurance. Watch temperature this evening."
+* [ ] **Aisha Bello — Ward B-11 (pneumonia, recovering).** Needs: Breathing — "sit upright, encourage
+      deep breathing / chest physio" (Every 4h); Hygiene — "assist shower" (Daily); Mobility —
+      "encourage short walks on the ward" (Twice daily). Log: Patel 13:10 "Walked to end of ward and
+      back, tolerated well." · **Handover** "Chest clearer, coughing productively. Keep prompting deep
+      breathing."
+* [ ] **Daniel Owusu — Ward A-03 (diabetic, stabilized).** Needs: Nutrition — "diabetic diet, monitor
+      intake" (Each meal); Wound/skin care — "inspect feet daily for ulcers" (Daily). Log: Romero 11:30
+      "Feet inspected, no ulcers. Ate full breakfast."
+* [ ] **John Doe · Gamma — ICU-02 (unconscious, head trauma, GCS improving).** Needs: Hygiene — "full
+      bed bath + mouth care" (Daily); Positioning — "turn every 2h" (Every 2h); Elimination — "catheter
+      care, monitor output" (Each shift); Eye care — "clean + protect eyes to prevent dryness" (Every
+      4h); Safety — "cot sides up, neuro observations" (Each shift). Log: Patel 14:00 "Full bed bath and
+      mouth care done. Repositioned. Output adequate." · **Handover** "GCS improving (7→9). Continue
+      2-hourly turns and eye care. Family visited."
+
+### Verify
+
+* [ ] Open `/care-plans` as a nurse: the four seeded patients appear in the list with their need counts,
+      Idris shows a handover-waiting signal; clicking a patient shows required care + the care log with
+      the handover note highlighted; recording care and leaving a handover append to the log and update
+      the signal. Admin/doctor can read it; the drawer shows the read-only summary. FR + EN clean; `tsc`
+      clean; unit tests for the new pure helpers green.
+
+## PHASE 16.7 — Cameroon Patient ID Format 🔜
+
+**Goal:** replace the auto-generated MRN (`CF-YYYY-NNNNNN`) with a Cameroon-standard patient ID
+derived from the patient's birth date, name initials, and mother's first-name initial — generated at
+registration.
+
+**Format:** `YYMMDD` + name initials + ` - ` + mother's initial
+* `YY` = last 2 digits of birth year · `MM` = 2-digit birth month · `DD` = 2-digit birth day
+* initials = first letter of each part of the patient's full name, uppercase
+* ` - ` then the first letter of the mother's first name
+* **Example:** Bambot Hanson Ngongmun, born 20/11/1998, mother Ndung → `981120BHN - N`
+
+### Decisions (locked)
+* **Replace MRN entirely.** This becomes the only patient ID shown everywhere (cards, search, intake
+  success, drawer, reports, printouts). Remove the `CF-…` sequence + `generate_mrn()`.
+  The patient **UUID stays the true internal key** — all FKs/joins reference the UUID, so swapping the
+  human-facing ID never touches relationships.
+* **Uniqueness = suffix on clash (interim).** If the generated ID already exists, append a counter
+  (`981120BHN - N-2`, `-3`, …). Good enough for now; better collision-proofing comes later.
+* **Mother's first name = optional field** at registration. If blank, generate without the
+  ` - <initial>` part (e.g. `981120BHN`); it can be added later, which regenerates the suffix.
+
+### Edge cases to handle
+* **Unknown DOB / approximate age** (stored `YYYY-01-01`): the ID uses whatever DOB is recorded — may
+  be approximate.
+* **Emergency anonymous intake:** no DOB/name/mother → no Cameroon ID yet; generate it at
+  reconciliation when real details are entered (same point the `anonymous_identifier` is resolved).
+* **Accents/diacritics** in French/African names: normalize to A–Z before taking the initial.
+* **Variable length:** initials = one letter per whitespace-separated name token, in stored order, so
+  ID length varies with the number of names.
+
+### Implementation
+* [ ] Add `mother_first_name` (nullable) to `Patient` in `types/healthcare.ts`, the intake form, and
+      `supabase/schema.sql`.
+* [ ] Replace the MRN display field with the new ID. Recommend renaming `patients.mrn` →
+      `patients.patient_code` for clarity (update all references), or keep the column name but change
+      its meaning/format — either way, drop the `CF-…` default and generate app-side.
+* [ ] Pure helper in the service layer: `generatePatientId(dob, fullName, motherFirstName)` →
+      base ID, plus clash-suffix logic against existing IDs. Generate at patient creation
+      (`createNewVisit`) and (re)generate at `reconcileAnonymousProfile`.
+* [ ] `supabase/schema.sql`: drop the `mrn_seq` / `generate_mrn()` default; the app supplies the ID on
+      insert (or a `plpgsql` function mirrors the helper). Keep a `unique` index on the ID.
+* [ ] Intake form: add the optional "Mother's first name" field; show the generated patient ID on the
+      success screen instead of the MRN.
+* [ ] Update every display of the old MRN: patient cards, drawer header, **global search** (match on
+      the new ID + name + phone), reports, and the printed visit slip.
+* [ ] i18n: relabel "Hospital number / Numéro d'hôpital" → "Patient ID / Identifiant patient"; add
+      FR/EN labels for the mother's-name field.
+* [ ] Unit tests: the worked example → `981120BHN - N`; accent stripping; missing mother → no ` - x`;
+      approximate DOB; clash → suffix.
+
+### Seed regeneration (so existing patients carry valid IDs)
+Recompute each seeded patient's ID in the new format and add a plausible mother's first name:
+* [ ] Grace Mensah, 1989-03-14, mother Akosua → `890314GM - A`
+* [ ] Samuel Idris, 1972-11-02, mother Fatima → `721102SI - F`
+* [ ] Aisha Bello, 1995-07-21, mother Hauwa → `950721AB - H`
+* [ ] Daniel Owusu, 1960-01-09, mother Abena → `600109DO - A`
+* [ ] John Doe · Gamma (anonymous) → no ID until reconciled
+
+### Verify
+* [ ] Registering a patient generates the correct ID (with and without a mother's name); the worked
+      example and edge-case unit tests pass; a forced clash appends `-2`; anonymous intake gets its ID
+      at reconciliation; the ID shows on cards/search/drawer/intake in FR + EN; `tsc` clean, tests green.
+
 ## PHASE 17 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
 
 **Goal:** swap the mock for a real, secure, multi-user backend — the last phase, after the UX is
@@ -670,6 +818,25 @@ When working with Claude Code, log completed steps, timestamps, and architectura
   (PatientDrawer console) → nurse and all eight pages + the drawer with **zero English leaks** and **no
   hydration warnings/console errors**; EN toggle restores English everywhere. (NB: this app's PWA
   service worker caches the JS bundle — had to unregister it + clear caches to see edits in dev.)
+* 2026-06-02: **Added Phase 16.7 — Cameroon Patient ID format.** Replaces the auto-generated MRN
+  (`CF-YYYY-NNNNNN`) with a Cameroon-standard ID built at registration from `YYMMDD` + name initials +
+  ` - ` + mother's-name initial (e.g. Bambot Hanson Ngongmun, 20/11/1998, mother Ndung → `981120BHN -
+  N`). Locked decisions: replaces MRN entirely as the displayed ID (patient UUID stays the internal
+  key); uniqueness via suffix-on-clash for now; new optional mother's-first-name field. Spec covers
+  edge cases (unknown/approx DOB, anonymous intake → ID at reconciliation, accent normalization) and
+  includes recomputed seed IDs for the existing patients. No code changed yet — phase spec only.
+
+* 2026-06-02: **Added Phase 16.6 — Nursing Care Plan (inpatient).** New feature phase (frontend + mock
+  now, schema-ready for Phase 17) driven by feedback from a practicing nurse: a dedicated
+  `/care-plans` page (left-nav, master/detail) where nurses record the individualized non-medication
+  care an admitted patient needs (Henderson's 14 components — hygiene, nutrition, positioning,
+  temperature, etc.) and an append-only care log + shift handover, so continuity survives nurse
+  handovers. Data model = `CarePlanItem` (the plan) + append-only `CarePlanEntry` (log/handover) +
+  `care_need_category` enum, mirrored into `supabase/schema.sql`. Kept off the patient drawer (too
+  crowded) except as a read-only summary. **Includes concrete seed data** for the four admitted seed
+  patients (Idris, Bello, Owusu, John Doe · Gamma) so the panel renders populated for demos. No code
+  changed yet — phase spec only.
+
 * 2026-06-02: **Added Phase 16.5 — Demo-Readiness QA Pass.** A frontend-only polish step before the
   backend, capturing two follow-ups: (1) **finish & confirm the drawer simplification** — verify the
   role-led `PatientDrawer` opens each role to its primary action with the rest collapsed (tighten the
