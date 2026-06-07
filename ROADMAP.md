@@ -598,25 +598,91 @@ registration form** that gives the anonymous patient a real identity **in-place*
       (no duplicate created); the optional merge path reassigns visits to the linked patient and removes
       the anonymous record; FR + EN clean; `tsc` clean; 183 tests pass.
 
-## PHASE 17 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
+## PHASE 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding 🔜
 
-**Goal:** swap the mock for a real, secure, multi-user backend — the last phase, after the UX is
-demo-ready.
+**Goal:** turn CareFlow into a SaaS where **each hospital is an isolated tenant/account.** A hospital
+admin signs up from a public landing page, provisions their hospital (departments, wards, beds), and
+creates staff logins to hand out. Built into the schema **before** the data cutover (Phase 18) so
+tenant isolation is *designed in*, never retrofitted — cheap now (no live data), painful later.
 
-* [ ] Provision the database — **`supabase/schema.sql` is written and ready to copy-paste** (all
-      tables, enums, indexes, triggers, MRN generator, occupancy sync, reporting views, storage
-      buckets, and RLS).
+**Tenancy model:** shared tables + a `hospital_id` discriminator + RLS (pooled multi-tenancy) — the
+standard, cost-effective choice for small/medium hospitals. A dedicated database per hospital stays a
+future premium option for any tenant demanding hard physical isolation.
+
+### Tenant data model
+
+* [x] **`hospitals` table** — the account/tenant entity: `id`, `name`, `region/location`, contact,
+      `subscription_tier`, `subscription_status` (`trial` / `active` / `suspended`), `created_at`.
+      This is also where monetization hooks live (a suspended/unpaid hospital is restricted).
+* [x] **Add `hospital_id` (FK → hospitals) to every domain table:** `staff`, `patients`, `allergies`,
+      `visits`, `consultations`, `diagnoses`, `orders`, `results`, `prescriptions`,
+      `medication_administrations`, `treatment_records`, `admissions`, `transfers`, `departments`,
+      `wards`, `beds`, `care_plan_items`, `care_plan_entries`, `audit_log`. (The patient **UUID** stays
+      the internal key; `hospital_id` is an added dimension, not a replacement.)
+* [x] **Per-tenant uniqueness:** make patient ID, bed labels, department/ward names unique **within a
+      hospital** (composite `unique (hospital_id, …)`). The Cameroon patient-ID clash check + suffix
+      (Phase 16.7) now scopes per hospital — more correct.
+
+### Tenant isolation (the make-or-break — highest stakes)
+
+> Holding *multiple* hospitals' patient records means one cross-tenant leak is catastrophic (privacy,
+> trust, legal). This must be airtight and tested.
+
+* [x] **`current_hospital_id()` RLS helper** — resolves the logged-in staff's hospital
+      (`select hospital_id from staff where user_id = auth.uid()`), mirroring `current_staff_id()`.
+* [x] **Add `hospital_id = current_hospital_id()` to EVERY RLS policy** — no table exempt. This is the
+      line that guarantees Hospital A never sees Hospital B's data.
+* [x] **Per-tenant storage:** prefix every object path with `hospital_id` and scope storage RLS by
+      hospital, so files can't leak across tenants.
+* [ ] **Automated cross-tenant isolation tests:** a query/run as Hospital A's user returns **zero** of
+      Hospital B's rows, across every table *and* storage bucket. Part of the verify gate.
+
+### Accounts, roles & onboarding
+
+* [ ] **Hospital signup:** creates the `hospitals` row **and** the founder's own `staff` row with role
+      `admin`, linked to their `auth.users` login. Public `/signup`.
+* [ ] **Admin provisioning:** the admin creates departments / wards / beds / staff, all scoped to their
+      hospital (the admin UIs already exist — now tenant-scoped).
+* [ ] **Admin-creates-staff logins (needs a server-side function):** Supabase Auth defaults to email
+      self-signup; creating accounts *on behalf of* staff requires a privileged **Supabase Edge
+      Function** (service-role key) — cannot run in the browser. Build it. Sub-decisions: prefer
+      **username + password** logins (many clinical staff have no email); force password change on
+      first login; consider a fast login/logout or kiosk pattern for **shared terminals/desks**.
+* [ ] **Subscription gating:** `hospitals.subscription_status` drives access (suspended → restricted);
+      hooks for the monetization tiers (which features each tier unlocks).
+
+### Public landing page
+
+* [ ] A **public, unauthenticated** marketing page (French-first) explaining the value with a
+      "Create your hospital account" CTA → signup. Restructure routes: public `/` (marketing),
+      `/signup`, `/login`; the current dashboard moves **behind an auth boundary**.
+
+### Verify
+
+* [ ] Two hospitals can sign up independently; each admin provisions their own structure and staff
+      logins; a doctor/nurse logs in at a desk and sees **only their hospital's** patients/board;
+      the cross-tenant isolation tests pass on every table + storage; landing → signup → login flow
+      works in FR + EN; `tsc` clean, tests green.
+
+## PHASE 18 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
+
+**Goal:** swap the mock for the real, secure, multi-user backend — the last phase, after multi-tenancy
+(Phase 17) and the UX are in place.
+
+* [ ] Provision the database — **`supabase/schema.sql`** (all tables incl. `hospitals` + `hospital_id`,
+      enums, indexes, triggers, Cameroon patient-ID handling, occupancy sync, reporting views, storage
+      buckets, and **tenant-scoped, role-based RLS**).
 * [ ] **Role-based access (enforced at this step):** real Supabase Auth login; "locked in as a
-      doctor/nurse/admin" enforced by the **RLS policies already defined** in the schema (doctors
-      author consultations/orders/prescriptions; nurses record vitals + MAR; lab techs enter results;
-      pharmacists update fulfilment; admin manages structure; everyone reads the operational record).
-      The dev role switcher (Phase 8) is removed here.
+      doctor/nurse/admin" enforced by the RLS policies (doctors author consultations/orders/
+      prescriptions; nurses record vitals + MAR; lab techs enter results; pharmacists update
+      fulfilment; admin manages structure; everyone reads their hospital's operational record). The dev
+      role switcher (Phase 8) is removed here.
 * [ ] **Audit trail (enforced at this step):** every change to a sensitive table records *who* and
       *when* plus before/after snapshots — **already wired** via the `audit_trigger` + append-only
-      `audit_log` (admin-readable, client-tamper-proof) in the schema.
+      `audit_log` (admin-readable, client-tamper-proof), now also tenant-scoped.
 * [ ] Replace `services/mockStorage.ts` internals with `supabase-js` calls; keep the UI contract
       identical and flip the `isSyncConfigured()` seam so the offline outbox drains automatically.
-* [ ] File storage: lab results / imaging / scanned documents in the private storage buckets.
+* [ ] File storage: lab results / imaging / scanned documents in the private, per-hospital buckets.
 * [ ] **Compliance hardening (folded in from the former Phase 14):** integration tests for RLS policy
       behavior; data-privacy review (encryption at rest/in transit, access logging, **retention
       policy**, backups); concurrency strategy for simultaneous edits (flagged item #7).
@@ -685,6 +751,35 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-07: **Phase 17 — tenant-scoped schema authored (`supabase/schema.sql`).** Made the entire
+  schema multi-tenant in one pass: added a `hospitals` (account/tenant) table + `subscription_status`
+  enum; added a non-null `hospital_id uuid references hospitals(id) on delete cascade` to all 18 domain
+  tables (departments, wards, beds, staff, patients, allergies, visits, consultations, diagnoses,
+  orders, results, prescriptions, medication_administrations, treatment_records, admissions, transfers,
+  care_plan_items, care_plan_entries) plus a nullable `hospital_id` on `audit_log`. Converted the
+  formerly-global uniques to **per-tenant composites** (`unique(hospital_id, code/name)` on departments,
+  `unique(hospital_id, name)` on wards, `unique(hospital_id, mrn)` + `unique(hospital_id, national_id)`
+  on patients, `unique(hospital_id, email)` on staff; `beds` keeps `unique(ward_id, label)` — already
+  tenant-isolated via ward). Added the `current_hospital_id()` SECURITY DEFINER helper, a
+  `hospital_id = current_hospital_id()` predicate on **every** RLS policy (+ `hospitals`-table policies
+  for self-read and admin self-update; no client INSERT — signup is service-role), per-tenant storage
+  paths (`(storage.foldername(name))[1] = current_hospital_id()::text` on read/write/update), tenant
+  `idx_<table>_hospital` indexes on all tables, `security_invoker` views exposing `hospital_id`, and
+  `hospital_id` capture in the audit trigger. **Schema-only** (no live Supabase DB) — verified by review
+  + grep. Cross-tenant isolation tests remain unchecked (need a live DB; deferred to Phase 18 verify).
+* 2026-06-02: **Split Phase 17 into multi-tenancy + cutover.** Before the backend cutover, added
+  **Phase 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding**: CareFlow becomes a SaaS where
+  each hospital is an isolated tenant. Plan = a `hospitals` (account) table + a `hospital_id` FK on
+  every domain table + a `current_hospital_id()` RLS helper with a `hospital_id = current_hospital_id()`
+  predicate on **every** policy, per-tenant uniqueness (patient ID / bed / department names scoped per
+  hospital), per-tenant storage prefixes, hospital signup (creates the hospital + founding admin),
+  admin-creates-staff logins via a Supabase Edge Function (username+password for staff without email),
+  subscription gating tied to monetization, a public French-first landing page, and **automated
+  cross-tenant isolation tests** (the make-or-break). The former backend cutover is now **Phase 18**
+  (the final phase), updated to reference the tenant-scoped schema. Decided tenancy model: pooled
+  (shared tables + `hospital_id` + RLS); dedicated DB per hospital is a future premium option. No code
+  changed — phase spec only.
 
 * 2026-06-02: **Phase 16.5 COMPLETE — demo-readiness QA pass (drawer confirm + FR layout sweep).**
   The last polish before the backend. **(1) Role-led drawer confirmed:** verified in-browser that the
