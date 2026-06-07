@@ -227,8 +227,8 @@ function AccountMenu() {
     mounted && currentStaff ? t(ROLE_LABEL[currentStaff.role]) : "";
   const initials = staffInitials(name);
 
-  function handleSignOut() {
-    signOut();
+  async function handleSignOut() {
+    await signOut();
     router.push("/login");
   }
 

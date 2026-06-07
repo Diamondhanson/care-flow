@@ -837,6 +837,19 @@ export function createStaff(input: CreateStaffInput): Staff {
   return staff;
 }
 
+/**
+ * Remove a staff member. Used to roll back a freshly created mock staff row when
+ * the privileged login provisioning (Phase 18a server action) fails — so the
+ * directory never shows an account that has no real login behind it.
+ */
+export function deleteStaff(id: StaffId): void {
+  const db = loadDatabase();
+  const next = db.staff.filter((s) => s.id !== id);
+  if (next.length === db.staff.length) return;
+  db.staff = next;
+  persist(db);
+}
+
 export function getPatients(): Patient[] {
   return loadScoped().patients;
 }

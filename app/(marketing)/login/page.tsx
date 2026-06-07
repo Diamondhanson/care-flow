@@ -1,24 +1,18 @@
 "use client";
 
 /**
- * Mock sign-in (`/login`). The real password flow arrives with the Supabase
- * cutover (Phase 18); for now we model the session by picking a hospital and
- * then a staff account to sign in as. On success we redirect to the dashboard.
+ * Sign-in (`/login`). Real Supabase Auth (Phase 18a): staff authenticate with a
+ * username + password. On success the AuthProvider bridges the session to the
+ * (still-mock) data layer and we land on the dashboard.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -28,34 +22,31 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
-import { getHospitals, getStaffForHospital } from "@/services/mockStorage";
-import { ROLE_LABEL } from "@/components/role-provider";
-import type { Hospital, Staff, StaffId, HospitalId } from "@/types/healthcare";
 
 export default function LoginPage() {
   const { t } = useT();
   const router = useRouter();
   const { signIn } = useAuth();
 
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const [hospitalId, setHospitalId] = useState<HospitalId | "">("");
-  const [staffId, setStaffId] = useState<StaffId | "">("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Reads hit localStorage, so load after mount (client-only).
-  useEffect(() => {
-    setHospitals(getHospitals());
-  }, []);
+  const canSubmit = username.trim() !== "" && password !== "";
 
-  const staff = useMemo<Staff[]>(
-    () => (hospitalId ? getStaffForHospital(hospitalId as HospitalId) : []),
-    [hospitalId]
-  );
-
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!staffId) return;
-    signIn(staffId as StaffId);
-    router.push("/dashboard");
+    if (!canSubmit || submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await signIn(username.trim(), password);
+      router.push("/dashboard");
+    } catch {
+      setError(t("auth.login.error"));
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -68,62 +59,56 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="hospital">{t("auth.login.hospitalLabel")}</Label>
-              <Select
-                value={hospitalId}
-                onValueChange={(v) => {
-                  setHospitalId(v as HospitalId);
-                  setStaffId("");
-                }}
-              >
-                <SelectTrigger id="hospital" className="w-full">
-                  <SelectValue
-                    placeholder={t("auth.login.hospitalPlaceholder")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {hospitals.map((h) => (
-                    <SelectItem key={h.id} value={h.id}>
-                      {h.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="username">{t("auth.login.usernameLabel")}</Label>
+              <Input
+                id="username"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t("auth.login.usernamePlaceholder")}
+                required
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="staff">{t("auth.login.staffLabel")}</Label>
-              <Select
-                value={staffId}
-                onValueChange={(v) => setStaffId(v as StaffId)}
-                disabled={!hospitalId || staff.length === 0}
-              >
-                <SelectTrigger id="staff" className="w-full">
-                  <SelectValue placeholder={t("auth.login.staffPlaceholder")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {staff.map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.full_name} · {t(ROLE_LABEL[s.role])}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {hospitalId && staff.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
-                  {t("auth.login.noStaff")}
-                </p>
-              ) : null}
+              <Label htmlFor="password">{t("auth.login.passwordLabel")}</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t("auth.login.passwordPlaceholder")}
+                required
+              />
             </div>
 
-            <Button type="submit" className="w-full" disabled={!staffId}>
-              {t("auth.login.submit")}
+            {error ? (
+              <p
+                role="alert"
+                className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive"
+              >
+                {error}
+              </p>
+            ) : null}
+
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!canSubmit || submitting}
+            >
+              {submitting ? t("auth.login.signingIn") : t("auth.login.submit")}
             </Button>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {t("auth.login.noAccount")}{" "}
-            <Link href="/signup" className="font-medium text-primary underline-offset-4 hover:underline">
+            <Link
+              href="/signup"
+              className="font-medium text-primary underline-offset-4 hover:underline"
+            >
               {t("auth.login.signUpLink")}
             </Link>
           </p>

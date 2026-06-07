@@ -2,8 +2,10 @@
 
 /**
  * Hospital signup (`/signup`). Creates a hospital and its founder admin in one
- * step via {@link useAuth().signUp} (mock {@link signUpHospital}), signs the
- * admin in, and lands them on the dashboard. Real auth arrives in Phase 18.
+ * step via {@link useAuth().signUp}: the mock data layer gets the tenant + admin
+ * (Phase 18a), and a real Supabase Auth login is provisioned for the admin's
+ * username + password. On success the admin is signed in and lands on the
+ * dashboard.
  */
 
 import { useState } from "react";
@@ -33,26 +35,37 @@ export default function SignupPage() {
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [adminName, setAdminName] = useState("");
+  const [adminUsername, setAdminUsername] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
   const [adminEmail, setAdminEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = hospitalName.trim() !== "" && adminName.trim() !== "";
+  const canSubmit =
+    hospitalName.trim() !== "" &&
+    adminName.trim() !== "" &&
+    adminUsername.trim() !== "" &&
+    adminPassword.length >= 6;
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     if (!canSubmit || submitting) return;
     setSubmitting(true);
+    setError(null);
     try {
-      signUp({
+      await signUp({
         name: hospitalName.trim(),
         region: region.trim() || undefined,
         contact_email: contactEmail.trim() || undefined,
         contact_phone: contactPhone.trim() || undefined,
         admin_full_name: adminName.trim(),
+        admin_username: adminUsername.trim(),
+        admin_password: adminPassword,
         admin_email: adminEmail.trim() || null,
       });
       router.push("/dashboard");
-    } catch {
+    } catch (e) {
+      setError(e instanceof Error ? e.message : t("auth.signup.error"));
       setSubmitting(false);
     }
   }
@@ -133,6 +146,37 @@ export default function SignupPage() {
                   required
                 />
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="adminUsername">
+                    {t("auth.signup.adminUsername")}
+                  </Label>
+                  <Input
+                    id="adminUsername"
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    value={adminUsername}
+                    onChange={(e) => setAdminUsername(e.target.value)}
+                    placeholder={t("auth.signup.adminUsernamePlaceholder")}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="adminPassword">
+                    {t("auth.signup.adminPassword")}
+                  </Label>
+                  <Input
+                    id="adminPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder={t("auth.signup.adminPasswordPlaceholder")}
+                    required
+                  />
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="adminEmail">{t("auth.signup.adminEmail")}</Label>
                 <Input
@@ -143,6 +187,15 @@ export default function SignupPage() {
                 />
               </div>
             </fieldset>
+
+            {error ? (
+              <p
+                role="alert"
+                className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive"
+              >
+                {error}
+              </p>
+            ) : null}
 
             <Button
               type="submit"

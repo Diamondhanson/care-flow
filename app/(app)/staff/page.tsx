@@ -41,8 +41,11 @@ import {
   getBedById,
   getPatientById,
   createStaff,
+  deleteStaff,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
+import { useAuth } from "@/components/auth-provider";
+import { provisionStaffLogin } from "@/app/actions/auth";
 import { ResetDemo } from "@/components/demo/reset-demo";
 import type { Department, Staff, StaffRole } from "@/types/healthcare";
 
@@ -291,12 +294,16 @@ function StaffFormSheet({
   onSaved: () => void;
 }) {
   const { t } = useT();
+  const { currentHospital } = useAuth();
   const [name, setName] = useState("");
   const [role, setRole] = useState<StaffRole | null>(null);
   const [departmentId, setDepartmentId] = useState<string>("none");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Reset the form each time the sheet opens.
   useEffect(() => {
@@ -304,13 +311,16 @@ function StaffFormSheet({
       setName("");
       setRole(null);
       setDepartmentId("none");
+      setUsername("");
+      setPassword("");
       setEmail("");
       setPhone("");
       setError(null);
+      setSaving(false);
     }
   }, [open]);
 
-  function handleSave() {
+  async function handleSave() {
     setError(null);
     if (!name.trim()) {
       setError(t("staff.nameRequired"));
@@ -320,14 +330,53 @@ function StaffFormSheet({
       setError(t("staff.roleRequired"));
       return;
     }
-    createStaff({
+    if (!username.trim()) {
+      setError(t("staff.usernameRequired"));
+      return;
+    }
+    if (password.length < 6) {
+      setError(t("staff.passwordTooShort"));
+      return;
+    }
+    if (!currentHospital) {
+      setError(t("staff.noHospital"));
+      return;
+    }
+
+    setSaving(true);
+    // Create the mock staff row first so we have its id to bridge the login to,
+    // then provision a real Supabase Auth login. If provisioning fails (e.g. the
+    // username is taken) we roll the mock row back so retrying is clean.
+    const created = createStaff({
       full_name: name,
       role,
       email: email.trim() || null,
       phone: phone.trim() || null,
       department_id: departmentId === "none" ? null : (departmentId as Department["id"]),
+      hospital_id: currentHospital.id,
     });
-    onSaved();
+    try {
+      const result = await provisionStaffLogin({
+        username: username.trim(),
+        password,
+        full_name: created.full_name,
+        role,
+        hospital_id: currentHospital.id,
+        mock_hospital_id: currentHospital.id,
+        mock_staff_id: created.id,
+      });
+      if (!result.ok) {
+        deleteStaff(created.id);
+        setError(result.error);
+        return;
+      }
+      onSaved();
+    } catch (err) {
+      deleteStaff(created.id);
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -374,6 +423,29 @@ function StaffFormSheet({
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_username">{t("staff.username")}</Label>
+            <Input
+              id="staff_username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder={t("staff.usernamePlaceholder")}
+              autoComplete="off"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_password">{t("staff.password")}</Label>
+            <Input
+              id="staff_password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t("staff.passwordPlaceholder")}
+              autoComplete="new-password"
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">
@@ -432,10 +504,12 @@ function StaffFormSheet({
         </div>
 
         <SheetFooter className="mt-auto flex-row justify-end gap-3 border-t border-border">
-          <Button variant="ghost" onClick={onClose}>
+          <Button variant="ghost" onClick={onClose} disabled={saving}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSave}>{t("staff.create")}</Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? t("staff.creating") : t("staff.create")}
+          </Button>
         </SheetFooter>
       </SheetContent>
     </Sheet>
