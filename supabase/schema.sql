@@ -27,6 +27,16 @@
 
 
 -- =============================================================================
+-- 0. SESSION SETTINGS
+-- =============================================================================
+-- The tenancy helper functions (current_staff_id / current_hospital_id / …) are
+-- `language sql` and are defined before the tables they read, so Postgres would
+-- reject them at creation time when validating their bodies against not-yet-
+-- existing relations. Disable body validation for this load; the references all
+-- resolve once the whole script has run.
+set check_function_bodies = off;
+
+-- =============================================================================
 -- 1. EXTENSIONS
 -- =============================================================================
 create extension if not exists "pgcrypto";   -- gen_random_uuid()
@@ -332,6 +342,10 @@ create table if not exists staff (
   full_name     text not null,
   role          staff_role not null,
   department_id uuid references departments(id) on delete set null,
+  -- Login handle. The admin creates staff with a username (no email required)
+  -- and assigns a password; the password itself lives in Supabase Auth
+  -- (auth.users), linked via user_id. Unique within a hospital.
+  username      text,
   email         text,
   phone         text,
   is_active     boolean not null default true,
@@ -339,7 +353,9 @@ create table if not exists staff (
   updated_at    timestamptz not null default now(),
   -- Email unique within a hospital (the same person may work at two facilities);
   -- the auth-user link stays globally unique (one login = one staff row).
-  unique (hospital_id, email)
+  unique (hospital_id, email),
+  -- Username unique within a hospital (multiple NULLs allowed for legacy rows).
+  unique (hospital_id, username)
 );
 
 create table if not exists patients (
@@ -402,6 +418,8 @@ create table if not exists visits (
   registered_by_id    uuid references staff(id) on delete set null,
   chief_complaint     text,
   triage_notes        text,             -- nurse's initial notes / observations
+  -- Emergency-severity acuity (1 = critical … 5 = non-urgent); null until triaged.
+  triage_level        smallint check (triage_level is null or triage_level between 1 and 5),
   arrived_at          timestamptz not null default now(),
   closed_at           timestamptz,
   created_at          timestamptz not null default now(),
@@ -461,6 +479,8 @@ create table if not exists results (
   summary         text,
   value           text,                 -- numeric/text result value
   reference_range text,
+  -- Flagged out-of-range / clinically significant; drives review highlighting.
+  is_abnormal     boolean not null default false,
   attachment_path text,                 -- storage object path, nullable
   recorded_at     timestamptz not null default now()
 );
@@ -508,6 +528,7 @@ create table if not exists treatment_records (
   bp_systolic    numeric,
   bp_diastolic   numeric,
   temperature_c  numeric,
+  weight_kg      numeric,              -- body weight, kilograms; null when not measured
   gcs_score      integer check (gcs_score is null or gcs_score between 3 and 15),
   notes          text,
   recorded_at    timestamptz not null default now()
