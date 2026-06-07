@@ -35,6 +35,8 @@ import type {
   Department,
   DepartmentId,
   Diagnosis,
+  Hospital,
+  HospitalId,
   MarStatus,
   MedicationAdministration,
   MedicationAdministrationId,
@@ -51,6 +53,8 @@ import type {
   ResultId,
   Staff,
   StaffId,
+  StaffRole,
+  SubscriptionStatus,
   Transfer,
   TransferId,
   TreatmentRecord,
@@ -63,9 +67,19 @@ import type {
 } from "@/types/healthcare";
 import { clearOutbox, enqueueChanges, type NewChange } from "@/services/syncQueue";
 
-const STORAGE_KEY = "careflow_db_v7";
+// Bumped v7 → v8: every domain row now carries a `hospital_id` (Phase 17
+// multi-tenancy). Older persisted shapes lack it, so a fresh key forces a clean
+// re-seed rather than trying to backfill tenantless rows.
+const STORAGE_KEY = "careflow_db_v8";
+
+/** The demo tenant every seeded record belongs to (mirrors `hospitals` row). */
+export const DEMO_HOSPITAL_ID = "hosp_demo";
+
+/** A seed/input row before its owning `hospital_id` is stamped on. */
+type Seed<T> = Omit<T, "hospital_id">;
 
 interface Database {
+  hospitals: Hospital[];
   departments: Department[];
   wards: Ward[];
   beds: Bed[];
@@ -205,6 +219,7 @@ function loadDatabase(): Database {
 
 /** Collections every Database holds — used to backfill stale persisted shapes. */
 const DB_COLLECTIONS = [
+  "hospitals",
   "departments",
   "wards",
   "beds",
@@ -255,6 +270,7 @@ let lastPersisted: Database | null = null;
  * future sync seam do `supabase.from(change.table)…` with no translation.
  */
 const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
+  hospitals: "hospitals",
   departments: "departments",
   wards: "wards",
   beds: "beds",
@@ -337,8 +353,159 @@ function persist(db: Database, opts: { track?: boolean } = {}): void {
 }
 
 // ---------------------------------------------------------------------------
+// Tenancy — the mock's stand-in for the schema's current_hospital_id() + RLS.
+//
+// A module-level "active hospital" (set from the logged-in / acting staff)
+// scopes every read to a single tenant and stamps new rows on write. On the
+// Supabase cutover (Phase 18) this whole mechanism is replaced by RLS on the
+// server and `setActiveHospitalId` becomes a no-op — the UI contract is
+// unchanged because callers never pass a hospital id explicitly.
+// ---------------------------------------------------------------------------
+
+let activeHospitalId: HospitalId | null = null;
+
+/** Set the tenant whose data is visible. Called when the acting staff resolves. */
+export function setActiveHospitalId(id: HospitalId | null): void {
+  activeHospitalId = id;
+}
+
+/** The active tenant id, or null before one has been resolved. */
+export function getActiveHospitalId(): HospitalId | null {
+  return activeHospitalId;
+}
+
+/**
+ * Resolve the tenant used to scope reads and stamp writes: the active hospital
+ * when it exists in the store, otherwise the first (demo) hospital so SSR and
+ * pre-login reads still render real data. Mirrors `current_hospital_id()`
+ * resolving the logged-in staff's hospital.
+ */
+function currentHospitalId(db: Database): HospitalId | null {
+  if (activeHospitalId && db.hospitals.some((h) => h.id === activeHospitalId)) {
+    return activeHospitalId;
+  }
+  return db.hospitals[0]?.id ?? null;
+}
+
+/** Non-null tenant id for stamping new rows (falls back to the demo hospital). */
+function tenantId(db: Database): HospitalId {
+  return currentHospitalId(db) ?? DEMO_HOSPITAL_ID;
+}
+
+/**
+ * Public resolver for the active tenant's hospital record (the account row).
+ * Returns undefined only when the store somehow holds no hospitals.
+ */
+export function getCurrentHospital(): Hospital | undefined {
+  const db = loadDatabase();
+  const hid = currentHospitalId(db);
+  return db.hospitals.find((h) => h.id === hid);
+}
+
+/**
+ * Every hospital account known to the platform. Deliberately NOT tenant-scoped:
+ * this is the control-plane view (signup, the dev hospital switcher, a future
+ * super-admin console), the one place that legitimately sees across tenants. On
+ * the Supabase cutover this maps to a service-role / platform query, not an
+ * RLS-scoped one.
+ */
+export function getHospitals(): Hospital[] {
+  return loadDatabase().hospitals;
+}
+
+/** A single hospital account by id, or undefined. Control-plane (cross-tenant). */
+export function getHospitalById(id: HospitalId): Hospital | undefined {
+  return loadDatabase().hospitals.find((h) => h.id === id);
+}
+
+/**
+ * Register a new hospital account — the heart of the future signup flow. New
+ * tenants start on a `trial` subscription. The created hospital is returned so
+ * the caller can immediately make it the active tenant and seed its first staff.
+ */
+export function createHospital(input: CreateHospitalInput): Hospital {
+  const db = loadDatabase();
+  const timestamp = nowISO();
+  const hospital: Hospital = {
+    id: generateId(),
+    name: input.name.trim(),
+    region: input.region?.trim() || null,
+    contact_email: input.contact_email?.trim() || null,
+    contact_phone: input.contact_phone?.trim() || null,
+    subscription_tier: input.subscription_tier ?? "standard",
+    subscription_status: input.subscription_status ?? "trial",
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+  if (!hospital.name) {
+    throw new Error("createHospital: a hospital name is required");
+  }
+  db.hospitals.push(hospital);
+  persist(db);
+  return hospital;
+}
+
+/**
+ * Load the database filtered to the active tenant — the READ path. Every domain
+ * collection is narrowed to rows whose `hospital_id` matches the current
+ * hospital; `hospitals` is narrowed to the tenant's own account row. This is the
+ * mock equivalent of an RLS `using (hospital_id = current_hospital_id())`
+ * predicate on every table. Writes use {@link loadDatabase} (the full store) so
+ * the outbox diff stays correct and rows are stamped, not filtered away.
+ */
+function loadScoped(): Database {
+  const db = loadDatabase();
+  const hid = currentHospitalId(db);
+  if (!hid) return db;
+  const only = <T extends { hospital_id: HospitalId }>(rows: T[]): T[] =>
+    rows.filter((r) => r.hospital_id === hid);
+  return {
+    hospitals: db.hospitals.filter((h) => h.id === hid),
+    departments: only(db.departments),
+    wards: only(db.wards),
+    beds: only(db.beds),
+    staff: only(db.staff),
+    patients: only(db.patients),
+    allergies: only(db.allergies),
+    visits: only(db.visits),
+    consultations: only(db.consultations),
+    diagnoses: only(db.diagnoses),
+    orders: only(db.orders),
+    results: only(db.results),
+    prescriptions: only(db.prescriptions),
+    medicationAdministrations: only(db.medicationAdministrations),
+    treatmentRecords: only(db.treatmentRecords),
+    admissions: only(db.admissions),
+    transfers: only(db.transfers),
+    carePlanItems: only(db.carePlanItems),
+    carePlanEntries: only(db.carePlanEntries),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Input shapes (what callers provide; ids/timestamps are filled in here)
 // ---------------------------------------------------------------------------
+
+export interface CreateHospitalInput {
+  name: string;
+  region?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+  /** Defaults to "standard". */
+  subscription_tier?: string;
+  /** Defaults to "trial" for a fresh signup. */
+  subscription_status?: SubscriptionStatus;
+}
+
+export interface CreateStaffInput {
+  full_name: string;
+  role: StaffRole;
+  email?: string | null;
+  phone?: string | null;
+  department_id?: DepartmentId | null;
+  /** Defaults to the active tenant; pass explicitly when seeding a new hospital. */
+  hospital_id?: HospitalId;
+}
 
 export interface CreatePatientInput {
   full_name: string;
@@ -589,27 +756,27 @@ export function countVisitsByDepartment<T extends { department_id: DepartmentId 
 // ---------------------------------------------------------------------------
 
 export function getDepartments(): Department[] {
-  return loadDatabase().departments;
+  return loadScoped().departments;
 }
 
 export function getDepartmentById(id: DepartmentId): Department | undefined {
-  return loadDatabase().departments.find((d) => d.id === id);
+  return loadScoped().departments.find((d) => d.id === id);
 }
 
 export function getWards(): Ward[] {
-  return loadDatabase().wards;
+  return loadScoped().wards;
 }
 
 export function getWardById(id: WardId): Ward | undefined {
-  return loadDatabase().wards.find((w) => w.id === id);
+  return loadScoped().wards.find((w) => w.id === id);
 }
 
 export function getBeds(): Bed[] {
-  return loadDatabase().beds;
+  return loadScoped().beds;
 }
 
 export function getBedById(id: BedId): Bed | undefined {
-  return loadDatabase().beds.find((b) => b.id === id);
+  return loadScoped().beds.find((b) => b.id === id);
 }
 
 // ---------------------------------------------------------------------------
@@ -617,19 +784,65 @@ export function getBedById(id: BedId): Bed | undefined {
 // ---------------------------------------------------------------------------
 
 export function getStaff(): Staff[] {
-  return loadDatabase().staff;
+  return loadScoped().staff;
 }
 
 export function getStaffById(id: StaffId): Staff | undefined {
+  return loadScoped().staff.find((s) => s.id === id);
+}
+
+// --- Control-plane staff lookups (cross-tenant) -----------------------------
+// The login screen and session resolution legitimately need to see staff before
+// a tenant is active (you pick a hospital, then sign in). These read the FULL
+// store, deliberately NOT scoped — the mock equivalent of a service-role query.
+
+/** Every staff member of a given hospital — for the login "sign in as" picker. */
+export function getStaffForHospital(hospitalId: HospitalId): Staff[] {
+  return loadDatabase().staff.filter((s) => s.hospital_id === hospitalId);
+}
+
+/** Resolve a staff account by id across all tenants — used to restore a session. */
+export function getStaffAccountById(id: StaffId): Staff | undefined {
   return loadDatabase().staff.find((s) => s.id === id);
 }
 
+/**
+ * Create a staff member. Used by hospital signup (the founder admin, against the
+ * just-created hospital via an explicit `hospital_id`) and by admin provisioning
+ * (against the active tenant). A real login (`user_id`) is provisioned later via
+ * a privileged server function (Phase 18); mock staff start with `user_id: null`.
+ */
+export function createStaff(input: CreateStaffInput): Staff {
+  const db = loadDatabase();
+  const fullName = input.full_name.trim();
+  if (!fullName) {
+    throw new Error("createStaff: a staff name is required");
+  }
+  const timestamp = nowISO();
+  const staff: Staff = {
+    id: generateId() as StaffId,
+    hospital_id: input.hospital_id ?? tenantId(db),
+    user_id: null,
+    full_name: fullName,
+    role: input.role,
+    department_id: input.department_id ?? null,
+    email: input.email?.trim() || null,
+    phone: input.phone?.trim() || null,
+    is_active: true,
+    created_at: timestamp,
+    updated_at: timestamp,
+  };
+  db.staff.push(staff);
+  persist(db);
+  return staff;
+}
+
 export function getPatients(): Patient[] {
-  return loadDatabase().patients;
+  return loadScoped().patients;
 }
 
 export function getPatientById(id: PatientId): Patient | undefined {
-  return loadDatabase().patients.find((p) => p.id === id);
+  return loadScoped().patients.find((p) => p.id === id);
 }
 
 /**
@@ -641,7 +854,7 @@ export function getPatientById(id: PatientId): Patient | undefined {
 export function searchPatients(query: string, limit = 8): Patient[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  const matches = loadDatabase().patients.filter((p) => {
+  const matches = loadScoped().patients.filter((p) => {
     const haystacks = [
       p.full_name,
       p.mrn,
@@ -667,7 +880,7 @@ export function searchPatients(query: string, limit = 8): Patient[] {
 
 /** Every visit a patient has ever had, most-recently arrived first. */
 export function getVisitsForPatient(patientId: PatientId): Visit[] {
-  return loadDatabase()
+  return loadScoped()
     .visits.filter((v) => v.patient_id === patientId)
     .sort((a, b) => b.arrived_at.localeCompare(a.arrived_at));
 }
@@ -678,7 +891,7 @@ export function getVisitsForPatient(patientId: PatientId): Visit[] {
  * patient has never had a visit.
  */
 export function getLatestVisitForPatient(patientId: PatientId): Visit | undefined {
-  const visits = loadDatabase().visits.filter((v) => v.patient_id === patientId);
+  const visits = loadScoped().visits.filter((v) => v.patient_id === patientId);
   if (visits.length === 0) return undefined;
   const open = visits.filter((v) => v.status === "open");
   const pool = open.length ? open : visits;
@@ -687,7 +900,7 @@ export function getLatestVisitForPatient(patientId: PatientId): Visit | undefine
 
 /** A patient's allergy records, most-recently noted first. */
 export function getAllergiesForPatient(patientId: PatientId): Allergy[] {
-  return loadDatabase()
+  return loadScoped()
     .allergies.filter((a) => a.patient_id === patientId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -697,11 +910,11 @@ export function getAllergiesForPatient(patientId: PatientId): Allergy[] {
 // ---------------------------------------------------------------------------
 
 export function getVisits(): Visit[] {
-  return loadDatabase().visits;
+  return loadScoped().visits;
 }
 
 export function getVisitById(id: VisitId): Visit | undefined {
-  return loadDatabase().visits.find((v) => v.id === id);
+  return loadScoped().visits.find((v) => v.id === id);
 }
 
 /**
@@ -709,7 +922,7 @@ export function getVisitById(id: VisitId): Visit | undefined {
  * This drives the Live Status Board.
  */
 export function getActiveVisits(): Visit[] {
-  return loadDatabase()
+  return loadScoped()
     .visits.filter((v) => v.status === "open")
     .sort((a, b) => b.arrived_at.localeCompare(a.arrived_at));
 }
@@ -728,7 +941,7 @@ export function getActiveVisitCountsByDepartment(): Record<string, number> {
 
 /** Visits whose patient is still flagged as an anonymous emergency. */
 export function getAnonymousVisits(): Visit[] {
-  const db = loadDatabase();
+  const db = loadScoped();
   const anonymousPatientIds = new Set(
     db.patients.filter((p) => p.is_emergency_anonymous).map((p) => p.id)
   );
@@ -740,32 +953,32 @@ export function getAnonymousVisits(): Visit[] {
 // ---------------------------------------------------------------------------
 
 export function getConsultationsForVisit(visitId: VisitId): Consultation[] {
-  return loadDatabase()
+  return loadScoped()
     .consultations.filter((c) => c.visit_id === visitId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export function getDiagnosesForVisit(visitId: VisitId): Diagnosis[] {
-  return loadDatabase()
+  return loadScoped()
     .diagnoses.filter((d) => d.visit_id === visitId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export function getOrdersForVisit(visitId: VisitId): Order[] {
-  return loadDatabase()
+  return loadScoped()
     .orders.filter((o) => o.visit_id === visitId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export function getResultsForOrder(orderId: OrderId): Result[] {
-  return loadDatabase()
+  return loadScoped()
     .results.filter((r) => r.order_id === orderId)
     .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
 }
 
 /** All results recorded against any order belonging to a visit. */
 export function getResultsForVisit(visitId: VisitId): Result[] {
-  const db = loadDatabase();
+  const db = loadScoped();
   const orderIds = new Set(
     db.orders.filter((o) => o.visit_id === visitId).map((o) => o.id)
   );
@@ -780,7 +993,7 @@ export function getResultsForVisit(visitId: VisitId): Result[] {
  * actioned next. Optionally narrowed to a single order type (lab / imaging).
  */
 export function getOpenOrders(orderType?: OrderType): Order[] {
-  return loadDatabase()
+  return loadScoped()
     .orders.filter(
       (o) =>
         (o.status === "requested" || o.status === "in_progress") &&
@@ -790,7 +1003,7 @@ export function getOpenOrders(orderType?: OrderType): Order[] {
 }
 
 export function getPrescriptionsForVisit(visitId: VisitId): Prescription[] {
-  return loadDatabase()
+  return loadScoped()
     .prescriptions.filter((p) => p.visit_id === visitId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -798,7 +1011,7 @@ export function getPrescriptionsForVisit(visitId: VisitId): Prescription[] {
 export function getMedicationAdministrationsForPrescription(
   prescriptionId: PrescriptionId
 ): MedicationAdministration[] {
-  return loadDatabase()
+  return loadScoped()
     .medicationAdministrations.filter((m) => m.prescription_id === prescriptionId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -812,7 +1025,7 @@ export function getMedicationAdministrationsForPrescription(
 export function getActivePrescriptions(
   departmentId?: DepartmentId | null
 ): Prescription[] {
-  const db = loadDatabase();
+  const db = loadScoped();
   const openVisitIds = new Set(
     db.visits
       .filter(
@@ -830,7 +1043,7 @@ export function getActivePrescriptions(
 }
 
 export function getTreatmentRecordsForVisit(visitId: VisitId): TreatmentRecord[] {
-  return loadDatabase()
+  return loadScoped()
     .treatmentRecords.filter((r) => r.visit_id === visitId)
     .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
 }
@@ -840,35 +1053,35 @@ export function getTreatmentRecordsForVisit(visitId: VisitId): TreatmentRecord[]
 // ---------------------------------------------------------------------------
 
 export function getAdmissions(): Admission[] {
-  return loadDatabase().admissions;
+  return loadScoped().admissions;
 }
 
 export function getAdmissionById(id: AdmissionId): Admission | undefined {
-  return loadDatabase().admissions.find((a) => a.id === id);
+  return loadScoped().admissions.find((a) => a.id === id);
 }
 
 /** The admission for a visit, if it became an inpatient stay. */
 export function getAdmissionForVisit(visitId: VisitId): Admission | undefined {
-  return loadDatabase().admissions.find((a) => a.visit_id === visitId);
+  return loadScoped().admissions.find((a) => a.visit_id === visitId);
 }
 
 /** Admissions still occupying a bed (status "active"). */
 export function getActiveAdmissions(): Admission[] {
-  return loadDatabase()
+  return loadScoped()
     .admissions.filter((a) => a.status === "active")
     .sort((a, b) => b.admitted_at.localeCompare(a.admitted_at));
 }
 
 /** The move history for an admission, most recent first. */
 export function getTransfersForAdmission(admissionId: AdmissionId): Transfer[] {
-  return loadDatabase()
+  return loadScoped()
     .transfers.filter((t) => t.admission_id === admissionId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 /** The move history for a patient across all admissions, most recent first. */
 export function getTransfersForPatient(patientId: PatientId): Transfer[] {
-  return loadDatabase()
+  return loadScoped()
     .transfers.filter((t) => t.patient_id === patientId)
     .sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -881,7 +1094,7 @@ export function getTransfersForPatient(patientId: PatientId): Transfer[] {
 export function getCarePlanItemsForAdmission(
   admissionId: AdmissionId
 ): CarePlanItem[] {
-  return loadDatabase()
+  return loadScoped()
     .carePlanItems.filter((i) => i.admission_id === admissionId)
     .sort((a, b) => {
       // Active needs lead; within a status, oldest-first keeps the plan stable.
@@ -894,7 +1107,7 @@ export function getCarePlanItemsForAdmission(
 export function getCarePlanEntriesForAdmission(
   admissionId: AdmissionId
 ): CarePlanEntry[] {
-  return loadDatabase()
+  return loadScoped()
     .carePlanEntries.filter((e) => e.admission_id === admissionId)
     .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
 }
@@ -917,7 +1130,7 @@ export interface CarePlanPatient {
 }
 
 export function getAdmittedPatientsForCarePlan(): CarePlanPatient[] {
-  const db = loadDatabase();
+  const db = loadScoped();
   return db.admissions
     .filter((a) => a.status === "active")
     .map((admission) => {
@@ -951,19 +1164,19 @@ export function getAdmittedPatientsForCarePlan(): CarePlanPatient[] {
 // ---------------------------------------------------------------------------
 
 export function getAllDiagnoses(): Diagnosis[] {
-  return loadDatabase().diagnoses;
+  return loadScoped().diagnoses;
 }
 
 export function getAllResults(): Result[] {
-  return loadDatabase().results;
+  return loadScoped().results;
 }
 
 export function getAllTreatmentRecords(): TreatmentRecord[] {
-  return loadDatabase().treatmentRecords;
+  return loadScoped().treatmentRecords;
 }
 
 export function getAllTransfers(): Transfer[] {
-  return loadDatabase().transfers;
+  return loadScoped().transfers;
 }
 
 // ---------------------------------------------------------------------------
@@ -994,7 +1207,7 @@ export function computeWardOccupancy(wards: Ward[], beds: Bed[]): WardOccupancy[
 }
 
 export function getWardOccupancy(): WardOccupancy[] {
-  const db = loadDatabase();
+  const db = loadScoped();
   return computeWardOccupancy(db.wards, db.beds);
 }
 
@@ -1017,6 +1230,7 @@ export function createDepartment(input: CreateDepartmentInput): Department {
   const timestamp = nowISO();
   const department: Department = {
     id: generateId(),
+    hospital_id: tenantId(db),
     name: input.name.trim(),
     code: input.code?.trim() || null,
     description: input.description?.trim() || null,
@@ -1078,9 +1292,15 @@ function nextBedLabelsInternal(existing: string[], count: number): string[] {
   return labels;
 }
 
-function makeBed(wardId: WardId, label: string, timestamp: string): Bed {
+function makeBed(
+  wardId: WardId,
+  label: string,
+  timestamp: string,
+  hospitalId: HospitalId,
+): Bed {
   return {
     id: generateId(),
+    hospital_id: hospitalId,
     ward_id: wardId,
     label,
     status: "free",
@@ -1096,6 +1316,7 @@ export function createWard(input: CreateWardInput): Ward {
   const timestamp = nowISO();
   const ward: Ward = {
     id: generateId(),
+    hospital_id: tenantId(db),
     department_id: input.department_id ?? null,
     name: input.name.trim(),
     floor_label: input.floor_label?.trim() || null,
@@ -1106,7 +1327,7 @@ export function createWard(input: CreateWardInput): Ward {
   db.wards.push(ward);
 
   for (const label of nextBedLabelsInternal([], input.bed_count ?? 0)) {
-    db.beds.push(makeBed(ward.id, label, timestamp));
+    db.beds.push(makeBed(ward.id, label, timestamp, ward.hospital_id));
   }
 
   persist(db);
@@ -1146,7 +1367,7 @@ export function addBedsToWard(wardId: WardId, count: number): Bed[] {
     .filter((b) => b.ward_id === wardId)
     .map((b) => b.label);
   const created = nextBedLabelsInternal(existing, count).map((label) =>
-    makeBed(wardId, label, timestamp)
+    makeBed(wardId, label, timestamp, ward.hospital_id)
   );
   db.beds.push(...created);
   persist(db);
@@ -1270,6 +1491,7 @@ export function transferAdmission(
 
   const transfer: Transfer = {
     id: generateId(),
+    hospital_id: admission.hospital_id,
     admission_id: admissionId,
     patient_id: admission.patient_id,
     from_ward_id: fromWard,
@@ -1319,6 +1541,7 @@ export function addCarePlanItem(
   const timestamp = nowISO();
   const item: CarePlanItem = {
     id: generateId(),
+    hospital_id: admission.hospital_id,
     admission_id: admissionId,
     patient_id: admission.patient_id,
     category: input.category,
@@ -1363,6 +1586,7 @@ export function addCarePlanEntry(
   }
   const entry: CarePlanEntry = {
     id: generateId(),
+    hospital_id: admission.hospital_id,
     admission_id: admissionId,
     care_plan_item_id: input.care_plan_item_id ?? null,
     note: input.note.trim(),
@@ -1407,6 +1631,7 @@ export function createNewVisit(
 
   const patient: Patient = {
     id: generateId(),
+    hospital_id: tenantId(db),
     mrn,
     full_name: patientData.full_name,
     date_of_birth: patientData.date_of_birth ?? null,
@@ -1424,6 +1649,7 @@ export function createNewVisit(
 
   const visit: Visit = {
     id: generateId(),
+    hospital_id: patient.hospital_id,
     patient_id: patient.id,
     visit_type: visitData.visit_type,
     status: "open",
@@ -1465,6 +1691,7 @@ export function addTreatmentLog(
   const timestamp = nowISO();
   const record: TreatmentRecord = {
     id: generateId(),
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     recorded_by_id: logData.recorded_by_id ?? null,
     spo2: logData.spo2 ?? null,
@@ -1509,6 +1736,7 @@ export function addConsultation(
   const timestamp = nowISO();
   const consultation: Consultation = {
     id: generateId(),
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     doctor_id: input.doctor_id ?? visit.attending_doctor_id ?? null,
     subjective: input.subjective?.trim() || null,
@@ -1563,6 +1791,7 @@ export function addDiagnosis(
   const timestamp = nowISO();
   const diagnosis: Diagnosis = {
     id: generateId(),
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     consultation_id: input.consultation_id ?? null,
     diagnosed_by_id: input.diagnosed_by_id ?? visit.attending_doctor_id ?? null,
@@ -1666,6 +1895,7 @@ export function addOrder(visitId: VisitId, input: AddOrderInput): Order {
   const timestamp = nowISO();
   const order: Order = {
     id: generateId(),
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     ordered_by_id: input.ordered_by_id ?? visit.attending_doctor_id ?? null,
     order_type: input.order_type,
@@ -1727,6 +1957,7 @@ export function addResult(orderId: OrderId, input: AddResultInput): Result {
   const timestamp = nowISO();
   const result: Result = {
     id: generateId() as ResultId,
+    hospital_id: order.hospital_id,
     order_id: orderId,
     recorded_by_id: input.recorded_by_id ?? null,
     summary: input.summary?.trim() || null,
@@ -1775,6 +2006,7 @@ export function addPrescription(
   const timestamp = nowISO();
   const prescription: Prescription = {
     id: generateId() as PrescriptionId,
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     prescribed_by_id: input.prescribed_by_id ?? visit.attending_doctor_id ?? null,
     drug_name: drugName,
@@ -1846,6 +2078,7 @@ export function recordMedicationAdministration(
 
   const record: MedicationAdministration = {
     id: generateId() as MedicationAdministrationId,
+    hospital_id: prescription.hospital_id,
     prescription_id: prescriptionId,
     administered_by_id: input.administered_by_id ?? null,
     scheduled_for: input.scheduled_for ?? timestamp,
@@ -1889,6 +2122,7 @@ export function addAllergy(
   const timestamp = nowISO();
   const allergy: Allergy = {
     id: generateId() as AllergyId,
+    hospital_id: patient.hospital_id,
     patient_id: patientId,
     substance,
     category: input.category ?? "drug",
@@ -1960,6 +2194,7 @@ export function createAdmissionForVisit(
   const timestamp = nowISO();
   const admission: Admission = {
     id: generateId(),
+    hospital_id: visit.hospital_id,
     visit_id: visitId,
     patient_id: visit.patient_id,
     attending_doctor_id:
@@ -2335,7 +2570,21 @@ function seedDatabaseObject(): Database {
   const day = (offsetHours: number) =>
     new Date(Date.now() - offsetHours * 3600_000).toISOString();
 
-  const departments: Department[] = [
+  const hospitals: Hospital[] = [
+    {
+      id: DEMO_HOSPITAL_ID,
+      name: "Douala General Hospital",
+      region: "Littoral — Douala",
+      contact_email: "contact@dgh.cm",
+      contact_phone: "+237 6 55 00 00 00",
+      subscription_tier: "standard",
+      subscription_status: "active",
+      created_at: day(8760),
+      updated_at: day(8760),
+    },
+  ];
+
+  const departments: Seed<Department>[] = [
     { id: "dept_emergency", name: "Emergency", code: "EMG", description: "Emergency & trauma", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "dept_medicine", name: "Internal Medicine", code: "MED", description: "General internal medicine", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "dept_surgery", name: "Surgery", code: "SUR", description: "General & specialist surgery", is_active: true, created_at: day(8760), updated_at: day(8760) },
@@ -2345,13 +2594,13 @@ function seedDatabaseObject(): Database {
     { id: "dept_admin", name: "Administration", code: "ADM", description: "Front desk & records", is_active: true, created_at: day(8760), updated_at: day(8760) },
   ];
 
-  const wards: Ward[] = [
+  const wards: Seed<Ward>[] = [
     { id: "ward_icu", department_id: "dept_icu", name: "ICU", floor_label: "3rd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "ward_medb", department_id: "dept_medicine", name: "Medical Ward B", floor_label: "2nd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "ward_er", department_id: "dept_emergency", name: "Emergency Bays", floor_label: "Ground Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
   ];
 
-  const beds: Bed[] = [
+  const beds: Seed<Bed>[] = [
     { id: "bed_icu_02", ward_id: "ward_icu", label: "ICU-02", status: "occupied", current_admission_id: "adm_anon_gamma", created_at: day(8760), updated_at: day(5) },
     { id: "bed_icu_04", ward_id: "ward_icu", label: "ICU-04", status: "occupied", current_admission_id: "adm_idris", created_at: day(8760), updated_at: day(28) },
     { id: "bed_icu_01", ward_id: "ward_icu", label: "ICU-01", status: "free", current_admission_id: null, created_at: day(8760), updated_at: day(8760) },
@@ -2362,7 +2611,7 @@ function seedDatabaseObject(): Database {
     { id: "bed_er_2", ward_id: "ward_er", label: "ER-Bay-2", status: "free", current_admission_id: null, created_at: day(8760), updated_at: day(8760) },
   ];
 
-  const staff: Staff[] = [
+  const staff: Seed<Staff>[] = [
     { id: "staff_okafor", user_id: null, full_name: "Dr. A. Okafor", role: "doctor", department_id: "dept_medicine", email: "a.okafor@generalhospital.med", phone: "+233 20 555 0010", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "staff_chen", user_id: null, full_name: "Dr. M. Chen", role: "doctor", department_id: "dept_surgery", email: "m.chen@generalhospital.med", phone: "+233 20 555 0011", is_active: true, created_at: day(8760), updated_at: day(8760) },
     { id: "staff_patel", user_id: null, full_name: "Nurse J. Patel", role: "nurse", department_id: "dept_icu", email: "j.patel@generalhospital.med", phone: "+233 20 555 0012", is_active: true, created_at: day(8760), updated_at: day(8760) },
@@ -2380,7 +2629,7 @@ function seedDatabaseObject(): Database {
     { id: "staff_yeboah", user_id: null, full_name: "Nurse H. Yeboah", role: "nurse", department_id: "dept_surgery", email: "h.yeboah@generalhospital.med", phone: "+233 20 555 0023", is_active: true, created_at: day(8760), updated_at: day(8760) },
   ];
 
-  const patients: Patient[] = [
+  const patients: Seed<Patient>[] = [
     { id: "pat_mensah", mrn: "890314GM - A", full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", mother_first_name: "Akosua", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(3), updated_at: day(3) },
     { id: "pat_idris", mrn: "721102SI - F", full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", mother_first_name: "Fatima", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(28), updated_at: day(6) },
     { id: "pat_anon_gamma", mrn: "", full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, mother_first_name: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, created_at: day(5), updated_at: day(1) },
@@ -2390,13 +2639,13 @@ function seedDatabaseObject(): Database {
 
   // Mensah & Idris carry documented allergies; Bello is confirmed no-known
   // (flag above); Owusu and the anonymous ICU patient are not yet assessed.
-  const allergies: Allergy[] = [
+  const allergies: Seed<Allergy>[] = [
     { id: "alg_mensah_pen", patient_id: "pat_mensah", substance: "Penicillin", category: "drug", severity: "severe", reaction: "Widespread rash and facial swelling", noted_by_id: "staff_romero", created_at: day(3), updated_at: day(3) },
     { id: "alg_idris_asa", patient_id: "pat_idris", substance: "Aspirin", category: "drug", severity: "moderate", reaction: "Gastric bleeding", noted_by_id: "staff_chen", created_at: day(28), updated_at: day(28) },
     { id: "alg_idris_peanut", patient_id: "pat_idris", substance: "Peanuts", category: "food", severity: "mild", reaction: "Hives", noted_by_id: "staff_patel", created_at: day(28), updated_at: day(28) },
   ];
 
-  const visits: Visit[] = [
+  const visits: Seed<Visit>[] = [
     // Intake column (registration/triage) — emergency, just arrived.
     { id: "vis_mensah", patient_id: "pat_mensah", visit_type: "emergency", status: "open", stage: "triage", department_id: "dept_emergency", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Acute chest pain", triage_notes: "Diaphoretic, BP elevated. ECG ordered. Awaiting cardiac workup.", triage_level: 2, arrived_at: day(3), closed_at: null, created_at: day(3), updated_at: day(3) },
     // Consultation column (consultation/diagnostics) — outpatient diabetes follow-up.
@@ -2409,20 +2658,20 @@ function seedDatabaseObject(): Database {
     { id: "vis_bello", patient_id: "pat_bello", visit_type: "inpatient", status: "open", stage: "discharge_planning", department_id: "dept_medicine", attending_doctor_id: "staff_okafor", registered_by_id: "staff_adebayo", chief_complaint: "Community-acquired pneumonia", triage_notes: null, triage_level: 3, arrived_at: day(96), closed_at: null, created_at: day(96), updated_at: day(12) },
   ];
 
-  const consultations: Consultation[] = [
+  const consultations: Seed<Consultation>[] = [
     { id: "con_owusu", visit_id: "vis_owusu", doctor_id: "staff_okafor", subjective: "Reports good adherence to metformin. Occasional polyuria. No hypoglycaemic episodes.", examination: "Well, afebrile. Feet examined — no ulcers. BMI 28.", assessment: "Type 2 diabetes mellitus, fair control.", plan: "Check HbA1c. Continue metformin. Dietary reinforcement. Review in 3 months.", created_at: day(2), updated_at: day(2) },
     { id: "con_idris", visit_id: "vis_idris", doctor_id: "staff_chen", subjective: "Mild incisional pain, controlled. Passing flatus.", examination: "Wound clean and dry. Abdomen soft. Bowel sounds present.", assessment: "Day-2 post laparotomy, recovering well.", plan: "Continue analgesia & DVT prophylaxis. Mobilize. Monitor wound.", created_at: day(26), updated_at: day(26) },
     { id: "con_bello", visit_id: "vis_bello", doctor_id: "staff_okafor", subjective: "Cough improving. No fever for 48h. Appetite returning.", examination: "Chest clear on auscultation. SpO₂ 98% on air.", assessment: "Community-acquired pneumonia, resolving.", plan: "Complete oral antibiotics. Plan discharge once finance cleared.", created_at: day(24), updated_at: day(24) },
     { id: "con_anon", visit_id: "vis_anon", doctor_id: "staff_okafor", subjective: "Unable to obtain — patient unresponsive.", examination: "GCS 7 on arrival. Pupils equal & reactive. Localizes to pain.", assessment: "Traumatic brain injury, RTA. Awaiting CT head.", plan: "Neuro protocol, mannitol, close monitoring. CT head urgent.", created_at: day(5), updated_at: day(5) },
   ];
 
-  const diagnoses: Diagnosis[] = [
+  const diagnoses: Seed<Diagnosis>[] = [
     { id: "dx_owusu", visit_id: "vis_owusu", consultation_id: "con_owusu", diagnosed_by_id: "staff_okafor", icd10_code: "E11.9", description: "Type 2 diabetes mellitus without complications", is_primary: true, created_at: day(2) },
     { id: "dx_bello", visit_id: "vis_bello", consultation_id: "con_bello", diagnosed_by_id: "staff_okafor", icd10_code: "J18.9", description: "Pneumonia, unspecified organism", is_primary: true, created_at: day(24) },
     { id: "dx_anon", visit_id: "vis_anon", consultation_id: "con_anon", diagnosed_by_id: "staff_okafor", icd10_code: "S06.9", description: "Intracranial injury, unspecified", is_primary: true, created_at: day(5) },
   ];
 
-  const orders: Order[] = [
+  const orders: Seed<Order>[] = [
     { id: "ord_owusu_hba1c", visit_id: "vis_owusu", ordered_by_id: "staff_okafor", order_type: "lab", description: "HbA1c", status: "completed", created_at: day(2), completed_at: day(1), updated_at: day(1) },
     { id: "ord_bello_cxr", visit_id: "vis_bello", ordered_by_id: "staff_okafor", order_type: "imaging", description: "Chest X-ray (PA)", status: "completed", created_at: day(90), completed_at: day(88), updated_at: day(88) },
     { id: "ord_anon_ct", visit_id: "vis_anon", ordered_by_id: "staff_okafor", order_type: "imaging", description: "CT head (non-contrast)", status: "in_progress", created_at: day(5), completed_at: null, updated_at: day(4) },
@@ -2431,19 +2680,19 @@ function seedDatabaseObject(): Database {
     { id: "ord_owusu_lipids", visit_id: "vis_owusu", ordered_by_id: "staff_okafor", order_type: "lab", description: "Fasting lipid panel", status: "requested", created_at: day(2), completed_at: null, updated_at: day(2) },
   ];
 
-  const results: Result[] = [
+  const results: Seed<Result>[] = [
     { id: "res_owusu_hba1c", order_id: "ord_owusu_hba1c", recorded_by_id: "staff_boateng", summary: "Moderately elevated — reinforce adherence.", value: "7.8%", reference_range: "< 7.0%", is_abnormal: true, attachment_path: null, recorded_at: day(1) },
     { id: "res_bello_cxr", order_id: "ord_bello_cxr", recorded_by_id: "staff_boateng", summary: "Right lower lobe consolidation, consistent with pneumonia.", value: "Abnormal", reference_range: null, is_abnormal: true, attachment_path: "bello-cxr-pa.jpg", recorded_at: day(88) },
   ];
 
-  const prescriptions: Prescription[] = [
+  const prescriptions: Seed<Prescription>[] = [
     { id: "rx_idris_para", visit_id: "vis_idris", prescribed_by_id: "staff_chen", drug_name: "Paracetamol", dose: "1 g", route: "IV", frequency: "every 6 hours", duration: "3 days", instructions: "For post-op analgesia.", status: "active", created_at: day(28), updated_at: day(6) },
     { id: "rx_idris_enox", visit_id: "vis_idris", prescribed_by_id: "staff_chen", drug_name: "Enoxaparin", dose: "40 mg", route: "SC", frequency: "once daily", duration: "while inpatient", instructions: "DVT prophylaxis.", status: "active", created_at: day(28), updated_at: day(6) },
     { id: "rx_bello_amox", visit_id: "vis_bello", prescribed_by_id: "staff_okafor", drug_name: "Amoxicillin-clavulanate", dose: "625 mg", route: "oral", frequency: "every 8 hours", duration: "7 days", instructions: "Complete full course.", status: "active", created_at: day(90), updated_at: day(12) },
     { id: "rx_owusu_metf", visit_id: "vis_owusu", prescribed_by_id: "staff_okafor", drug_name: "Metformin", dose: "1 g", route: "oral", frequency: "twice daily", duration: "ongoing", instructions: "Take with meals.", status: "active", created_at: day(2), updated_at: day(2) },
   ];
 
-  const medicationAdministrations: MedicationAdministration[] = [
+  const medicationAdministrations: Seed<MedicationAdministration>[] = [
     { id: "mar_idris_para_1", prescription_id: "rx_idris_para", administered_by_id: "staff_patel", scheduled_for: day(12), administered_at: day(12), status: "given", notes: "Tolerated well.", created_at: day(12) },
     { id: "mar_idris_para_2", prescription_id: "rx_idris_para", administered_by_id: "staff_patel", scheduled_for: day(6), administered_at: day(6), status: "given", notes: null, created_at: day(6) },
     { id: "mar_idris_enox_1", prescription_id: "rx_idris_enox", administered_by_id: "staff_patel", scheduled_for: day(24), administered_at: day(24), status: "given", notes: null, created_at: day(24) },
@@ -2451,7 +2700,7 @@ function seedDatabaseObject(): Database {
     { id: "mar_bello_amox_2", prescription_id: "rx_bello_amox", administered_by_id: "staff_patel", scheduled_for: day(8), administered_at: null, status: "missed", notes: "Patient off ward for imaging.", created_at: day(8) },
   ];
 
-  const treatmentRecords: TreatmentRecord[] = [
+  const treatmentRecords: Seed<TreatmentRecord>[] = [
     { id: "trec_mensah_1", visit_id: "vis_mensah", recorded_by_id: "staff_romero", spo2: 96, pulse: 102, bp_systolic: 158, bp_diastolic: 96, temperature_c: 37.0, weight_kg: 78.5, gcs_score: 15, notes: "Chest pain 7/10. ECG taken, troponin sent.", recorded_at: day(3) },
     { id: "trec_idris_1", visit_id: "vis_idris", recorded_by_id: "staff_patel", spo2: 97, pulse: 88, bp_systolic: 128, bp_diastolic: 82, temperature_c: 37.4, weight_kg: 71.0, gcs_score: 15, notes: "Stable post-op. Pain controlled. Mobilizing with assistance.", recorded_at: day(6) },
     { id: "trec_anon_1", visit_id: "vis_anon", recorded_by_id: "staff_patel", spo2: 94, pulse: 104, bp_systolic: 148, bp_diastolic: 95, temperature_c: 37.9, weight_kg: 82.0, gcs_score: 7, notes: "Unresponsive to voice, localizes to pain. Pupils equal/reactive. CT head pending.", recorded_at: day(4) },
@@ -2459,7 +2708,7 @@ function seedDatabaseObject(): Database {
     { id: "trec_bello_1", visit_id: "vis_bello", recorded_by_id: "staff_patel", spo2: 98, pulse: 74, bp_systolic: 118, bp_diastolic: 76, temperature_c: 36.9, weight_kg: 64.5, gcs_score: 15, notes: "Afebrile 48h. Chest clear on auscultation. Fit for discharge planning.", recorded_at: day(12) },
   ];
 
-  const admissions: Admission[] = [
+  const admissions: Seed<Admission>[] = [
     { id: "adm_idris", visit_id: "vis_idris", patient_id: "pat_idris", attending_doctor_id: "staff_chen", ward_id: "ward_icu", bed_id: "bed_icu_04", status: "active", stage: "treatment", reason: "Post-operative recovery, laparotomy", is_medical_cleared: false, is_financial_cleared: true, is_pharmacy_ready: false, admitted_at: day(28), discharged_at: null, updated_at: day(6) },
     { id: "adm_anon_gamma", visit_id: "vis_anon", patient_id: "pat_anon_gamma", attending_doctor_id: "staff_okafor", ward_id: "ward_icu", bed_id: "bed_icu_02", status: "active", stage: "treatment", reason: "Unconscious on arrival, head trauma — RTA", is_medical_cleared: false, is_financial_cleared: false, is_pharmacy_ready: false, admitted_at: day(5), discharged_at: null, updated_at: day(1) },
     { id: "adm_bello", visit_id: "vis_bello", patient_id: "pat_bello", attending_doctor_id: "staff_okafor", ward_id: "ward_medb", bed_id: "bed_medb_11", status: "active", stage: "discharge_planning", reason: "Community-acquired pneumonia, responding to treatment", is_medical_cleared: true, is_financial_cleared: false, is_pharmacy_ready: true, admitted_at: day(96), discharged_at: null, updated_at: day(12) },
@@ -2467,14 +2716,14 @@ function seedDatabaseObject(): Database {
 
   // History: Idris deteriorated post-op and was escalated from Medical Ward B
   // to ICU, with his attending changing from the medic to the surgeon.
-  const transfers: Transfer[] = [
+  const transfers: Seed<Transfer>[] = [
     { id: "trf_idris_icu", admission_id: "adm_idris", patient_id: "pat_idris", from_ward_id: "ward_medb", to_ward_id: "ward_icu", from_bed_id: "bed_medb_09", to_bed_id: "bed_icu_04", from_doctor_id: "staff_okafor", to_doctor_id: "staff_chen", reason: "Post-op deterioration — escalated to critical care", transferred_by_id: "staff_patel", created_at: day(20) },
   ];
 
   // Nursing care plans for the three admitted patients — the individualized,
   // non-medication care (hygiene, positioning, nutrition…) that fills a shift,
   // plus an append-only care log with shift-handover notes for the next nurse.
-  const carePlanItems: CarePlanItem[] = [
+  const carePlanItems: Seed<CarePlanItem>[] = [
     // Samuel Idris — ICU-04, post-op laparotomy.
     { id: "cpi_idris_hyg", admission_id: "adm_idris", patient_id: "pat_idris", category: "hygiene", description: "Assist with bed bath, keep skin dry", frequency: "Daily", goal: "Skin remains intact", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
     { id: "cpi_idris_pos", admission_id: "adm_idris", patient_id: "pat_idris", category: "mobility_positioning", description: "Turn every 2h to prevent pressure sores", frequency: "Every 2h", goal: "No pressure injury", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
@@ -2492,7 +2741,7 @@ function seedDatabaseObject(): Database {
     { id: "cpi_anon_safe", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "safety", description: "Cot sides up, neuro observations", frequency: "Each shift", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
   ];
 
-  const carePlanEntries: CarePlanEntry[] = [
+  const carePlanEntries: Seed<CarePlanEntry>[] = [
     // Samuel Idris — care log + a fresh handover for the evening shift.
     { id: "cpe_idris_1", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_pos", note: "Turned to left side. Temp 37.8°C, settling.", is_handover: false, recorded_by_id: "staff_romero", recorded_at: day(9) },
     { id: "cpe_idris_2", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_hyg", note: "Bed bath given, skin intact. Ate half of lunch.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(7) },
@@ -2527,25 +2776,31 @@ function seedDatabaseObject(): Database {
     admissions,
   });
 
+  // Stamp the demo tenant onto every domain row. The seed is built tenantless
+  // (`Seed<T>`) so the literals stay terse; ownership is applied in one place.
+  const stamp = <T,>(rows: Seed<T>[]): T[] =>
+    rows.map((r) => ({ ...r, hospital_id: DEMO_HOSPITAL_ID }) as T);
+
   return {
-    departments,
-    wards,
-    beds,
-    staff,
-    patients,
-    allergies,
-    visits,
-    consultations,
-    diagnoses,
-    orders,
-    results,
-    prescriptions,
-    medicationAdministrations,
-    treatmentRecords,
-    admissions,
-    transfers,
-    carePlanItems,
-    carePlanEntries,
+    hospitals,
+    departments: stamp<Department>(departments),
+    wards: stamp<Ward>(wards),
+    beds: stamp<Bed>(beds),
+    staff: stamp<Staff>(staff),
+    patients: stamp<Patient>(patients),
+    allergies: stamp<Allergy>(allergies),
+    visits: stamp<Visit>(visits),
+    consultations: stamp<Consultation>(consultations),
+    diagnoses: stamp<Diagnosis>(diagnoses),
+    orders: stamp<Order>(orders),
+    results: stamp<Result>(results),
+    prescriptions: stamp<Prescription>(prescriptions),
+    medicationAdministrations: stamp<MedicationAdministration>(medicationAdministrations),
+    treatmentRecords: stamp<TreatmentRecord>(treatmentRecords),
+    admissions: stamp<Admission>(admissions),
+    transfers: stamp<Transfer>(transfers),
+    carePlanItems: stamp<CarePlanItem>(carePlanItems),
+    carePlanEntries: stamp<CarePlanEntry>(carePlanEntries),
   };
 }
 
@@ -2555,17 +2810,19 @@ function seedDatabaseObject(): Database {
 
 interface HistoricalSeedCtx {
   day: (offsetHours: number) => string;
-  patients: Patient[];
-  allergies: Allergy[];
-  visits: Visit[];
-  consultations: Consultation[];
-  diagnoses: Diagnosis[];
-  orders: Order[];
-  results: Result[];
-  prescriptions: Prescription[];
-  medicationAdministrations: MedicationAdministration[];
-  treatmentRecords: TreatmentRecord[];
-  admissions: Admission[];
+  // Rows are stamped with `hospital_id` by the caller after generation, so the
+  // generator builds them tenantless (`Seed<T>`).
+  patients: Seed<Patient>[];
+  allergies: Seed<Allergy>[];
+  visits: Seed<Visit>[];
+  consultations: Seed<Consultation>[];
+  diagnoses: Seed<Diagnosis>[];
+  orders: Seed<Order>[];
+  results: Seed<Result>[];
+  prescriptions: Seed<Prescription>[];
+  medicationAdministrations: Seed<MedicationAdministration>[];
+  treatmentRecords: Seed<TreatmentRecord>[];
+  admissions: Seed<Admission>[];
 }
 
 /**

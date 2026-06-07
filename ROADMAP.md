@@ -639,10 +639,11 @@ future premium option for any tenant demanding hard physical isolation.
 
 ### Accounts, roles & onboarding
 
-* [ ] **Hospital signup:** creates the `hospitals` row **and** the founder's own `staff` row with role
-      `admin`, linked to their `auth.users` login. Public `/signup`.
-* [ ] **Admin provisioning:** the admin creates departments / wards / beds / staff, all scoped to their
-      hospital (the admin UIs already exist — now tenant-scoped).
+* [x] **Hospital signup:** creates the `hospitals` row **and** the founder's own `staff` row with role
+      `admin`. Public `/signup` (`signUpHospital` against the mock today; the `auth.users` link is
+      provisioned at the Phase 18 cutover).
+* [x] **Admin provisioning:** the admin creates departments / wards / beds / staff, all scoped to their
+      hospital (the admin UIs already exist — every create-mutator now stamps `hospital_id`).
 * [ ] **Admin-creates-staff logins (needs a server-side function):** Supabase Auth defaults to email
       self-signup; creating accounts *on behalf of* staff requires a privileged **Supabase Edge
       Function** (service-role key) — cannot run in the browser. Build it. Sub-decisions: prefer
@@ -653,16 +654,20 @@ future premium option for any tenant demanding hard physical isolation.
 
 ### Public landing page
 
-* [ ] A **public, unauthenticated** marketing page (French-first) explaining the value with a
-      "Create your hospital account" CTA → signup. Restructure routes: public `/` (marketing),
-      `/signup`, `/login`; the current dashboard moves **behind an auth boundary**.
+* [x] A **public, unauthenticated** marketing page (French-first) explaining the value with a
+      "Create your hospital account" CTA → signup. Routes restructured into `(marketing)` (public `/`,
+      `/signup`, `/login`) and `(app)` (the dashboard, now at `/dashboard` **behind a `RequireAuth`
+      boundary**, framed by the AppShell with a sign-out/account menu).
 
 ### Verify
 
-* [ ] Two hospitals can sign up independently; each admin provisions their own structure and staff
-      logins; a doctor/nurse logs in at a desk and sees **only their hospital's** patients/board;
-      the cross-tenant isolation tests pass on every table + storage; landing → signup → login flow
-      works in FR + EN; `tsc` clean, tests green.
+* [x] **(mock):** Two hospitals sign up independently; each admin's data is stamped to their hospital;
+      a user logs in (pick hospital → staff) and sees **only their hospital's** patients/board; the
+      landing → signup → login → sign-out flow works in FR + EN; `tsc` clean, **191 tests green**
+      (incl. a tenancy isolation suite covering the board/queue reads). *Browser-verified both ways: a
+      fresh tenant shows a 0-active board; the demo tenant shows its full caseload.*
+* [ ] **(live DB, Phase 18):** the automated cross-tenant isolation tests pass on every table **and**
+      storage bucket, run as real authenticated users under RLS.
 
 ## PHASE 18 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
 
@@ -752,6 +757,23 @@ them before they become expensive to retrofit:
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
 
+* 2026-06-07: **Phase 17 — mock multi-tenancy + the SaaS front door (signup / login / landing / auth
+  boundary).** Made the mock a real pooled-tenant store, then built the public entry. **Tenancy:** a
+  module-level "active hospital" scopes every read (`loadScoped()`) and stamps every create-mutator
+  (`hospital_id`); added `hospitals` directory + `createHospital`; control-plane reads (the hospital
+  list, `getStaffForHospital`, session resolution) stay deliberately cross-tenant. **Auth:** new
+  `services/mockAuth` (localStorage session) + `AuthProvider` (owns `setActiveHospitalId`);
+  `role-provider` refactored to derive purely from the auth context. **Front door:** route groups
+  `(marketing)` (public `/` landing, `/signup`, `/login` — French-first, new `marketing`/`auth`/
+  `account` i18n) and `(app)` (dashboard moved to `/dashboard` behind `RequireAuth` + AppShell, now
+  with an account/sign-out menu). **Bug caught in verification (important):** the Live Board read the
+  *unscoped* store, so a brand-new hospital saw the demo caseload — `getActiveVisits`/`getOpenOrders`/
+  `getActiveAdmissions` and the per-parent reads were on `loadDatabase()`; converted all 16 chained
+  tenant reads to `loadScoped()` and added a regression test asserting the board/queue reads are
+  scoped. Also fixed a Base UI crash (`DropdownMenuLabel` must sit inside a `DropdownMenuGroup`).
+  Browser-verified both directions (fresh tenant → 0-active board; demo → full caseload), signup →
+  account menu → sign-out → login. `tsc` clean, **191 tests** green, production build OK. This clears
+  the Phase 17 mock-side verify gate; live-DB cross-tenant tests under real RLS remain for Phase 18.
 * 2026-06-07: **Phase 17 — tenant-scoped schema authored (`supabase/schema.sql`).** Made the entire
   schema multi-tenant in one pass: added a `hospitals` (account/tenant) table + `subscription_status`
   enum; added a non-null `hospital_id uuid references hospitals(id) on delete cascade` to all 18 domain

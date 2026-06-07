@@ -1,14 +1,15 @@
 "use client";
 
 /**
- * RoleProvider — DEV-ONLY acting-role scaffold.
+ * RoleProvider — DEV-ONLY role-preview scaffold, now layered on top of auth.
  *
- * Lets us switch which staff member (and therefore which role's UI) is "acting"
- * without real authentication, so we can preview the doctor / nurse / admin
- * views during development. When real auth lands (Phase 13) the acting staff
- * will come from the signed-in session and this provider — plus the navbar
- * RoleSwitcher — is removed wholesale; nothing else needs to change because
- * consumers only read `actingStaff` / `actingRole`.
+ * The signed-in staff (from {@link useAuth}) is the real "acting" identity. This
+ * provider lets a dev/demo *preview* another role's UI without re-logging-in, by
+ * overriding which staff member of the **same hospital** is acting — so tenancy
+ * is never crossed. With no override it simply reflects the logged-in staff.
+ * When the dev role switcher is removed (Phase 18), `actingStaff` collapses to
+ * `currentStaff` and consumers — which only read `actingStaff` / `actingRole` —
+ * keep working unchanged.
  */
 
 import {
@@ -20,13 +21,9 @@ import {
   useState,
 } from "react";
 
-import { getStaff } from "@/services/mockStorage";
+import { useAuth } from "@/components/auth-provider";
+import { getStaffForHospital } from "@/services/mockStorage";
 import type { Staff, StaffRole } from "@/types/healthcare";
-
-const STORAGE_KEY = "careflow_acting_staff";
-
-/** Default acting identity — matches the seeded attending doctor. */
-const DEFAULT_STAFF_ID = "staff_okafor";
 
 interface RoleContextValue {
   /** False until the client has hydrated; guard role-specific UI with it. */
@@ -41,54 +38,38 @@ interface RoleContextValue {
 const RoleContext = createContext<RoleContextValue | null>(null);
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
-  const [mounted, setMounted] = useState(false);
-  const [allStaff, setAllStaff] = useState<Staff[]>([]);
-  const [actingStaffId, setActingStaffIdState] = useState<string | null>(
-    DEFAULT_STAFF_ID,
+  const { mounted, currentStaff, currentHospital } = useAuth();
+  // Dev-only role-preview override (which staff in the current hospital is acting).
+  const [overrideStaffId, setOverrideStaffId] = useState<string | null>(null);
+
+  // Every staff member of the signed-in hospital — the role switcher's options.
+  const allStaff = useMemo(
+    () => (currentHospital ? getStaffForHospital(currentHospital.id) : []),
+    [currentHospital],
   );
 
+  // Drop any preview when the signed-in identity changes (don't leak across logins).
   useEffect(() => {
-    const staff = getStaff();
-    setAllStaff(staff);
-
-    let saved: string | null = null;
-    try {
-      saved = window.localStorage.getItem(STORAGE_KEY);
-    } catch {
-      saved = null;
-    }
-
-    const resolved =
-      (saved && staff.some((s) => s.id === saved) ? saved : null) ??
-      (staff.some((s) => s.id === DEFAULT_STAFF_ID) ? DEFAULT_STAFF_ID : null) ??
-      staff[0]?.id ??
-      null;
-
-    setActingStaffIdState(resolved);
-    setMounted(true);
-  }, []);
+    setOverrideStaffId(null);
+  }, [currentStaff?.id]);
 
   const setActingStaffId = useCallback((id: string) => {
-    setActingStaffIdState(id);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, id);
-    } catch {
-      /* ignore persistence errors (private mode, etc.) */
-    }
+    setOverrideStaffId(id);
   }, []);
 
   const value = useMemo<RoleContextValue>(() => {
+    const actingStaffId = overrideStaffId ?? currentStaff?.id ?? null;
     const actingStaff =
-      allStaff.find((s) => s.id === actingStaffId) ?? null;
+      allStaff.find((s) => s.id === actingStaffId) ?? currentStaff ?? null;
     return {
       mounted,
       allStaff,
-      actingStaffId,
+      actingStaffId: actingStaff?.id ?? null,
       actingStaff,
       actingRole: actingStaff?.role ?? null,
       setActingStaffId,
     };
-  }, [mounted, allStaff, actingStaffId, setActingStaffId]);
+  }, [mounted, allStaff, overrideStaffId, currentStaff, setActingStaffId]);
 
   return <RoleContext.Provider value={value}>{children}</RoleContext.Provider>;
 }

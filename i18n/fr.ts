@@ -897,4 +897,80 @@ export const fr = {
     forNeed: "Réf. : {need}",
     generalNote: "Général",
   },
+
+  marketing: {
+    signIn: "Se connecter",
+    getStarted: "Créer le compte de votre hôpital",
+    heroEyebrow: "Les opérations hospitalières, numérisées",
+    heroTitle: "Gérez tout votre hôpital à partir d'un seul dossier clair.",
+    heroSubtitle:
+      "CareFlow suit chaque patient de l'arrivée à la sortie — accueil, consultation, examens, médicaments, lits et rapports — pour que votre équipe travaille sur un dossier unique et fiable plutôt que sur des papiers éparpillés.",
+    heroNote:
+      "Conçu pour les cliniques et hôpitaux du Cameroun. Français et anglais.",
+    featuresTitle: "Tout ce que fait l'hôpital, au même endroit",
+    f1Title: "Tout le parcours du patient",
+    f1Body:
+      "De l'accueil et du triage par l'infirmier, à la consultation du médecin, aux examens et résultats, aux ordonnances et aux soins au lit, jusqu'à l'admission, les lits et la sortie.",
+    f2Title: "Chaque rôle, un seul dossier",
+    f2Body:
+      "L'accueil, les infirmiers, les médecins, le laboratoire, la pharmacie et l'administration voient exactement ce dont leur métier a besoin — à partir du même dossier à jour.",
+    f3Title: "Lits et rapports en temps réel",
+    f3Body:
+      "Voyez quels lits sont libres, comptez les admissions et les externes, et exportez des rapports hebdomadaires et mensuels pour le conseil.",
+    f4Title: "Bilingue et fonctionne hors ligne",
+    f4Body:
+      "Français et anglais complets, et un dossier qui continue de fonctionner quand internet coupe — les changements se synchronisent automatiquement au retour.",
+    ctaTitle: "Mettez votre hôpital en ligne dès aujourd'hui",
+    ctaBody:
+      "Créez le compte de votre hôpital en une minute. Vos données restent les vôtres — chaque hôpital est totalement isolé.",
+    footerNote: "CareFlow — le dossier opérationnel propre à l'hôpital.",
+  },
+
+  auth: {
+    backHome: "Retour à l'accueil",
+    login: {
+      title: "Connexion",
+      subtitle: "Choisissez votre hôpital et votre compte pour continuer.",
+      hospitalLabel: "Hôpital",
+      hospitalPlaceholder: "Sélectionnez votre hôpital",
+      staffLabel: "Se connecter en tant que",
+      staffPlaceholder: "Sélectionnez votre compte",
+      noStaff: "Aucun compte pour cet hôpital pour l'instant.",
+      submit: "Se connecter",
+      noAccount: "Nouvel hôpital ?",
+      signUpLink: "Créer un compte",
+      demoHint:
+        "Connexion de démonstration : choisissez un hôpital, puis un compte. Les vrais mots de passe arriveront avec le backend sécurisé.",
+    },
+    signup: {
+      title: "Créer le compte de votre hôpital",
+      subtitle:
+        "Configurez votre hôpital et votre compte administrateur. Vous pourrez ensuite ajouter services, unités, lits et personnel.",
+      sectionHospital: "Votre hôpital",
+      sectionAdmin: "Votre compte administrateur",
+      hospitalName: "Nom de l'hôpital",
+      hospitalNamePlaceholder: "ex. Hôpital Général de Douala",
+      region: "Région / ville",
+      regionPlaceholder: "ex. Littoral — Douala",
+      contactEmail: "Email de contact",
+      contactPhone: "Téléphone de contact",
+      adminName: "Votre nom complet",
+      adminNamePlaceholder: "ex. Dr Amina Okafor",
+      adminEmail: "Votre email (identifiant)",
+      submit: "Créer le compte",
+      creating: "Création…",
+      haveAccount: "Vous avez déjà un compte ?",
+      loginLink: "Se connecter",
+      trialNote:
+        "Démarre avec un essai gratuit. Les données de votre hôpital sont totalement isolées de tout autre hôpital.",
+    },
+  },
+
+  account: {
+    menu: "Compte",
+    signedInAs: "Connecté en tant que",
+    role: "Rôle",
+    hospital: "Hôpital",
+    signOut: "Se déconnecter",
+  },
 } satisfies Messages;

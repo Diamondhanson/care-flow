@@ -27,7 +27,7 @@ export default function OfflinePage() {
               this device and will sync once you&apos;re back online.
             </p>
           </div>
-          <Link href="/" className={cn(buttonVariants({ variant: "default" }), "mt-1")}>
+          <Link href="/dashboard" className={cn(buttonVariants({ variant: "default" }), "mt-1")}>
             Back to the board
           </Link>
         </CardContent>

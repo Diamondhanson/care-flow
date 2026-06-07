@@ -22,6 +22,7 @@ import type {
 function rx(partial: Partial<Prescription>): Prescription {
   return {
     id: "rx_x",
+    hospital_id: "hosp_demo",
     visit_id: "vis_x",
     prescribed_by_id: null,
     drug_name: "Paracetamol",
@@ -42,6 +43,7 @@ function mar(
 ): MedicationAdministration {
   return {
     id: "mar_x",
+    hospital_id: "hosp_demo",
     prescription_id: "rx_x",
     administered_by_id: null,
     scheduled_for: null,

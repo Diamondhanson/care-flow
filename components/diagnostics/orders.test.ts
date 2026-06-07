@@ -14,6 +14,7 @@ import type { Result } from "@/types/healthcare";
 function result(partial: Partial<Result>): Result {
   return {
     id: "res_x",
+    hospital_id: "hosp_demo",
     order_id: "ord_x",
     recorded_by_id: null,
     summary: null,

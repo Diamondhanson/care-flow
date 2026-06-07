@@ -181,7 +181,7 @@ export default function IntakePage() {
               ) : null}
             </div>
             <div className="flex gap-3">
-              <Button nativeButton={false} render={<Link href="/" />}>
+              <Button nativeButton={false} render={<Link href="/dashboard" />}>
                 {t("intake.viewOnBoard")} <ArrowRight className="size-4" />
               </Button>
               <Button variant="outline" onClick={resetForm}>
@@ -479,7 +479,7 @@ export default function IntakePage() {
             type="button"
             variant="ghost"
             nativeButton={false}
-            render={<Link href="/" />}
+            render={<Link href="/dashboard" />}
           >
             {t("common.cancel")}
           </Button>

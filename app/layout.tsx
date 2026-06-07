@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AppShell } from "@/components/layout/app-shell";
+import { AuthProvider } from "@/components/auth-provider";
 import { LocaleProvider } from "@/components/locale-provider";
 import { RoleProvider } from "@/components/role-provider";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -64,11 +64,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <LocaleProvider>
-            <RoleProvider>
-              <TooltipProvider>
-                <AppShell>{children}</AppShell>
-              </TooltipProvider>
-            </RoleProvider>
+            <AuthProvider>
+              <RoleProvider>
+                <TooltipProvider>{children}</TooltipProvider>
+              </RoleProvider>
+            </AuthProvider>
           </LocaleProvider>
           <ServiceWorkerRegister />
           <SyncEngine />

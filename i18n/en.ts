@@ -893,6 +893,81 @@ export const en = {
     forNeed: "Re: {need}",
     generalNote: "General",
   },
+
+  marketing: {
+    signIn: "Sign in",
+    getStarted: "Create your hospital account",
+    heroEyebrow: "Hospital operations, digitized",
+    heroTitle: "Run your whole hospital from one clear record.",
+    heroSubtitle:
+      "CareFlow tracks every patient from arrival to discharge — intake, consultation, tests, medication, beds and reports — so your team works from one shared, accurate record instead of scattered paper.",
+    heroNote: "Built for clinics and hospitals in Cameroon. French and English.",
+    featuresTitle: "Everything the hospital does, in one place",
+    f1Title: "The whole patient journey",
+    f1Body:
+      "From nurse intake and triage, through the doctor's consultation, tests and results, prescriptions and bedside medication, to admission, beds and discharge.",
+    f2Title: "Every role, one record",
+    f2Body:
+      "Reception, nurses, doctors, lab, pharmacy and administration each see exactly what their job needs — working from the same up-to-date record.",
+    f3Title: "Beds & reports that stay live",
+    f3Body:
+      "See which beds are free, count admissions and outpatients, and export weekly and monthly reports for the review board.",
+    f4Title: "Bilingual and works offline",
+    f4Body:
+      "Full French and English, and a record that keeps working when the internet drops — changes sync automatically when it returns.",
+    ctaTitle: "Bring your hospital online today",
+    ctaBody:
+      "Create your hospital account in a minute. Your data stays yours — every hospital is fully isolated.",
+    footerNote: "CareFlow — the hospital's own operational record.",
+  },
+
+  auth: {
+    backHome: "Back to home",
+    login: {
+      title: "Sign in",
+      subtitle: "Choose your hospital and your account to continue.",
+      hospitalLabel: "Hospital",
+      hospitalPlaceholder: "Select your hospital",
+      staffLabel: "Sign in as",
+      staffPlaceholder: "Select your account",
+      noStaff: "No staff accounts for this hospital yet.",
+      submit: "Sign in",
+      noAccount: "New hospital?",
+      signUpLink: "Create an account",
+      demoHint:
+        "Demo sign-in: pick a hospital, then an account. Real passwords arrive with the secure backend.",
+    },
+    signup: {
+      title: "Create your hospital account",
+      subtitle:
+        "Set up your hospital and your administrator account. You can add departments, wards, beds and staff right after.",
+      sectionHospital: "Your hospital",
+      sectionAdmin: "Your administrator account",
+      hospitalName: "Hospital name",
+      hospitalNamePlaceholder: "e.g. Douala General Hospital",
+      region: "Region / city",
+      regionPlaceholder: "e.g. Littoral — Douala",
+      contactEmail: "Contact email",
+      contactPhone: "Contact phone",
+      adminName: "Your full name",
+      adminNamePlaceholder: "e.g. Dr. Amina Okafor",
+      adminEmail: "Your email (login)",
+      submit: "Create account",
+      creating: "Creating…",
+      haveAccount: "Already have an account?",
+      loginLink: "Sign in",
+      trialNote:
+        "Starts on a free trial. Your hospital's data is completely isolated from every other hospital.",
+    },
+  },
+
+  account: {
+    menu: "Account",
+    signedInAs: "Signed in as",
+    role: "Role",
+    hospital: "Hospital",
+    signOut: "Sign out",
+  },
 };
 
 export type Messages = typeof en;

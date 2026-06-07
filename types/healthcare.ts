@@ -21,6 +21,7 @@
 // Primary-key aliases — UUID strings, named per table for readability.
 // ---------------------------------------------------------------------------
 
+export type HospitalId = string;
 export type DepartmentId = string;
 export type WardId = string;
 export type BedId = string;
@@ -53,6 +54,12 @@ export type ISODate = string;
 // ---------------------------------------------------------------------------
 // Enumerated types (1:1 with the SQL `create type ... as enum` declarations).
 // ---------------------------------------------------------------------------
+
+/**
+ * `subscription_status` — a hospital tenant's account standing. `trial` on
+ * signup, `active` once paying, `suspended` cuts off access (gating hook).
+ */
+export type SubscriptionStatus = "trial" | "active" | "suspended";
 
 /** `staff_role` — expanded beyond clinical roles to cover the whole hospital. */
 export type StaffRole =
@@ -159,12 +166,38 @@ export type CareNeedCategory =
 export type CarePlanItemStatus = "active" | "resolved";
 
 // ---------------------------------------------------------------------------
+// 4·0 Tenant / account (multi-tenancy — Phase 17)
+// ---------------------------------------------------------------------------
+
+/**
+ * `hospitals` — the account/tenant entity. CareFlow is pooled multi-tenancy:
+ * every other row carries a `hospital_id` and a tenant only ever sees its own
+ * data (RLS via `current_hospital_id()` on the real backend; scoped reads in the
+ * mock). One hospital == one isolated customer account.
+ */
+export interface Hospital {
+  id: HospitalId;
+  name: string;
+  /** Region / city, e.g. "Littoral — Douala". */
+  region: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  /** Monetization tier, e.g. "standard"; drives feature gating later. */
+  subscription_tier: string;
+  subscription_status: SubscriptionStatus;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}
+
+// ---------------------------------------------------------------------------
 // 4a. Reference / structural data (the editable "floor map")
 // ---------------------------------------------------------------------------
 
 /** `departments` — e.g. Maternity, Ophthalmology, Internal Medicine. */
 export interface Department {
   id: DepartmentId;
+  /** Owning tenant. Scoped per hospital; `code`/`name` unique within it. */
+  hospital_id: HospitalId;
   name: string;
   /** Short code, e.g. "MAT", "OPH". */
   code: string | null;
@@ -177,6 +210,7 @@ export interface Department {
 /** `wards` — a floor/unit belonging to a department; holds beds. */
 export interface Ward {
   id: WardId;
+  hospital_id: HospitalId;
   department_id: DepartmentId | null;
   name: string;
   /** e.g. "2nd Floor", "Block C". */
@@ -189,6 +223,7 @@ export interface Ward {
 /** `beds` — one row per physical bed; status + admission link keep occupancy live. */
 export interface Bed {
   id: BedId;
+  hospital_id: HospitalId;
   ward_id: WardId;
   /** e.g. "Bed 12", "A-04". Unique within a ward. */
   label: string;
@@ -209,6 +244,7 @@ export interface Bed {
  */
 export interface Staff {
   id: StaffId;
+  hospital_id: HospitalId;
   /** FK -> auth.users(id). Null until a login is provisioned. */
   user_id: AuthUserId | null;
   full_name: string;
@@ -224,6 +260,7 @@ export interface Staff {
 /** `patients` — the stable person record, referenced by every visit. */
 export interface Patient {
   id: PatientId;
+  hospital_id: HospitalId;
   /**
    * Human-facing patient ID — the Cameroon-standard booklet number generated at
    * registration (Phase 16.7). Format: `YYMMDD` + name initials + ` - ` +
@@ -273,6 +310,7 @@ export interface Patient {
  */
 export interface Allergy {
   id: AllergyId;
+  hospital_id: HospitalId;
   patient_id: PatientId;
   /** The offending substance, e.g. "Penicillin", "Peanuts". */
   substance: string;
@@ -297,6 +335,7 @@ export interface Allergy {
  */
 export interface Visit {
   id: VisitId;
+  hospital_id: HospitalId;
   patient_id: PatientId;
   visit_type: VisitType;
   status: VisitStatus;
@@ -323,6 +362,7 @@ export interface Visit {
 /** `consultations` — the doctor's SOAP-style note for a visit. */
 export interface Consultation {
   id: ConsultationId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   doctor_id: StaffId | null;
   /** What the patient reports (S). */
@@ -340,6 +380,7 @@ export interface Consultation {
 /** `diagnoses` — structured diagnosis (ICD-10 where possible). */
 export interface Diagnosis {
   id: DiagnosisId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   consultation_id: ConsultationId | null;
   diagnosed_by_id: StaffId | null;
@@ -353,6 +394,7 @@ export interface Diagnosis {
 /** `orders` — a test the doctor recommends (lab / imaging / procedure). */
 export interface Order {
   id: OrderId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   ordered_by_id: StaffId | null;
   order_type: OrderType;
@@ -370,6 +412,7 @@ export interface Order {
  */
 export interface Result {
   id: ResultId;
+  hospital_id: HospitalId;
   order_id: OrderId;
   recorded_by_id: StaffId | null;
   summary: string | null;
@@ -385,6 +428,7 @@ export interface Result {
 /** `prescriptions` — the "structure of medication" written by a doctor. */
 export interface Prescription {
   id: PrescriptionId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   prescribed_by_id: StaffId | null;
   drug_name: string;
@@ -409,6 +453,7 @@ export interface Prescription {
  */
 export interface MedicationAdministration {
   id: MedicationAdministrationId;
+  hospital_id: HospitalId;
   prescription_id: PrescriptionId;
   administered_by_id: StaffId | null;
   scheduled_for: ISODateString | null;
@@ -426,6 +471,7 @@ export interface MedicationAdministration {
  */
 export interface TreatmentRecord {
   id: TreatmentRecordId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   recorded_by_id: StaffId | null;
   /** Peripheral oxygen saturation (SpO₂), percentage. */
@@ -456,6 +502,7 @@ export interface TreatmentRecord {
  */
 export interface Admission {
   id: AdmissionId;
+  hospital_id: HospitalId;
   visit_id: VisitId;
   patient_id: PatientId;
   attending_doctor_id: StaffId | null;
@@ -484,6 +531,7 @@ export interface Admission {
  */
 export interface Transfer {
   id: TransferId;
+  hospital_id: HospitalId;
   admission_id: AdmissionId;
   patient_id: PatientId;
   from_ward_id: WardId | null;
@@ -511,6 +559,7 @@ export interface Transfer {
  */
 export interface CarePlanItem {
   id: CarePlanItemId;
+  hospital_id: HospitalId;
   admission_id: AdmissionId;
   patient_id: PatientId;
   category: CareNeedCategory;
@@ -534,6 +583,7 @@ export interface CarePlanItem {
  */
 export interface CarePlanEntry {
   id: CarePlanEntryId;
+  hospital_id: HospitalId;
   admission_id: AdmissionId;
   /** The need this note relates to, when applicable. */
   care_plan_item_id: CarePlanItemId | null;
@@ -555,6 +605,8 @@ export interface CarePlanEntry {
  */
 export interface AuditLog {
   id: AuditLogId;
+  /** Tenant the change belongs to. Nullable (system events may be tenantless). */
+  hospital_id: HospitalId | null;
   table_name: string;
   record_id: string | null;
   /** INSERT / UPDATE / DELETE. */

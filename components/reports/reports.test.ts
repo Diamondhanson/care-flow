@@ -45,6 +45,7 @@ function daysAgoIso(days: number, hour = 9): string {
 function makeVisit(overrides: Partial<Visit> = {}): Visit {
   return {
     id: "vis_1",
+    hospital_id: "hosp_demo",
     patient_id: "pat_1",
     visit_type: "outpatient",
     status: "closed",
@@ -66,6 +67,7 @@ function makeVisit(overrides: Partial<Visit> = {}): Visit {
 function makePatient(overrides: Partial<Patient> = {}): Patient {
   return {
     id: "pat_1",
+    hospital_id: "hosp_demo",
     mrn: "890314TP - A",
     full_name: "Test Patient",
     date_of_birth: null,
@@ -86,6 +88,7 @@ function makePatient(overrides: Partial<Patient> = {}): Patient {
 function makeAdmission(overrides: Partial<Admission> = {}): Admission {
   return {
     id: "adm_1",
+    hospital_id: "hosp_demo",
     visit_id: "vis_1",
     patient_id: "pat_1",
     attending_doctor_id: "staff_1",
@@ -107,6 +110,7 @@ function makeAdmission(overrides: Partial<Admission> = {}): Admission {
 function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
   return {
     id,
+    hospital_id: "hosp_demo",
     ward_id,
     label: id,
     status,
@@ -119,6 +123,7 @@ function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
 function makeWard(id: string, name = id): Ward {
   return {
     id,
+    hospital_id: "hosp_demo",
     department_id: null,
     name,
     floor_label: null,
@@ -131,6 +136,7 @@ function makeWard(id: string, name = id): Ward {
 function makeDiagnosis(overrides: Partial<Diagnosis> = {}): Diagnosis {
   return {
     id: "dx_1",
+    hospital_id: "hosp_demo",
     visit_id: "vis_1",
     consultation_id: null,
     diagnosed_by_id: null,
@@ -287,8 +293,8 @@ describe("visitTypeMix", () => {
 describe("departmentThroughput", () => {
   it("resolves names, buckets unassigned, and sorts descending", () => {
     const departments: Department[] = [
-      { id: "dept_a", name: "Cardiology", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
-      { id: "dept_b", name: "Surgery", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
+      { id: "dept_a", hospital_id: "hosp_demo", name: "Cardiology", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
+      { id: "dept_b", hospital_id: "hosp_demo", name: "Surgery", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
     ];
     const visits = [
       makeVisit({ id: "1", department_id: "dept_a" }),
@@ -392,7 +398,7 @@ describe("stageDistribution", () => {
 describe("abnormalRate", () => {
   it("computes the abnormal percentage", () => {
     const res = (id: string, is_abnormal: boolean): Result => ({
-      id, order_id: "o", recorded_by_id: null, summary: null, value: null,
+      id, hospital_id: "hosp_demo", order_id: "o", recorded_by_id: null, summary: null, value: null,
       reference_range: null, is_abnormal, attachment_path: null, recorded_at: daysAgoIso(1),
     });
     const rate = abnormalRate([res("1", true), res("2", false), res("3", false), res("4", false)], RANGE);

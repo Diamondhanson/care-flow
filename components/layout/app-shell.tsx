@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Activity,
   BarChart3,
@@ -13,6 +13,7 @@ import {
   GitMerge,
   LayoutDashboard,
   LayoutGrid,
+  LogOut,
   Menu,
   Pill,
   Users,
@@ -20,7 +21,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -30,7 +31,17 @@ import { GlobalSearch } from "@/components/search/global-search";
 import { GuidedTour, TourHelpButton } from "@/components/onboarding/guided-tour";
 import { SyncStatus } from "@/components/pwa/sync-status";
 import { ROLE_LABEL, staffInitials, useRole } from "@/components/role-provider";
+import { useAuth } from "@/components/auth-provider";
 import { useT, useLocale } from "@/components/locale-provider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/i18n/format";
 import type { StaffRole } from "@/types/healthcare";
 import {
@@ -48,7 +59,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { title: "nav.liveBoard", href: "/", icon: LayoutDashboard },
+  { title: "nav.liveBoard", href: "/dashboard", icon: LayoutDashboard },
   { title: "nav.intake", href: "/intake", icon: ClipboardPlus },
   { title: "nav.diagnostics", href: "/diagnostics", icon: FlaskConical },
   { title: "nav.medications", href: "/medications", icon: Pill },
@@ -69,15 +80,15 @@ const NAV_ITEMS: NavItem[] = [
  */
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
-  receptionist: ["/", "/intake", "/floor-map", "/reconciliation"],
+  receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation"],
   // Nurse: the board, medications due, care plans, and bed/ward status.
-  nurse: ["/", "/medications", "/care-plans", "/floor-map"],
+  nurse: ["/dashboard", "/medications", "/care-plans", "/floor-map"],
   // Doctor: the board (their patients), tests & results, prescribing, care plans.
-  doctor: ["/", "/diagnostics", "/medications", "/care-plans"],
+  doctor: ["/dashboard", "/diagnostics", "/medications", "/care-plans"],
   // Pharmacist: medications and the tests that inform them.
-  pharmacist: ["/", "/medications", "/diagnostics"],
+  pharmacist: ["/dashboard", "/medications", "/diagnostics"],
   // Lab tech: the diagnostics queue.
-  lab_tech: ["/", "/diagnostics"],
+  lab_tech: ["/dashboard", "/diagnostics"],
   // Admin: full operational menu.
   admin: NAV_ITEMS.map((i) => i.href),
 };
@@ -90,13 +101,15 @@ function navItemsForRole(role: StaffRole | null): NavItem[] {
 }
 
 function isActive(pathname: string, href: string) {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  return href === "/dashboard"
+    ? pathname === "/dashboard"
+    : pathname.startsWith(href);
 }
 
 function Brand({ compact = false }: { compact?: boolean }) {
   const { t } = useT();
   return (
-    <Link href="/" className="flex items-center gap-2.5">
+    <Link href="/dashboard" className="flex items-center gap-2.5">
       <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
         <Activity className="size-5" strokeWidth={2.25} />
       </span>
@@ -203,6 +216,73 @@ function ActingStaffCard() {
   );
 }
 
+function AccountMenu() {
+  const { t } = useT();
+  const router = useRouter();
+  const { mounted, currentStaff, currentHospital, signOut } = useAuth();
+
+  const name = mounted && currentStaff ? currentStaff.full_name : "—";
+  const roleLabel =
+    mounted && currentStaff ? t(ROLE_LABEL[currentStaff.role]) : "";
+  const initials = staffInitials(name);
+
+  function handleSignOut() {
+    signOut();
+    router.push("/login");
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={cn(
+          buttonVariants({ variant: "ghost", size: "icon" }),
+          "rounded-full"
+        )}
+        aria-label={t("account.menu")}
+      >
+        <Avatar className="size-8 border border-border">
+          <AvatarFallback className="bg-secondary text-xs font-semibold">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col gap-0.5">
+            <span className="text-[10px] font-normal uppercase tracking-wide text-muted-foreground/70">
+              {t("account.signedInAs")}
+            </span>
+            <span className="text-sm font-medium">{name}</span>
+            {roleLabel ? (
+              <span className="text-xs font-normal text-muted-foreground">
+                {roleLabel}
+              </span>
+            ) : null}
+          </DropdownMenuLabel>
+          {mounted && currentHospital ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="flex flex-col gap-0.5">
+                <span className="text-[10px] font-normal uppercase tracking-wide text-muted-foreground/70">
+                  {t("account.hospital")}
+                </span>
+                <span className="text-sm font-medium">
+                  {currentHospital.name}
+                </span>
+              </DropdownMenuLabel>
+            </>
+          ) : null}
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut} variant="destructive">
+          <LogOut className="size-4" />
+          {t("account.signOut")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useT();
@@ -272,6 +352,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <TourHelpButton />
             <LocaleToggle />
             <ThemeToggle />
+            <Separator orientation="vertical" className="hidden h-5 sm:block" />
+            <AccountMenu />
           </div>
         </header>
 

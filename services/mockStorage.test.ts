@@ -25,6 +25,7 @@ import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
 function makeAdmission(overrides: Partial<Admission> = {}): Admission {
   return {
     id: "adm_1",
+    hospital_id: "hosp_demo",
     visit_id: "vis_1",
     patient_id: "pat_1",
     attending_doctor_id: null,
@@ -46,6 +47,7 @@ function makeAdmission(overrides: Partial<Admission> = {}): Admission {
 function makePatient(overrides: Partial<Patient> = {}): Patient {
   return {
     id: "pat_1",
+    hospital_id: "hosp_demo",
     mrn: "890314TP - A",
     full_name: "Test Patient",
     date_of_birth: null,
@@ -66,6 +68,7 @@ function makePatient(overrides: Partial<Patient> = {}): Patient {
 function makeWard(id: string): Ward {
   return {
     id,
+    hospital_id: "hosp_demo",
     department_id: null,
     name: id,
     floor_label: null,
@@ -78,6 +81,7 @@ function makeWard(id: string): Ward {
 function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
   return {
     id,
+    hospital_id: "hosp_demo",
     ward_id,
     label: id,
     status,
