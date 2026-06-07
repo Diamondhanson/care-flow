@@ -420,7 +420,7 @@ French text runs ~15–20% longer than English, so the risk is visual overflow, 
       test green; `tsc` clean. *(153/153 tests pass; `tsc --noEmit` exit 0; floor-map clean at 390 /
       768 / 1280 in both locales.)*
 
-## PHASE 16.6 — Nursing Care Plan (Inpatient) 🔜
+## PHASE 16.6 — Nursing Care Plan (Inpatient) ✅ COMPLETE
 
 **Goal:** give nurses a dedicated place to record the individualized, non-medication care an admitted
 patient needs (bathing, feeding, positioning, temperature control, comfort, etc.) and a running,
@@ -440,16 +440,16 @@ admitted only; can be extended with a flag later.)*
 
 ### Data model (mirror the existing patterns — append-only log, service-layer only)
 
-* [ ] `care_need_category` enum from Henderson's 14, named practically: `breathing`, `nutrition`,
+* [x] `care_need_category` enum from Henderson's 14, named practically: `breathing`, `nutrition`,
       `elimination`, `mobility_positioning`, `sleep_rest`, `hygiene`, `temperature`, `dressing`,
       `safety`, `communication_emotional`, `pain_comfort`, `spiritual`, `wound_skin_care`, `other`.
-* [ ] `CarePlanItem` (the **plan** — what the patient needs): `admission_id`, `patient_id`,
+* [x] `CarePlanItem` (the **plan** — what the patient needs): `admission_id`, `patient_id`,
       `category`, `description`, `frequency` (free text, e.g. "Every 2h"), optional `goal`,
       `status` (`active` / `resolved`), `created_by_id`, timestamps.
-* [ ] `CarePlanEntry` (the **log + handover** — append-only, never overwritten, like `transfers`):
+* [x] `CarePlanEntry` (the **log + handover** — append-only, never overwritten, like `transfers`):
       `admission_id` (and optional `care_plan_item_id`), `note`, `is_handover` flag, `recorded_by_id`,
       `recorded_at`.
-* [ ] Add all three to `types/healthcare.ts`, `services/mockStorage.ts` (CRUD + read queries:
+* [x] Add all three to `types/healthcare.ts`, `services/mockStorage.ts` (CRUD + read queries:
       `getCarePlanItemsForAdmission`, `getCarePlanEntriesForAdmission`, `addCarePlanItem`,
       `resolveCarePlanItem`, `addCarePlanEntry`, `getAdmittedPatientsForCarePlan`), and
       `supabase/schema.sql` (tables + indexes + `updated_at`/audit triggers + nurse/doctor/admin RLS
@@ -457,39 +457,39 @@ admitted only; can be extended with a flag later.)*
 
 ### UI
 
-* [ ] New left-nav entry **"Nursing care plan"** (`/care-plans`), in the **nurse** role's menu
+* [x] New left-nav entry **"Nursing care plan"** (`/care-plans`), in the **nurse** role's menu
       (`ROLE_NAV` in `app-shell.tsx`); visible to doctor/admin too (read + write).
-* [ ] **Master/detail page:** left = list of currently admitted patients (name, bed/ward, a count of
+* [x] **Master/detail page:** left = list of currently admitted patients (name, bed/ward, a count of
       active care needs, and a **handover-waiting** signal when an unread handover note exists); right =
       the selected patient's care plan in three blocks — **What is required** (the plan items),
       **What has been done** (the care log, with handover notes visually highlighted), and actions to
       **Record care** and **Leave handover**.
-* [ ] A **ward filter** at the top so a nurse can narrow to her ward at shift change.
-* [ ] Low-friction input: category is a **quick-pick** (not free typing); record-care and handover are
+* [x] A **ward filter** at the top so a nurse can narrow to her ward at shift change.
+* [x] Low-friction input: category is a **quick-pick** (not free typing); record-care and handover are
       short forms. (Natural future home for the French voice-to-note AI.)
-* [ ] A compact **read-only** care-plan summary inside the patient drawer (for a doctor's glance), so
+* [x] A compact **read-only** care-plan summary inside the patient drawer (for a doctor's glance), so
       the drawer references the record without becoming the working surface.
-* [ ] Fully localized (FR/EN) including the category labels.
+* [x] Fully localized (FR/EN) including the category labels.
 
 ### Seed sample data (so the panel is populated and demoable)
 
 Seed against the existing admitted patients (bump the mock DB key). Concrete records:
 
-* [ ] **Samuel Idris — ICU-04 (post-op laparotomy).** Needs: Hygiene — "assist with bed bath, keep skin
+* [x] **Samuel Idris — ICU-04 (post-op laparotomy).** Needs: Hygiene — "assist with bed bath, keep skin
       dry" (Daily); Mobility/positioning — "turn every 2h to prevent pressure sores" (Every 2h);
       Temperature — "tepid sponge and review if temp > 38.5°C" (As needed); Nutrition — "soft diet,
       assist feeding, encourage fluids" (Each meal). Log: Romero 12:05 "Turned to left side. Temp 37.8°C,
       settling." · Patel 14:20 "Bed bath given, skin intact. Ate half of lunch." · **Handover** Patel
       15:00 "Anxious about surgery tomorrow — needs reassurance. Watch temperature this evening."
-* [ ] **Aisha Bello — Ward B-11 (pneumonia, recovering).** Needs: Breathing — "sit upright, encourage
+* [x] **Aisha Bello — Ward B-11 (pneumonia, recovering).** Needs: Breathing — "sit upright, encourage
       deep breathing / chest physio" (Every 4h); Hygiene — "assist shower" (Daily); Mobility —
       "encourage short walks on the ward" (Twice daily). Log: Patel 13:10 "Walked to end of ward and
       back, tolerated well." · **Handover** "Chest clearer, coughing productively. Keep prompting deep
       breathing."
-* [ ] **Daniel Owusu — Ward A-03 (diabetic, stabilized).** Needs: Nutrition — "diabetic diet, monitor
+* [x] **Daniel Owusu — Ward A-03 (diabetic, stabilized).** Needs: Nutrition — "diabetic diet, monitor
       intake" (Each meal); Wound/skin care — "inspect feet daily for ulcers" (Daily). Log: Romero 11:30
       "Feet inspected, no ulcers. Ate full breakfast."
-* [ ] **John Doe · Gamma — ICU-02 (unconscious, head trauma, GCS improving).** Needs: Hygiene — "full
+* [x] **John Doe · Gamma — ICU-02 (unconscious, head trauma, GCS improving).** Needs: Hygiene — "full
       bed bath + mouth care" (Daily); Positioning — "turn every 2h" (Every 2h); Elimination — "catheter
       care, monitor output" (Each shift); Eye care — "clean + protect eyes to prevent dryness" (Every
       4h); Safety — "cot sides up, neuro observations" (Each shift). Log: Patel 14:00 "Full bed bath and
@@ -498,13 +498,15 @@ Seed against the existing admitted patients (bump the mock DB key). Concrete rec
 
 ### Verify
 
-* [ ] Open `/care-plans` as a nurse: the four seeded patients appear in the list with their need counts,
+* [x] Open `/care-plans` as a nurse: the four seeded patients appear in the list with their need counts,
       Idris shows a handover-waiting signal; clicking a patient shows required care + the care log with
       the handover note highlighted; recording care and leaving a handover append to the log and update
       the signal. Admin/doctor can read it; the drawer shows the read-only summary. FR + EN clean; `tsc`
-      clean; unit tests for the new pure helpers green.
+      clean; unit tests for the new pure helpers green. *(Shipped: `/care-plans` master/detail page,
+      `CarePlanItem`/`CarePlanEntry` model + service layer, drawer summary, nurse/doctor nav, seed data,
+      FR/EN, Supabase schema; `tsc` clean; tests green.)*
 
-## PHASE 16.7 — Cameroon Patient ID Format 🔜
+## PHASE 16.7 — Cameroon Patient ID Format ✅ COMPLETE
 
 **Goal:** replace the auto-generated MRN (`CF-YYYY-NNNNNN`) with a Cameroon-standard patient ID
 derived from the patient's birth date, name initials, and mother's first-name initial — generated at
@@ -536,37 +538,65 @@ registration.
   ID length varies with the number of names.
 
 ### Implementation
-* [ ] Add `mother_first_name` (nullable) to `Patient` in `types/healthcare.ts`, the intake form, and
+* [x] Add `mother_first_name` (nullable) to `Patient` in `types/healthcare.ts`, the intake form, and
       `supabase/schema.sql`.
-* [ ] Replace the MRN display field with the new ID. Recommend renaming `patients.mrn` →
+* [x] Replace the MRN display field with the new ID. Recommend renaming `patients.mrn` →
       `patients.patient_code` for clarity (update all references), or keep the column name but change
       its meaning/format — either way, drop the `CF-…` default and generate app-side.
-* [ ] Pure helper in the service layer: `generatePatientId(dob, fullName, motherFirstName)` →
+* [x] Pure helper in the service layer: `generatePatientId(dob, fullName, motherFirstName)` →
       base ID, plus clash-suffix logic against existing IDs. Generate at patient creation
       (`createNewVisit`) and (re)generate at `reconcileAnonymousProfile`.
-* [ ] `supabase/schema.sql`: drop the `mrn_seq` / `generate_mrn()` default; the app supplies the ID on
+* [x] `supabase/schema.sql`: drop the `mrn_seq` / `generate_mrn()` default; the app supplies the ID on
       insert (or a `plpgsql` function mirrors the helper). Keep a `unique` index on the ID.
-* [ ] Intake form: add the optional "Mother's first name" field; show the generated patient ID on the
+* [x] Intake form: add the optional "Mother's first name" field; show the generated patient ID on the
       success screen instead of the MRN.
-* [ ] Update every display of the old MRN: patient cards, drawer header, **global search** (match on
+* [x] Update every display of the old MRN: patient cards, drawer header, **global search** (match on
       the new ID + name + phone), reports, and the printed visit slip.
-* [ ] i18n: relabel "Hospital number / Numéro d'hôpital" → "Patient ID / Identifiant patient"; add
+* [x] i18n: relabel "Hospital number / Numéro d'hôpital" → "Patient ID / Identifiant patient"; add
       FR/EN labels for the mother's-name field.
-* [ ] Unit tests: the worked example → `981120BHN - N`; accent stripping; missing mother → no ` - x`;
+* [x] Unit tests: the worked example → `981120BHN - N`; accent stripping; missing mother → no ` - x`;
       approximate DOB; clash → suffix.
 
 ### Seed regeneration (so existing patients carry valid IDs)
 Recompute each seeded patient's ID in the new format and add a plausible mother's first name:
-* [ ] Grace Mensah, 1989-03-14, mother Akosua → `890314GM - A`
-* [ ] Samuel Idris, 1972-11-02, mother Fatima → `721102SI - F`
-* [ ] Aisha Bello, 1995-07-21, mother Hauwa → `950721AB - H`
-* [ ] Daniel Owusu, 1960-01-09, mother Abena → `600109DO - A`
-* [ ] John Doe · Gamma (anonymous) → no ID until reconciled
+* [x] Grace Mensah, 1989-03-14, mother Akosua → `890314GM - A`
+* [x] Samuel Idris, 1972-11-02, mother Fatima → `721102SI - F`
+* [x] Aisha Bello, 1995-07-21, mother Hauwa → `950721AB - H`
+* [x] Daniel Owusu, 1960-01-09, mother Abena → `600109DO - A`
+* [x] John Doe · Gamma (anonymous) → no ID until reconciled
 
 ### Verify
-* [ ] Registering a patient generates the correct ID (with and without a mother's name); the worked
+* [x] Registering a patient generates the correct ID (with and without a mother's name); the worked
       example and edge-case unit tests pass; a forced clash appends `-2`; anonymous intake gets its ID
       at reconciliation; the ID shows on cards/search/drawer/intake in FR + EN; `tsc` clean, tests green.
+
+> **Deviation from plan (locked):** kept the existing `patients.mrn` field/column name internally
+> (no rename to `patient_code`) — only the UI labels became "Patient ID / Identifiant patient". The
+> human-facing format changed; the field name and all FKs/joins are untouched. `mrn` is now nullable
+> (anonymous patients carry no ID until reconciled). 183 tests pass.
+
+## PHASE 16.8 — Reconciliation Redesign (Emergency → Identified) ✅ COMPLETE
+
+**Goal:** the original reconciliation tab only offered "merge into an existing patient" via a dropdown,
+which a nurse found confusing. Reframe it so the nurse picks an emergency record and fills in a **full
+registration form** that gives the anonymous patient a real identity **in-place**.
+
+* [x] New centered modal `Dialog` UI primitive (`components/ui/dialog.tsx`, base-ui), with light/dark
+      tokens and exit animation.
+* [x] `completeAnonymousProfile(anonymousId, details)` service fn: updates the anonymous patient record
+      in-place (same UUID → all visits/FKs intact), flips `is_emergency_anonymous` off, clears
+      `anonymous_identifier`, and mints the Cameroon patient ID.
+* [x] `ReconcileDialog` (`components/reconciliation/reconcile-dialog.tsx`): a full registration form
+      (name, sex, DOB / approx-age toggle, phone, national ID, mother's first name) **plus** an optional
+      "already in the system?" search that links an existing patient to merge instead.
+* [x] Reworked `/reconciliation` page: searchable emergency worklist; each card's single **Reconcile**
+      action opens the dialog; dismissible success banner.
+* [x] FR/EN strings for the new flow.
+
+### Verify
+* [x] Filling the form updates the emergency record in-place with a real name + generated patient ID
+      (no duplicate created); the optional merge path reassigns visits to the linked patient and removes
+      the anonymous record; FR + EN clean; `tsc` clean; 183 tests pass.
 
 ## PHASE 17 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
 
