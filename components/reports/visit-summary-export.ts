@@ -27,6 +27,7 @@ import {
   ALLERGY_SEVERITY_LABEL,
 } from "@/components/allergies/allergies";
 import { formatDate, formatDateTime } from "@/i18n/format";
+import { getCurrentHospital } from "@/services/mockStorage";
 import type { Locale } from "@/i18n";
 import type { Allergy, MarStatus, Patient } from "@/types/healthcare";
 import type { PatientHistoryData, VisitSummaryData } from "./visit-summary";
@@ -605,10 +606,11 @@ export function exportVisitSummaryPdf(
   locale: Locale,
 ): void {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const hospitalName = getCurrentHospital()?.name ?? t("shell.facility");
   let y = drawDocHeader(
     doc,
     t("visitReport.title"),
-    t("shell.facility"),
+    hospitalName,
     t,
     locale,
     data.generatedAtMs,
@@ -633,10 +635,11 @@ export function exportPatientHistoryPdf(
   locale: Locale,
 ): void {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const hospitalName = getCurrentHospital()?.name ?? t("shell.facility");
   let y = drawDocHeader(
     doc,
     t("visitReport.history.title"),
-    t("shell.facility"),
+    hospitalName,
     t,
     locale,
     data.generatedAtMs,

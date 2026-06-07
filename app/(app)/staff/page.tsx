@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   Mail,
+  Plus,
   Stethoscope,
   HeartPulse,
   ShieldCheck,
@@ -14,6 +15,24 @@ import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import {
   getStaff,
   getDepartments,
@@ -21,10 +40,11 @@ import {
   getAdmissionForVisit,
   getBedById,
   getPatientById,
+  createStaff,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
 import { ResetDemo } from "@/components/demo/reset-demo";
-import type { Staff, StaffRole } from "@/types/healthcare";
+import type { Department, Staff, StaffRole } from "@/types/healthcare";
 
 interface RoleGroup {
   role: StaffRole;
@@ -72,11 +92,15 @@ function initials(name: string): string {
 export default function StaffDirectoryPage() {
   const { t } = useT();
   const [data, setData] = useState<DirectoryData | null>(null);
+  const [departmentList, setDepartmentList] = useState<Department[]>([]);
+  const [adding, setAdding] = useState(false);
 
-  useEffect(() => {
+  function refresh() {
     const staff = getStaff();
+    const departmentRows = getDepartments();
     const departments: Record<string, string> = {};
-    for (const d of getDepartments()) departments[d.id] = d.name;
+    for (const d of departmentRows) departments[d.id] = d.name;
+    setDepartmentList(departmentRows);
 
     const attending: Record<string, AttendingPatient[]> = {};
     for (const visit of getActiveVisits()) {
@@ -95,22 +119,32 @@ export default function StaffDirectoryPage() {
       (attending[visit.attending_doctor_id] ??= []).push({ name, location });
     }
     setData({ staff, departments, attending });
+  }
+
+  useEffect(() => {
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
   const total = data?.staff.length ?? null;
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8">
-      <header className="flex flex-col gap-1">
-        <div className="flex items-baseline gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("staff.title")}</h1>
-          <span className="text-sm font-medium tabular-nums text-muted-foreground">
-            {total ?? "—"} {t("staff.members")}
-          </span>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <div className="flex items-baseline gap-3">
+            <h1 className="text-2xl font-semibold tracking-tight">{t("staff.title")}</h1>
+            <span className="text-sm font-medium tabular-nums text-muted-foreground">
+              {total ?? "—"} {t("staff.members")}
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {t("staff.subtitle")}
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {t("staff.subtitle")}
-        </p>
+        <Button onClick={() => setAdding(true)}>
+          <Plus className="size-4" /> {t("staff.newStaff")}
+        </Button>
       </header>
 
       {data === null ? (
@@ -226,6 +260,184 @@ export default function StaffDirectoryPage() {
         <h2 className="text-sm font-medium">{t("demo.title")}</h2>
         <ResetDemo />
       </section>
+
+      <StaffFormSheet
+        open={adding}
+        departments={departmentList}
+        onClose={() => setAdding(false)}
+        onSaved={() => {
+          setAdding(false);
+          refresh();
+        }}
+      />
     </div>
+  );
+}
+
+/** Role options for the add-staff select, in directory order. */
+const ROLE_OPTIONS: readonly { role: StaffRole; label: string }[] = ROLE_GROUPS.map(
+  (g) => ({ role: g.role, label: g.label }),
+);
+
+function StaffFormSheet({
+  open,
+  departments,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  departments: Department[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const { t } = useT();
+  const [name, setName] = useState("");
+  const [role, setRole] = useState<StaffRole | null>(null);
+  const [departmentId, setDepartmentId] = useState<string>("none");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset the form each time the sheet opens.
+  useEffect(() => {
+    if (open) {
+      setName("");
+      setRole(null);
+      setDepartmentId("none");
+      setEmail("");
+      setPhone("");
+      setError(null);
+    }
+  }, [open]);
+
+  function handleSave() {
+    setError(null);
+    if (!name.trim()) {
+      setError(t("staff.nameRequired"));
+      return;
+    }
+    if (!role) {
+      setError(t("staff.roleRequired"));
+      return;
+    }
+    createStaff({
+      full_name: name,
+      role,
+      email: email.trim() || null,
+      phone: phone.trim() || null,
+      department_id: departmentId === "none" ? null : (departmentId as Department["id"]),
+    });
+    onSaved();
+  }
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+    >
+      <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
+        <SheetHeader className="border-b border-border">
+          <SheetTitle>{t("staff.newTitle")}</SheetTitle>
+          <SheetDescription>{t("staff.newDesc")}</SheetDescription>
+        </SheetHeader>
+
+        <div className="flex flex-col gap-5 p-4">
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_name">{t("staff.name")}</Label>
+            <Input
+              id="staff_name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t("staff.namePlaceholder")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_role">{t("staff.role")}</Label>
+            <Select
+              items={Object.fromEntries(
+                ROLE_OPTIONS.map((o) => [o.role, t(o.label)]),
+              )}
+              value={role}
+              onValueChange={(v) => setRole(v as StaffRole)}
+            >
+              <SelectTrigger id="staff_role">
+                <SelectValue placeholder={t("staff.rolePlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {ROLE_OPTIONS.map((o) => (
+                  <SelectItem key={o.role} value={o.role}>
+                    {t(o.label)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_department">{t("staff.department")}</Label>
+            <Select
+              items={{
+                none: t("staff.departmentNone"),
+                ...Object.fromEntries(
+                  departments
+                    .filter((d) => d.is_active)
+                    .map((d) => [d.id, d.name]),
+                ),
+              }}
+              value={departmentId}
+              onValueChange={(v) => setDepartmentId(v ?? "none")}
+            >
+              <SelectTrigger id="staff_department">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">{t("staff.departmentNone")}</SelectItem>
+                {departments
+                  .filter((d) => d.is_active)
+                  .map((d) => (
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_email">{t("staff.email")}</Label>
+            <Input
+              id="staff_email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("staff.emailPlaceholder")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="staff_phone">{t("staff.phone")}</Label>
+            <Input
+              id="staff_phone"
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder={t("staff.phonePlaceholder")}
+            />
+          </div>
+
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        </div>
+
+        <SheetFooter className="mt-auto flex-row justify-end gap-3 border-t border-border">
+          <Button variant="ghost" onClick={onClose}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleSave}>{t("staff.create")}</Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

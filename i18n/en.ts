@@ -472,6 +472,23 @@ export const en = {
     attending: "Attending · {count}",
     noActivePatients: "No active patients",
     unknownPatient: "Unknown patient",
+    // Add-staff form
+    newStaff: "Add staff member",
+    newTitle: "Add staff member",
+    newDesc: "Register a clinical or administrative team member for your hospital.",
+    name: "Full name",
+    namePlaceholder: "e.g. Dr. Amina Diallo",
+    role: "Role",
+    rolePlaceholder: "Select a role",
+    department: "Department",
+    departmentNone: "No department",
+    email: "Email",
+    emailPlaceholder: "name@hospital.cm",
+    phone: "Phone",
+    phonePlaceholder: "+237…",
+    create: "Add member",
+    nameRequired: "A full name is required.",
+    roleRequired: "Please select a role.",
   },
 
   reconciliation: {
@@ -967,6 +984,12 @@ export const en = {
     role: "Role",
     hospital: "Hospital",
     signOut: "Sign out",
+  },
+
+  subscription: {
+    trialBadge: "Free trial",
+    trialMessage:
+      "You're on a free trial. All features are unlocked while you evaluate CareFlow.",
   },
 };
 

@@ -16,6 +16,7 @@ import {
   LogOut,
   Menu,
   Pill,
+  Sparkles,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -287,6 +288,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useT();
   const { mounted, locale } = useLocale();
+  const { mounted: authMounted, currentHospital } = useAuth();
 
   return (
     <div className="flex h-svh overflow-hidden bg-background text-foreground">
@@ -329,7 +331,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               clipped inside the box instead of spilling onto the search. */}
           <div className="hidden min-w-0 flex-col leading-tight md:flex">
             <span className="truncate text-sm font-medium tracking-tight">
-              {t("shell.facility")}
+              {authMounted && currentHospital
+                ? currentHospital.name
+                : t("shell.facility")}
             </span>
             <span className="truncate text-xs text-muted-foreground">
               {t("shell.liveOperations")}
@@ -356,6 +360,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <AccountMenu />
           </div>
         </header>
+
+        {authMounted && currentHospital?.subscription_status === "trial" ? (
+          <div className="flex shrink-0 items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-2 text-xs text-muted-foreground md:px-8">
+            <span
+              aria-hidden
+              className="flex size-5 shrink-0 items-center justify-center rounded-md"
+              style={{
+                backgroundColor:
+                  "color-mix(in oklab, var(--status-clearance) 18%, transparent)",
+                color: "var(--status-clearance)",
+              }}
+            >
+              <Sparkles className="size-3" />
+            </span>
+            <span className="font-medium text-foreground">
+              {t("subscription.trialBadge")}
+            </span>
+            <span className="hidden sm:inline">{t("subscription.trialMessage")}</span>
+          </div>
+        ) : null}
 
         <main className="min-h-0 flex-1 overflow-y-auto p-4 md:p-8">{children}</main>
       </div>

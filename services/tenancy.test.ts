@@ -42,17 +42,25 @@ const memoryStorage = new MemoryStorage();
 
 import {
   DEMO_HOSPITAL_ID,
+  addBedsToWard,
+  createDepartment,
   createHospital,
   createNewVisit,
+  createStaff,
+  createWard,
   getActiveAdmissions,
   getActiveHospitalId,
   getActiveVisits,
+  getBeds,
   getCurrentHospital,
+  getDepartments,
   getHospitalById,
   getHospitals,
   getOpenOrders,
   getPatients,
+  getStaff,
   getVisits,
+  getWards,
   resetDatabase,
   setActiveHospitalId,
 } from "@/services/mockStorage";
@@ -158,5 +166,53 @@ describe("tenant isolation (read scoping + write stamping)", () => {
     expect(getActiveVisits()).toHaveLength(0);
     expect(getOpenOrders()).toHaveLength(0);
     expect(getActiveAdmissions()).toHaveLength(0);
+  });
+});
+
+describe("admin provisioning (write stamping for setup mutators)", () => {
+  it("stamps a newly registered tenant's staff, department, ward and beds to it", () => {
+    // Onboarding flow: a fresh hospital provisions its own org structure via the
+    // admin UIs (staff directory, departments, floor map). Every such write must
+    // be stamped to the acting tenant and stay invisible to the demo tenant.
+    const other = createHospital({ name: "Limbe Cottage" });
+    setActiveHospitalId(other.id);
+
+    const staff = createStaff({ full_name: "Dr. New Tenant", role: "doctor" });
+    const department = createDepartment({ name: "Cardiology" });
+    const ward = createWard({ name: "Ward A", bed_count: 2 });
+    const moreBeds = addBedsToWard(ward.id, 3);
+
+    expect(staff.hospital_id).toBe(other.id);
+    expect(department.hospital_id).toBe(other.id);
+    expect(ward.hospital_id).toBe(other.id);
+    expect(moreBeds.every((b) => b.hospital_id === other.id)).toBe(true);
+
+    // Scoped reads as the new tenant see exactly what it created.
+    expect(getStaff()).toHaveLength(1);
+    expect(getDepartments()).toHaveLength(1);
+    expect(getWards()).toHaveLength(1);
+    expect(getBeds()).toHaveLength(5); // 2 seeded + 3 appended
+    expect(getStaff().every((s) => s.hospital_id === other.id)).toBe(true);
+    expect(getBeds().every((b) => b.hospital_id === other.id)).toBe(true);
+  });
+
+  it("keeps the new tenant's provisioning invisible to the demo tenant", () => {
+    const demoStaffCount = (() => {
+      setActiveHospitalId(DEMO_HOSPITAL_ID);
+      return getStaff().length;
+    })();
+    const demoDeptCount = getDepartments().length;
+
+    const other = createHospital({ name: "Kribi Health" });
+    setActiveHospitalId(other.id);
+    const staff = createStaff({ full_name: "Nurse Two", role: "nurse" });
+    const department = createDepartment({ name: "Maternity" });
+
+    // Back to demo: counts unchanged, and the new rows are absent.
+    setActiveHospitalId(DEMO_HOSPITAL_ID);
+    expect(getStaff()).toHaveLength(demoStaffCount);
+    expect(getDepartments()).toHaveLength(demoDeptCount);
+    expect(getStaff().some((s) => s.id === staff.id)).toBe(false);
+    expect(getDepartments().some((d) => d.id === department.id)).toBe(false);
   });
 });

@@ -469,6 +469,23 @@ export const fr = {
     attending: "Patients suivis · {count}",
     noActivePatients: "Aucun patient actif",
     unknownPatient: "Patient inconnu",
+    // Formulaire d'ajout de personnel
+    newStaff: "Ajouter un membre",
+    newTitle: "Ajouter un membre du personnel",
+    newDesc: "Enregistrez un membre clinique ou administratif de votre hôpital.",
+    name: "Nom complet",
+    namePlaceholder: "ex. Dre Amina Diallo",
+    role: "Rôle",
+    rolePlaceholder: "Sélectionnez un rôle",
+    department: "Service",
+    departmentNone: "Aucun service",
+    email: "E-mail",
+    emailPlaceholder: "nom@hopital.cm",
+    phone: "Téléphone",
+    phonePlaceholder: "+237…",
+    create: "Ajouter",
+    nameRequired: "Un nom complet est requis.",
+    roleRequired: "Veuillez sélectionner un rôle.",
   },
 
   reconciliation: {
@@ -972,5 +989,11 @@ export const fr = {
     role: "Rôle",
     hospital: "Hôpital",
     signOut: "Se déconnecter",
+  },
+
+  subscription: {
+    trialBadge: "Essai gratuit",
+    trialMessage:
+      "Vous êtes en essai gratuit. Toutes les fonctionnalités sont débloquées pendant votre évaluation de CareFlow.",
   },
 } satisfies Messages;
