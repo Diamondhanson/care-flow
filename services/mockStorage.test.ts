@@ -13,6 +13,7 @@ import {
   isTerminalStage,
   normalizeDatabase,
   searchPatients,
+  SUPABASE_TABLES,
   transferAdmission,
   uniquePatientId,
 } from "@/services/mockStorage";
@@ -525,5 +526,48 @@ describe("diffDatabases", () => {
       "patients:insert:p2",
       "wards:update:w1",
     ]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// SUPABASE_TABLES — the canonical Postgres table list used by Phase 18b
+// hydration (download) and the outbox (upload). Locks the camelCase → snake_case
+// mapping and the parents-before-children ordering that keeps FK replays valid.
+// ---------------------------------------------------------------------------
+
+describe("SUPABASE_TABLES", () => {
+  it("exposes every mirrored table as a unique snake_case name", () => {
+    expect(SUPABASE_TABLES.length).toBeGreaterThan(0);
+    // No duplicates.
+    expect(new Set(SUPABASE_TABLES).size).toBe(SUPABASE_TABLES.length);
+    // Real Postgres names: lower snake_case only.
+    for (const table of SUPABASE_TABLES) {
+      expect(table).toMatch(/^[a-z][a-z0-9_]*$/);
+    }
+  });
+
+  it("translates multi-word collections to their Postgres names", () => {
+    expect(SUPABASE_TABLES).toEqual(
+      expect.arrayContaining([
+        "medication_administrations",
+        "treatment_records",
+        "care_plan_items",
+        "care_plan_entries",
+      ]),
+    );
+  });
+
+  it("lists parents before their children so FK-respecting replays succeed", () => {
+    const order = (t: string) => SUPABASE_TABLES.indexOf(t);
+    // A row can only reference tables that appear earlier in the list.
+    expect(order("hospitals")).toBe(0);
+    expect(order("patients")).toBeLessThan(order("visits"));
+    expect(order("visits")).toBeLessThan(order("consultations"));
+    expect(order("visits")).toBeLessThan(order("admissions"));
+    expect(order("orders")).toBeLessThan(order("results"));
+    expect(order("prescriptions")).toBeLessThan(
+      order("medication_administrations"),
+    );
+    expect(order("care_plan_items")).toBeLessThan(order("care_plan_entries"));
   });
 });

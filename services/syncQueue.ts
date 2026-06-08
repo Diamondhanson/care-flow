@@ -19,6 +19,8 @@
  * └──────────────────────────────────────────────────────────────────────────┘
  */
 
+import { getSupabaseClient } from "@/lib/supabase/client";
+
 const OUTBOX_KEY = "careflow_outbox_v1";
 
 /** A window event fired whenever the outbox changes, so the UI chip can react. */
@@ -143,10 +145,17 @@ export function readOutbox(): OutboxChange[] {
   }
 }
 
-function writeOutbox(queue: OutboxChange[]): void {
+/**
+ * Persist the outbox. By default this fires {@link OUTBOX_EVENT} so the UI chip
+ * and the {@link SyncEngine} react. Pass `{ emit: false }` to persist silently —
+ * used when a drain only records failure bookkeeping (attempts/last_error) with
+ * no change to the pending set, so it must NOT re-trigger the engine (otherwise
+ * a perpetually-failing drain, e.g. while offline, would busy-loop).
+ */
+function writeOutbox(queue: OutboxChange[], opts: { emit?: boolean } = {}): void {
   if (!isBrowser()) return;
   window.localStorage.setItem(OUTBOX_KEY, JSON.stringify(queue));
-  emitChanged();
+  if (opts.emit ?? true) emitChanged();
 }
 
 /** Append captured changes to the persisted outbox. No-op on the server. */
@@ -172,50 +181,35 @@ export function clearOutbox(): void {
 // ===========================================================================
 
 /**
- * Thrown by {@link pushChangeToServer} until the backend is wired. Lets the
- * drain loop detect "no server yet" without special-casing strings.
- */
-export class SyncNotConfiguredError extends Error {
-  constructor() {
-    super("CareFlow sync is not configured yet — Supabase lands in Phase 13.");
-    this.name = "SyncNotConfiguredError";
-  }
-}
-
-/**
- * Is a real backend wired up? Returns `false` today, so {@link drainOutbox} is a
- * no-op and the queue simply accumulates. Flip this to `true` (e.g. once the
- * Supabase client + env vars exist) the day you implement
- * {@link pushChangeToServer}, and queued changes start draining automatically.
+ * Is a real backend wired up? True in the browser once the Supabase env vars
+ * exist (Phase 18b). False on the server / in node tests (no `window`), so
+ * {@link drainOutbox} stays a safe no-op there and importing the module never
+ * needs the env.
  */
 export function isSyncConfigured(): boolean {
-  return false;
+  return (
+    typeof window !== "undefined" &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
 }
 
 /**
- * ⭐ THE one function to implement when Supabase is provisioned. ⭐
+ * Upload a single queued change to Supabase (Phase 18b). Inserts and updates are
+ * a row-level `upsert` keyed on the primary key; deletes remove by id. The drain
+ * runs as the signed-in user, so Row-Level-Security authorizes each write.
  *
- * Upload a single queued change to the server. Today it throws — there is no
- * server. The Phase-13 implementation is roughly:
- *
- * ```ts
- * import { supabase } from "@/services/supabaseClient";
- * export async function pushChangeToServer(change: OutboxChange): Promise<void> {
- *   const { error } =
- *     change.op === "delete"
- *       ? await supabase.from(change.table).delete().eq("id", change.row_id)
- *       : await supabase.from(change.table).upsert(change.payload);
- *   if (error) throw error;
- * }
- * ```
- *
- * Note: this is intentionally a single-row replay (last-write-wins). The
- * multi-device merge / conflict-resolution engine is deliberately NOT built here
- * — it genuinely needs the central server and stays in Phase 13.
+ * Field names already match the Postgres columns, so the captured row payload is
+ * uploaded as-is. This is a single-row, last-write-wins replay; multi-device
+ * conflict merging is a later phase.
  */
-export async function pushChangeToServer(_change: OutboxChange): Promise<void> {
-  void _change;
-  throw new SyncNotConfiguredError();
+export async function pushChangeToServer(change: OutboxChange): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } =
+    change.op === "delete"
+      ? await supabase.from(change.table).delete().eq("id", change.row_id)
+      : await supabase.from(change.table).upsert(change.payload);
+  if (error) throw error;
 }
 
 // ===========================================================================
@@ -265,7 +259,11 @@ export async function drainOutbox(): Promise<DrainResult> {
   }
 
   working = removeFromQueue(working, uploadedIds);
-  writeOutbox(working);
+  // Only fire the change event when the pending set actually shrank. A pass that
+  // only failed (e.g. offline) changes nothing the UI tracks and must not wake
+  // the engine again, or it would re-drain in a tight loop. Real retries come
+  // from the next `online` event, mount, or a fresh enqueue.
+  writeOutbox(working, { emit: uploadedIds.length > 0 });
 
   return {
     skipped: false,

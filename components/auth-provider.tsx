@@ -1,15 +1,14 @@
 "use client";
 
 /**
- * AuthProvider — real Supabase Auth session boundary (Phase 18a).
+ * AuthProvider — real Supabase Auth session boundary (Phase 18a/18b).
  *
- * Staff sign in with a username + password (see `services/supabaseAuth`). The
- * authenticated identity is bridged to the still-mock data layer: we scope the
- * mock to the user's hospital and resolve their `currentStaff` / `currentHospital`
- * from the mock store (falling back to a synthetic record built from the auth
- * metadata when the mock seed doesn't contain that staff member — e.g. a freshly
- * provisioned account viewed in another browser). Phase 18b swaps the mock store
- * for Postgres and drops the bridge; this context's shape stays the same.
+ * Staff sign in with a username + password (see `services/supabaseAuth`). Once a
+ * session resolves we hydrate the local cache from Supabase (Phase 18b — RLS
+ * scopes the pull to the user's hospital), then resolve `currentStaff` /
+ * `currentHospital` from the hydrated `staff` row matched on the auth uid. If the
+ * pull fails (offline) we fall back to whatever the cache already holds, and to a
+ * synthetic record built from the auth metadata as a last resort.
  */
 
 import {
@@ -31,10 +30,14 @@ import {
 } from "@/services/supabaseAuth";
 import { provisionStaffLogin } from "@/app/actions/auth";
 import {
+  clearLocalCache,
   getHospitalById,
+  getHospitals,
   getStaffAccountById,
+  getStaffAccountByUserId,
   setActiveHospitalId,
 } from "@/services/mockStorage";
+import { hydrateFromSupabase } from "@/services/supabaseData";
 import type { Hospital, Staff, StaffRole } from "@/types/healthcare";
 
 /** Founder-admin signup: hospital details + the admin's login credentials. */
@@ -97,35 +100,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [currentStaff, setCurrentStaff] = useState<Staff | null>(null);
   const [currentHospital, setCurrentHospital] = useState<Hospital | null>(null);
 
-  /** Apply a resolved identity to the mock data layer + local state. */
-  const bridge = useCallback((identity: AuthIdentity | null) => {
-    if (!identity) {
-      setActiveHospitalId(null);
-      setCurrentStaff(null);
-      setCurrentHospital(null);
-      return;
-    }
-    setActiveHospitalId(identity.mock_hospital_id);
-    setCurrentStaff(
-      getStaffAccountById(identity.mock_staff_id) ?? syntheticStaff(identity),
-    );
-    setCurrentHospital(
-      getHospitalById(identity.mock_hospital_id) ?? syntheticHospital(identity),
-    );
-  }, []);
+  /**
+   * Resolve a signed-in identity into local state. By default we first hydrate
+   * the local cache from Supabase (Phase 18b); pass `{ hydrate: false }` for the
+   * mock-only new-hospital signup path, whose rows don't exist in Supabase yet.
+   */
+  const bridge = useCallback(
+    async (
+      identity: AuthIdentity | null,
+      opts: { hydrate?: boolean } = {},
+    ) => {
+      if (!identity) {
+        clearLocalCache();
+        setActiveHospitalId(null);
+        setCurrentStaff(null);
+        setCurrentHospital(null);
+        return;
+      }
+      if (opts.hydrate ?? true) {
+        // Pull this user's hospital data into the cache (RLS-scoped). On failure
+        // (offline) keep whatever the cache already holds.
+        try {
+          await hydrateFromSupabase();
+        } catch {
+          /* fall through to resolve from the existing cache */
+        }
+      }
+      const staff =
+        getStaffAccountByUserId(identity.userId) ??
+        getStaffAccountById(identity.mock_staff_id) ??
+        syntheticStaff(identity);
+      const hospital =
+        getHospitalById(staff.hospital_id) ??
+        getHospitals()[0] ??
+        syntheticHospital(identity);
+      setActiveHospitalId(hospital.id);
+      setCurrentStaff(staff);
+      setCurrentHospital(hospital);
+    },
+    [],
+  );
 
   useEffect(() => {
     let active = true;
     getActiveIdentity()
-      .then((identity) => {
+      .then(async (identity) => {
         if (!active) return;
-        bridge(identity);
+        await bridge(identity);
       })
       .finally(() => {
         if (active) setMounted(true);
       });
     // React to sign-in / sign-out / token refresh in this and other tabs.
-    const unsub = onAuthChange((identity) => bridge(identity));
+    const unsub = onAuthChange((identity) => {
+      void bridge(identity);
+    });
     return () => {
       active = false;
       unsub();
@@ -135,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(
     async (username: string, password: string) => {
       const identity = await signInWithUsername(username, password);
-      bridge(identity);
+      await bridge(identity);
     },
     [bridge],
   );
@@ -163,19 +192,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         mock_staff_id: admin.id,
       });
       if (!result.ok) throw new Error(result.error);
-      // 3. Sign in for real.
+      // 3. Sign in for real. A brand-new tenant has no Supabase rows yet, so
+      //    don't hydrate (that would wipe the just-created mock tenant from the
+      //    cache); resolve straight from the mock store. Real Supabase-backed
+      //    onboarding is a follow-up.
       const identity = await signInWithUsername(
         input.admin_username,
         input.admin_password,
       );
-      bridge(identity);
+      await bridge(identity, { hydrate: false });
     },
     [bridge],
   );
 
   const signOut = useCallback(async () => {
     await signOutSupabase();
-    bridge(null);
+    await bridge(null);
   }, [bridge]);
 
   const value = useMemo<AuthContextValue>(

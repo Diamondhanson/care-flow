@@ -42,6 +42,7 @@ import {
   getPatientById,
   createStaff,
   deleteStaff,
+  setStaffUserId,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
 import { useAuth } from "@/components/auth-provider";
@@ -370,6 +371,9 @@ function StaffFormSheet({
         setError(result.error);
         return;
       }
+      // Link the mock staff row to its new auth uid so Row-Level-Security
+      // recognizes the account as its own (the write syncs via the outbox).
+      setStaffUserId(created.id, result.userId);
       onSaved();
     } catch (err) {
       deleteStaff(created.id);

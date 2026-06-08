@@ -352,7 +352,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
             <Separator orientation="vertical" className="hidden h-5 sm:block" />
             <SyncStatus />
-            <RoleSwitcher />
+            {/* Dev-only impersonation control. Real RLS governs access by
+                user_id in production, so hide it outside development. */}
+            {process.env.NODE_ENV !== "production" ? <RoleSwitcher /> : null}
             <TourHelpButton />
             <LocaleToggle />
             <ThemeToggle />

@@ -1,12 +1,18 @@
 "use client";
 
 /**
- * Demo mode (Phase 16) — a one-click reset to a clean, realistic sample
- * hospital, so a presenter can rerun the same walkthrough from a known state.
- * The reset is destructive (it discards local edits and the sync outbox), so
- * it's gated behind an explicit confirm step that states the outcome.
+ * Demo mode (Phase 16, re-pointed at the real backend in Phase 18b) — a
+ * one-click reset to a known-good state so a presenter can rerun the same
+ * walkthrough. It discards *local* edits and the sync outbox only:
  *
- * Mount-guarded per AGENTS.md so server and first-paint markup stay identical.
+ *  - With a real backend wired (Phase 18b), it re-pulls the signed-in user's
+ *    hospital from Supabase into the local cache. Server data is never touched.
+ *  - With no backend (dev/tests, no env), it falls back to re-seeding the mock
+ *    store, as before.
+ *
+ * The reset is destructive to local state, so it's gated behind an explicit
+ * confirm step that states the outcome. Mount-guarded per AGENTS.md so server
+ * and first-paint markup stay identical.
  */
 
 import { useState } from "react";
@@ -15,6 +21,8 @@ import { RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { resetDatabase } from "@/services/mockStorage";
+import { hydrateFromSupabase } from "@/services/supabaseData";
+import { clearOutbox, isSyncConfigured } from "@/services/syncQueue";
 import { useT } from "@/components/locale-provider";
 
 export function ResetDemo() {
@@ -22,11 +30,25 @@ export function ResetDemo() {
   const [confirming, setConfirming] = useState(false);
   const [resetting, setResetting] = useState(false);
 
-  function handleReset() {
+  async function handleReset() {
     setResetting(true);
-    resetDatabase();
-    // Hard reload so every screen re-reads the freshly seeded store.
-    window.location.assign("/");
+    try {
+      if (isSyncConfigured()) {
+        // Re-pull server truth into the cache, then drop any local pending
+        // edits. hydrateFromSupabase replaces the cache atomically, so a fetch
+        // failure leaves the existing cache intact rather than emptying it.
+        await hydrateFromSupabase();
+        clearOutbox();
+      } else {
+        resetDatabase();
+      }
+      // Hard reload so every screen re-reads the refreshed store.
+      window.location.assign("/");
+    } catch {
+      // Likely offline — keep the current cache and let the user retry.
+      setResetting(false);
+      setConfirming(false);
+    }
   }
 
   return (

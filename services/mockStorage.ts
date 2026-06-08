@@ -291,6 +291,16 @@ const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
   carePlanEntries: "care_plan_entries",
 };
 
+/**
+ * Every Postgres table the local cache mirrors, in dependency-friendly order
+ * (parents before children). Phase 18b hydration fetches each of these and the
+ * outbox replays writes against them, so this is the canonical table list for
+ * the Supabase data layer.
+ */
+export const SUPABASE_TABLES: readonly string[] = DB_COLLECTIONS.map(
+  (c) => COLLECTION_TO_TABLE[c],
+);
+
 interface Identified {
   id: string;
 }
@@ -350,6 +360,37 @@ function persist(db: Database, opts: { track?: boolean } = {}): void {
 
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
   lastPersisted = structuredClone(db);
+}
+
+/**
+ * Replace the entire local cache with rows fetched from Supabase (Phase 18b
+ * hydration). Each Postgres table is mapped back onto its in-memory collection;
+ * unknown/missing tables default to `[]`. The write is untracked so hydration
+ * never floods the outbox, and it resets the diff baseline (`lastPersisted`) to
+ * this server snapshot so the next real mutation diffs against accurate state.
+ */
+export function replaceDatabaseFromTables(
+  byTable: Partial<Record<string, unknown[]>>,
+): void {
+  const db = normalizeDatabase({});
+  for (const collection of DB_COLLECTIONS) {
+    const rows = byTable[COLLECTION_TO_TABLE[collection]];
+    if (Array.isArray(rows)) {
+      (db[collection] as unknown[]) = rows;
+    }
+  }
+  persist(db, { track: false });
+}
+
+/**
+ * Drop the local cache so the next reader starts clean (Phase 18b sign-out).
+ * Leaves the outbox alone — any not-yet-uploaded changes must still drain. The
+ * next login re-hydrates from Supabase.
+ */
+export function clearLocalCache(): void {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(STORAGE_KEY);
+  lastPersisted = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -807,6 +848,15 @@ export function getStaffAccountById(id: StaffId): Staff | undefined {
 }
 
 /**
+ * Resolve a staff account by its linked Supabase Auth uid (Phase 18b). After
+ * hydration the staff row carries the real `user_id`, so this maps a signed-in
+ * user straight to their staff identity without the mock metadata bridge.
+ */
+export function getStaffAccountByUserId(userId: string): Staff | undefined {
+  return loadDatabase().staff.find((s) => s.user_id === userId);
+}
+
+/**
  * Create a staff member. Used by hospital signup (the founder admin, against the
  * just-created hospital via an explicit `hospital_id`) and by admin provisioning
  * (against the active tenant). A real login (`user_id`) is provisioned later via
@@ -847,6 +897,22 @@ export function deleteStaff(id: StaffId): void {
   const next = db.staff.filter((s) => s.id !== id);
   if (next.length === db.staff.length) return;
   db.staff = next;
+  persist(db);
+}
+
+/**
+ * Link a staff row to its Supabase Auth user id. Called right after
+ * {@link provisionStaffLogin} succeeds (Phase 18b) so the new account's
+ * `staff.user_id` matches `auth.uid()` — without that link the row is invisible
+ * to its owner under Row-Level-Security. The write is tracked, so it drains to
+ * Supabase via the outbox like any other mutation.
+ */
+export function setStaffUserId(id: StaffId, userId: string): void {
+  const db = loadDatabase();
+  const staff = db.staff.find((s) => s.id === id);
+  if (!staff || staff.user_id === userId) return;
+  staff.user_id = userId;
+  staff.updated_at = nowISO();
   persist(db);
 }
 
