@@ -34,28 +34,6 @@ export function isOrderOpen(status: OrderStatus): boolean {
   return status === "requested" || status === "in_progress";
 }
 
-/** Common quick-pick tests per order type, to speed up doctor ordering. */
-export const COMMON_ORDERS: Record<OrderType, string[]> = {
-  lab: [
-    "Full Blood Count",
-    "Urea & Electrolytes",
-    "Liver Function Tests",
-    "Fasting Blood Glucose",
-    "HbA1c",
-    "Troponin I",
-    "C-Reactive Protein",
-    "Malaria RDT",
-  ],
-  imaging: [
-    "Chest X-ray (PA)",
-    "Abdominal Ultrasound",
-    "CT head (non-contrast)",
-    "ECG",
-    "Echocardiogram",
-  ],
-  procedure: ["Lumbar puncture", "Wound debridement", "Endoscopy"],
-};
-
 /** True when any result in the set is flagged abnormal — drives highlighting. */
 export function hasAbnormalResult(results: Result[]): boolean {
   return results.some((r) => r.is_abnormal);

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  COMMON_DRUGS,
   DOSE_STATE_ORDER,
   FREQUENCY_OPTIONS,
   MAR_STATUS_LABEL,
@@ -77,9 +76,8 @@ describe("status label + token maps", () => {
     expect(MAR_STATUS_TOKEN.refused).toBe("treatment");
   });
 
-  it("offers schedulable frequency quick-picks and common drugs", () => {
+  it("offers schedulable frequency quick-picks", () => {
     expect(FREQUENCY_OPTIONS.length).toBeGreaterThan(0);
-    expect(COMMON_DRUGS.length).toBeGreaterThan(0);
     // Every non-PRN quick-pick must yield a usable interval.
     for (const f of FREQUENCY_OPTIONS) {
       if (f === "as required") {

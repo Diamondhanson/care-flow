@@ -1,0 +1,4550 @@
+[
+  {
+    "term_en": "Abdominal ultrasound scan",
+    "term_fr": "Échographie abdominale",
+    "synonyms_en": [
+      "belly scan",
+      "stomach ultrasound"
+    ],
+    "synonyms_fr": [
+      "échographie du ventre",
+      "écho abdo"
+    ]
+  },
+  {
+    "term_en": "Add to surgical waiting list",
+    "term_fr": "Inscription sur la liste d'attente chirurgicale",
+    "synonyms_en": [
+      "book for surgery",
+      "put on operation list"
+    ],
+    "synonyms_fr": [
+      "programmer pour l'opération",
+      "mettre sur la liste d'opération"
+    ]
+  },
+  {
+    "term_en": "Admit to intensive care unit",
+    "term_fr": "Admettre en unité de soins intensifs",
+    "synonyms_en": [
+      "ICU admission",
+      "admit to reanimation"
+    ],
+    "synonyms_fr": [
+      "hospitaliser en réanimation",
+      "mettre aux soins intensifs"
+    ]
+  },
+  {
+    "term_en": "Admit to maternity ward",
+    "term_fr": "Hospitaliser en maternité",
+    "synonyms_en": [
+      "admit to labor ward",
+      "admit for delivery"
+    ],
+    "synonyms_fr": [
+      "admettre à la maternité",
+      "garder pour l'accouchement"
+    ]
+  },
+  {
+    "term_en": "Admit to medical ward",
+    "term_fr": "Hospitaliser en médecine interne",
+    "synonyms_en": [
+      "admit to hospital",
+      "put on bed"
+    ],
+    "synonyms_fr": [
+      "garder à l'hôpital",
+      "hospitaliser en médecine hommes/femmes"
+    ]
+  },
+  {
+    "term_en": "Admit to nutritional rehabilitation unit",
+    "term_fr": "Admettre au centre de nutrition thérapeutique",
+    "synonyms_en": [
+      "admit for malnutrition",
+      "admit to CNTI"
+    ],
+    "synonyms_fr": [
+      "hospitaliser au CNTI",
+      "garder pour malnutrition grave"
+    ]
+  },
+  {
+    "term_en": "Admit to pediatric ward",
+    "term_fr": "Hospitaliser en pédiatrie",
+    "synonyms_en": [
+      "admit the child",
+      "pediatric admission"
+    ],
+    "synonyms_fr": [
+      "garder l'enfant à l'hôpital",
+      "hospitalisation pédiatrique"
+    ]
+  },
+  {
+    "term_en": "Admit to surgical ward",
+    "term_fr": "Hospitaliser en chirurgie",
+    "synonyms_en": [
+      "admit for operation",
+      "surgical admission"
+    ],
+    "synonyms_fr": [
+      "garder en chirurgie",
+      "hospitaliser pour opération"
+    ]
+  },
+  {
+    "term_en": "Advise exclusive breastfeeding for 6 months",
+    "term_fr": "Conseiller l'allaitement maternel exclusif pendant 6 mois",
+    "synonyms_en": [
+      "only breast milk for six months"
+    ],
+    "synonyms_fr": [
+      "donner uniquement le sein pendant 6 mois",
+      "allaitement exclusif"
+    ]
+  },
+  {
+    "term_en": "Advise smoking cessation",
+    "term_fr": "Conseiller l'arrêt du tabac",
+    "synonyms_en": [
+      "stop smoking",
+      "quit cigarettes"
+    ],
+    "synonyms_fr": [
+      "arrêter de fumer",
+      "laisser la cigarette"
+    ]
+  },
+  {
+    "term_en": "Antenatal care consultation",
+    "term_fr": "Consultation prénatale",
+    "synonyms_en": [
+      "pregnancy checkup",
+      "ANC visit"
+    ],
+    "synonyms_fr": [
+      "CPN",
+      "visite de grossesse"
+    ]
+  },
+  {
+    "term_en": "Apply compression bandage",
+    "term_fr": "Poser une bande de contention",
+    "synonyms_en": [
+      "elastic bandage",
+      "wrap leg tightly"
+    ],
+    "synonyms_fr": [
+      "bander la jambe",
+      "mettre une bande élastique"
+    ]
+  },
+  {
+    "term_en": "Apply topical antiseptic",
+    "term_fr": "Appliquer un antiseptique local",
+    "synonyms_en": [
+      "put medicine on wound",
+      "clean wound with antiseptic"
+    ],
+    "synonyms_fr": [
+      "mettre l'antiseptique sur la plaie",
+      "nettoyer la blessure"
+    ]
+  },
+  {
+    "term_en": "Arrange barrier nursing isolation",
+    "term_fr": "Mettre en isolement protecteur",
+    "synonyms_en": [
+      "isolate patient",
+      "separate bed for contagious illness"
+    ],
+    "synonyms_fr": [
+      "isoler le malade",
+      "mettre en chambre d'isolement"
+    ]
+  },
+  {
+    "term_en": "Arterial blood gas test",
+    "term_fr": "Gazométrie artérielle",
+    "synonyms_en": [
+      "blood oxygen test",
+      "ABG"
+    ],
+    "synonyms_fr": [
+      "gaz du sang",
+      "mesure de l'oxygène dans le sang artériel"
+    ]
+  },
+  {
+    "term_en": "Ascitic tap for fluid analysis",
+    "term_fr": "Ponction d'ascite exploratrice",
+    "synonyms_en": [
+      "belly fluid tap",
+      "draw water from stomach"
+    ],
+    "synonyms_fr": [
+      "ponctionner le liquide du ventre",
+      "tirer l'eau du ventre pour analyser"
+    ]
+  },
+  {
+    "term_en": "Assist vaginal delivery",
+    "term_fr": "Assister l'accouchement par voie basse",
+    "synonyms_en": [
+      "conduct normal delivery",
+      "help give birth"
+    ],
+    "synonyms_fr": [
+      "faire accoucher",
+      "gérer l'accouchement normal"
+    ]
+  },
+  {
+    "term_en": "Blood culture and sensitivity",
+    "term_fr": "Hémoculture et antibiogramme",
+    "synonyms_en": [
+      "test germs in blood",
+      "blood culture"
+    ],
+    "synonyms_fr": [
+      "culture du sang",
+      "recherche de microbes dans le sang"
+    ]
+  },
+  {
+    "term_en": "Blood glucose monitoring",
+    "term_fr": "Surveillance de la glycémie",
+    "synonyms_en": [
+      "sugar checks",
+      "test blood sugar level"
+    ],
+    "synonyms_fr": [
+      "contrôle du sucre",
+      "vérifier le taux de sucre"
+    ]
+  },
+  {
+    "term_en": "Blood grouping and cross-matching",
+    "term_fr": "Groupage sanguin et épreuve de compatibilité",
+    "synonyms_en": [
+      "find blood group",
+      "match blood for transfusion"
+    ],
+    "synonyms_fr": [
+      "recherche de groupe sanguin",
+      "test de compatibilité de sang"
+    ]
+  },
+  {
+    "term_en": "Blood urea and creatinine test",
+    "term_fr": "Dosage de l'urée et de la créatinine sérique",
+    "synonyms_en": [
+      "kidney function test",
+      "kidney blood test"
+    ],
+    "synonyms_fr": [
+      "bilan rénal",
+      "créatinine et urée",
+      "examen des reins"
+    ]
+  },
+  {
+    "term_en": "Cardiac auscultation monitoring",
+    "term_fr": "Surveillance par auscultation cardiaque",
+    "synonyms_en": [
+      "listen to heart",
+      "heart sound checks"
+    ],
+    "synonyms_fr": [
+      "écouter le cœur",
+      "surveillance des bruits du cœur"
+    ]
+  },
+  {
+    "term_en": "Cardiology referral",
+    "term_fr": "Référer en cardiologie",
+    "synonyms_en": [
+      "send to heart doctor",
+      "see a cardiologist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le cardiologue",
+      "référence en cardiologie"
+    ]
+  },
+  {
+    "term_en": "Catheterize urinary bladder",
+    "term_fr": "Poser une sonde urinaire",
+    "synonyms_en": [
+      "put urine pipe",
+      "urinary catheter insertion"
+    ],
+    "synonyms_fr": [
+      "sonder le malade",
+      "mettre la sonde pour pisser"
+    ]
+  },
+  {
+    "term_en": "CD4 lymphocyte count",
+    "term_fr": "Taux de lymphocytes CD4",
+    "synonyms_en": [
+      "CD4 count",
+      "immunity test for HIV"
+    ],
+    "synonyms_fr": [
+      "dosage des CD4",
+      "les CD4"
+    ]
+  },
+  {
+    "term_en": "Cervical smear test",
+    "term_fr": "Frottis cervico-vaginal",
+    "synonyms_en": [
+      "Pap smear",
+      "cervical cancer screening"
+    ],
+    "synonyms_fr": [
+      "frottis du col de l'utérus",
+      "FCV",
+      "dépistage du cancer du col"
+    ]
+  },
+  {
+    "term_en": "Chest physiotherapy",
+    "term_fr": "Kinésithérapie respiratoire",
+    "synonyms_en": [
+      "chest clapping",
+      "breathing exercises"
+    ],
+    "synonyms_fr": [
+      "kiné respiratoire",
+      "massage de poitrine pour faire cracher"
+    ]
+  },
+  {
+    "term_en": "Chest X-ray",
+    "term_fr": "Radiographie pulmonaire",
+    "synonyms_en": [
+      "chest film",
+      "lung radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du thorax",
+      "radiographie de la poitrine",
+      "radio poumons"
+    ]
+  },
+  {
+    "term_en": "Clean wound and debride",
+    "term_fr": "Nettoyer et parer la plaie",
+    "synonyms_en": [
+      "wash wound and cut dead skin",
+      "wound dressing with debridement"
+    ],
+    "synonyms_fr": [
+      "laver et gratter la plaie",
+      "parage de plaie"
+    ]
+  },
+  {
+    "term_en": "Close wound with sutures",
+    "term_fr": "Suturer la plaie",
+    "synonyms_en": [
+      "stitch the wound",
+      "put stitches"
+    ],
+    "synonyms_fr": [
+      "coudre la plaie",
+      "faire les points de suture"
+    ]
+  },
+  {
+    "term_en": "Complete blood count",
+    "term_fr": "Hémogramme complet",
+    "synonyms_en": [
+      "CBC",
+      "full blood count",
+      "FBC"
+    ],
+    "synonyms_fr": [
+      "numération formule sanguine",
+      "NFS",
+      "examen général du sang"
+    ]
+  },
+  {
+    "term_en": "Continuous positive airway pressure",
+    "term_fr": "Ventilation en pression positive continue",
+    "synonyms_en": [
+      "CPAP",
+      "breathing machine support"
+    ],
+    "synonyms_fr": [
+      "CPAP",
+      "assistance respiratoire par masque sous pression"
+    ]
+  },
+  {
+    "term_en": "Counsel on condom use",
+    "term_fr": "Conseiller l'utilisation du préservatif",
+    "synonyms_en": [
+      "use protection during sex",
+      "use condoms"
+    ],
+    "synonyms_fr": [
+      "conseiller le condom",
+      "utiliser les capotes",
+      "protéger les rapports sexuels"
+    ]
+  },
+  {
+    "term_en": "Counsel on insecticide-treated mosquito net use",
+    "term_fr": "Conseiller l'utilisation de la moustiquaire imprégnée",
+    "synonyms_en": [
+      "sleep under mosquito net",
+      "ITN usage"
+    ],
+    "synonyms_fr": [
+      "dormir sous moustiquaire imprégnée",
+      "utiliser la moustiquaire"
+    ]
+  },
+  {
+    "term_en": "Counsel on medication adherence",
+    "term_fr": "Conseiller sur l'observance thérapeutique",
+    "synonyms_en": [
+      "explain how to take drugs regularly",
+      "drug compliance advice"
+    ],
+    "synonyms_fr": [
+      "conseiller de bien prendre les médicaments",
+      "respecter le traitement"
+    ]
+  },
+  {
+    "term_en": "Daily weight measurement",
+    "term_fr": "Pesée quotidienne",
+    "synonyms_en": [
+      "check weight every day",
+      "daily weight"
+    ],
+    "synonyms_fr": [
+      "peser tous les jours",
+      "surveillance du poids"
+    ]
+  },
+  {
+    "term_en": "Defibrillate cardiac rhythm",
+    "term_fr": "Défibrillation cardiaque",
+    "synonyms_en": [
+      "give electric shock to heart"
+    ],
+    "synonyms_fr": [
+      "choquer le cœur",
+      "choc électrique externe"
+    ]
+  },
+  {
+    "term_en": "Dermatology referral",
+    "term_fr": "Référer en dermatologie",
+    "synonyms_en": [
+      "send to skin doctor",
+      "see a dermatologist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le dermatologue",
+      "référence en dermatologie"
+    ]
+  },
+  {
+    "term_en": "Dietary consultation",
+    "term_fr": "Consultation diététique",
+    "synonyms_en": [
+      "see a nutritionist",
+      "food advice session"
+    ],
+    "synonyms_fr": [
+      "conseil nutritionnel",
+      "voir le diététicien"
+    ]
+  },
+  {
+    "term_en": "Discharge home",
+    "term_fr": "Autoriser la sortie de l'hôpital",
+    "synonyms_en": [
+      "discharge from hospital",
+      "go home"
+    ],
+    "synonyms_fr": [
+      "signer la sortie",
+      "rentrer à la maison",
+      "libérer le malade"
+    ]
+  },
+  {
+    "term_en": "Discharge with oral medications",
+    "term_fr": "Sortie avec traitement par voie orale",
+    "synonyms_en": [
+      "go home with tablets",
+      "discharge prescriptions"
+    ],
+    "synonyms_fr": [
+      "libérer avec les comprimés à prendre",
+      "ordonnance de sortie"
+    ]
+  },
+  {
+    "term_en": "Discontinue intravenous fluids",
+    "term_fr": "Arrêter la perfusion intraveineuse",
+    "synonyms_en": [
+      "stop the drip",
+      "remove IV line"
+    ],
+    "synonyms_fr": [
+      "enlever la perfusion",
+      "arrêter le sérum"
+    ]
+  },
+  {
+    "term_en": "Ear syringing",
+    "term_fr": "Lavage d'oreille",
+    "synonyms_en": [
+      "ear wax removal",
+      "clean ear with water pump"
+    ],
+    "synonyms_fr": [
+      "enlever le bouchon de cérumen",
+      "laver l'oreille"
+    ]
+  },
+  {
+    "term_en": "Echocardiography",
+    "term_fr": "Échocardiographie",
+    "synonyms_en": [
+      "heart scan",
+      "heart ultrasound"
+    ],
+    "synonyms_fr": [
+      "échographie du cœur",
+      "écho cardiaque"
+    ]
+  },
+  {
+    "term_en": "Electrocardiogram",
+    "term_fr": "Électrocardiogramme",
+    "synonyms_en": [
+      "ECG",
+      "EKG",
+      "heart trace"
+    ],
+    "synonyms_fr": [
+      "ECG",
+      "tracé du cœur",
+      "électrocardiogramme"
+    ]
+  },
+  {
+    "term_en": "Elevate affected limb",
+    "term_fr": "Surélever le membre atteint",
+    "synonyms_en": [
+      "lift the leg up",
+      "raise the swollen arm"
+    ],
+    "synonyms_fr": [
+      "soulever le pied",
+      "surélever le bras gonflé"
+    ]
+  },
+  {
+    "term_en": "Emergency caesarean section",
+    "term_fr": "Césarienne en urgence",
+    "synonyms_en": [
+      "urgent C-section",
+      "emergency belly operation for delivery"
+    ],
+    "synonyms_fr": [
+      "césarienne d'urgence",
+      "opérer le ventre pour sortir l'enfant vite"
+    ]
+  },
+  {
+    "term_en": "Encourage fluid intake",
+    "term_fr": "Encourager l'apport liquidien",
+    "synonyms_en": [
+      "drink plenty of water",
+      "push oral fluids"
+    ],
+    "synonyms_fr": [
+      "faire boire beaucoup d'eau",
+      "boire beaucoup de liquides"
+    ]
+  },
+  {
+    "term_en": "Endocrinology referral",
+    "term_fr": "Référer en endocrinologie",
+    "synonyms_en": [
+      "send to diabetes specialist",
+      "see hormone doctor"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le diabétologue",
+      "référence en endocrinologie"
+    ]
+  },
+  {
+    "term_en": "Endotracheal intubation",
+    "term_fr": "Intubation endotrachéale",
+    "synonyms_en": [
+      "put breathing tube in throat",
+      "intubate"
+    ],
+    "synonyms_fr": [
+      "intuber",
+      "mettre le tuyau dans la gorge pour respirer"
+    ]
+  },
+  {
+    "term_en": "ENT surgery referral",
+    "term_fr": "Référer en chirurgie ORL",
+    "synonyms_en": [
+      "send to ear, nose, throat doctor"
+    ],
+    "synonyms_fr": [
+      "envoyer chez l'ORL",
+      "consultation spécialiste oreille-nez-gorge"
+    ]
+  },
+  {
+    "term_en": "Episiotomy repair",
+    "term_fr": "Suture d'épisiotomie",
+    "synonyms_en": [
+      "stitch tear from childbirth",
+      "repair perineal cut"
+    ],
+    "synonyms_fr": [
+      "coudre la déchirure d'accouchement",
+      "suturer l'épisiotomie"
+    ]
+  },
+  {
+    "term_en": "Erythrocyte sedimentation rate",
+    "term_fr": "Vitesse de sédimentation globulaire",
+    "synonyms_en": [
+      "ESR",
+      "inflammation blood test"
+    ],
+    "synonyms_fr": [
+      "vitesse de sédimentation",
+      "VS",
+      "test d'inflammation"
+    ]
+  },
+  {
+    "term_en": "Evacuation of retained products of conception",
+    "term_fr": "Évacuation utérine pour rétention placentaire",
+    "synonyms_en": [
+      "curettage",
+      "cleaning womb after miscarriage",
+      "D and C"
+    ],
+    "synonyms_fr": [
+      "curettage utérin",
+      "curage",
+      "nettoyer le ventre après fausse couche"
+    ]
+  },
+  {
+    "term_en": "External fixation of fracture",
+    "term_fr": "Fixation externe de fracture",
+    "synonyms_en": [
+      "put pins outside bone",
+      "external fixator"
+    ],
+    "synonyms_fr": [
+      "poser un fixateur externe",
+      "mettre les ferrures sur l'os"
+    ]
+  },
+  {
+    "term_en": "Eye swabs for microscopy",
+    "term_fr": "Prélèvement conjonctival pour examen direct",
+    "synonyms_en": [
+      "eye discharge test",
+      "swab eye liquid"
+    ],
+    "synonyms_fr": [
+      "prélèvement des yeux",
+      "frotter le pus de l'œil pour analyser"
+    ]
+  },
+  {
+    "term_en": "Fast for 8 hours",
+    "term_fr": "Rester à jeun pendant 8 heures",
+    "synonyms_en": [
+      "do not eat or drink for eight hours",
+      "NPO for 8 hours"
+    ],
+    "synonyms_fr": [
+      "ne rien manger ni boire pendant 8 heures",
+      "à jeun"
+    ]
+  },
+  {
+    "term_en": "Fasting blood glucose test",
+    "term_fr": "Dosage de la glycémie à jeun",
+    "synonyms_en": [
+      "morning sugar test",
+      "fasting blood sugar"
+    ],
+    "synonyms_fr": [
+      "glycémie à jeun",
+      "test de sucre le matin sans manger"
+    ]
+  },
+  {
+    "term_en": "Fecal occult blood test",
+    "term_fr": "Recherche de sang occulte dans les selles",
+    "synonyms_en": [
+      "stool test for hidden blood",
+      "FOBT"
+    ],
+    "synonyms_fr": [
+      "sang invisible dans les selles",
+      "recherche de sang dans le caca"
+    ]
+  },
+  {
+    "term_en": "Fetal heart rate monitoring by Doppler",
+    "term_fr": "Surveillance du rythme cardiaque fœtal par Doppler",
+    "synonyms_en": [
+      "listen to baby's heartbeat",
+      "fetal doppler sound"
+    ],
+    "synonyms_fr": [
+      "écouter le cœur du bébé",
+      "bruits du cœur fœtal au Doppler"
+    ]
+  },
+  {
+    "term_en": "Fetal heart rate monitoring by Pinard stethoscope",
+    "term_fr": "Auscultation du cœur fœtal au stéthoscope de Pinard",
+    "synonyms_en": [
+      "listen to baby heartbeat with horn tool"
+    ],
+    "synonyms_fr": [
+      "écouter le cœur du bébé au Pinard",
+      "cornet de Pinard"
+    ]
+  },
+  {
+    "term_en": "Fluid restriction management",
+    "term_fr": "Restriction hydrique",
+    "synonyms_en": [
+      "limit drinking water",
+      "fluid restriction"
+    ],
+    "synonyms_fr": [
+      "diminuer l'eau qu'on boit",
+      "limiter les boissons"
+    ]
+  },
+  {
+    "term_en": "Fundoscopy eye examination",
+    "term_fr": "Examen du fond d'œil",
+    "synonyms_en": [
+      "look inside the eye back",
+      "fundus check"
+    ],
+    "synonyms_fr": [
+      "fond d'œil",
+      "regarder derrière l'œil"
+    ]
+  },
+  {
+    "term_en": "Gastroenterology referral",
+    "term_fr": "Référer en gastro-entérologie",
+    "synonyms_en": [
+      "send to stomach doctor",
+      "see a liver specialist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le gastro-entérologue",
+      "référence en gastro"
+    ]
+  },
+  {
+    "term_en": "General surgery referral",
+    "term_fr": "Référer en chirurgie générale",
+    "synonyms_en": [
+      "send to surgeon",
+      "consult surgical department"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le chirurgien",
+      "référence en chirurgie"
+    ]
+  },
+  {
+    "term_en": "GeneXpert sputum test for TB",
+    "term_fr": "Test GeneXpert sur crachat",
+    "synonyms_en": [
+      "rapid DNA test for tuberculosis",
+      "GeneXpert TB"
+    ],
+    "synonyms_fr": [
+      "test moléculaire tuberculose",
+      "GeneXpert crachats"
+    ]
+  },
+  {
+    "term_en": "Glycated haemoglobin test",
+    "term_fr": "Dosage de l'hémoglobine glyquée",
+    "synonyms_en": [
+      "HbA1c test",
+      "three month sugar average test"
+    ],
+    "synonyms_fr": [
+      "HbA1c",
+      "contrôle de sucre sur trois mois"
+    ]
+  },
+  {
+    "term_en": "Gynecology referral",
+    "term_fr": "Référer en gynécologie",
+    "synonyms_en": [
+      "send to women's doctor",
+      "see a gynecologist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le gynécologue",
+      "consultation gynécologique"
+    ]
+  },
+  {
+    "term_en": "Haemodialysis session",
+    "term_fr": "Séance d'hémodialyse",
+    "synonyms_en": [
+      "kidney machine treatment",
+      "dialysis"
+    ],
+    "synonyms_fr": [
+      "séance de dialyse",
+      "laver le sang par machine"
+    ]
+  },
+  {
+    "term_en": "Hepatitis B surface antigen test",
+    "term_fr": "Recherche de l'antigène HBs",
+    "synonyms_en": [
+      "HBsAg test",
+      "hep B screening test"
+    ],
+    "synonyms_fr": [
+      "test hépatite B",
+      "Ag HBs",
+      "dépistage de la jaunisse B"
+    ]
+  },
+  {
+    "term_en": "Hepatitis C antibody test",
+    "term_fr": "Recherche d'anticorps anti-VHC",
+    "synonyms_en": [
+      "anti-HCV test",
+      "hep C blood test"
+    ],
+    "synonyms_fr": [
+      "test hépatite C",
+      "sérologie VHC"
+    ]
+  },
+  {
+    "term_en": "High-vaginal swab for microscopy",
+    "term_fr": "Prélèvement vaginal pour examen direct",
+    "synonyms_en": [
+      "HVS test",
+      "vaginal discharge swab test"
+    ],
+    "synonyms_fr": [
+      "prélèvement des pertes blanches",
+      "frotter le vagin pour analyser"
+    ]
+  },
+  {
+    "term_en": "HIV viral load test",
+    "term_fr": "Dosage de la charge virale du VIH",
+    "synonyms_en": [
+      "HIV virus count",
+      "viral load"
+    ],
+    "synonyms_fr": [
+      "charge virale VIH",
+      "quantité de virus dans le sang"
+    ]
+  },
+  {
+    "term_en": "Immobilize with plaster of Paris cast",
+    "term_fr": "Immobilisation par plâtre",
+    "synonyms_en": [
+      "put plaster",
+      "POP cast application",
+      "put cement on broken leg"
+    ],
+    "synonyms_fr": [
+      "mettre le plâtre",
+      "plâtrer le membre"
+    ]
+  },
+  {
+    "term_en": "Incision and drainage of abscess",
+    "term_fr": "Incision et drainage d'un abcès",
+    "synonyms_en": [
+      "cut and drain boil",
+      "open pocket of pus"
+    ],
+    "synonyms_fr": [
+      "percer l'abcès",
+      "ouvrir pour faire sortir le pus",
+      "incision de collection"
+    ]
+  },
+  {
+    "term_en": "Induction of labor",
+    "term_fr": "Déclenchement artificiel du travail",
+    "synonyms_en": [
+      "provoke labor contractions",
+      "force delivery birth"
+    ],
+    "synonyms_fr": [
+      "déclencher l'accouchement",
+      "provoquer les contractions par médicament"
+    ]
+  },
+  {
+    "term_en": "Infectious diseases referral",
+    "term_fr": "Référer en maladies infectieuses",
+    "synonyms_en": [
+      "send to infection specialist",
+      "HIV clinic referral"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le spécialiste des infections",
+      "référence en maladies infectieuses"
+    ]
+  },
+  {
+    "term_en": "Initiate anti-tuberculosis therapy",
+    "term_fr": "Instaurer un traitement antituberculeux",
+    "synonyms_en": [
+      "start TB drugs",
+      "begin tuberculosis regimen"
+    ],
+    "synonyms_fr": [
+      "commencer les médicaments de la tuberculose",
+      "mise sous antituberculeux"
+    ]
+  },
+  {
+    "term_en": "Initiate antiretroviral therapy",
+    "term_fr": "Instaurer un traitement antirétroviral",
+    "synonyms_en": [
+      "start HIV drugs",
+      "begin ARV treatment"
+    ],
+    "synonyms_fr": [
+      "commencer les ARV",
+      "mise sous traitement antirétroviral"
+    ]
+  },
+  {
+    "term_en": "Initiate intensive phase insulin therapy",
+    "term_fr": "Instaurer une insulinothérapie intensive",
+    "synonyms_en": [
+      "start insulin injections",
+      "put on insulin protocol"
+    ],
+    "synonyms_fr": [
+      "commencer les injections d'insuline",
+      "mise sous insuline"
+    ]
+  },
+  {
+    "term_en": "Insert nasogastric tube",
+    "term_fr": "Poser une sonde naso-gastrique",
+    "synonyms_en": [
+      "put feeding pipe in nose",
+      "NG tube insertion"
+    ],
+    "synonyms_fr": [
+      "mettre la sonde dans le nez",
+      "tuyau d'alimentation du nez à l'estomac"
+    ]
+  },
+  {
+    "term_en": "Intercostal chest drain insertion",
+    "term_fr": "Pose d'un drain pleural intercostal",
+    "synonyms_en": [
+      "chest tube placement",
+      "drain fluid or air from ribs"
+    ],
+    "synonyms_fr": [
+      "placer un drain dans la poitrine",
+      "drainage pleural"
+    ]
+  },
+  {
+    "term_en": "Intravenous cannulation",
+    "term_fr": "Pose d'une voie veineuse périphérique",
+    "synonyms_en": [
+      "put IV needle",
+      "insert drip needle",
+      "IV line placement"
+    ],
+    "synonyms_fr": [
+      "poser le cathéter dans la veine",
+      "mettre la voie veineuse"
+    ]
+  },
+  {
+    "term_en": "Isolate in tuberculosis ward",
+    "term_fr": "Isoler dans le pavillon de la tuberculose",
+    "synonyms_en": [
+      "put in TB isolation room"
+    ],
+    "synonyms_fr": [
+      "mettre en isolement tuberculose",
+      "séparer le malade qui tousse la TB"
+    ]
+  },
+  {
+    "term_en": "Kangaroo mother care training",
+    "term_fr": "Apprentissage de la méthode kangourou",
+    "synonyms_en": [
+      "skin-to-skin contact for premature baby",
+      "KMC"
+    ],
+    "synonyms_fr": [
+      "méthode kangourou",
+      "coller le prématuré sur la poitrine"
+    ]
+  },
+  {
+    "term_en": "Lipid profile blood test",
+    "term_fr": "Bilan lipidique sanguin",
+    "synonyms_en": [
+      "cholesterol test",
+      "blood fat panel"
+    ],
+    "synonyms_fr": [
+      "bilan de cholestérol",
+      "dosage des graisses dans le sang"
+    ]
+  },
+  {
+    "term_en": "Liver function tests",
+    "term_fr": "Bilan hépatique complet",
+    "synonyms_en": [
+      "LFTs",
+      "liver enzyme blood test"
+    ],
+    "synonyms_fr": [
+      "bilan du foie",
+      "transaminases et bilirubine",
+      "examens hépatiques"
+    ]
+  },
+  {
+    "term_en": "Low salt diet instruction",
+    "term_fr": "Régime hyposodé",
+    "synonyms_en": [
+      "eat less salt",
+      "hypertension diet cuts"
+    ],
+    "synonyms_fr": [
+      "manger sans sel",
+      "diminuer le sel",
+      "régime sans sel pour la tension"
+    ]
+  },
+  {
+    "term_en": "Lumbar puncture for CSF analysis",
+    "term_fr": "Ponction lombaire pour analyse du LCR",
+    "synonyms_en": [
+      "spinal tap",
+      "draw water from backbone"
+    ],
+    "synonyms_fr": [
+      "ponction lombaire",
+      "PL",
+      "tirer le liquide du dos pour la méningite"
+    ]
+  },
+  {
+    "term_en": "Malaria rapid diagnostic test",
+    "term_fr": "Test de diagnostic rapide du paludisme",
+    "synonyms_en": [
+      "malaria RDT",
+      "finger prick malaria test"
+    ],
+    "synonyms_fr": [
+      "TDR palu",
+      "test rapide du paludisme"
+    ]
+  },
+  {
+    "term_en": "Malaria thick and thin blood film",
+    "term_fr": "Frottis sanguin et goutte épaisse pour paludisme",
+    "synonyms_en": [
+      "GE",
+      "microscope test for malaria",
+      "blood film for parasites"
+    ],
+    "synonyms_fr": [
+      "goutte épaisse",
+      "GE",
+      "recherche de palu au microscope"
+    ]
+  },
+  {
+    "term_en": "Manual vacuum aspiration of uterus",
+    "term_fr": "Aspiration manuelle intra-utérine",
+    "synonyms_en": [
+      "MVA",
+      "womb cleaning with syringe pump"
+    ],
+    "synonyms_fr": [
+      "AMIU",
+      "aspiration après avortement incomplet"
+    ]
+  },
+  {
+    "term_en": "Monitor fluid balance intake and output",
+    "term_fr": "Surveillance des entrées et sorties de liquides",
+    "synonyms_en": [
+      "fluid balance chart",
+      "measure urine volume and drinks"
+    ],
+    "synonyms_fr": [
+      "fiche de diurèse",
+      "calculer ce qu'il boit et ce qu'il pisse"
+    ]
+  },
+  {
+    "term_en": "Monitor neurological status via Glasgow Coma Scale",
+    "term_fr": "Surveillance neurologique par le score de Glasgow",
+    "synonyms_en": [
+      "coma scale checks",
+      "GCS monitoring"
+    ],
+    "synonyms_fr": [
+      "surveillance du coma",
+      "score de Glasgow",
+      "vérifier le réveil du malade"
+    ]
+  },
+  {
+    "term_en": "Monitor vital signs every 4 hours",
+    "term_fr": "Prendre les constantes toutes les 4 heures",
+    "synonyms_en": [
+      "check pressure and pulse four-hourly"
+    ],
+    "synonyms_fr": [
+      "vérifier la tension et la température toutes les 4 heures",
+      "constantes toutes les 4h"
+    ]
+  },
+  {
+    "term_en": "Monitor vital signs hourly",
+    "term_fr": "Prendre les constantes toutes les heures",
+    "synonyms_en": [
+      "hourly vital checks",
+      "pressure every hour"
+    ],
+    "synonyms_fr": [
+      "surveillance horaire de la tension et du pouls",
+      "constantes chaque heure"
+    ]
+  },
+  {
+    "term_en": "Nephrology referral",
+    "term_fr": "Référer en néphrologie",
+    "synonyms_en": [
+      "send to kidney specialist",
+      "see a renal doctor"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le néphrologue",
+      "référence en néphrologie"
+    ]
+  },
+  {
+    "term_en": "Neurology referral",
+    "term_fr": "Référer en neurologie",
+    "synonyms_en": [
+      "send to brain doctor",
+      "neurologist evaluation"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le neurologue",
+      "référence en neurologie"
+    ]
+  },
+  {
+    "term_en": "Nipple swab for culture",
+    "term_fr": "Prélèvement d'écoulement mamelonnaire pour culture",
+    "synonyms_en": [
+      "breast discharge test"
+    ],
+    "synonyms_fr": [
+      "analyser le liquide qui sort du sein",
+      "prélèvement mamelonnaire"
+    ]
+  },
+  {
+    "term_en": "No added sugar diet instruction",
+    "term_fr": "Régime diabétique sans sucre rapide",
+    "synonyms_en": [
+      "diabetic diet cuts",
+      "stop eating sugar"
+    ],
+    "synonyms_fr": [
+      "couper le sucre",
+      "régime sans sucre pour le diabète"
+    ]
+  },
+  {
+    "term_en": "Obstetrics surgery referral",
+    "term_fr": "Référer en gynécologie-obstétrique",
+    "synonyms_en": [
+      "send to maternity specialist",
+      "consult mid-wife master"
+    ],
+    "synonyms_fr": [
+      "référer au gynéco-obstétricien",
+      "envoyer en bloc de maternité"
+    ]
+  },
+  {
+    "term_en": "Ophthalmology referral",
+    "term_fr": "Référer en ophtalmologie",
+    "synonyms_en": [
+      "send to eye doctor",
+      "see an oculist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez l'ophtalmologue",
+      "consultation des yeux"
+    ]
+  },
+  {
+    "term_en": "Orthopedic surgery referral",
+    "term_fr": "Référer en chirurgie orthopédique",
+    "synonyms_en": [
+      "send to bone doctor",
+      "fracture specialist referral"
+    ],
+    "synonyms_fr": [
+      "envoyer chez l'orthopédiste",
+      "chirurgie des os cassés"
+    ]
+  },
+  {
+    "term_en": "Oxygen therapy via face mask",
+    "term_fr": "Oxygénothérapie au masque facial",
+    "synonyms_en": [
+      "put oxygen mask",
+      "give oxygen by mask"
+    ],
+    "synonyms_fr": [
+      "mettre le masque à oxygène",
+      "donner l'oxygène au masque"
+    ]
+  },
+  {
+    "term_en": "Oxygen therapy via nasal cannulae",
+    "term_fr": "Oxygénothérapie par lunettes nasales",
+    "synonyms_en": [
+      "put breathing prongs in nose",
+      "give oxygen by nasal tubes"
+    ],
+    "synonyms_fr": [
+      "mettre les lunettes d'oxygène",
+      "donner l'oxygène dans le nez"
+    ]
+  },
+  {
+    "term_en": "Packed red blood cell transfusion",
+    "term_fr": "Transfusion de culot globulaire",
+    "synonyms_en": [
+      "give blood cells",
+      "blood transfusion for anemia"
+    ],
+    "synonyms_fr": [
+      "transfuser du sang",
+      "mettre les poches de sang"
+    ]
+  },
+  {
+    "term_en": "Paracentesis for abdominal decompression",
+    "term_fr": "Ponction d'ascite évacuatrice",
+    "synonyms_en": [
+      "drain belly fluid",
+      "empty water from stomach"
+    ],
+    "synonyms_fr": [
+      "vider le liquide du ventre",
+      "grande ponction d'ascite pour soulager"
+    ]
+  },
+  {
+    "term_en": "Partner notification and treatment for STI",
+    "term_fr": "Notification et traitement du partenaire pour IST",
+    "synonyms_en": [
+      "bring husband or wife for infection treatment"
+    ],
+    "synonyms_fr": [
+      "soigner aussi le partenaire sexuel",
+      "traitement du conjoint pour IST"
+    ]
+  },
+  {
+    "term_en": "Pediatrics referral",
+    "term_fr": "Référer en pédiatrie",
+    "synonyms_en": [
+      "send to children's doctor",
+      "consult pediatrician"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le pédiatre",
+      "référence en pédiatrie"
+    ]
+  },
+  {
+    "term_en": "Pelvic ultrasound scan",
+    "term_fr": "Échographie pelvienne",
+    "synonyms_en": [
+      "womb ultrasound",
+      "lower belly scan"
+    ],
+    "synonyms_fr": [
+      "échographie du bas-ventre",
+      "écho pelvienne"
+    ]
+  },
+  {
+    "term_en": "Perform episiotomy",
+    "term_fr": "Pratiquer une épisiotomie",
+    "synonyms_en": [
+      "cut perineum during birth",
+      "make birth outlet wider"
+    ],
+    "synonyms_fr": [
+      "couper le bas pour faire sortir le bébé",
+      "faire une épisiotomie"
+    ]
+  },
+  {
+    "term_en": "Peripheral blood film for morphology",
+    "term_fr": "Frottis de sang périphérique pour cytologie",
+    "synonyms_en": [
+      "look at blood cells shapes under microscope"
+    ],
+    "synonyms_fr": [
+      "frottis sanguin pour voir la forme des cellules",
+      "analyse des hématies"
+    ]
+  },
+  {
+    "term_en": "Plaster of Paris cast removal",
+    "term_fr": "Ablation de plâtre",
+    "synonyms_en": [
+      "cut the plaster",
+      "remove cement cast from leg"
+    ],
+    "synonyms_fr": [
+      "enlever le plâtre",
+      "déplâtrer la jambe"
+    ]
+  },
+  {
+    "term_en": "Plaster splint immobilization",
+    "term_fr": "Immobilisation par attelle plâtrée",
+    "synonyms_en": [
+      "put a plaster half-slab",
+      "temporary leg splint"
+    ],
+    "synonyms_fr": [
+      "mettre une attelle de plâtre",
+      "immobilisation temporaire"
+    ]
+  },
+  {
+    "term_en": "Pleural fluid aspiration for analysis",
+    "term_fr": "Ponction pleurale exploratrice",
+    "synonyms_en": [
+      "lung fluid tap",
+      "draw water from chest side"
+    ],
+    "synonyms_fr": [
+      "ponctionner le liquide de la poitrine",
+      "tirer l'eau du poumon pour analyser"
+    ]
+  },
+  {
+    "term_en": "Post-exposure prophylaxis for HIV",
+    "term_fr": "Prophylaxie post-exposition au VIH",
+    "synonyms_en": [
+      "PEP",
+      "emergency HIV prevention drugs after prick or assault"
+    ],
+    "synonyms_fr": [
+      "TPE",
+      "traitement d'urgence après piqûre de sang ou viol"
+    ]
+  },
+  {
+    "term_en": "Post-partum family planning counseling",
+    "term_fr": "Conseil en planification familiale du post-partum",
+    "synonyms_en": [
+      "birth control talk after delivery"
+    ],
+    "synonyms_fr": [
+      "conseiller sur la contraception après l'accouchement",
+      "planning familial"
+    ]
+  },
+  {
+    "term_en": "Potassium serum test",
+    "term_fr": "Dosage du potassium sérique",
+    "synonyms_en": [
+      "blood potassium level",
+      "kalemia"
+    ],
+    "synonyms_fr": [
+      "kaliémie",
+      "mesure du potassium dans le sang"
+    ]
+  },
+  {
+    "term_en": "Pregnancy test, urine",
+    "term_fr": "Test de grossesse urinaire",
+    "synonyms_en": [
+      "urine pregnancy strip test"
+    ],
+    "synonyms_fr": [
+      "test de grossesse dans les urines"
+    ]
+  },
+  {
+    "term_en": "Prepare patient for emergency operating theatre",
+    "term_fr": "Préparer le malade pour le bloc opératoire en urgence",
+    "synonyms_en": [
+      "get ready for operation now",
+      "send to theater"
+    ],
+    "synonyms_fr": [
+      "préparer pour le bloc d'urgence",
+      "habiller pour l'opération"
+    ]
+  },
+  {
+    "term_en": "Prostate specific antigen test",
+    "term_fr": "Dosage de l'antigène prostatique spécifique",
+    "synonyms_en": [
+      "PSA blood test",
+      "prostate blood screening"
+    ],
+    "synonyms_fr": [
+      "dosage du PSA",
+      "examen de sang pour la prostate"
+    ]
+  },
+  {
+    "term_en": "Psychiatry referral",
+    "term_fr": "Référer en psychiatrie",
+    "synonyms_en": [
+      "send to mental health doctor",
+      "see a psychiatrist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le psychiatre",
+      "consultation en santé mentale"
+    ]
+  },
+  {
+    "term_en": "Pulse oximetry monitoring",
+    "term_fr": "Surveillance par oxymétrie de pouls",
+    "synonyms_en": [
+      "check oxygen saturation",
+      "finger machine test for breathing"
+    ],
+    "synonyms_fr": [
+      "mesure de la saturation en oxygène",
+      "suivi oxymètre"
+    ]
+  },
+  {
+    "term_en": "Radical debridement of necrotizing fasciitis wound",
+    "term_fr": "Parage large de plaie de fasciite nécrosante",
+    "synonyms_en": [
+      "cut out rotted flesh from deep skin infection"
+    ],
+    "synonyms_fr": [
+      "nettoyer la chair pourrie au bloc",
+      "parage chirurgical intensif"
+    ]
+  },
+  {
+    "term_en": "Random blood glucose test",
+    "term_fr": "Dosage de la glycémie capillaire aléatoire",
+    "synonyms_en": [
+      "finger prick sugar check anytime"
+    ],
+    "synonyms_fr": [
+      "glycémie au hasard",
+      "mesure rapide du sucre au doigt"
+    ]
+  },
+  {
+    "term_en": "Refer to district health center for follow-up",
+    "term_fr": "Référer au centre de santé de district pour suivi",
+    "synonyms_en": [
+      "send to local dispensary"
+    ],
+    "synonyms_fr": [
+      "renvoyer au CSI local pour pansement ou suite",
+      "suivi au centre de santé"
+    ]
+  },
+  {
+    "term_en": "Refer to regional hospital for specialist management",
+    "term_fr": "Référer à l'hôpital régional pour prise en charge spécialisée",
+    "synonyms_en": [
+      "transfer to higher hospital",
+      "send to big town hospital"
+    ],
+    "synonyms_fr": [
+      "évacuer vers l'hôpital régional",
+      "référer au niveau supérieur"
+    ]
+  },
+  {
+    "term_en": "Reposition and splint dislocated joint",
+    "term_fr": "Réduire et immobiliser une luxation",
+    "synonyms_en": [
+      "pull out-of-joint bone back into place",
+      "fix dislocation"
+    ],
+    "synonyms_fr": [
+      "remettre l'os déboîté en place",
+      "réduction de luxation"
+    ]
+  },
+  {
+    "term_en": "Request abdominal computed tomography scan",
+    "term_fr": "Demander un scanner abdomino-pelvien",
+    "synonyms_en": [
+      "belly CT scan",
+      "stomach scanner machine picture"
+    ],
+    "synonyms_fr": [
+      "scanner du ventre",
+      "TDM abdominale"
+    ]
+  },
+  {
+    "term_en": "Request emergency blood transfusion clearance",
+    "term_fr": "Demander l'attribution de sang en urgence",
+    "synonyms_en": [
+      "order blood bags from bank quickly"
+    ],
+    "synonyms_fr": [
+      "commander les poches de sang d'urgence",
+      "demande de sang de sauvetage"
+    ]
+  },
+  {
+    "term_en": "Request head computed tomography scan",
+    "term_fr": "Demander un scanner cérébral",
+    "synonyms_en": [
+      "brain CT scan",
+      "head scanner picture"
+    ],
+    "synonyms_fr": [
+      "scanner de la tête",
+      "TDM cérébrale"
+    ]
+  },
+  {
+    "term_en": "Request pelvic X-ray",
+    "term_fr": "Radiographie du bassin",
+    "synonyms_en": [
+      "hip bone X-ray"
+    ],
+    "synonyms_fr": [
+      "radio du bassin"
+    ]
+  },
+  {
+    "term_en": "Request standard femur X-ray",
+    "term_fr": "Radiographie du fémur",
+    "synonyms_en": [
+      "thigh bone picture"
+    ],
+    "synonyms_fr": [
+      "radio de la cuisse",
+      "radiographie du fémur"
+    ]
+  },
+  {
+    "term_en": "Request urgent obstetric ultrasound",
+    "term_fr": "Demander une échographie obstétricale en urgence",
+    "synonyms_en": [
+      "urgent pregnancy scan"
+    ],
+    "synonyms_fr": [
+      "échographie de grossesse d'urgence",
+      "écho fœtale urgente"
+    ]
+  },
+  {
+    "term_en": "Resuture disrupted surgical wound",
+    "term_fr": "Reprendre les sutures d'une plaie opératoire lâchée",
+    "synonyms_en": [
+      "re-stitch open operation cut"
+    ],
+    "synonyms_fr": [
+      "recoudre la plaie opératoire ouverte",
+      "reprise de cicatrice lâche"
+    ]
+  },
+  {
+    "term_en": "Review in cardiology clinic in 1 month",
+    "term_fr": "Revoir en consultation de cardiologie dans 1 mois",
+    "synonyms_en": [
+      "heart doctor review in four weeks"
+    ],
+    "synonyms_fr": [
+      "rendez-vous cardiologue dans un mois"
+    ]
+  },
+  {
+    "term_en": "Review in general outpatient clinic in 1 week",
+    "term_fr": "Revoir en consultation externe générale dans 1 semaine",
+    "synonyms_en": [
+      "come back for checkup in seven days"
+    ],
+    "synonyms_fr": [
+      "revenir au contrôle dans une semaine",
+      "rendez-vous dans 7 jours"
+    ]
+  },
+  {
+    "term_en": "Review in pediatric clinic in 2 weeks",
+    "term_fr": "Revoir l'enfant en consultation externe de pédiatrie dans 2 semaines",
+    "synonyms_en": [
+      "bring child back in fourteen days"
+    ],
+    "synonyms_fr": [
+      "revenir avec l'enfant au contrôle dans deux semaines"
+    ]
+  },
+  {
+    "term_en": "Review in surgical clinic in 2 weeks",
+    "term_fr": "Revoir en consultation de chirurgie dans 2 semaines",
+    "synonyms_en": [
+      "surgical follow-up in fourteen days"
+    ],
+    "synonyms_fr": [
+      "rendez-vous chez le chirurgien dans deux semaines"
+    ]
+  },
+  {
+    "term_en": "Rheumatology referral",
+    "term_fr": "Référer en rhumatologie",
+    "synonyms_en": [
+      "send to joint and bone pain specialist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le rhumatologue",
+      "référence en rhumatologie pour maux d'os"
+    ]
+  },
+  {
+    "term_en": "Routine vaccination card review",
+    "term_fr": "Contrôle du carnet de vaccination de routine",
+    "synonyms_en": [
+      "check baby vaccine book"
+    ],
+    "synonyms_fr": [
+      "vérifier les vaccins de l'enfant",
+      "contrôle du calendrier vaccinal"
+    ]
+  },
+  {
+    "term_en": "Scheduled caesarean section",
+    "term_fr": "Césarienne programmée",
+    "synonyms_en": [
+      "planned C-section",
+      "booked belly birth operation"
+    ],
+    "synonyms_fr": [
+      "césarienne programmée",
+      "opération d'accouchement prévue à l'avance"
+    ]
+  },
+  {
+    "term_en": "Screen for malnutrition via mid-upper arm circumference",
+    "term_fr": "Dépister la malnutrition par la mesure du périmètre brachial",
+    "synonyms_en": [
+      "measure upper arm size with color tape",
+      "MUAC check"
+    ],
+    "synonyms_fr": [
+      "mesurer le bras de l'enfant",
+      "mesure du PB avec le ruban"
+    ]
+  },
+  {
+    "term_en": "Screen siblings for malnutrition",
+    "term_fr": "Dépister la malnutrition chez les frères et sœurs",
+    "synonyms_en": [
+      "check other children at home for wasting"
+    ],
+    "synonyms_fr": [
+      "amener les autres enfants de la maison pour vérifier le poids"
+    ]
+  },
+  {
+    "term_en": "Skin biopsy preparation",
+    "term_fr": "Prélèvement de biopsie cutanée",
+    "synonyms_en": [
+      "cut skin piece for lab testing"
+    ],
+    "synonyms_fr": [
+      "biopsie de peau",
+      "couper un morceau de bouton pour analyser"
+    ]
+  },
+  {
+    "term_en": "Skin scraping for fungal microscopy",
+    "term_fr": "Grattage cutané pour examen mycologique direct",
+    "synonyms_en": [
+      "scrape skin ringworm skin sample"
+    ],
+    "synonyms_fr": [
+      "gratter les croûtes de la peau pour voir le champignon",
+      "prélèvement de dartre"
+    ]
+  },
+  {
+    "term_en": "Sodium serum test",
+    "term_fr": "Dosage du sodium sérique",
+    "synonyms_en": [
+      "blood salt level",
+      "natremia test"
+    ],
+    "synonyms_fr": [
+      "natrémie",
+      "mesure du sel dans le sang"
+    ]
+  },
+  {
+    "term_en": "Sputum smear for acid-fast bacilli",
+    "term_fr": "Recherche de bacilles acido-alcoolo-résistants dans les crachats",
+    "synonyms_en": [
+      "AFB sputum smear",
+      "cough spit test for TB"
+    ],
+    "synonyms_fr": [
+      "recherche de BAAR",
+      "crachats pour la tuberculose au microscope",
+      "examen des crachats"
+    ]
+  },
+  {
+    "term_en": "Stool microscopy for ova and parasites",
+    "term_fr": "Examen parasitologique des selles",
+    "synonyms_en": [
+      "caca test for worms",
+      "stool test for parasites"
+    ],
+    "synonyms_fr": [
+      "analyse des selles",
+      "recherche de vers dans le caca"
+    ]
+  },
+  {
+    "term_en": "Stop oral intake entirely",
+    "term_fr": "Mettre à jeun strict",
+    "synonyms_en": [
+      "nothing by mouth",
+      "NPO status"
+    ],
+    "synonyms_fr": [
+      "ne rien donner par la bouche",
+      "zéro alimentation orale",
+      "à jeun strict"
+    ]
+  },
+  {
+    "term_en": "Strict bed rest management",
+    "term_fr": "Repos strict au lit",
+    "synonyms_en": [
+      "stay flat on bed",
+      "no walking out of bed"
+    ],
+    "synonyms_fr": [
+      "rester couché au lit sans bouger",
+      "alitement strict"
+    ]
+  },
+  {
+    "term_en": "Syphilis rapid serology test",
+    "term_fr": "Test sérologique rapide de la syphilis",
+    "synonyms_en": [
+      "VDRL RPR screening",
+      "blood test for syphilis bad infection"
+    ],
+    "synonyms_fr": [
+      "test rapide syphilis",
+      "TPHA VDRL",
+      "sérologie syphilis"
+    ]
+  },
+  {
+    "term_en": "Tetanus toxoid vaccination booster",
+    "term_fr": "Rappel de vaccin antitétanique",
+    "synonyms_en": [
+      "tetanus injection for cuts",
+      "anti-tetanus shot"
+    ],
+    "synonyms_fr": [
+      "vaccin contre le tétanos",
+      "sérum antitétanique de rappel"
+    ]
+  },
+  {
+    "term_en": "Urethral discharge swab for microscopy",
+    "term_fr": "Prélèvement d'écoulement urétral pour examen direct",
+    "synonyms_en": [
+      "penis discharge test",
+      "swab male pus leakage"
+    ],
+    "synonyms_fr": [
+      "prélèvement de la chaude-pisse",
+      "frotter le canal de l'homme pour analyser"
+    ]
+  },
+  {
+    "term_en": "Urine dipstick analysis",
+    "term_fr": "Analyse d'urine par bandelette réactive",
+    "synonyms_en": [
+      "urine test strip",
+      "check albumin or sugar in urine with paper tape"
+    ],
+    "synonyms_fr": [
+      "test urine par bandelette",
+      "bandelette urinaire"
+    ]
+  },
+  {
+    "term_en": "Urine microscopy, culture and sensitivity",
+    "term_fr": "Examen cytobactériologique des urines",
+    "synonyms_en": [
+      "ECBU",
+      "urine lab test for germs"
+    ],
+    "synonyms_fr": [
+      "ECBU",
+      "analyse d'urine au laboratoire pour infection"
+    ]
+  },
+  {
+    "term_en": "Urology referral",
+    "term_fr": "Référer en urologie",
+    "synonyms_en": [
+      "send to prostate/bladder surgeon",
+      "see urologist"
+    ],
+    "synonyms_fr": [
+      "envoyer chez l'urologue",
+      "référence en urologie pour problème d'urine"
+    ]
+  },
+  {
+    "term_en": "Voluntary counseling and testing for HIV",
+    "term_fr": "Conseil et dépistage volontaire du VIH",
+    "synonyms_en": [
+      "VCT HIV test",
+      "check HIV status with advice"
+    ],
+    "synonyms_fr": [
+      "test VIH volontaire",
+      "CDV",
+      "dépistage du SIDA avec conseil"
+    ]
+  },
+  {
+    "term_en": "Wash skin with permethrin lotion",
+    "term_fr": "Application cutanée de lotion à la perméthrine",
+    "synonyms_en": [
+      "put scabies medicine on body skin"
+    ],
+    "synonyms_fr": [
+      "mettre le produit de la gale sur tout le corps"
+    ]
+  },
+  {
+    "term_en": "Wound dressing change",
+    "term_fr": "Réfection du pansement",
+    "synonyms_en": [
+      "clean wound and change bandage",
+      "redo dressing"
+    ],
+    "synonyms_fr": [
+      "refaire le pansement",
+      "changer les bandes de la plaie"
+    ]
+  },
+  {
+    "term_en": "Wound swab for bacteriological culture",
+    "term_fr": "Prélèvement de pus de plaie pour culture",
+    "synonyms_en": [
+      "swab wound pus for test"
+    ],
+    "synonyms_fr": [
+      "prélèvement de pus",
+      "frotter le liquide de la plaie pour analyser"
+    ]
+  },
+  {
+    "term_en": "X-ray of forearm radius and ulna",
+    "term_fr": "Radiographie de l'avant-bras",
+    "synonyms_en": [
+      "wrist and arm bone picture"
+    ],
+    "synonyms_fr": [
+      "radio de l'avant-bras"
+    ]
+  },
+  {
+    "term_en": "X-ray of humerus upper arm",
+    "term_fr": "Radiographie de l'humérus",
+    "synonyms_en": [
+      "arm bone picture"
+    ],
+    "synonyms_fr": [
+      "radio du bras",
+      "radiographie de l'humérus"
+    ]
+  },
+  {
+    "term_en": "X-ray of lower leg tibia and fibula",
+    "term_fr": "Radiographie jambe face et profil",
+    "synonyms_en": [
+      "shin bone picture"
+    ],
+    "synonyms_fr": [
+      "radio de la jambe",
+      "radiographie tibia-péroné"
+    ]
+  },
+  {
+    "term_en": "Administer intramuscular vaccination",
+    "term_fr": "Administrer un vaccin par voie intramusculaire",
+    "synonyms_en": [
+      "give vaccine shot in arm or thigh"
+    ],
+    "synonyms_fr": [
+      "faire le vaccin dans le muscle",
+      "piqûre de vaccin"
+    ]
+  },
+  {
+    "term_en": "Administer oral rehydration salts",
+    "term_fr": "Administrer des sels de réhydratation orale",
+    "synonyms_en": [
+      "give ORS drink for diarrhea",
+      "give dehydration water packets"
+    ],
+    "synonyms_fr": [
+      "donner le SRO",
+      "faire boire l'eau de réhydratation"
+    ]
+  },
+  {
+    "term_en": "Advise alcohol restriction",
+    "term_fr": "Conseiller la réduction de la consommation d'alcool",
+    "synonyms_en": [
+      "stop or cut down drinking liquor"
+    ],
+    "synonyms_fr": [
+      "diminuer l'alcool",
+      "laisser la boisson"
+    ]
+  },
+  {
+    "term_en": "Advise insecticide spraying indoors",
+    "term_fr": "Conseiller la pulvérisation d'insecticide à l'intérieur",
+    "synonyms_en": [
+      "spray house for mosquitoes"
+    ],
+    "synonyms_fr": [
+      "pulvériser la maison contre les moustiques",
+      "tuer les moustiques"
+    ]
+  },
+  {
+    "term_en": "Amputation of gangrenous limb digit",
+    "term_fr": "Amputation de l'orteil ou du doigt gangrené",
+    "synonyms_en": [
+      "cut rotted toe or finger"
+    ],
+    "synonyms_fr": [
+      "couper le doigt ou l'orteil pourri",
+      "amputation d'un doigt mort"
+    ]
+  },
+  {
+    "term_en": "Antenatal screening for gestational diabetes",
+    "term_fr": "Dépistage du diabète gestationnel",
+    "synonyms_en": [
+      "check pregnancy sugar levels"
+    ],
+    "synonyms_fr": [
+      "recherche de sucre de grossesse",
+      "dépistage diabète chez la femme enceinte"
+    ]
+  },
+  {
+    "term_en": "Anti-Hepatitis B vaccination series",
+    "term_fr": "Vaccination contre l'hépatite B",
+    "synonyms_en": [
+      "get hep B shots protection"
+    ],
+    "synonyms_fr": [
+      "faire le vaccin de l'hépatite B"
+    ]
+  },
+  {
+    "term_en": "Antiretroviral treatment counseling session",
+    "term_fr": "Séance de conseil pour traitement ARV",
+    "synonyms_en": [
+      "HIV drug education session"
+    ],
+    "synonyms_fr": [
+      "conseil d'adhérence aux ARV",
+      "éducation thérapeutique VIH"
+    ]
+  },
+  {
+    "term_en": "Apply topical antifungal cream",
+    "term_fr": "Appliquer une crème antifongique locale",
+    "synonyms_en": [
+      "rub ringworm cream on skin"
+    ],
+    "synonyms_fr": [
+      "mettre la pommade contre les champignons sur la peau"
+    ]
+  },
+  {
+    "term_en": "Asymptomatic HIV partner notification",
+    "term_fr": "Dépistage et notification du partenaire du patient VIH",
+    "synonyms_en": [
+      "test husband or wife for HIV"
+    ],
+    "synonyms_fr": [
+      "recherche du statut VIH chez le conjoint",
+      "dépistage du partenaire"
+    ]
+  },
+  {
+    "term_en": "Bacterial vaginosis testing",
+    "term_fr": "Recherche de vaginose bactérienne",
+    "synonyms_en": [
+      "smelly discharge swab lab check"
+    ],
+    "synonyms_fr": [
+      "analyse pour odeur vaginale",
+      "recherche vaginose"
+    ]
+  },
+  {
+    "term_en": "Bilirubin total and direct test",
+    "term_fr": "Dosage de la bilirubine totale et directe",
+    "synonyms_en": [
+      "jaundice blood test",
+      "yellow eyes blood check"
+    ],
+    "synonyms_fr": [
+      "dosage de la jaunisse",
+      "bilirubine dans le sang"
+    ]
+  },
+  {
+    "term_en": "Blood pressure monitoring daily",
+    "term_fr": "Surveillance quotidienne de la tension artérielle",
+    "synonyms_en": [
+      "take tension every day",
+      "daily blood pressure checks"
+    ],
+    "synonyms_fr": [
+      "prendre la tension tous les jours",
+      "suivi de la tension"
+    ]
+  },
+  {
+    "term_en": "Blood transfusion reaction monitoring",
+    "term_fr": "Surveillance de réaction transfusionnelle",
+    "synonyms_en": [
+      "check for fever during blood transfusion"
+    ],
+    "synonyms_fr": [
+      "surveiller le malade pendant la transfusion de sang"
+    ]
+  },
+  {
+    "term_en": "Burn wound debridement and dressing",
+    "term_fr": "Nettoyage et pansement de brûlure",
+    "synonyms_en": [
+      "clean skin burn injuries and wrap"
+    ],
+    "synonyms_fr": [
+      "soigner et bander la peau brûlée",
+      "pansement de brûlure"
+    ]
+  },
+  {
+    "term_en": "Candidal vulvovaginitis swab review",
+    "term_fr": "Prélèvement vaginal pour suspicion de candidose",
+    "synonyms_en": [
+      "yeast infection discharge check"
+    ],
+    "synonyms_fr": [
+      "analyse pour pertes blanches grumeleuses",
+      "recherche de champignons vaginaux"
+    ]
+  },
+  {
+    "term_en": "Cataract surgery screening evaluation",
+    "term_fr": "Évaluation pré-opératoire pour chirurgie de la cataracte",
+    "synonyms_en": [
+      "check eyes for cataract operation list"
+    ],
+    "synonyms_fr": [
+      "visite pour opération du film blanc sur l'œil"
+    ]
+  },
+  {
+    "term_en": "Cellulitis leg measurement tracking",
+    "term_fr": "Surveillance de l'extension de la cellulite de jambe",
+    "synonyms_en": [
+      "draw line on red swollen leg skin to check spread"
+    ],
+    "synonyms_fr": [
+      "marquer la jambe rouge gonflée pour surveiller l'infection"
+    ]
+  },
+  {
+    "term_en": "Cervical cancer screening by visual inspection",
+    "term_fr": "Dépistage du cancer du col de l'utérus par inspection visuelle IVA/IVL",
+    "synonyms_en": [
+      "vinegar wash cervix test for cancer",
+      "VIA-VILI test"
+    ],
+    "synonyms_fr": [
+      "dépistage par le vinaigre du col utérin",
+      "test IVA IVL"
+    ]
+  },
+  {
+    "term_en": "Chlamydia screening test",
+    "term_fr": "Dépistage de l'infection à Chlamydia",
+    "synonyms_en": [
+      "chlamydia STI laboratory check"
+    ],
+    "synonyms_fr": [
+      "test chlamydia",
+      "recherche infection cachée à chlamydia"
+    ]
+  },
+  {
+    "term_en": "Cholera treatment center isolation",
+    "term_fr": "Isolement au centre de traitement du choléra",
+    "synonyms_en": [
+      "put in CTC isolation ward for watery diarrhea"
+    ],
+    "synonyms_fr": [
+      "isoler au CTC",
+      "mettre le malade au pavillon du choléra"
+    ]
+  },
+  {
+    "term_en": "Chronic obstructive pulmonary disease inhaler instruction",
+    "term_fr": "Éducation à l'utilisation de l'inhalateur pour BPCO",
+    "synonyms_en": [
+      "show patient how to pump asthma chest spray"
+    ],
+    "synonyms_fr": [
+      "montrer comment pomper le spray de poitrine"
+    ]
+  },
+  {
+    "term_en": "Circumcision procedure",
+    "term_fr": "Circoncision chirurgicale",
+    "synonyms_en": [
+      "cut foreskin of boy"
+    ],
+    "synonyms_fr": [
+      "faire la circoncision",
+      "couper la peau du pénis"
+    ]
+  },
+  {
+    "term_en": "Coagulation profile blood test",
+    "term_fr": "Bilan de coagulation sanguine",
+    "synonyms_en": [
+      "clotting test",
+      "PT PTT bleeding check"
+    ],
+    "synonyms_fr": [
+      "taux de prothrombine",
+      "TP TCA",
+      "examen de saignement du sang"
+    ]
+  },
+  {
+    "term_en": "Computerized tomography scan of chest",
+    "term_fr": "Demander un scanner thoracique",
+    "synonyms_en": [
+      "chest CT scan",
+      "lung scanner machine picture"
+    ],
+    "synonyms_fr": [
+      "scanner des poumons",
+      "TDM thoracique"
+    ]
+  },
+  {
+    "term_en": "Consult anemic status nutritional team",
+    "term_fr": "Demander l'avis de l'équipe de soutien nutritionnel",
+    "synonyms_en": [
+      "get advice from nutrition unit for weak blood diet"
+    ],
+    "synonyms_fr": [
+      "demander l'appui de la nutrition pour le manque de sang"
+    ]
+  },
+  {
+    "term_en": "Counseling on diabetes self-care",
+    "term_fr": "Éducation du patient diabétique sur l'auto-prise en charge",
+    "synonyms_en": [
+      "teach diabetic about lifestyle adjustments"
+    ],
+    "synonyms_fr": [
+      "apprendre au diabétique à s'occuper de sa maladie"
+    ]
+  },
+  {
+    "term_en": "C-reactive protein lab test",
+    "term_fr": "Dosage de la protéine C-réactive",
+    "synonyms_en": [
+      "CRP blood test",
+      "acute inflammation check"
+    ],
+    "synonyms_fr": [
+      "dosage de la CRP",
+      "prise de sang pour inflammation aiguë"
+    ]
+  },
+  {
+    "term_en": "Daily wound assessment tracking",
+    "term_fr": "Surveillance quotidienne de l'état de la plaie",
+    "synonyms_en": [
+      "look at operation cut skin every morning"
+    ],
+    "synonyms_fr": [
+      "vérifier la blessure tous les jours"
+    ]
+  },
+  {
+    "term_en": "Decontaminate road traffic accident lacerations",
+    "term_fr": "Lavage abondant et décontamination de plaies d'accident",
+    "synonyms_en": [
+      "wash mud and dirt from crash wounds carefully"
+    ],
+    "synonyms_fr": [
+      "laver et désinfecter les plaies d'accident de la route"
+    ]
+  },
+  {
+    "term_en": "Deep vein thrombosis mechanical prevention legs",
+    "term_fr": "Prévention mécanique des thromboses veineuses profondes",
+    "synonyms_en": [
+      "put tight stockings to prevent leg clot",
+      "DVT stockings"
+    ],
+    "synonyms_fr": [
+      "mettre les bas de contention pour éviter les caillots"
+    ]
+  },
+  {
+    "term_en": "Dental caries extraction referral",
+    "term_fr": "Référer pour extraction de carie dentaire",
+    "synonyms_en": [
+      "send to dentist to pull rotten tooth"
+    ],
+    "synonyms_fr": [
+      "envoyer arracher la dent chez le dentiste",
+      "consultation odontologie"
+    ]
+  },
+  {
+    "term_en": "Dermatophytosis soap application review",
+    "term_fr": "Conseiller des soins d'hygiène locaux pour dermatophytose",
+    "synonyms_en": [
+      "wash ringworm lesions with clean anti-fungal soap"
+    ],
+    "synonyms_fr": [
+      "laver la dartre avec du savon antiseptique"
+    ]
+  },
+  {
+    "term_en": "Diabetes mellitus insulin administration training",
+    "term_fr": "Apprentissage des injections d'insuline par le patient",
+    "synonyms_en": [
+      "show patient how to needle sugar medication on belly skin"
+    ],
+    "synonyms_fr": [
+      "apprendre au malade à se piquer l'insuline seul"
+    ]
+  },
+  {
+    "term_en": "Diabetic foot infection dressing care",
+    "term_fr": "Soins et pansement de plaie de pied diabétique",
+    "synonyms_en": [
+      "clean and pack ulcerated sugar sore on foot"
+    ],
+    "synonyms_fr": [
+      "faire le pansement du mal de pied du diabétique"
+    ]
+  },
+  {
+    "term_en": "Diarrheal disease dehydration check 2 hours",
+    "term_fr": "Réévaluation de la déshydratation après 2 heures",
+    "synonyms_en": [
+      "recheck eyes sunken skin pinch in loose motion baby"
+    ],
+    "synonyms_fr": [
+      "revoir si l'enfant qui purge a encore le corps sec"
+    ]
+  },
+  {
+    "term_en": "Dietary tracking carbohydrate intake",
+    "term_fr": "Suivi des apports en glucides",
+    "synonyms_en": [
+      "measure starchy food and bread sizes eaten daily"
+    ],
+    "synonyms_fr": [
+      "surveiller la quantité de couscous manioc ou riz mangée"
+    ]
+  },
+  {
+    "term_en": "Dilated cardiomyopathy salt limits advisory",
+    "term_fr": "Conseil d'éviction du sel pour myocardiopathie dilatée",
+    "synonyms_en": [
+      "explain zero salt rules for enlarged weak heart"
+    ],
+    "synonyms_fr": [
+      "expliquer le régime sans sel strict pour le gros cœur"
+    ]
+  },
+  {
+    "term_en": "Discharge against medical advice documentation",
+    "term_fr": "Signature d'une décharge pour sortie contre avis médical",
+    "synonyms_en": [
+      "sign papers to leave hospital by force",
+      "escape form signing"
+    ],
+    "synonyms_fr": [
+      "signer le refus d'hospitalisation",
+      "décharge de responsabilité de sortie"
+    ]
+  },
+  {
+    "term_en": "Discharge to outpatient care nutritional group",
+    "term_fr": "Sortie vers le programme nutritionnel ambulatoire CRENAM",
+    "synonyms_en": [
+      "send recovered child to local food program center"
+    ],
+    "synonyms_fr": [
+      "référer l'enfant au centre de nutrition externe"
+    ]
+  },
+  {
+    "term_en": "Dynamic glucose loading testing",
+    "term_fr": "Épreuve d'hyperglycémie provoquée par voie orale HGPO",
+    "synonyms_en": [
+      "three hour sugar tolerance drink test",
+      "OGTT"
+    ],
+    "synonyms_fr": [
+      "test de boire le sucre lourd au labo",
+      "HGPO"
+    ]
+  },
+  {
+    "term_en": "Ear foreign body extractor preparation",
+    "term_fr": "Extraction de corps étranger du conduit auditif externe",
+    "synonyms_en": [
+      "pull object out of ear hole"
+    ],
+    "synonyms_fr": [
+      "retirer l'objet ou l'insecte coincé dans l'oreille"
+    ]
+  },
+  {
+    "term_en": "Eclampsia seizure prevention magnesium sulfate checks",
+    "term_fr": "Surveillance du traitement par sulfate de magnésium",
+    "synonyms_en": [
+      "check urine reflexes when mother receives magnesium fits shot"
+    ],
+    "synonyms_fr": [
+      "surveiller les réflexes sous sulfate de magnésium"
+    ]
+  },
+  {
+    "term_en": "Electrolyte panel blood check",
+    "term_fr": "Dosage de l'ionogramme plasmatique",
+    "synonyms_en": [
+      "blood salts test",
+      "sodium potassium check",
+      "ionogram"
+    ],
+    "synonyms_fr": [
+      "ionogramme sanguin",
+      "iono complet",
+      "sels du sang"
+    ]
+  },
+  {
+    "term_en": "Elevate head of bed 30 degrees",
+    "term_fr": "Surélever la tête du lit à 30 degrés",
+    "synonyms_en": [
+      "propped up position on bed",
+      "raise pillows for easy breathing"
+    ],
+    "synonyms_fr": [
+      "position demi-assise au lit",
+      "surélever la tête du lit"
+    ]
+  },
+  {
+    "term_en": "Emergency exploratory laparotomy procedure",
+    "term_fr": "Laparotomie exploratrice en urgence",
+    "synonyms_en": [
+      "urgent open stomach surgery for burst bowel"
+    ],
+    "synonyms_fr": [
+      "ouvrir le ventre en urgence au bloc",
+      "laparotomie d'urgence"
+    ]
+  },
+  {
+    "term_en": "Encourage bed mobilization techniques",
+    "term_fr": "Encourager la mobilisation précoce au lit",
+    "synonyms_en": [
+      "turn patient sides to avoid bedsores"
+    ],
+    "synonyms_fr": [
+      "tourner le malade régulièrement pour éviter les plaies de lit"
+    ]
+  },
+  {
+    "term_en": "Endoscopic upper gastrointestinal review",
+    "term_fr": "Fibroscopie œso-gastro-duodénale FOGD",
+    "synonyms_en": [
+      "swallow camera tube for ulcer check",
+      "stomach endoscopy"
+    ],
+    "synonyms_fr": [
+      "fibroscopie de l'estomac",
+      "endoscopie digestive haute",
+      "FOGD"
+    ]
+  },
+  {
+    "term_en": "Epididymo-orchitis ice pack therapy",
+    "term_fr": "Application locale de froid sur la bourse infectée",
+    "synonyms_en": [
+      "put ice on swollen painful scrotum"
+    ],
+    "synonyms_fr": [
+      "mettre la glace sur le testicule gonflé"
+    ]
+  },
+  {
+    "term_en": "Epilepsy medication toxicity blood tracking",
+    "term_fr": "Dosage plasmatique des anti-épileptiques",
+    "synonyms_en": [
+      "measure level of seizure drug in blood"
+    ],
+    "synonyms_fr": [
+      "dosage de la dépakine ou phénobarbital dans le sang"
+    ]
+  },
+  {
+    "term_en": "Erysipelas leg tracking marker",
+    "term_fr": "Marquage des contours de l'érysipèle",
+    "synonyms_en": [
+      "pen boundary line on hot red infected leg skin"
+    ],
+    "synonyms_fr": [
+      "tracer les bords rouges de l'infection cutanée"
+    ]
+  },
+  {
+    "term_en": "Establish two large-bore intravenous lines",
+    "term_fr": "Poser deux voies veineuses de gros calibre",
+    "synonyms_en": [
+      "put two big needles for fluid crash resuscitation"
+    ],
+    "synonyms_fr": [
+      "prendre deux grosses veines pour réanimation rapide"
+    ]
+  },
+  {
+    "term_en": "Expanded program on immunization clinic tracking",
+    "term_fr": "Orientation vers le programme élargi de vaccination PEV",
+    "synonyms_en": [
+      "send child for standard vaccine series",
+      "EPI schedule visit"
+    ],
+    "synonyms_fr": [
+      "envoyer au PEV pour les vaccins",
+      "séance de vaccination bébé"
+    ]
+  },
+  {
+    "term_en": "External ear canal cleaning",
+    "term_fr": "Nettoyage doux du conduit auditif externe",
+    "synonyms_en": [
+      "wipe ear leakage liquid from skin outside"
+    ],
+    "synonyms_fr": [
+      "nettoyer le pus qui sort de l'oreille"
+    ]
+  },
+  {
+    "term_en": "Eye protection protocol comatose patient",
+    "term_fr": "Soins protecteurs oculaires chez le patient comateux",
+    "synonyms_en": [
+      "close eyes of unconscious patient with gauze drops"
+    ],
+    "synonyms_fr": [
+      "fermer et hydrater les yeux du patient dans le coma"
+    ]
+  },
+  {
+    "term_en": "F100 nutritional milk administration therapeutic phase 2",
+    "term_fr": "Administration de lait thérapeutique F100 en phase 2",
+    "synonyms_en": [
+      "give recovery milk formula to severely malnourished child"
+    ],
+    "synonyms_fr": [
+      "donner le lait F100 à l'enfant malnutri"
+    ]
+  },
+  {
+    "term_en": "F75 nutritional milk administration stabilization phase 1",
+    "term_fr": "Administration de lait thérapeutique F75 en phase 1",
+    "synonyms_en": [
+      "give initial stabilization therapeutic milk baby nutrition"
+    ],
+    "synonyms_fr": [
+      "donner le lait F75 pour stabiliser l'enfant malnutri"
+    ]
+  },
+  {
+    "term_en": "Family planning method insertion intrauterine device",
+    "term_fr": "Pose d'un dispositif intra-utérin DIU",
+    "synonyms_en": [
+      "put loop birth control inside womb",
+      "IUD insertion"
+    ],
+    "synonyms_fr": [
+      "placer le stérilet",
+      "pose de stérilet DIU"
+    ]
+  },
+  {
+    "term_en": "Family planning method insertion subdermal implant",
+    "term_fr": "Pose d'un implant contraceptif sous-cutané",
+    "synonyms_en": [
+      "put birth control matchsticks inside arm skin",
+      "implant insert"
+    ],
+    "synonyms_fr": [
+      "mettre l'implant dans le bras",
+      "capsule contraceptive sous la peau"
+    ]
+  },
+  {
+    "term_en": "Fluid resuscitation protocol burns",
+    "term_fr": "Réanimation liquidienne selon la formule de Parkland",
+    "synonyms_en": [
+      "calculate high volume IV fluid speed for body burns"
+    ],
+    "synonyms_fr": [
+      "calculer les perfusions pour grand brûlé",
+      "formule de Parkland"
+    ]
+  },
+  {
+    "term_en": "Foley catheter urine measurement hourly",
+    "term_fr": "Mesure horaire de la diurèse par sonde de Foley",
+    "synonyms_en": [
+      "check hourly urine bag amount in critical patients"
+    ],
+    "synonyms_fr": [
+      "vérifier la quantité de pipi dans le sac chaque heure"
+    ]
+  },
+  {
+    "term_en": "Functional physical therapy limb rehabilitation",
+    "term_fr": "Séance de kinésithérapie motrice",
+    "synonyms_en": [
+      "limb exercise physical therapy rehab after fracture stroke"
+    ],
+    "synonyms_fr": [
+      "séance de rééducation pour bouger les membres",
+      "kiné motrice"
+    ]
+  },
+  {
+    "term_en": "Fundal height assessment pregnancy tracking",
+    "term_fr": "Mesure de la hauteur utérine HU",
+    "synonyms_en": [
+      "measure baby growth on belly with tape tool"
+    ],
+    "synonyms_fr": [
+      "mesurer la hauteur du ventre de grossesse",
+      "mesurer la HU"
+    ]
+  },
+  {
+    "term_en": "Gastric lavage overdose decontamination",
+    "term_fr": "Lavage gastrique pour intoxication",
+    "synonyms_en": [
+      "pump toxic poison material from stomach out",
+      "stomach wash"
+    ],
+    "synonyms_fr": [
+      "laver l'estomac après empoisonnement",
+      "lavage d'estomac"
+    ]
+  },
+  {
+    "term_en": "General anesthesia surgical fitness prep",
+    "term_fr": "Consultation pré-anesthésique CPA",
+    "synonyms_en": [
+      "pre-op anesthesia checkup",
+      "fitness for operation sleeping drug"
+    ],
+    "synonyms_fr": [
+      "visite pré-anesthésique",
+      "CPA avant l'opération"
+    ]
+  },
+  {
+    "term_en": "Glaucoma intraocular pressure serial check",
+    "term_fr": "Mesure sérielle de la pression intra-oculaire",
+    "synonyms_en": [
+      "check pressure level inside eye regularly"
+    ],
+    "synonyms_fr": [
+      "mesurer la tension de l'œil régulièrement"
+    ]
+  },
+  {
+    "term_en": "Gonorrhea partner identification tracking",
+    "term_fr": "Recherche et traitement des contacts pour gonococcie",
+    "synonyms_en": [
+      "trace sexual links for painful yellow urine discharge treatment"
+    ],
+    "synonyms_fr": [
+      "retrouver les partenaires pour traiter la chaude-pisse"
+    ]
+  },
+  {
+    "term_en": "Head injury monitoring neurochecks 2 hours",
+    "term_fr": "Surveillance neurologique toutes les 2 heures",
+    "synonyms_en": [
+      "check eye pupil sizes wakefulness every two hours after accident"
+    ],
+    "synonyms_fr": [
+      "surveiller les pupilles et conscience après choc à la tête"
+    ]
+  },
+  {
+    "term_en": "Hematocrit tracking serial checks",
+    "term_fr": "Suivi biologique de l'hématocrite",
+    "synonyms_en": [
+      "check level of blood thickness regularly in bleeding trauma"
+    ],
+    "synonyms_fr": [
+      "surveiller le taux d'hématocrite pour l'anémie"
+    ]
+  },
+  {
+    "term_en": "Hemoglobin testing bedside device",
+    "term_fr": "Mesure rapide du taux d'hémoglobine au lit du malade",
+    "synonyms_en": [
+      "HemoCue test for quick anemia checking"
+    ],
+    "synonyms_fr": [
+      "HemoCue",
+      "test de sang rapide pour anémie au doigt"
+    ]
+  },
+  {
+    "term_en": "Hemoptysis blood cough monitoring",
+    "term_fr": "Surveillance quantitative de l'hémoptysie",
+    "synonyms_en": [
+      "measure cups of blood coughed out by TB patient"
+    ],
+    "synonyms_fr": [
+      "mesurer la quantité de sang craché par le malade"
+    ]
+  },
+  {
+    "term_en": "Hemorrhoid sitz bath guidance",
+    "term_fr": "Conseiller des bains de siège pour hémorroïdes",
+    "synonyms_en": [
+      "sit in warm basin water for bleeding anal lumps pain relief"
+    ],
+    "synonyms_fr": [
+      "faire des bains de siège tièdes pour fesses qui sortent"
+    ]
+  },
+  {
+    "term_en": "Hepatitis viral antigen screening panel",
+    "term_fr": "Demander un bilan sérologique des hépatites virales",
+    "synonyms_en": [
+      "order complete blood panel for liver viruses types"
+    ],
+    "synonyms_fr": [
+      "sérologies des hépatites complètes"
+    ]
+  },
+  {
+    "term_en": "Hepatocellular carcinoma staging alpha-fetoprotein test",
+    "term_fr": "Dosage de l'alpha-fœtoprotéine AFP",
+    "synonyms_en": [
+      "blood test for liver cancer mass tracking"
+    ],
+    "synonyms_fr": [
+      "dosage de l'alpha-fœtoprotéine",
+      "marqueur de cancer du foie AFP"
+    ]
+  },
+  {
+    "term_en": "Herpes zoster skin secondary infection prevention",
+    "term_fr": "Soins cutanés antiseptiques pour prévenir la surinfection du zona",
+    "synonyms_en": [
+      "clean blister nerve belt rash area gently with clear wash"
+    ],
+    "synonyms_fr": [
+      "nettoyer les boutons de zona pour éviter le pus"
+    ]
+  },
+  {
+    "term_en": "HIV testing infants PCR method",
+    "term_fr": "Dépistage du VIH chez le nourrisson par PCR",
+    "synonyms_en": [
+      "early infant HIV DNA blood test at six weeks"
+    ],
+    "synonyms_fr": [
+      "test PCR VIH pour bébé de maman séropositive"
+    ]
+  },
+  {
+    "term_en": "Hydrocele surgical repair listing",
+    "term_fr": "Programmation pour cure chirurgicale d'hydrocèle",
+    "synonyms_en": [
+      "schedule operation for water in testicle sac bag"
+    ],
+    "synonyms_fr": [
+      "prévoir l'opération pour grosse bourse d'eau"
+    ]
+  },
+  {
+    "term_en": "Hyperglycemia critical hydration insulin infusion management",
+    "term_fr": "Prise en charge de la crise d'hyperglycémie par insuline IVD et perfusion",
+    "synonyms_en": [
+      "give insulin drip for extremely high sugar levels crisis"
+    ],
+    "synonyms_fr": [
+      "traitement de crise de sucre par insuline dans la perfusion"
+    ]
+  },
+  {
+    "term_en": "Hypertensive crisis parenteral drug tracking",
+    "term_fr": "Traitement intraveineux d'une poussée hypertensive sévère",
+    "synonyms_en": [
+      "give fast acting vein medication for very high tension surge"
+    ],
+    "synonyms_fr": [
+      "faire baisser la crise de tension par injection intraveineuse"
+    ]
+  },
+  {
+    "term_en": "Hypoglycemia correction oral sugar administration",
+    "term_fr": "Correction de l'hypoglycémie légère par resucrage oral",
+    "synonyms_en": [
+      "give sugar water drink for low sugar weakness episode"
+    ],
+    "synonyms_fr": [
+      "faire boire de l'eau sucrée pour baisse de sucre"
+    ]
+  },
+  {
+    "term_en": "Hypovolemic shock rapid physiological crystalloid infusion",
+    "term_fr": "Remplissage vasculaire rapide par solutés cristalloïdes",
+    "synonyms_en": [
+      "run IV fluids drip very fast to restore low blood pressure from dehydration"
+    ],
+    "synonyms_fr": [
+      "passer les perfusions de sérum très vite pour choc"
+    ]
+  },
+  {
+    "term_en": "Impetigo lesion hygiene crust washing",
+    "term_fr": "Soins d'hygiène et ramollissement des croûtes d'impétigo",
+    "synonyms_en": [
+      "soak and wipe honey colored sores skin crusts on baby face"
+    ],
+    "synonyms_fr": [
+      "laver doucement les croûtes jaunes du visage de l'enfant"
+    ]
+  },
+  {
+    "term_en": "Indirect inguinal hernia truss fitting review",
+    "term_fr": "Conseil d'éviction des efforts physiques pour hernie inguinale",
+    "synonyms_en": [
+      "tell patient to avoid lifting heavy loads to protect groin rupture"
+    ],
+    "synonyms_fr": [
+      "interdire de porter les fardeaux lourds pour la hernie"
+    ]
+  },
+  {
+    "term_en": "Infant development growth assessment tracking",
+    "term_fr": "Suivi de croissance de l'enfant sur la courbe de poids",
+    "synonyms_en": [
+      "weigh baby monthly and mark card curve line"
+    ],
+    "synonyms_fr": [
+      "suivre le poids du bébé sur la courbe du carnet"
+    ]
+  },
+  {
+    "term_en": "Internal fixation bone fracture surgery preparation",
+    "term_fr": "Référer pour ostéosynthèse chirurgicale interne",
+    "synonyms_en": [
+      "send for open bone operation with plates and screws inside"
+    ],
+    "synonyms_fr": [
+      "chirurgie de fracture avec plaques ou clous dans l'os"
+    ]
+  },
+  {
+    "term_en": "Intermittent preventive treatment of malaria in pregnancy",
+    "term_fr": "Traitement préventif intermittent du paludisme chez la femme enceinte TPI",
+    "synonyms_en": [
+      "IPTp fansidar doses during pregnancy checkups"
+    ],
+    "synonyms_fr": [
+      "donner le TPI à la maman enceinte pour éviter le palu",
+      "TPI Fansidar"
+    ]
+  },
+  {
+    "term_en": "Intestinal helminthiasis deworming community tracking",
+    "term_fr": "Déparasitage intestinal systématique",
+    "synonyms_en": [
+      "routine deworming tablet administration"
+    ],
+    "synonyms_fr": [
+      "donner le vermifuge systématique",
+      "purge de vers intestinaux"
+    ]
+  },
+  {
+    "term_en": "Intravenous medication injection execution",
+    "term_fr": "Administrer un médicament par injection intraveineuse directe IVD",
+    "synonyms_en": [
+      "inject medicine directly into vein catheter line tube"
+    ],
+    "synonyms_fr": [
+      "faire l'injection dans la veine",
+      "injection IV directe"
+    ]
+  },
+  {
+    "term_en": "Iron supplementation oral monitoring therapy",
+    "term_fr": "Mise sous supplémentation en fer par voie orale",
+    "synonyms_en": [
+      "start blood building iron pills syrups",
+      "iron therapy"
+    ],
+    "synonyms_fr": [
+      "donner le fer en sirop ou comprimés pour le sang"
+    ]
+  },
+  {
+    "term_en": "Ischemic stroke functional neuro checks 4 hours",
+    "term_fr": "Surveillance de déficit moteur d'AVC toutes les 4 heures",
+    "synonyms_en": [
+      "test arm leg grip strength frequently after paralysis attack"
+    ],
+    "synonyms_fr": [
+      "vérifier la force de la main et jambe paralysée régulièrement"
+    ]
+  },
+  {
+    "term_en": "Isolation in medical ward suspected highly contagious",
+    "term_fr": "Isolement du patient suspect d'infection contagieuse",
+    "synonyms_en": [
+      "keep separate to protect ward from dangerous germs spread"
+    ],
+    "synonyms_fr": [
+      "isoler immédiatement le patient suspect"
+    ]
+  },
+  {
+    "term_en": "Joint aspiration septic arthritis drainage procedure",
+    "term_fr": "Ponction articulaire évacuatrice pour arthrite septique",
+    "synonyms_en": [
+      "draw infected knee fluid out with large syringe",
+      "drain joint pus"
+    ],
+    "synonyms_fr": [
+      "ponctionner le pus de l'articulation infectée"
+    ]
+  },
+  {
+    "term_en": "Kaposi sarcoma skin staging oncology tracking",
+    "term_fr": "Référer en oncologie pour maladie de Kaposi",
+    "synonyms_en": [
+      "send violet skin plaque patient to cancer care unit"
+    ],
+    "synonyms_fr": [
+      "envoyer au spécialiste du cancer pour le sarcome de Kaposi"
+    ]
+  },
+  {
+    "term_en": "Lactation support cracked nipple management care",
+    "term_fr": "Soins et conseils pour crevasses du mamelon",
+    "synonyms_en": [
+      "breast milk rub breast care instruction for painful feed skin cuts"
+    ],
+    "synonyms_fr": [
+      "soins des plaies du sein chez la maman qui allaite"
+    ]
+  },
+  {
+    "term_en": "Lumbar disc displacement pain body mechanisms physical therapy",
+    "term_fr": "Conseils d'ergonomie et économie rachidienne pour hernie discale",
+    "synonyms_en": [
+      "teach how to bend knees instead of back when picking objects"
+    ],
+    "synonyms_fr": [
+      "apprendre à garder le dos droit pour ramasser un objet"
+    ]
+  },
+  {
+    "term_en": "Malaria prevention counseling vector control sanitation",
+    "term_fr": "Conseiller la destruction des gîtes larvaires stagnants autour de la maison",
+    "synonyms_en": [
+      "empty stagnant water puddles barrels around home compound"
+    ],
+    "synonyms_fr": [
+      "vider l'eau stagnante et couper les herbes autour de la maison"
+    ]
+  },
+  {
+    "term_en": "Manual removal placenta retained postpartum",
+    "term_fr": "Délivrance artificielle et révision utérine manuelle",
+    "synonyms_en": [
+      "pull out stuck afterbirth by hand inside womb under emergency"
+    ],
+    "synonyms_fr": [
+      "décoller le placenta à la main dans l'utérus",
+      "révision utérine"
+    ]
+  },
+  {
+    "term_en": "Mastoiditis bone complication urgent surgical evaluation",
+    "term_fr": "Demander un avis chirurgical ORL d'urgence pour mastoïdite",
+    "synonyms_en": [
+      "send for urgent operation of infected bone swelling behind ear hole"
+    ],
+    "synonyms_fr": [
+      "urgence chirurgicale pour infection de l'os derrière l'oreille"
+    ]
+  },
+  {
+    "term_en": "Maternal vital checks labor delivery phase 30 minutes",
+    "term_fr": "Surveillance rapprochée de la parturiente en salle de travail",
+    "synonyms_en": [
+      "check pressure contractions of mother giving birth every half hour"
+    ],
+    "synonyms_fr": [
+      "prendre la tension et contractions de la femme en travail toutes les 30 min"
+    ]
+  },
+  {
+    "term_en": "Mental status checks acute bacterial meningitis tracking",
+    "term_fr": "Surveillance horaire de l'état de conscience pour méningite",
+    "synonyms_en": [
+      "check response to voice or pain hourly in critical brain fever"
+    ],
+    "synonyms_fr": [
+      "vérifier le réveil ou délire du malade de méningite chaque heure"
+    ]
+  },
+  {
+    "term_en": "Mitral stenosis cardiac strain monitoring heart checks",
+    "term_fr": "Surveillance clinique de tolérance d'un rétrécissement mitral",
+    "synonyms_en": [
+      "check for sudden severe breathlessness or lung fluid sounds in heart patient"
+    ],
+    "synonyms_fr": [
+      "surveiller l'étouffement ou bruit d'eau pulmonaire chez le cardiaque"
+    ]
+  },
+  {
+    "term_en": "Myocardial infarction complete absolute immobilization protocol",
+    "term_fr": "Repos absolu strict au lit pour infarctus du myocarde",
+    "synonyms_en": [
+      "forbid patient from lifting torso or moving legs after acute heart attack"
+    ],
+    "synonyms_fr": [
+      "interdiction absolue de se lever ou faire effort après infarctus"
+    ]
+  },
+  {
+    "term_en": "Nasogastric enteral feeding malnutrition child",
+    "term_fr": "Alimentation entérale par sonde naso-gastrique",
+    "synonyms_en": [
+      "give therapeutic milk formula slowly via nose pipe tube"
+    ],
+    "synonyms_fr": [
+      "passer le lait par la sonde du nez chez l'enfant très faible"
+    ]
+  },
+  {
+    "term_en": "Neonatal care immediate newborn resuscitation thermal care",
+    "term_fr": "Soins immédiats du nouveau-né et prévention de l'hypothermie",
+    "synonyms_en": [
+      "dry baby skin fast rub cloth put under heating radiant lamp tool"
+    ],
+    "synonyms_fr": [
+      "essuyer le nouveau-né rapidement et le chauffer sous la lampe"
+    ]
+  },
+  {
+    "term_en": "Neonatal jaundice phototherapy treatment machine",
+    "term_fr": "Mise sous photothérapie pour ictère néonatal",
+    "synonyms_en": [
+      "put yellow skin newborn baby under blue light lamp machine exposure"
+    ],
+    "synonyms_fr": [
+      "mettre le bébé jaune sous la lumière bleue"
+    ]
+  },
+  {
+    "term_en": "Neonatal tetanus dark quiet room isolation safety",
+    "term_fr": "Isolement du nouveau-né atteint de tétanos dans le calme et l'obscurité",
+    "synonyms_en": [
+      "keep lockjaw baby away from noise light sparks to prevent spasms"
+    ],
+    "synonyms_fr": [
+      "mettre le bébé du tétanos seul dans la chambre noire sans bruit"
+    ]
+  },
+  {
+    "term_en": "Nephrotic syndrome full body weight tracking daily edema",
+    "term_fr": "Suivi quotidien du poids et des œdèmes pour syndrome néphrotique",
+    "synonyms_en": [
+      "weigh morning swelling child to evaluate kidney protein leak fluid cuts"
+    ],
+    "synonyms_fr": [
+      "peser l'enfant gonflé chaque matin pour voir la perte d'eau"
+    ]
+  },
+  {
+    "term_en": "Nutrition education session local foods weaning preparation",
+    "term_fr": "Démonstration culinaire et conseils d'alimentation pour le sevrage",
+    "synonyms_en": [
+      "show mother how to cook nutritious porridge mixes from corn soya papaya"
+    ],
+    "synonyms_fr": [
+      "apprendre à la maman à faire la bouillie enrichie locale"
+    ]
+  },
+  {
+    "term_en": "Obstetric delivery tracking via partograph chart",
+    "term_fr": "Surveillance du travail d'accouchement par le partogramme",
+    "synonyms_en": [
+      "draw delivery progress line cervix opening speed on tracking sheet"
+    ],
+    "synonyms_fr": [
+      "suivre le travail d'accouchement sur la courbe du partogramme"
+    ]
+  },
+  {
+    "term_en": "Obstetric hemorrhage uterine massage balloon tamponade therapy",
+    "term_fr": "Massage utérin et tamponnement par ballon de Bakri",
+    "synonyms_en": [
+      "rub birth mother belly tightly insert soft balloon to stop bleed"
+    ],
+    "synonyms_fr": [
+      "masser l'utérus et poser un ballon intra-utérin pour stopper l'hémorragie"
+    ]
+  },
+  {
+    "term_en": "Onchocerciasis skin nodule excision minor surgery procedure",
+    "term_fr": "Nodulectomie pour onchocercose",
+    "synonyms_en": [
+      "cut filaria worm small bump capsule out of skin under local numb"
+    ],
+    "synonyms_fr": [
+      "enlever la boule de filaire sous la peau au bistouri"
+    ]
+  },
+  {
+    "term_en": "Ophthalmia neonatorum silver nitrate preventive drops baby birth",
+    "term_fr": "Prophylaxie oculaire conjonctivale systématique du nouveau-né",
+    "synonyms_en": [
+      "put antibiotic gel fluid drop in newborn eyes immediately after delivery"
+    ],
+    "synonyms_fr": [
+      "mettre les gouttes antibiotiques dans les yeux du bébé à la naissance"
+    ]
+  },
+  {
+    "term_en": "Oral hygiene care chlorhexidine mouthwashes mouth ulcers",
+    "term_fr": "Soins de bouche antiseptiques",
+    "synonyms_en": [
+      "rinse mouth white coating sores with protective rinse fluid liquid"
+    ],
+    "synonyms_fr": [
+      "faire les bains de bouche pour aphtes ou blessures de langue"
+    ]
+  },
+  {
+    "term_en": "Orthopedic traction setup lower limb fracture",
+    "term_fr": "Pose d'une traction trans-osseuse ou continue de membre inférieur",
+    "synonyms_en": [
+      "hang weights ropes extensions on broken leg bone pulley frame device"
+    ],
+    "synonyms_fr": [
+      "mettre le malade sous traction avec les poids suspendus"
+    ]
+  },
+  {
+    "term_en": "Peptic ulcer perforation emergency surgical repair closure",
+    "term_fr": "Cure chirurgicale d'ulcère perforé par suture et épiplooplastie",
+    "synonyms_en": [
+      "emergency closure patch operation for burst stomach ulcer hole"
+    ],
+    "synonyms_fr": [
+      "fermer le trou de l'ulcère percé au bloc opératoire"
+    ]
+  },
+  {
+    "term_en": "Peritonitis rigid abdomen decompression preoperative nasogastric setup",
+    "term_fr": "Aspiration digestive continue par sonde naso-gastrique",
+    "synonyms_en": [
+      "put nose bag tube to empty green bile stomach backup fluid in gut block"
+    ],
+    "synonyms_fr": [
+      "poser la sonde du nez au sac pour vider le ventre de bois"
+    ]
+  },
+  {
+    "term_en": "Placenta praevia strict physical avoidance digital pelvic check",
+    "term_fr": "Interdiction absolue de toucher vaginal pour suspicion de placenta praevia",
+    "synonyms_en": [
+      "do not perform finger vagina exam in bleeding pregnancy mother"
+    ],
+    "synonyms_fr": [
+      "interdire le toucher vaginal pour risque de grande hémorragie"
+    ]
+  },
+  {
+    "term_en": "Pleurisy intercostal fluid drainage tracking aspiration needle",
+    "term_fr": "Évacuation de liquide pleural par ponction à l'aiguille",
+    "synonyms_en": [
+      "draw huge amounts side lung water out via syringe needle to ease suffocation"
+    ],
+    "synonyms_fr": [
+      "ponction pleurale évacuatrice pour vider l'eau du poumon"
+    ]
+  },
+  {
+    "term_en": "Pneumocystis jirovecii hypoxia high flow oxygen mask therapy",
+    "term_fr": "Oxygénothérapie à haut débit pour pneumocystose",
+    "synonyms_en": [
+      "run oxygen tank dial very high for advanced severe HIV lung failure"
+    ],
+    "synonyms_fr": [
+      "donner l'oxygène fort pour infection pulmonaire sévère VIH"
+    ]
+  },
+  {
+    "term_en": "Pneumothorax chest tube water seal underwater setup tracking",
+    "term_fr": "Surveillance du bullage d'un drainage pleural sous eau",
+    "synonyms_en": [
+      "check bubble air leaks in chest fluid bottle box drain line"
+    ],
+    "synonyms_fr": [
+      "surveiller les bulles d'air dans le bocal de drain du poumon"
+    ]
+  },
+  {
+    "term_en": "Post-partum hemorrhage uterine packing gauze method emergency",
+    "term_fr": "Tamponnement intra-utérin par mèche de gaze",
+    "synonyms_en": [
+      "stuff long sterile gauze bandage inside bleeding empty birth womb firmly"
+    ],
+    "synonyms_fr": [
+      "mécher l'utérus avec de la gaze pour arrêter les saignements"
+    ]
+  },
+  {
+    "term_en": "Pre-eclampsia imminent eclampsia strict sound light reduction isolation",
+    "term_fr": "Isolement sensoriel de la patiente en pré-éclampsie sévère",
+    "synonyms_en": [
+      "keep pregnancy high blood pressure mother in dark quiet spot to avoid fits"
+    ],
+    "synonyms_fr": [
+      "mettre la femme enceinte à forte tension dans le calme complet"
+    ]
+  },
+  {
+    "term_en": "Pregnancy prenatal tetanus vaccination schedule management",
+    "term_fr": "Administration systématique du vaccin antitétanique Vat pendant la CPN",
+    "synonyms_en": [
+      "give routine pregnancy anti tetanus protective toxoid arm shots series"
+    ],
+    "synonyms_fr": [
+      "faire le vaccin VAT de grossesse pour protéger le bébé"
+    ]
+  },
+  {
+    "term_en": "Prevention of mother-to-child transmission of HIV protocol",
+    "term_fr": "Prise en charge pour prévention de la transmission mère-enfant du VIH PTME",
+    "synonyms_en": [
+      "give protective HIV preventive doses to pregnant mother baby combo",
+      "PMTCT care"
+    ],
+    "synonyms_fr": [
+      "protocole PTME",
+      "médicaments pour éviter de donner le VIH au bébé"
+    ]
+  },
+  {
+    "term_en": "Prostate cancer retention permanent indwelling catheter option",
+    "term_fr": "Pose d'une sonde urinaire à demeure pour néoplasie prostatique",
+    "synonyms_en": [
+      "leave rubber urine drain pipe inside long term for hard blocked mass urinary line"
+    ],
+    "synonyms_fr": [
+      "laisser la sonde urinaire au long cours pour tumeur de la prostate"
+    ]
+  },
+  {
+    "term_en": "Psychosis patient physical restraint protocol safety",
+    "term_fr": "Contention physique temporaire de patient agité ou psychotique",
+    "synonyms_en": [
+      "tie violent delirious patient to bed rails with safe cloth wraps protectively"
+    ],
+    "synonyms_fr": [
+      "attacher temporairement le malade agité pour sa sécurité"
+    ]
+  },
+  {
+    "term_en": "Pulmonary embolism anticoagulant dosing protocol monitoring",
+    "term_fr": "Instaurer un traitement anticoagulant et surveiller l'hémostase",
+    "synonyms_en": [
+      "give blood thinning injections check bleeding parameters safety"
+    ],
+    "synonyms_fr": [
+      "commencer les piqûres pour diluer le sang et surveiller"
+    ]
+  },
+  {
+    "term_en": "Pulmonary tuberculosis household contact screening evaluation",
+    "term_fr": "Dépistage de la tuberculose chez les contacts intra-domiciliaires",
+    "synonyms_en": [
+      "test family members living with coughing lung TB patient"
+    ],
+    "synonyms_fr": [
+      "examiner toute la famille de la maison du malade de tuberculose"
+    ]
+  },
+  {
+    "term_en": "Radical surgical amputation crushed unsalvageable limb gangrene",
+    "term_fr": "Amputation chirurgicale réglée de membre",
+    "synonyms_en": [
+      "cut crushed dead leg arm bone under general anesthesia accident injury"
+    ],
+    "synonyms_fr": [
+      "couper le membre écrasé ou mort au bloc opératoire"
+    ]
+  },
+  {
+    "term_en": "Ready-to-use therapeutic food administration malnutrition child",
+    "term_fr": "Administration d'aliments thérapeutiques prêts à l'emploi ATPE PlumpyNut",
+    "synonyms_en": [
+      "give highly nutrient peanut butter packets nutrition paste",
+      "RUTF feeds"
+    ],
+    "synonyms_fr": [
+      "donner le PlumpyNut à l'enfant malnutri"
+    ]
+  },
+  {
+    "term_en": "Refer to emergency room triage immediately severe deterioration",
+    "term_fr": "Amener immédiatement aux urgences pour décompensation",
+    "synonyms_en": [
+      "rush critical gasping unconscious patient to ER room now"
+    ],
+    "synonyms_fr": [
+      "pousser le malade en détresse vitale directement aux urgences"
+    ]
+  },
+  {
+    "term_en": "Refer to community HIV support group adherence",
+    "term_fr": "Orienter vers le groupe de soutien communautaire pour patients sous ARV",
+    "synonyms_en": [
+      "link patient with local living positive counseling fellowship association"
+    ],
+    "synonyms_fr": [
+      "envoyer le malade vers l'association ou groupe de parole VIH"
+    ]
+  },
+  {
+    "term_en": "Reposition displaced closed bone fracture emergency splint",
+    "term_fr": "Réduction manuelle de fracture fermée déplacée",
+    "synonyms_en": [
+      "pull straight crooked broken bone before plastering limb skin protection"
+    ],
+    "synonyms_fr": [
+      "tirer et aligner l'os cassé déplacé avant de plâtrer"
+    ]
+  },
+  {
+    "term_en": "Request abdominal wall hernia ultrasound evaluation size site",
+    "term_fr": "Demander une échographie de la paroi abdominale pour hernie",
+    "synonyms_en": [
+      "order probe scan check for painful belly navel lump pouch"
+    ],
+    "synonyms_fr": [
+      "échographie de la boule ou hernie du ventre"
+    ]
+  },
+  {
+    "term_en": "Request blood type screen cross match units surgery reserve",
+    "term_fr": "Prévoir et réserver deux poches de sang pour intervention chirurgicale",
+    "synonyms_en": [
+      "keep blood ready in bank storage for scheduled major operation safety"
+    ],
+    "synonyms_fr": [
+      "réserver le sang au laboratoire avant l'opération programmée"
+    ]
+  },
+  {
+    "term_en": "Request chest X-ray tracking pneumonia resolution 6 weeks",
+    "term_fr": "Demander une radiographie pulmonaire de contrôle à 6 semaines",
+    "synonyms_en": [
+      "re-do chest radiograph picture film weeks after lung infection treatment"
+    ],
+    "synonyms_fr": [
+      "radio du thorax de contrôle après guérison de pneumonie"
+    ]
+  },
+  {
+    "term_en": "Request pelvic bones fracture imaging views trauma check",
+    "term_fr": "Demander une radiographie du bassin face après accident de la route",
+    "synonyms_en": [
+      "order pelvic ring x-ray layout views following severe vehicle crash"
+    ],
+    "synonyms_fr": [
+      "radiographie du bassin d'urgence après accident de la route"
+    ]
+  },
+  {
+    "term_en": "Request skeletal imaging broken arm humerus bones views",
+    "term_fr": "Demander une radiographie de l'humérus face et profil",
+    "synonyms_en": [
+      "order upper arm bone fracture alignment film layouts"
+    ],
+    "synonyms_fr": [
+      "radiographie du bras entier face et profil pour cassure"
+    ]
+  },
+  {
+    "term_en": "Request screening pregnancy ultrasound evaluation fetal viability age",
+    "term_fr": "Demander une échographie obstétricale de datation au premier trimestre",
+    "synonyms_en": [
+      "order standard early weeks pregnancy jelly belly baby echo scan"
+    ],
+    "synonyms_fr": [
+      "échographie du premier trimestre pour dater la grossesse"
+    ]
+  },
+  {
+    "term_en": "Resuture torn vaginal perineal lacerations obstetric birth trauma",
+    "term_fr": "Suture de déchirure périnéale ou vaginale après accouchement",
+    "synonyms_en": [
+      "stitch up deep down private parts soft tissue tears after baby push"
+    ],
+    "synonyms_fr": [
+      "recoudre la déchirure du bas après sortie du bébé"
+    ]
+  },
+  {
+    "term_en": "Review blood pressure log files outpatient clinic 2 weeks",
+    "term_fr": "Revoir le carnet d'automesure de tension dans 2 semaines",
+    "synonyms_en": [
+      "come back with tension tracking number booklet papers in 14 days"
+    ],
+    "synonyms_fr": [
+      "revenir avec les chiffres de tension écrits dans deux semaines"
+    ]
+  },
+  {
+    "term_en": "Review general recovery status consultation clinic 3 days",
+    "term_fr": "Revoir le patient en consultation externe de contrôle dans 3 jours",
+    "synonyms_en": [
+      "return to check illness healing progress in seventy two hours"
+    ],
+    "synonyms_fr": [
+      "revenir pour contrôle dans 3 jours",
+      "rendez-vous dans trois jours"
+    ]
+  },
+  {
+    "term_en": "Review pediatric dynamic weight charts nutrition clinic 1 week",
+    "term_fr": "Revoir la courbe de poids de l'enfant malnutri dans 1 semaine",
+    "synonyms_en": [
+      "bring child for scale weight updates check in seven days"
+    ],
+    "synonyms_fr": [
+      "ramener l'enfant pour pesée de contrôle dans une semaine"
+    ]
+  },
+  {
+    "term_en": "Review postoperation wound healing surgical outpatient clinic 1 week",
+    "term_fr": "Revoir pour contrôle de cicatrice opératoire dans 1 semaine",
+    "synonyms_en": [
+      "come to wound dressing clinic for stitch cut checks in 7 days"
+    ],
+    "synonyms_fr": [
+      "visite de contrôle de la plaie chirurgicale dans une semaine"
+    ]
+  },
+  {
+    "term_en": "Rheumatic valve lesion monitoring periodic echocardiogram plan",
+    "term_fr": "Planifier une échographie cardiaque de contrôle tous les 6 mois",
+    "synonyms_en": [
+      "schedule heart ultrasound scan tracking every six months valve disease"
+    ],
+    "synonyms_fr": [
+      "échographie cardiaque de contrôle semestrielle pour rhumatisme"
+    ]
+  },
+  {
+    "term_en": "Routine child immunization schedule vitamin A drops administration",
+    "term_fr": "Administration systématique de vitamine A et déparasitage au PEV",
+    "synonyms_en": [
+      "give oral oily vitamin capsule juice drops during routine infant checkup"
+    ],
+    "synonyms_fr": [
+      "donner les gouttes de vitamine A à l'enfant au PEV"
+    ]
+  },
+  {
+    "term_en": "Scheduled nonurgent major elective surgery booking list",
+    "term_fr": "Programmation d'une intervention chirurgicale réglée majeure",
+    "synonyms_en": [
+      "book standard internal body operation on non emergency list weeks out"
+    ],
+    "synonyms_fr": [
+      "programmer l'opération froide au bloc",
+      "chirurgie programmée"
+    ]
+  },
+  {
+    "term_en": "Screen household children malnutrition arm tapes evaluations",
+    "term_fr": "Dépistage systématique de la malnutrition chez les enfants de moins de 5 ans",
+    "synonyms_en": [
+      "run arm stripe color tape tests on toddler siblings at compound tracking"
+    ],
+    "synonyms_fr": [
+      "mesurer le périmètre brachial de tous les enfants de la maison"
+    ]
+  },
+  {
+    "term_en": "Screen maternal risk profiles antenatal care initial assessment",
+    "term_fr": "Évaluation des facteurs de risque obstétricaux lors de la première CPN",
+    "synonyms_en": [
+      "check background age previous operation lines in early pregnancy tracking"
+    ],
+    "synonyms_fr": [
+      "recherche des antécédents de complications ou césarienne à la CPN1"
+    ]
+  },
+  {
+    "term_en": "Skin excision biopsy suspicious chronic dynamic ulcers tissue",
+    "term_fr": "Pratiquer une biopsie cutanée chirurgicale d'ulcère chronique",
+    "synonyms_en": [
+      "cut out small skin wedge tissue from edge of long term wound for lab pathology"
+    ],
+    "synonyms_fr": [
+      "faire un prélèvement chirurgical d'un morceau de plaie chronique"
+    ]
+  },
+  {
+    "term_en": "Skin scraping scabies burrows identification microscopy preparation",
+    "term_fr": "Prélèvement cutané par grattage à la recherche de la gale",
+    "synonyms_en": [
+      "scrape itchy finger webs skin folds layer to look for live mites"
+    ],
+    "synonyms_fr": [
+      "gratter les sillons entre les doigts pour chercher le parasite de la gale"
+    ]
+  },
+  {
+    "term_en": "Sodium chloride physiological intravenous rapid fluid hydration plan",
+    "term_fr": "Perfusion rapide de sérum physiologique à 0,9 % pour réhydratation",
+    "synonyms_en": [
+      "run normal saline fluid drip lines quickly into vein blood network"
+    ],
+    "synonyms_fr": [
+      "passer le sérum salé à 0,9 % rapidement en perfusion"
+    ]
+  },
+  {
+    "term_en": "Sputum collections induction chest physical vibrator therapy methods",
+    "term_fr": "Aide à l'induction de crachats pour diagnostic de tuberculose",
+    "synonyms_en": [
+      "perform deep inhalation tap breathing techniques to produce thick sputum cough spit"
+    ],
+    "synonyms_fr": [
+      "faire inhaler de la vapeur pour aider le malade à cracher pour la TB"
+    ]
+  },
+  {
+    "term_en": "Stool sample concentrations amoebiasis cyst tracking microscopies",
+    "term_fr": "Examen des selles enrichi à la recherche de kystes d'amibes",
+    "synonyms_en": [
+      "order special laboratory concentration tests on caca to find dormant amoeba eggs"
+    ],
+    "synonyms_fr": [
+      "recherche approfondie de kystes d'amibes dans le caca au laboratoire"
+    ]
+  },
+  {
+    "term_en": "Stop oral intake fluids medications surgeries preparing status",
+    "term_fr": "Mettre le patient à jeun strict avant l'opération chirurgicale",
+    "synonyms_en": [
+      "keep stomach zero foods drinks content for upcoming theater surgery block"
+    ],
+    "synonyms_fr": [
+      "interdire de manger ou boire quoi que ce soit avant l'opération"
+    ]
+  },
+  {
+    "term_en": "Strict bed rest positioning pressure ulcer turning charts",
+    "term_fr": "Mettre en place un protocole de changement de position pour éviter les escarres",
+    "synonyms_en": [
+      "roll helpless stroke patient every two hours side to side body relief"
+    ],
+    "synonyms_fr": [
+      "tourner le malade paralysé au lit toutes les 2h contre les plaies"
+    ]
+  },
+  {
+    "term_en": "Syphilis tracing treat sexual contacts epidemiological protocols",
+    "term_fr": "Traitement obligatoire du conjoint pour syphilis confirmée",
+    "synonyms_en": [
+      "bring spouse sexual link partner to get twin penicillin arm muscle shots"
+    ],
+    "synonyms_fr": [
+      "traiter le mari ou la femme pour la syphilis du partenaire"
+    ]
+  },
+  {
+    "term_en": "Tetanus immune globulin administration urgent wound contamination therapy",
+    "term_fr": "Administrer du sérum antitétanique SAT en urgence après blessure",
+    "synonyms_en": [
+      "give passive antibody protective arm serum injection for dirty nail wound deep cuts"
+    ],
+    "synonyms_fr": [
+      "faire l'injection de sérum antitétanique SAT après plaie souillée"
+    ]
+  },
+  {
+    "term_en": "Urethral exudates microscopic evaluations gram staining slides tracking",
+    "term_fr": "Examen direct et coloration de Gram sur prélèvement urétral",
+    "synonyms_en": [
+      "smear penis pus fluid leakage drops on glass slide for microscopy checkup"
+    ],
+    "synonyms_fr": [
+      "coloration de Gram du pus qui coule du sexe chez l'homme"
+    ]
+  },
+  {
+    "term_en": "Urine dipsticks biochemical parameters readings tracking logs",
+    "term_fr": "Contrôle des nitrites et leucocytes urinaires par bandelette réactive",
+    "synonyms_en": [
+      "dip multi test paper tape into urine cup to check bladder infection markers"
+    ],
+    "synonyms_fr": [
+      "vérifier l'infection urinaire rapide par bandelette réactive au lit"
+    ]
+  },
+  {
+    "term_en": "Urine collection midstream clean catch tracking procedure instructions",
+    "term_fr": "Expliquer la technique du prélèvement d'urine du milieu de jet",
+    "synonyms_en": [
+      "tell patient to pee first drops out then capture middle fluid inside sterile lab cup"
+    ],
+    "synonyms_fr": [
+      "expliquer au malade de prendre l'urine du milieu du jet pour analyse"
+    ]
+  },
+  {
+    "term_en": "Urology surgical referral prostate volume reduction scoping interventions",
+    "term_fr": "Référer en urologie pour traitement chirurgical d'adénome de la prostate",
+    "synonyms_en": [
+      "send old man with severe blocked urine prostate swelling for surgical scoping cuts"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le spécialiste pour opérer la prostate bloquée"
+    ]
+  },
+  {
+    "term_en": "Voluntary counseling testing center link anonymous family files tracking",
+    "term_fr": "Référer au secrétariat de l'unité de prise en charge VIH UPEC",
+    "synonyms_en": [
+      "send confirmed positive screening files to hospital chronic ARV drug care desk"
+    ],
+    "synonyms_fr": [
+      "envoyer le dossier du patient dépisté positif vers l'UPEC CTA"
+    ]
+  },
+  {
+    "term_en": "Wash skin clothing permethrin applications contact group eradication",
+    "term_fr": "Désinfection collective literie vêtements cas gale familiale contact",
+    "synonyms_en": [
+      "boil blankets clothes wash bedding sheets all together family scabies mites cleanup"
+    ],
+    "synonyms_fr": [
+      "laver les habits et draps à l'eau chaude pour tuer la gale de la maison"
+    ]
+  },
+  {
+    "term_en": "Wound dressing materials changes saline wet to dry packings",
+    "term_fr": "Pansement humide à base de sérum salé pour plaie bourgeonnante",
+    "synonyms_en": [
+      "pack open cleaning deep skin ulcer hole with wet salty clean cloth mesh gauze daily"
+    ],
+    "synonyms_fr": [
+      "faire le pansement humide sur la plaie propre rouge"
+    ]
+  },
+  {
+    "term_en": "Wound fluid cultures collection deep cavity syringes aspirations techniques",
+    "term_fr": "Prélèvement de pus profond par aspiration à la seringue stérile au bloc",
+    "synonyms_en": [
+      "pull deep hidden muscle abscess pus liquid inside clean syringe needle for lab germ code"
+    ],
+    "synonyms_fr": [
+      "aspirer le pus profond à la seringue pour analyse au laboratoire"
+    ]
+  },
+  {
+    "term_en": "X-ray forearm radius ulna tracking callus formations weeks checks",
+    "term_fr": "Radiographie de l'avant-bras de contrôle sous plâtre à j15",
+    "synonyms_en": [
+      "re-do broken arm bone picture layouts two weeks into plaster cast tracking healing lines"
+    ],
+    "synonyms_fr": [
+      "radio de contrôle du bras plâtré après deux semaines"
+    ]
+  },
+  {
+    "term_en": "X-ray humerus bones layout view tracking checks alignment shifts",
+    "term_fr": "Radiographie de l'humérus de contrôle après réduction",
+    "synonyms_en": [
+      "re-do upper arm bone image pictures to see if fracture skeleton pieces shifted away"
+    ],
+    "synonyms_fr": [
+      "radio de contrôle du bras après remise en place de l'os"
+    ]
+  },
+  {
+    "term_en": "X-ray lower leg shin fractures orthopedic frames setups checks views",
+    "term_fr": "Radiographie de la jambe de contrôle j21",
+    "synonyms_en": [
+      "take secondary shin bone tibia picture views to confirm hard bone callus joins"
+    ],
+    "synonyms_fr": [
+      "radio de contrôle de la jambe cassée après trois semaines"
+    ]
+  },
+  {
+    "term_en": "Absolute alcohol restriction liver protection protocol cirrhosis lines",
+    "term_fr": "Interdiction absolue de toute boisson alcoolisée cas de cirrhose",
+    "synonyms_en": [
+      "forbid liquor beer entirely to save scarred failing liver tissue from destruction"
+    ],
+    "synonyms_fr": [
+      "interdire totalement la bière ou l'alcool pour foie détruit ou cirrhose"
+    ]
+  },
+  {
+    "term_en": "Abdominal wall hernias reduction manual gentle positioning techniques",
+    "term_fr": "Tentative de réduction manuelle douce de hernie inguinale simple",
+    "synonyms_en": [
+      "push soft groin swelling lump carefully back inside belly wall using finger pressure"
+    ],
+    "synonyms_fr": [
+      "essayer de repousser doucement la boule de la hernie dans le ventre"
+    ]
+  },
+  {
+    "term_en": "Active cooling sponging tepid water malaria hyperpyrexia child",
+    "term_fr": "Refroidissement physique par bain d'enveloppe ou éponge tiède enfant fébrile",
+    "synonyms_en": [
+      "wipe burning hot baby body skin with wet warm cloth wrap to reduce fits hazard"
+    ],
+    "synonyms_fr": [
+      "essuyer le corps de l'enfant qui brûle de fièvre avec un linge mouillé tiède"
+    ]
+  },
+  {
+    "term_en": "Activity modifications avoidance heavy physical lifting lumbar sciatica tracking",
+    "term_fr": "Repos lombaire relatif éviction charges lourdes sciatique aiguë",
+    "synonyms_en": [
+      "stop lifting heavy field baskets or water barrels to heal shooting leg nerve pinches"
+    ],
+    "synonyms_fr": [
+      "arrêter de porter les sacs ou soulever les choses lourdes pour la sciatique"
+    ]
+  },
+  {
+    "term_en": "Administer intramuscular oily contraceptive injections family planning care",
+    "term_fr": "Injection contraceptive intramusculaire trimestrielle Depo-Provera",
+    "synonyms_en": [
+      "give three month birth control needle protection injection in buttock skin muscle"
+    ],
+    "synonyms_fr": [
+      "faire la piqûre contraceptive de trois mois",
+      "injection Depo-Provera"
+    ]
+  },
+  {
+    "term_en": "Administer oral nutrient rehydration fluids zinc tablets infants diarrhea",
+    "term_fr": "Prescription combinée de SRO et suppléments de zinc pour diarrhée infantile",
+    "synonyms_en": [
+      "give oral salts drinks along with small zinc pills to treat kid purging loose motions"
+    ],
+    "synonyms_fr": [
+      "donner les sachets SRO avec les comprimés de zinc pour l'enfant qui purge"
+    ]
+  },
+  {
+    "term_en": "Admit infant specialized neonatology incubator premature care",
+    "term_fr": "Hospitaliser le nouveau-né prématuré en couveuse",
+    "synonyms_en": [
+      "put weak small premature baby inside heated glass incubator box machine tool"
+    ],
+    "synonyms_fr": [
+      "mettre le bébé prématuré dans la couveuse",
+      "hospitalisation en néonatalogie"
+    ]
+  },
+  {
+    "term_en": "Admit trauma patient high observation intermediate care emergency tracking",
+    "term_fr": "Hospitaliser le blessé de la route en unité de surveillance chirurgicale",
+    "synonyms_en": [
+      "keep severe car bike smash patient under tight observation bed monitoring near theatre"
+    ],
+    "synonyms_fr": [
+      "garder l'accidenté de la route en salle de surveillance étroite"
+    ]
+  },
+  {
+    "term_en": "Antenatal screening profiles maternal syphilis rapid test strips logs",
+    "term_fr": "Dépistage systématique de la syphilis lors du premier bilan prénatal CPN1",
+    "synonyms_en": [
+      "run rapid test strip drop check for hidden genital syphilis infection in pregnancy start"
+    ],
+    "synonyms_fr": [
+      "faire le test syphilis obligatoire lors de la première visite de grossesse"
+    ]
+  },
+  {
+    "term_en": "Approve blood transfusion unit packed cells hematology banks releases",
+    "term_fr": "Valider et lancer la transfusion sanguine après double contrôle au lit",
+    "synonyms_en": [
+      "check donor card bag stickers names carefully before pushing blood vein fluids line"
+    ],
+    "synonyms_fr": [
+      "faire la vérification ultime au lit du malade avant de lancer le sang"
+    ]
+  },
+  {
+    "term_en": "Ascaris roundworms heavy infections complications intestinal block surgery review",
+    "term_fr": "Demander un avis chirurgical urgent pour occlusion par paquet d'ascaris",
+    "synonyms_en": [
+      "consult surgeon for child with blocked locked belly due to ball of living worms inside"
+    ],
+    "synonyms_fr": [
+      "urgence chirurgicale pour ventre bloqué par les vers intestinaux ascaris"
+    ]
+  },
+  {
+    "term_en": "Bacterial meningitis isolation droplets protective mask barriers setup",
+    "term_fr": "Mettre en place un isolement de type gouttelettes pour méningite bactérienne",
+    "synonyms_en": [
+      "wear respiratory facial masks cover mouth near brain fever patient hospital bed area"
+    ],
+    "synonyms_fr": [
+      "porter le masque et isoler le malade de méningite contre la contagion par l'air"
+    ]
+  },
+  {
+    "term_en": "Bilharzia hematobium snail fever endemic village screening microscopic urine",
+    "term_fr": "Examen urinaire des sédiments après centrifugation recherche d'œufs de bilharzie",
+    "synonyms_en": [
+      "spin urine sample look under microscope layout for spine eggs red cell tracks"
+    ],
+    "synonyms_fr": [
+      "recherche d'œufs de bilharziose dans le culot d'urine au microscope"
+    ]
+  },
+  {
+    "term_en": "Blood sample processing serum transaminases liver injury evaluations panel",
+    "term_fr": "Dosage des transaminases hépatiques ALAT et ASAT",
+    "synonyms_en": [
+      "check liver enzyme toxicity levels blood chemistry values ALAT ASAT"
+    ],
+    "synonyms_fr": [
+      "dosage des transaminases ALAT ASAT pour vérifier l'état du foie"
+    ]
+  },
+  {
+    "term_en": "Candidal skin infections folds drying antiseptic powders topical cares",
+    "term_fr": "Soins d'hygiène et séchage des plis cutanés pour intertrigo candidosique",
+    "synonyms_en": [
+      "wash clean keep bone dry raw skin fold zones under heavy breasts red thigh cuts"
+    ],
+    "synonyms_fr": [
+      "laver et bien sécher les plis de la peau irrités par les champignons"
+    ]
+  },
+  {
+    "term_en": "Cataract visual assessment tracking blindness prevention outpatient care lines",
+    "term_fr": "Référer au technicien supérieur d'ophtalmologie spécialisé cataracte",
+    "synonyms_en": [
+      "send elderly opaque cloudy eye lens patient to regional specialist team eye camps"
+    ],
+    "synonyms_fr": [
+      "envoyer le vieux au technicien d'ophtalmologie pour le film blanc de l'œil"
+    ]
+  },
+  {
+    "term_en": "Cervical cerclage procedure incompetent cervix midpregnancy tracking",
+    "term_fr": "Poser un cerclage du col de l'utérus pour béance cervicale",
+    "synonyms_en": [
+      "stitch close loose mouth neck of womb during early pregnancy months to avoid drop miscarriages"
+    ],
+    "synonyms_fr": [
+      "faire un cerclage du col utérin pour empêcher la fausse couche"
+    ]
+  },
+  {
+    "term_en": "Chest drainage monitoring air leaks systems oscillation checking protocols",
+    "term_fr": "Surveillance du niveau d'oscillation du liquide dans le bocal de drainage",
+    "synonyms_en": [
+      "check breathing swing balance changes water levels inside chest drainage equipment"
+    ],
+    "synonyms_fr": [
+      "vérifier si l'eau bouge dans le bocal du drain quand le malade respire"
+    ]
+  },
+  {
+    "term_en": "Cholera fluid rescue high speed dehydration intravenous scaling chart",
+    "term_fr": "Perfusion intraveineuse massive de Ringer Lactate protocole choléra d'urgence",
+    "synonyms_en": [
+      "run multiple bags of fluid ringer lactates extremely fast into veins bowel purge collapse"
+    ],
+    "synonyms_fr": [
+      "perfusion massive de Ringer Lactate en urgence absolue pour le choléra"
+    ]
+  },
+  {
+    "term_en": "Chronic hypertension cardiac monitoring salt checks microalbuminuria tracking",
+    "term_fr": "Recherche d'une protéinurie des 24 heures retentissement rénal de l'HTA",
+    "synonyms_en": [
+      "collect full day urine volume container bottle to test kidney damage from tension"
+    ],
+    "synonyms_fr": [
+      "ramasser les urines de 24h pour doser l'albumine de la tension"
+    ]
+  },
+  {
+    "term_en": "Clean surgical skin incisions closure staples sutures techniques options",
+    "term_fr": "Fermeture cutanée d'incision propre par points séparés de fil non résorbable",
+    "synonyms_en": [
+      "tie separate clean surgical loop knots cuts stitch lines outer layer finish"
+    ],
+    "synonyms_fr": [
+      "fermer la peau avec des points de fil simples séparés"
+    ]
+  },
+  {
+    "term_en": "Complete blood crossmatch checking neonates anemia hemolytic tracking",
+    "term_fr": "Bilan d'ictère néonatal recherche d'incompatibilité ABO ou Rhésus",
+    "synonyms_en": [
+      "test mother infant blood type combination crash mismatches yellow skin crisis newborn"
+    ],
+    "synonyms_fr": [
+      "recherche d'incompatibilité de groupe sanguin entre la maman et le bébé jaune"
+    ]
+  },
+  {
+    "term_en": "Continuous fetal heart monitor labor risk dystocia management tracker",
+    "term_fr": "Auscultation du cœur fœtal toutes les 15 minutes phase active du travail",
+    "synonyms_en": [
+      "listen to down belly infant heart beats frequently during strong delivery pushes"
+    ],
+    "synonyms_fr": [
+      "écouter le cœur du bébé toutes les 15 minutes pendant le travail"
+    ]
+  },
+  {
+    "term_en": "Counsel family enteric infections transmission food hygiene boiling water",
+    "term_fr": "Éducation sanitaire sur le lavage des mains et ébullition de l'eau typhoïde",
+    "synonyms_en": [
+      "teach compound household members to boil all drinking brook water wash hands with soap"
+    ],
+    "synonyms_fr": [
+      "expliquer au malade de bouillir l'eau de boisson et laver les mains contre la typhoïde"
+    ]
+  },
+  {
+    "term_en": "Deep muscle wound collections surgically decompress surgical operating plan",
+    "term_fr": "Mise à plat chirurgicale d'un abcès profond de la cuisse ou fesse au bloc",
+    "synonyms_en": [
+      "open drain huge deep flesh pus pouch pocket under spinal general numb room setup"
+    ],
+    "synonyms_fr": [
+      "ouvrir et nettoyer un gros abcès profond au bloc opératoire"
+    ]
+  },
+  {
+    "term_en": "Dermatophytosis scalp ringworms hair loss treatment oral grid monitoring",
+    "term_fr": "Instaurer un traitement antifongique par voie orale teigne de l'enfant",
+    "synonyms_en": [
+      "give oral anti-fungal tablet syrups long weeks course child head white scaling crusts"
+    ],
+    "synonyms_fr": [
+      "mettre l'enfant sous comprimés antifongiques oraux pour la teigne du cuir chevelu"
+    ]
+  },
+  {
+    "term_en": "Diabetes mellitus ketoacidosis protocol continuous hourly capillary sugar tracking",
+    "term_fr": "Surveillance horaire de la glycémie capillaire et cétonurie acidocétose",
+    "synonyms_en": [
+      "prick finger sugar dipstick urine test sheet every hour critical diabetes coma management"
+    ],
+    "synonyms_fr": [
+      "contrôle toutes les heures du sucre au doigt et acétone dans les urines coma diabétique"
+    ]
+  },
+  {
+    "term_en": "Diarrheal disease severe dehydration intravenous electrolyte replacement plan pediatric",
+    "term_fr": "Réhydratation intraveineuse de l'enfant déshydraté selon le plan C de la PCIME",
+    "synonyms_en": [
+      "run fast pediatric iv infusion protocols line severe fluid loss body collapse kid diarrhea"
+    ],
+    "synonyms_fr": [
+      "réhydratation IV rapide de l'enfant selon le plan C PCIME",
+      "perfusion plan C pcime"
+    ]
+  },
+  {
+    "term_en": "Discharge newborn infant mother summary lines updates postdelivery tracking",
+    "term_fr": "Autoriser la sortie de l'accouchée et son nouveau-né à j2 post-partum",
+    "synonyms_en": [
+      "approve going home package bundle mother child 48 hours after normal delivery birth"
+    ],
+    "synonyms_fr": [
+      "signer la sortie de la maman et du bébé deux jours après accouchement normal"
+    ]
+  },
+  {
+    "term_en": "Dynamic glucose loading testing gestational screening antenatal profiles protocol",
+    "term_fr": "Dépistage du diabète chez la femme enceinte charge 75g glucose HGPO",
+    "synonyms_en": [
+      "give pregnancy mother sweet liquid load test drink check blood levels baseline hour two"
+    ],
+    "synonyms_fr": [
+      "test de diabète de grossesse avec boisson de 75 grammes de glucose au labo"
+    ]
+  },
+  {
+    "term_en": "Eclampsia impending symptoms severe induction emergency surgical options readying",
+    "term_fr": "Extraction fœtale d'urgence par césarienne crise d'éclampsie non contrôlée",
+    "synonyms_en": [
+      "perform crash abdominal operation birth child fast to save high blood pressure convulsing mother"
+    ],
+    "synonyms_fr": [
+      "faire la césarienne d'extrême urgence pour sauver la femme en crise d'éclampsie"
+    ]
+  },
+  {
+    "term_en": "Electrocardiogram rhythm tracks validation bradycardia tachycardia blocks identification",
+    "term_fr": "Pratiquer un électrocardiogramme ECG 12 dérivations complet",
+    "synonyms_en": [
+      "stick heart tracing suction tape leads chest arms roll out graph chart lines paper"
+    ],
+    "synonyms_fr": [
+      "faire un ECG complet à 12 pistes au lit du malade"
+    ]
+  },
+  {
+    "term_en": "Endemic filarial lymphatic disease swelling compression elevation skin hygiene",
+    "term_fr": "Soins d'hygiène locale et bandages élastiques éléphantiasis de jambe",
+    "synonyms_en": [
+      "wash massive swollen parasitic filaria leg carefully apply compression wrap wraps lines"
+    ],
+    "synonyms_fr": [
+      "soigner la peau et bander la grosse jambe d'éléphantiasis filarienne"
+    ]
+  },
+  {
+    "term_en": "Episiotomy incisions execution obstetric crowning birth mechanical assistance",
+    "term_fr": "Pratiquer une infiltration locale à la lidocaïne 1% avant épisiotomie",
+    "synonyms_en": [
+      "numb low genital vaginal outlet flesh area with syringe needle before cutting opening push baby"
+    ],
+    "synonyms_fr": [
+      "piqûre locale pour endormir le bas avant de couper l'épisiotomie"
+    ]
+  },
+  {
+    "term_en": "Establish peripheral lines access newborns umbilical vein cannulation route",
+    "term_fr": "Pose d'un cathéter veineux ombilical chez le nouveau-né en détresse réanimation",
+    "synonyms_en": [
+      "insert emergency small drip line tube inside newborn navel cord cord vein connection"
+    ],
+    "synonyms_fr": [
+      "placer le cathéter dans le cordon ombilical du bébé pour réanimation urgente"
+    ]
+  },
+  {
+    "term_en": "Evacuation products conception incomplete miscarriage surgical curettes instruments kits",
+    "term_fr": "Révision utérine instrumentale par curetage de sécurité post avortement",
+    "synonyms_en": [
+      "scrape dead placenta pregnancy remains from womb inside loop tool bleeding emergency"
+    ],
+    "synonyms_fr": [
+      "curetage de l'utérus pour enlever les débris de fausse couche au bloc"
+    ]
+  },
+  {
+    "term_en": "Fasting blood glucose concentrations calibrations clinical lab validation panels",
+    "term_fr": "Demander une glycémie veineuse à jeun au laboratoire central",
+    "synonyms_en": [
+      "send vein blood draw tube container bottle morning fast sugar count verification"
+    ],
+    "synonyms_fr": [
+      "prise de sang à jeun au laboratoire pour confirmer le taux de sucre"
+    ]
+  },
+  {
+    "term_en": "Fecal samples occult blood biochemical cards testing colorectal pathologies",
+    "term_fr": "Recherche de sang dans les selles par test immunologique rapide",
+    "synonyms_en": [
+      "apply smear caca drop on chemistry indicator card paper check slow bowel bleed tracks"
+    ],
+    "synonyms_fr": [
+      "test rapide sur le caca pour chercher le sang invisible de l'estomac"
+    ]
+  },
+  {
+    "term_en": "Fluid intake output charts documentations renal failure shock tracking hourly",
+    "term_fr": "Mettre en place une fiche de surveillance stricte de la diurèse horaire",
+    "synonyms_en": [
+      "log down numbers of drink fluids urine metrics container lines nurse chart flow"
+    ],
+    "synonyms_fr": [
+      "ouvrir une fiche d'entrées et sorties d'eau pour insuffisance rénale"
+    ]
+  },
+  {
+    "term_en": "Functional recovery limbs muscle exercises hemiplegia stroke sessions therapy",
+    "term_fr": "Planifier trois séances de kinésithérapie passive par semaine post AVC",
+    "synonyms_en": [
+      "schedule physical body specialist limb stretches movements weeks sequence stroke recovery"
+    ],
+    "synonyms_fr": [
+      "programmer trois massages et mouvements passifs par semaine pour hémiplégie AVC"
+    ]
+  },
+  {
+    "term_en": "Fundoscopy hypertensive retinopathy staging blood pressure impact vascular view",
+    "term_fr": "Examen du fond d'œil pour recherche de signes de rétinopathie hypertensive",
+    "synonyms_en": [
+      "look through dark pupil back eye layer vessels check damage high blood pressure lines"
+    ],
+    "synonyms_fr": [
+      "faire le fond d'œil pour voir les dégâts de la tension sur les vaisseaux"
+    ]
+  },
+  {
+    "term_en": "Gastric washing tube removals charcoal activations drug overdosages protocols",
+    "term_fr": "Administration de charbon activé par sonde naso-gastrique empoisonnement",
+    "synonyms_en": [
+      "pour black activated liquid mix down nose pipe stomach loop block toxic absorbs"
+    ],
+    "synonyms_fr": [
+      "passer le charbon actif par la sonde du nez après intoxication par produit"
+    ]
+  },
+  {
+    "term_en": "GeneXpert molecular testings lung sputum samples multi drug resistant tuberculosis tracking",
+    "term_fr": "Demander un test GeneXpert MTB/RIF sur les crachats recherche de résistance",
+    "synonyms_en": [
+      "order molecular rapid dna check cough spit sample search hard resistant tuberculosis bugs"
+    ],
+    "synonyms_fr": [
+      "test moléculaire GeneXpert pour voir si le microbe de la tuberculose refuse les médicaments"
+    ]
+  },
+  {
+    "term_en": "Glaucoma vision protections optic disk damages periodic visual fields testing",
+    "term_fr": "Demander un examen du champ visuel périmétrie glaucome chronique",
+    "synonyms_en": [
+      "order dot flash light tracking test maps side view angles checking blind spot layout"
+    ],
+    "synonyms_fr": [
+      "faire l'examen du champ visuel pour suivre la perte de vue du glaucome"
+    ]
+  },
+  {
+    "term_en": "Gonorrhea syndromic guidelines treatments cephalosporin intramuscular injections tracking",
+    "term_fr": "Traitement de l'urétrite selon l'approche syndromique IST dose unique",
+    "synonyms_en": [
+      "give combined penicillin muscle shot oral drug capsules same day painful yellow drip treatment"
+    ],
+    "synonyms_fr": [
+      "soigner la chaude-pisse directement par piqûre et comprimés le même jour",
+      "approche syndromique ist"
+    ]
+  },
+  {
+    "term_en": "Head injury skull bones fractures imaging plain radiographs layouts skull views",
+    "term_fr": "Radiographie du crâne face et profil traumatisme",
+    "synonyms_en": [
+      "order flat plain bone picture layouts head skull structure crash hits trauma checking"
+    ],
+    "synonyms_fr": [
+      "radiographie des os de la tête face et profil après coup reçu"
+    ]
+  },
+  {
+    "term_en": "Hepatitis virus active chronic tracking viral load count quantification testing PCR",
+    "term_fr": "Demander la charge virale plasmatique de l'hépatite B PCR ADN",
+    "synonyms_en": [
+      "order high tech molecular count virus particles liver chronic illness tracking blood sample"
+    ],
+    "synonyms_fr": [
+      "mesurer la quantité de virus de l'hépatite B dans le sang par charge virale"
+    ]
+  },
+  {
+    "term_en": "Hepatocellular carcinoma ultrasound guided liver core biopsy surgical histology",
+    "term_fr": "Prélèvement de ponction-biopsie hépatique sous guidage échographique PBH",
+    "synonyms_en": [
+      "punch long thick needle inside liver tumor mass tissue under sound scan guide laboratory slide"
+    ],
+    "synonyms_fr": [
+      "faire la biopsie à l'aiguille du foie malade à travers la peau écho guidée"
+    ]
+  },
+  {
+    "term_en": "Hemorrhoids severe proctitis rectal bleeding surgery internal ligation ligation booking",
+    "term_fr": "Référer pour traitement chirurgical ou ligature d'hémorroïdes internes",
+    "synonyms_en": [
+      "send old chronic bleeding piles lumps patient for internal ring tie clip operation block"
+    ],
+    "synonyms_fr": [
+      "envoyer chez le chirurgien pour couper ou attacher les paquets d'hémorroïdes"
+    ]
+  },
+  {
+    "term_en": "HIV disease clinical stages tracking opportunist prophylaxis trimethoprim sulfa oral pills",
+    "term_fr": "Mise sous prophylaxie par cotrimoxazole systématique patient VIH avancé",
+    "synonyms_en": [
+      "start protective daily white double defense capsules prevent chest head germs attack",
+      "HIV cotrimoxazole"
+    ],
+    "synonyms_fr": [
+      "commencer le traitement préventif au cotrimoxazole Bactrim chez le séropositif"
+    ]
+  },
+  {
+    "term_en": "Hydrocele tense massive contents scrotal aspirations therapeutic avoidance puncture infection",
+    "term_fr": "Interdire la ponction simple à l'aiguille de l'hydrocèle risque élevé d'infection",
+    "synonyms_en": [
+      "do not insert fluid drain syringe inside swollen water testicle pouch outside operating room"
+    ],
+    "synonyms_fr": [
+      "interdiction absolue de vider la bourse d'eau à l'aiguille en salle de consultation"
+    ]
+  },
+  {
+    "term_en": "Hypertensive encephalopathy severe cerebral signs continuous intravenous vasodilator infusions lines",
+    "term_fr": "Administration d'antihypertenseurs injectables à la seringue électrique réanimation",
+    "synonyms_en": [
+      "put potent heavy tension control fluid inside automatic pump line tube machine critical monitor"
+    ],
+    "synonyms_fr": [
+      "perfusion de nicardipine ou loxen à la seringue électrique pour crise cérébrale tension"
+    ]
+  },
+  {
+    "term_en": "Hypoglycemia comatose unconscious states intravenous hypertonic glucose hypertonic injections direct",
+    "term_fr": "Injection intraveineuse directe lente de sérum glucosé hypertonique à 30 % ou 50 %",
+    "synonyms_en": [
+      "push heavy concentrated sweet thick syrup fluid needle directly into vein comatose sugar drop"
+    ],
+    "synonyms_fr": [
+      "faire l'injection de sérum glucosé concentré à 30% directement dans la veine réveil coma"
+    ]
+  },
+  {
+    "term_en": "Impetigo widespread eruptions extensive lesions systemic antibiotic therapy oral pills",
+    "term_fr": "Mise sous antibiothérapie systémique orale pour impétigo généralisé",
+    "synonyms_en": [
+      "give oral antibiotic syrups capsules dynamic weeks cycle child infected golden fluid blisters body skin"
+    ],
+    "synonyms_fr": [
+      "donner les antibiotiques en comprimés ou sirop pour boutons d'impétigo sur tout le corps"
+    ]
+  },
+  {
+    "term_en": "Incision drainage abdominal surgical collections surgical peritoneal lavages systems operations",
+    "term_fr": "Référer au bloc de chirurgie pour laparotomie d'évacuation d'abcès sous-phrénique",
+    "synonyms_en": [
+      "send for open inner belly operation wash clean localized pus collection pockets rib floors"
+    ],
+    "synonyms_fr": [
+      "ouvrir le ventre chirurgicalement pour vider une poche de pus localisée péritonite"
+    ]
+  },
+  {
+    "term_en": "Indirect inguinal hernia incarcerated irreducible signs emergency surgical release listing",
+    "term_fr": "Référer en urgence chirurgicale absolue hernie inguinale étranglée suspicion gangrène",
+    "synonyms_en": [
+      "rush painful hard tight blocked groin rupture lump patient directly into surgery operating layout"
+    ],
+    "synonyms_fr": [
+      "envoyer immédiatement au bloc chirurgical pour hernie de l'aine bloquée douloureuse gâtée"
+    ]
+  },
+  {
+    "term_en": "Iron deficiency anemia blood parameters trackings ferritin iron bindings capacities labs",
+    "term_fr": "Demander un dosage de la ferritine sérique bilan anémie martiale",
+    "synonyms_en": [
+      "order deep blood test chemistry check iron reserve warehouses levels values"
+    ],
+    "synonyms_fr": [
+      "dosage de la ferritine pour voir la réserve de fer dans le corps anémie"
+    ]
+  },
+  {
+    "term_en": "Ischemic stroke cerebral protection protocol avoidance high fluid hypertonic overloads",
+    "term_fr": "Prescrire un nursing de protection cérébrale post AVC et surveillance déglutition",
+    "synonyms_en": [
+      "keep head upright verify zero swallow cough choke faults before giving water foods mouth lines"
+    ],
+    "synonyms_fr": [
+      "tester si le malade avale la salive avant de donner à manger ou boire après l'attaque AVC"
+    ]
+  },
+  {
+    "term_en": "Joint infections septic arthritis synovial fluids collections microscope gram checks cultures",
+    "term_fr": "Analyse cytobactériologique du liquide articulaire ponctionné",
+    "synonyms_en": [
+      "send joint aspirated liquid vial container check cells germ types antibiotics response test"
+    ],
+    "synonyms_fr": [
+      "analyse en laboratoire du liquide retiré du genou gonflé à la recherche de microbes"
+    ]
+  },
+  {
+    "term_en": "Malnutrition child edema checking scales serial skin folds checking metrics tracker",
+    "term_fr": "Vérifier la disparition du signe du godet œdèmes kwashiorkor pesée quotidienne",
+    "synonyms_en": [
+      "press fingers soft ankle skin bone daily monitor fluid swelling melting away kid nutrition card"
+    ],
+    "synonyms_fr": [
+      "suivre la diminution du gonflement des pieds godet de l'enfant kwashiorkor tous les jours"
+    ]
+  },
+  {
+    "term_en": "Maternal risk tracking prenatal visits urine proteins quantitative checkups dipsticks logs",
+    "term_fr": "Recherche d'albumine urinaire à chaque consultation prénatale CPN",
+    "synonyms_en": [
+      "dip test paper strip yellow urine bottle pregnancy visit search swelling tension toxins leaks"
+    ],
+    "synonyms_fr": [
+      "tester obligatoirement l'albumine dans les urines de la femme enceinte à chaque CPN"
+    ]
+  },
+  {
+    "term_en": "Mitral stenosis chronic valve impairments left atrial expansion coagulation thrombo prophylaxis",
+    "term_fr": "Prévention des accidents emboliques par antivitamines K AVK cardiopathie mitrale",
+    "synonyms_en": [
+      "start long term protective thin blood oral tablets check clotting values INR regularly valve lines"
+    ],
+    "synonyms_fr": [
+      "mise sous traitement par comprimés AVK fluidifiants sang pour maladie de valve cardiaque"
+    ]
+  },
+  {
+    "term_en": "Myocardial infarction secondary damage prevention oral daily aspirin therapy regimen",
+    "term_fr": "Prescrire un traitement antiagrégant plaquettaire au long cours post infarctus",
+    "synonyms_en": [
+      "start protective small dose daily blood thin micro aspirin tablets lifelong heart protection"
+    ],
+    "synonyms_fr": [
+      "mise sous aspirine faible dose kardegic tous les jours à vie après crise cardiaque"
+    ]
+  },
+  {
+    "term_en": "Neonatal asphyxia emergency interventions bag valve mask manual inflations ventilations tracking",
+    "term_fr": "Ventilation du nouveau-né au ballon auto-remplisseur et masque Ambu réanimation",
+    "synonyms_en": [
+      "pump manual squeeze respiratory bag air mask over limp blue non crying baby birth delivery floor"
+    ],
+    "synonyms_fr": [
+      "animer le bébé qui ne respire pas à la naissance avec le ballon et masque Ambu"
+    ]
+  },
+  {
+    "term_en": "Neonatal tetanus spasms control continuous intravenous sedatives relaxants line infusion",
+    "term_fr": "Sédimentation contrôlée des spasmes du tétanos néonatal par perfusions de diazépam",
+    "synonyms_en": [
+      "run relaxing calm anti contraction fluid nerve drops tube newborn rigid seizures lines control"
+    ],
+    "synonyms_fr": [
+      "passer le valium en perfusion continue pour calmer les crises de raideur du tétanos bébé"
+    ]
+  },
+  {
+    "term_en": "Nephrotic syndrome lipid overloads cardiovascular risks profiling cholesterol blood checks",
+    "term_fr": "Bilan de contrôle d'hyperlipidémie secondaire syndrome néphrotique complexe",
+    "synonyms_en": [
+      "measure total blood fats triglycerides values kidney damage body response test panels"
+    ],
+    "synonyms_fr": [
+      "surveiller la hausse de cholestérol provoquée par la fuite d'albumine des reins"
+    ]
+  },
+  {
+    "term_en": "Onchocerciasis microfilaria loads eyes damage tracking split lamp ophthalmologic views",
+    "term_fr": "Examen ophtalmologique à la lampe à fente recherche de microfilaires dans l'œil",
+    "synonyms_en": [
+      "look inside eye layers bright magnification slit lamp tool search crawling parasite threads blinding disease"
+    ],
+    "synonyms_fr": [
+      "recherche de vers de filaire oncho dans l'œil au microscope de consultation"
+    ]
+  },
+  {
+    "term_en": "Peptic ulcer disease hemorrhage hematemesis vomiting blood surgery emergency options reviews",
+    "term_fr": "Demander une consultation chirurgicale d'urgence pour ulcère gastrique hémorragique vomissement sang",
+    "synonyms_en": [
+      "call emergency surgeon for patient throwing up coffee ground blood clots severe ulcer gut raw cuts"
+    ],
+    "synonyms_fr": [
+      "urgence chirurgicale pour hématémèse vomissement de sang noir sur ulcère d'estomac"
+    ]
+  },
+  {
+    "term_en": "Peritonitis generalized septic collections broad spectrum combined intravenous triple antibiotic therapy",
+    "term_fr": "Triple antibiothérapie intraveineuse probabiliste d'urgence pour péritonite aiguë",
+    "synonyms_en": [
+      "inject three powerful bone matching anti germ medications together drip lines burst bowel lines protection"
+    ],
+    "synonyms_fr": [
+      "triple antibiothérapie IV d'urgence ampicilline gentamycine métronidazole ventre de bois"
+    ]
+  },
+  {
+    "term_en": "Placenta praevia heavy continuous hemorrhage lifesaving maternal emergency emergency csection delivery",
+    "term_fr": "Césarienne d'urgence absolue pour placenta praevia hémorragique massif",
+    "synonyms_en": [
+      "perform immediate operative belly birth slice open womb stop flooding birth channel bleed maternal rescue"
+    ],
+    "synonyms_fr": [
+      "césarienne de sauvetage immédiat pour maman enceinte qui vide le sang placenta bas"
+    ]
+  },
+  {
+    "term_en": "Pleurisy massive volumes fluid accumulations drainage intercostal catheter insertion procedures",
+    "term_fr": "Pose d'un cathéter de drainage pleural pour pleurésie purulente ou ascite thoracique",
+    "synonyms_en": [
+      "insert wide plastic tube link container chest wall side pump bad fluid pus collection away"
+    ],
+    "synonyms_fr": [
+      "drainage thoracique pour vider la poche de pus ou grand liquide du poumon"
+    ]
+  },
+  {
+    "term_en": "Pneumocystis jirovecii infection advanced HIV combined high oral dose trimethoprim sulfa regimen",
+    "term_fr": "Instaurer un traitement curatif par cotrimoxazole forte dose pour pneumocystose pulmonaire",
+    "synonyms_en": [
+      "give massive loads white shield pills multiple times daily fight specific fungal severe lung collapse HIV"
+    ],
+    "synonyms_fr": [
+      "traitement curatif par fortes doses de cotrimoxazole Bactrim pour infection poumon VIH"
+    ]
+  },
+  {
+    "term_en": "Pneumothorax hypertensive ventilatory distress emergency needle thoracocentesis air escape",
+    "term_fr": "Exsufflation à l'aiguille d'urgence d'un pneumothorax suffocant sous tension",
+    "synonyms_en": [
+      "drive large bore syringe needle directly inside upper collar rib space vent explosive trapped air bubble lung collapse"
+    ],
+    "synonyms_fr": [
+      "piquer une aiguille dans la poitrine en urgence pour vider l'air sous pression qui étouffe"
+    ]
+  },
+  {
+    "term_en": "Post-partum hemorrhage continuous high dose oxytocin intravenous infusion speed protocols uterine tones",
+    "term_fr": "Perfusion continue d'ocytocine à forte dose pour atonie utérine post-partum",
+    "synonyms_en": [
+      "run high speed womb contracting hormone drug drip lines directly stop birth delivery bleed channel fluid"
+    ],
+    "synonyms_fr": [
+      "passer l'ocytocine Syntocinon en perfusion rapide pour faire durcir l'utérus saignement"
+    ]
+  },
+  {
+    "term_en": "Pre-eclampsia severe maternal stabilization intravenous antihypertensive hydralazine bolus slow injection",
+    "term_fr": "Administration intraveineuse lente d'hydralazine protocole hypertension sévère de grossesse",
+    "synonyms_en": [
+      "inject specialized fast blood pressure drops drug molecule directly into vein pregnancy crisis lines safety"
+    ],
+    "synonyms_fr": [
+      "injection intraveineuse directe lente de népressol hydralazine pour forte tension de grossesse"
+    ]
+  },
+  {
+    "term_en": "Pulmonary embolism respiratory collapses high density low molecular weight heparin subcutaneous injections",
+    "term_fr": "Instaurer une héparinothérapie à dose curative par injections sous-cutanées LOVENOX",
+    "synonyms_en": [
+      "inject fluid clot melting liquid needles into belly skin folds twice daily lung clot crisis care"
+    ],
+    "synonyms_fr": [
+      "faire les piqûres sous-cutanées de Lovenox dans le ventre à dose curative caillot poumon"
+    ]
+  },
+  {
+    "term_en": "Pulmonary tuberculosis advanced cavities tracking lung compliance respiratory functions lung imaging updates",
+    "term_fr": "Suivi radiologique pulmonaire de contrôle au deuxième et sixième mois de traitement antituberculeux",
+    "synonyms_en": [
+      "take chest plate x-ray layout views months in to check tuberculosis holes scars healing paths"
+    ],
+    "synonyms_fr": [
+      "radio du thorax obligatoire de contrôle à deux mois et six mois de traitement TB"
+    ]
+  },
+  {
+    "term_en": "Radical debridement necrotizing wounds surgical washings packing secondary closures loops plans",
+    "term_fr": "Nettoyage chirurgical itératif et pansement quotidien à la solution de Dakin bloc opératoire",
+    "synonyms_en": [
+      "take rot tissue flesh skin infection patient to theatre daily wash scrub soak with bleach fluids gauze"
+    ],
+    "synonyms_fr": [
+      "lavage chirurgical régulier et pansement au Dakin pour chair pourrie fasciite gangrène"
+    ]
+  },
+  {
+    "term_en": "Screening community health tracking typhoid fevers agglutinations testing Widal Felix profiles validation",
+    "term_fr": "Demander un sérodiagnostic de Widal et Felix valeur d'orientation typhoïde",
+    "synonyms_en": [
+      "order standard blood slide antibody glue reaction checks for suspected sale water enteric fever tracks"
+    ],
+    "synonyms_fr": [
+      "examen de sang sérologie de Widal pour orientation de la fièvre typhoïde"
+    ]
+  },
+  {
+    "term_en": "Skin scraps microscopic preparation tinea capitis identification dermatophytic filaments view slides",
+    "term_fr": "Prélèvement de squames et examen direct au microscope pour teigne du cuir chevelu",
+    "synonyms_en": [
+      "scrape head white hairless hair root scale crust crusts powder check fungal thread layouts lab glass"
+    ],
+    "synonyms_fr": [
+      "gratter les peaux blanches du cuir chevelu de l'enfant pour voir le champignon au microscope"
+    ]
+  },
+  {
+    "term_en": "Syphilis neurological secondary involvements checking cerebrospinal fluids lumbar puncture parameters validation",
+    "term_fr": "Ponction lombaire de contrôle sérologique VDRL cas de neurosyphilis suspectée",
+    "synonyms_en": [
+      "draw spinal cord back fluid water vial test syphilis virus invasion central nerve structures brain tracking"
+    ],
+    "synonyms_fr": [
+      "ponction lombaire pour chercher la syphilis dans le liquide du dos neurosyphilis"
+    ]
+  },
+  {
+    "term_en": "Trauma severe compound limb fractures temporary transcutaneous skeletal pins splint immobilization frameworks",
+    "term_fr": "Pose d'une attelle de Cramer d'attente immobilisation provisoire de membre fracturé accident",
+    "synonyms_en": [
+      "wrap flexible metal ladder wire frame splint tightly around mangled bloody leg bone structure crash scene stabilization"
+    ],
+    "synonyms_fr": [
+      "poser une attelle métallique de Cramer pour bloquer la jambe cassée après accident"
+    ]
+  },
+  {
+    "term_en": "Urethral discharge collections loops swabs strict clinical bacteriological culture methods chocolate agar slants",
+    "term_fr": "Mise en culture sur milieu gélosé spécifique prélèvement urétral chaude-pisse gonocoque",
+    "synonyms_en": [
+      "grow penis discharge fluid drops on special laboratory germ nutrient dishes find accurate drug matches lines"
+    ],
+    "synonyms_fr": [
+      "mettre le pus du sexe de l'homme en culture au labo pour trouver le bon antibiotique"
+    ]
+  }
+]

@@ -1,0 +1,1390 @@
+[
+  {
+    "term_en": "Complete blood count",
+    "term_fr": "Hémogramme complet",
+    "synonyms_en": [
+      "CBC",
+      "Full blood count",
+      "FBC",
+      "Blood test"
+    ],
+    "synonyms_fr": [
+      "NFS",
+      "Numération formule sanguine",
+      "Prise de sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hemoglobin concentration",
+    "term_fr": "Taux d'hémoglobine",
+    "synonyms_en": [
+      "Hb level",
+      "Blood level"
+    ],
+    "synonyms_fr": [
+      "Taux de sang",
+      "Anémie test"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Thick blood smear for malaria",
+    "term_fr": "Goutte épaisse",
+    "synonyms_en": [
+      "Malaria smear",
+      "Blood film for MPS"
+    ],
+    "synonyms_fr": [
+      "GE",
+      "Recherche de palu",
+      "Test de paludisme"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Malaria rapid diagnostic test",
+    "term_fr": "Test de diagnostic rapide du paludisme",
+    "synonyms_en": [
+      "Malaria RDT",
+      "Finger prick test"
+    ],
+    "synonyms_fr": [
+      "TDR Palu",
+      "Test rapide palu"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Erythrocyte sedimentation rate",
+    "term_fr": "Vitesse de sédimentation",
+    "synonyms_en": [
+      "ESR",
+      "Sed rate"
+    ],
+    "synonyms_fr": [
+      "VS",
+      "Vitesse de sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "C-reactive protein",
+    "term_fr": "Protéine C-réactive",
+    "synonyms_en": [
+      "CRP",
+      "Infection marker"
+    ],
+    "synonyms_fr": [
+      "CRP",
+      "Prise de sang pour infection"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Reticulocyte count",
+    "term_fr": "Taux de réticulocytes",
+    "synonyms_en": [
+      "Retic count"
+    ],
+    "synonyms_fr": [
+      "Réticulocytes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "White blood cell count",
+    "term_fr": "Numération des globules blancs",
+    "synonyms_en": [
+      "WBC",
+      "White count"
+    ],
+    "synonyms_fr": [
+      "Globules blancs",
+      "Leucocytes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Platelet count",
+    "term_fr": "Numération plaquettaire",
+    "synonyms_en": [
+      "PLT",
+      "Platelets"
+    ],
+    "synonyms_fr": [
+      "Plaquettes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Sickle cell slide test",
+    "term_fr": "Test d'Emmel",
+    "synonyms_en": [
+      "Sickling test",
+      "Emmel test"
+    ],
+    "synonyms_fr": [
+      "Test d'Emmel",
+      "Test drépanocytose"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hemoglobin electrophoresis",
+    "term_fr": "Électrophorèse de l'hémoglobine",
+    "synonyms_en": [
+      "Hb electrophoresis",
+      "Sickle cell test"
+    ],
+    "synonyms_fr": [
+      "Électrophorèse",
+      "Analyse de la drépanocytose"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood typing and Rh factor",
+    "term_fr": "Groupage sanguin et facteur Rhésus",
+    "synonyms_en": [
+      "Blood group",
+      "ABO Rh"
+    ],
+    "synonyms_fr": [
+      "Groupe sanguin",
+      "Carte de groupe"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cross-matching of blood",
+    "term_fr": "Épreuve croisée de compatibilité sanguine",
+    "synonyms_en": [
+      "Crossmatch",
+      "Blood compatibility test"
+    ],
+    "synonyms_fr": [
+      "Compatibilité sanguine",
+      "Test de la poche de sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Bleeding time",
+    "term_fr": "Temps de saignement",
+    "synonyms_en": [
+      "Duke test",
+      "Ivy test"
+    ],
+    "synonyms_fr": [
+      "Temps de saignement",
+      "TS"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Prothrombin time",
+    "term_fr": "Taux de prothrombine",
+    "synonyms_en": [
+      "PT",
+      "INR"
+    ],
+    "synonyms_fr": [
+      "TP",
+      "INR",
+      "Temps de Quick"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Activated partial thromboplastin time",
+    "term_fr": "Temps de céphaline activée",
+    "synonyms_en": [
+      "APTT",
+      "PTT"
+    ],
+    "synonyms_fr": [
+      "TCA",
+      "TCK"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Fast plasma glucose",
+    "term_fr": "Glycémie à jeun",
+    "synonyms_en": [
+      "Fasting blood sugar",
+      "FBS"
+    ],
+    "synonyms_fr": [
+      "Sucre dans le sang à jeun",
+      "Glycémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Random blood glucose",
+    "term_fr": "Glycémie capillaire aléatoire",
+    "synonyms_en": [
+      "RBS",
+      "Finger prick glucose"
+    ],
+    "synonyms_fr": [
+      "Destro",
+      "Sucre rapide",
+      "HGT"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Glycated hemoglobin",
+    "term_fr": "Hémoglobine glyquée",
+    "synonyms_en": [
+      "HbA1c",
+      "Three-month sugar test"
+    ],
+    "synonyms_fr": [
+      "HbA1c",
+      "Moyenne de sucre"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum creatinine",
+    "term_fr": "Créatininémie",
+    "synonyms_en": [
+      "Creatinine",
+      "Kidney function test"
+    ],
+    "synonyms_fr": [
+      "Créat",
+      "Examen des reins"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood urea nitrogen",
+    "term_fr": "Urée sanguine",
+    "synonyms_en": [
+      "Urea",
+      "BUN"
+    ],
+    "synonyms_fr": [
+      "Urée",
+      "Bilan rénal"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum uric acid",
+    "term_fr": "Uricémie",
+    "synonyms_en": [
+      "Uric acid",
+      "Gout test"
+    ],
+    "synonyms_fr": [
+      "Acide urique",
+      "Crise de goutte test"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total cholesterol",
+    "term_fr": "Cholestérol total",
+    "synonyms_en": [
+      "Blood fat test"
+    ],
+    "synonyms_fr": [
+      "Graisse dans le sang",
+      "Cholestérol"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HDL cholesterol",
+    "term_fr": "Cholestérol HDL",
+    "synonyms_en": [
+      "Good cholesterol"
+    ],
+    "synonyms_fr": [
+      "Bon cholestérol"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "LDL cholesterol",
+    "term_fr": "Cholestérol LDL",
+    "synonyms_en": [
+      "Bad cholesterol"
+    ],
+    "synonyms_fr": [
+      "Mauvais cholestérol"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum triglycerides",
+    "term_fr": "Triglycéridémie",
+    "synonyms_en": [
+      "Triglycerides"
+    ],
+    "synonyms_fr": [
+      "Triglycérides"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Alanine aminotransferase",
+    "term_fr": "Alanine aminotransférase",
+    "synonyms_en": [
+      "ALT",
+      "SGPT",
+      "Liver enzyme"
+    ],
+    "synonyms_fr": [
+      "ALAT",
+      "SGPT",
+      "Transaminases foie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Aspartate aminotransferase",
+    "term_fr": "Aspartate aminotransférase",
+    "synonyms_en": [
+      "AST",
+      "SGOT"
+    ],
+    "synonyms_fr": [
+      "ASAT",
+      "SGOT"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Alkaline phosphatase",
+    "term_fr": "Phosphatase alcaline",
+    "synonyms_en": [
+      "ALP"
+    ],
+    "synonyms_fr": [
+      "PAL",
+      "Phosphatases alcalines"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Gamma-glutamyl transferase",
+    "term_fr": "Gamma-glutamyl transférase",
+    "synonyms_en": [
+      "GGT",
+      "Gamma GT"
+    ],
+    "synonyms_fr": [
+      "GGT",
+      "Gamma GT"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total bilirubin",
+    "term_fr": "Bilirubine totale",
+    "synonyms_en": [
+      "Bilirubin",
+      "Jaundice test"
+    ],
+    "synonyms_fr": [
+      "Bilirubine",
+      "Test d'ictère",
+      "Test des yeux jaunes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Direct bilirubin",
+    "term_fr": "Bilirubine directe",
+    "synonyms_en": [
+      "Conjugated bilirubin"
+    ],
+    "synonyms_fr": [
+      "Bilirubine conjuguée"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum albumin",
+    "term_fr": "Albuminémie",
+    "synonyms_en": [
+      "Albumin",
+      "Malnutrition blood test"
+    ],
+    "synonyms_fr": [
+      "Albumine",
+      "Protéines du sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total serum protein",
+    "term_fr": "Protéines totales sériques",
+    "synonyms_en": [
+      "Total protein"
+    ],
+    "synonyms_fr": [
+      "Protides totaux",
+      "Protéines"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum electrolytes",
+    "term_fr": "Ionogramme sanguin",
+    "synonyms_en": [
+      "Electrolytes",
+      "Sodium Potassium Chloride",
+      "Lytes"
+    ],
+    "synonyms_fr": [
+      "Iono",
+      "Sels minéraux du sang",
+      "Sodium et Potassium"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum calcium",
+    "term_fr": "Calcémie",
+    "synonyms_en": [
+      "Calcium"
+    ],
+    "synonyms_fr": [
+      "Calcium dans le sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum amylase",
+    "term_fr": "Amylasémie",
+    "synonyms_en": [
+      "Amylase",
+      "Pancreas test"
+    ],
+    "synonyms_fr": [
+      "Amylase",
+      "Examen du pancréas"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum lipase",
+    "term_fr": "Lipasémie",
+    "synonyms_en": [
+      "Lipase"
+    ],
+    "synonyms_fr": [
+      "Lipase"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Creatine kinase-MB",
+    "term_fr": "Créatine kinase-MB",
+    "synonyms_en": [
+      "CK-MB",
+      "Heart attack blood test"
+    ],
+    "synonyms_fr": [
+      "CK-MB",
+      "Enzyme cardiaque"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cardiac troponin test",
+    "term_fr": "Dosage de la troponine cardiaque",
+    "synonyms_en": [
+      "Troponin I",
+      "Troponin T",
+      "Trop"
+    ],
+    "synonyms_fr": [
+      "Troponine",
+      "Test d'infarctus"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Widal test",
+    "term_fr": "Sérodiagnostic de Widal et Felix",
+    "synonyms_en": [
+      "Typhoid test",
+      "Widal"
+    ],
+    "synonyms_fr": [
+      "Test de Widal",
+      "Examen de la typhoïde"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Typhoid rapid diagnostic test",
+    "term_fr": "Test rapide de la typhoïde",
+    "synonyms_en": [
+      "Typhodot",
+      "Typhoid RDT"
+    ],
+    "synonyms_fr": [
+      "TDR Typhoïde"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HIV rapid screening test",
+    "term_fr": "Test de diagnostic rapide du VIH",
+    "synonyms_en": [
+      "HIV RDT",
+      "AIDS finger prick test"
+    ],
+    "synonyms_fr": [
+      "TDR VIH",
+      "Dépistage Sida"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HIV confirmatory western blot",
+    "term_fr": "Western Blot VIH pour confirmation",
+    "synonyms_en": [
+      "Western blot"
+    ],
+    "synonyms_fr": [
+      "Western Blot VIH",
+      "Confirmation VIH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis B surface antigen",
+    "term_fr": "Antigène HBs",
+    "synonyms_en": [
+      "HBsAg",
+      "Hep B test"
+    ],
+    "synonyms_fr": [
+      "Ag HBs",
+      "Dépistage Hépatite B"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis C virus antibody",
+    "term_fr": "Anticorps anti-VHC",
+    "synonyms_en": [
+      "Anti-HCV",
+      "Hep C test"
+    ],
+    "synonyms_fr": [
+      "Ac anti-VHC",
+      "Dépistage Hépatite C"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "VDRL test for syphilis",
+    "term_fr": "Test VDRL pour la syphilis",
+    "synonyms_en": [
+      "Syphilis test",
+      "VDRL"
+    ],
+    "synonyms_fr": [
+      "VDRL",
+      "Sérologie de la syphilis"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "TPHA test for syphilis",
+    "term_fr": "Test TPHA pour la syphilis",
+    "synonyms_en": [
+      "TPHA"
+    ],
+    "synonyms_fr": [
+      "TPHA",
+      "Confirmation syphilis"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Rheumatoid factor",
+    "term_fr": "Facteur rhumatoïde",
+    "synonyms_en": [
+      "RF test",
+      "Rheumatism blood test"
+    ],
+    "synonyms_fr": [
+      "FR",
+      "Test du rhumatisme"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antistreptolysin O titer",
+    "term_fr": "Titre d'antistreptolysine O",
+    "synonyms_en": [
+      "ASLO titer",
+      "ASO"
+    ],
+    "synonyms_fr": [
+      "ASLO",
+      "Antistreptolysines"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Chlamydia rapid test",
+    "term_fr": "Test rapide Chlamydia",
+    "synonyms_en": [
+      "Chlamydia swab/blood test"
+    ],
+    "synonyms_fr": [
+      "Test Chlamydia",
+      "Dépistage chlamydia"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Toxoplasmosis IgG and IgM antibody",
+    "term_fr": "Sérologie de la toxoplasmose IgG/IgM",
+    "synonyms_en": [
+      "Toxoplasma screening"
+    ],
+    "synonyms_fr": [
+      "Toxoplasmose",
+      "Bilan de grossesse toxo"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Rubella IgG and IgM antibody",
+    "term_fr": "Sérologie de la rubéole IgG/IgM",
+    "synonyms_en": [
+      "Rubella screening"
+    ],
+    "synonyms_fr": [
+      "Rubéole",
+      "Bilan prénatal rubéole"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cytomegalovirus antibody",
+    "term_fr": "Sérologie à cytomégalovirus",
+    "synonyms_en": [
+      "CMV test"
+    ],
+    "synonyms_fr": [
+      "CMV",
+      "Sérologie CMV"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urinalysis by dipstick",
+    "term_fr": "Analyse d'urine par bandelette",
+    "synonyms_en": [
+      "Urine dipstick",
+      "Urine sugar and protein test"
+    ],
+    "synonyms_fr": [
+      "Bandelette urinaire",
+      "BU",
+      "Test d'urine rapide"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine microscopy and sediment",
+    "term_fr": "Examen cytobactériologique des urines sans culture",
+    "synonyms_en": [
+      "Urine microscopy",
+      "Urine sediment"
+    ],
+    "synonyms_fr": [
+      "Culot urinaire",
+      "Microscopie urine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine culture and sensitivity",
+    "term_fr": "Examen cytobactériologique des urines avec antibiogramme",
+    "synonyms_en": [
+      "Urine culture",
+      "ECBU"
+    ],
+    "synonyms_fr": [
+      "ECBU",
+      "Culture d'urine",
+      "Antibiogramme urine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine pregnancy test",
+    "term_fr": "Test de grossesse urinaire",
+    "synonyms_en": [
+      "HCG urine test",
+      "Pregnancy test"
+    ],
+    "synonyms_fr": [
+      "Test de grossesse",
+      "Test pipi"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "24-hour urine protein",
+    "term_fr": "Protéinurie des 24 heures",
+    "synonyms_en": [
+      "24 hour urine collection",
+      "Urine protein track"
+    ],
+    "synonyms_fr": [
+      "Protéinurie des 24h",
+      "Pipi de 24 heures"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool microscopy for ova and parasites",
+    "term_fr": "Examen parasitologique des selles",
+    "synonyms_en": [
+      "Stool test for worms",
+      "Stool microscopy",
+      "Stool O&P"
+    ],
+    "synonyms_fr": [
+      "EPS",
+      "Examen des selles",
+      "Recherche de vers"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool culture and sensitivity",
+    "term_fr": "Coproculture et antibiogramme",
+    "synonyms_en": [
+      "Stool culture"
+    ],
+    "synonyms_fr": [
+      "Coproculture",
+      "Culture des selles"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool occult blood test",
+    "term_fr": "Recherche de sang occulte dans les selles",
+    "synonyms_en": [
+      "Stool guaiac",
+      "Fecal occult blood",
+      "FOBT"
+    ],
+    "synonyms_fr": [
+      "Sang dans les selles",
+      "Test Hemoccult"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Sputum smear for Acid-Fast Bacilli",
+    "term_fr": "Microscopie des crachats pour BAAR",
+    "synonyms_en": [
+      "AFB smear",
+      "TB sputum test"
+    ],
+    "synonyms_fr": [
+      "Recherche de BAAR",
+      "Analyse des crachats",
+      "Crachats BK"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "GeneXpert Mycobacterium tuberculosis assay",
+    "term_fr": "Test moléculaire GeneXpert Mycobacterium tuberculosis",
+    "synonyms_en": [
+      "GeneXpert TB",
+      "TB PCR test"
+    ],
+    "synonyms_fr": [
+      "GeneXpert",
+      "Test machine pour tuberculose"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood culture and sensitivity",
+    "term_fr": "Hémoculture et antibiogramme",
+    "synonyms_en": [
+      "Blood culture"
+    ],
+    "synonyms_fr": [
+      "Hémoculture",
+      "Culture de sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cerebrospinal fluid analysis",
+    "term_fr": "Analyse du liquide céphalorachidien",
+    "synonyms_en": [
+      "CSF analysis",
+      "Lumbar puncture lab test"
+    ],
+    "synonyms_fr": [
+      "Analyse du LCR",
+      "Liquide du dos exam"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "High vaginal swab microscopy and culture",
+    "term_fr": "Prélèvement vaginal avec examen direct et culture",
+    "synonyms_en": [
+      "HVS culture",
+      "Vaginal swab test"
+    ],
+    "synonyms_fr": [
+      "Prélèvement vaginal",
+      "PV",
+      "Pertes blanches examen"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urethral discharge smear and culture",
+    "term_fr": "Prélèvement urétral avec examen direct et culture",
+    "synonyms_en": [
+      "Urethral swab",
+      "Chaudepisse test"
+    ],
+    "synonyms_fr": [
+      "Prélèvement urétral",
+      "Examen chaude-pisse"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Skin scraping for fungal microscopy",
+    "term_fr": "Prélèvement cutané pour examen mycologique",
+    "synonyms_en": [
+      "Skin scraping",
+      "Ringworm test"
+    ],
+    "synonyms_fr": [
+      "Grattage cutané",
+      "Examen de la dartre"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Wound swab culture and sensitivity",
+    "term_fr": "Prélèvement de plaie avec culture et antibiogramme",
+    "synonyms_en": [
+      "Wound swab",
+      "Pus culture"
+    ],
+    "synonyms_fr": [
+      "Prélèvement de pus",
+      "Culture de plaie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "CD4 T-lymphocyte count",
+    "term_fr": "Numération des lymphocytes CD4",
+    "synonyms_en": [
+      "CD4 count",
+      "HIV immunity test"
+    ],
+    "synonyms_fr": [
+      "Taux de CD4",
+      "Défense immunitaire VIH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HIV viral load plasma assay",
+    "term_fr": "Dosage de la charge virale du VIH",
+    "synonyms_en": [
+      "HIV viral load",
+      "Viral count"
+    ],
+    "synonyms_fr": [
+      "Charge virale VIH",
+      "Quantité de virus"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Thyroid stimulating hormone assay",
+    "term_fr": "Dosage de la thyréostimuline",
+    "synonyms_en": [
+      "TSH test",
+      "Thyroid test"
+    ],
+    "synonyms_fr": [
+      "Dosage TSH",
+      "Bilan thyroïde"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Free thyroxine assay",
+    "term_fr": "Dosage de la thyroxine libre",
+    "synonyms_en": [
+      "Free T4",
+      "FT4"
+    ],
+    "synonyms_fr": [
+      "T4 libre",
+      "FT4"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Free triiodothyronine assay",
+    "term_fr": "Dosage de la triiodothyronine libre",
+    "synonyms_en": [
+      "Free T3",
+      "FT3"
+    ],
+    "synonyms_fr": [
+      "T3 libre",
+      "FT3"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Beta-hCG quantitative blood test",
+    "term_fr": "Dosage plasmatique quantitatif des bêta-hCG",
+    "synonyms_en": [
+      "Beta hCG",
+      "Quantitative pregnancy blood test"
+    ],
+    "synonyms_fr": [
+      "Bêta-hCG plasmatique",
+      "Prise de sang de grossesse"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Prostate specific antigen test",
+    "term_fr": "Dosage de l'antigène prostatique spécifique",
+    "synonyms_en": [
+      "PSA test",
+      "Prostate blood test"
+    ],
+    "synonyms_fr": [
+      "PSA",
+      "Dépistage de la prostate"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Alpha-fetoprotein assay",
+    "term_fr": "Dosage de l'alpha-fœtoprotéine",
+    "synonyms_en": [
+      "AFP cancer test",
+      "Liver tumor marker"
+    ],
+    "synonyms_fr": [
+      "AFP",
+      "Marqueur de tumeur du foie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Carcinoembryonic antigen assay",
+    "term_fr": "Dosage de l'antigène carcinoembryonnaire",
+    "synonyms_en": [
+      "CEA marker",
+      "Colon cancer test"
+    ],
+    "synonyms_fr": [
+      "ACE",
+      "Marqueur tumoral colon"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Chest X-ray posterior-anterior view",
+    "term_fr": "Radiographie thoracique de face",
+    "synonyms_en": [
+      "Chest X-ray",
+      "CXR",
+      "Lung photo"
+    ],
+    "synonyms_fr": [
+      "Radio poumons",
+      "Radiographie du thorax",
+      "Cliché thoracique"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Abdominal ultrasound",
+    "term_fr": "Échographie abdominale",
+    "synonyms_en": [
+      "Abdo scan",
+      "Belly ultrasound"
+    ],
+    "synonyms_fr": [
+      "Écho abdo",
+      "Échographie du ventre"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Pelvic ultrasound",
+    "term_fr": "Échographie pelvienne",
+    "synonyms_en": [
+      "Pelvis scan",
+      "Womb ultrasound"
+    ],
+    "synonyms_fr": [
+      "Échographie du bas-ventre",
+      "Écho pelvienne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Obstetric ultrasound",
+    "term_fr": "Échographie obstétricale",
+    "synonyms_en": [
+      "Pregnancy scan",
+      "Baby scan"
+    ],
+    "synonyms_fr": [
+      "Échographie de grossesse",
+      "Écho bébé"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Abdominal X-ray erect and supine",
+    "term_fr": "Radiographie de l'abdomen sans préparation",
+    "synonyms_en": [
+      "Abdominal X-ray",
+      "ASP"
+    ],
+    "synonyms_fr": [
+      "ASP",
+      "Radio ventre sans préparation"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of long bone",
+    "term_fr": "Radiographie d'un os long",
+    "synonyms_en": [
+      "Limb X-ray",
+      "Bone photo"
+    ],
+    "synonyms_fr": [
+      "Radio de la jambe",
+      "Radio du bras",
+      "Radiographie osseuse"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Computed tomography of the brain",
+    "term_fr": "Tomodensitométrie cérébrale",
+    "synonyms_en": [
+      "Brain CT scan",
+      "Head scanner"
+    ],
+    "synonyms_fr": [
+      "Scanner cérébral",
+      "Scanner de la tête"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Electrocardiogram",
+    "term_fr": "Électrocardiogramme",
+    "synonyms_en": [
+      "ECG",
+      "EKG",
+      "Heart trace"
+    ],
+    "synonyms_fr": [
+      "ECG",
+      "Tracé du cœur"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Echocardiography",
+    "term_fr": "Échocardiographie",
+    "synonyms_en": [
+      "Cardiac echo",
+      "Heart ultrasound"
+    ],
+    "synonyms_fr": [
+      "Échographie cardiaque",
+      "Écho cœur"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Lumbar puncture",
+    "term_fr": "Ponction lombaire",
+    "synonyms_en": [
+      "Spinal tap",
+      "LP"
+    ],
+    "synonyms_fr": [
+      "PL",
+      "Ponction dans le dos",
+      "Piquer le dos"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Paracentesis",
+    "term_fr": "Ponction d'ascite",
+    "synonyms_en": [
+      "Abdominal tap",
+      "Ascites fluid drainage"
+    ],
+    "synonyms_fr": [
+      "Ponction d'ascite",
+      "Tirer l'eau du ventre"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Thoracentesis",
+    "term_fr": "Ponction pleurale",
+    "synonyms_en": [
+      "Pleural tap",
+      "Chest fluid drainage"
+    ],
+    "synonyms_fr": [
+      "Ponction pleurale",
+      "Tirer l'eau des poumons"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Endotracheal intubation",
+    "term_fr": "Intubation endotrachéale",
+    "synonyms_en": [
+      "Placing breathing tube",
+      "Intubation"
+    ],
+    "synonyms_fr": [
+      "Intubation",
+      "Placer le tuyau pour respirer"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Urinary bladder catheterization",
+    "term_fr": "Sondage vésical",
+    "synonyms_en": [
+      "Foley catheter placement",
+      "Urine tube"
+    ],
+    "synonyms_fr": [
+      "Poser une sonde urinaire",
+      "Sondage urinaire"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Peripheral intravenous cannulation",
+    "term_fr": "Cathétérisme veineux périphérique",
+    "synonyms_en": [
+      "IV line",
+      "Setting a drip",
+      "Cannula"
+    ],
+    "synonyms_fr": [
+      "Poser une voie veineuse",
+      "Mettre la perfusion",
+      "Placer le cathéter"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Blood transfusion procedure",
+    "term_fr": "Transfusion sanguine",
+    "synonyms_en": [
+      "Giving blood",
+      "Blood transfusion"
+    ],
+    "synonyms_fr": [
+      "Transfusion",
+      "Donner du sang"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Gastric lavage",
+    "term_fr": "Lavage gastrique",
+    "synonyms_en": [
+      "Stomach pump",
+      "Stomach wash"
+    ],
+    "synonyms_fr": [
+      "Lavage d'estomac",
+      "Pompage d'estomac"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Nasogastric tube insertion",
+    "term_fr": "Pose d'une sonde naso-gastrique",
+    "synonyms_en": [
+      "Feeding tube",
+      "NG tube insertion"
+    ],
+    "synonyms_fr": [
+      "Sonde naso-gastrique",
+      "Tuyau par le nez"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Surgical wound debridement",
+    "term_fr": "Parage chirurgical de plaie",
+    "synonyms_en": [
+      "Wound cleaning",
+      "Scraping dead tissue"
+    ],
+    "synonyms_fr": [
+      "Nettoyage de plaie chirurgical",
+      "Parage"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Abscess incision and drainage",
+    "term_fr": "Incision et drainage d'abcès",
+    "synonyms_en": [
+      "Cutting boil open",
+      "Draining pus"
+    ],
+    "synonyms_fr": [
+      "Incision d'abcès",
+      "Percer un abcès"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Suture of superficial laceration",
+    "term_fr": "Suture de plaie superficielle",
+    "synonyms_en": [
+      "Stitches",
+      "Sewing skin laceration"
+    ],
+    "synonyms_fr": [
+      "Sutures",
+      "Coudre la blessure",
+      "Faire des points"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Removal of skin sutures",
+    "term_fr": "Ablation de fils de suture",
+    "synonyms_en": [
+      "Removing stitches"
+    ],
+    "synonyms_fr": [
+      "Enlever les fils",
+      "Retirer les points"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Application of plaster cast",
+    "term_fr": "Pose de plâtre",
+    "synonyms_en": [
+      "Putting POP",
+      "Bone plastering cast"
+    ],
+    "synonyms_fr": [
+      "Plâtrage",
+      "Mettre le plâtre"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "External splint immobilization",
+    "term_fr": "Immobilisation par attelle",
+    "synonyms_en": [
+      "Splinting bone",
+      "Placing splint"
+    ],
+    "synonyms_fr": [
+      "Pose d'attelle",
+      "Attelle de maintien"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Full Blood Count",
+    "term_fr": "Hémogramme",
+    "synonyms_en": [
+      "FBC",
+      "CBC",
+      "complete blood count"
+    ],
+    "synonyms_fr": [
+      "NFS",
+      "numération formule sanguine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Malaria RDT",
+    "term_fr": "TDR paludisme",
+    "synonyms_en": [
+      "malaria rapid test",
+      "MRDT"
+    ],
+    "synonyms_fr": [
+      "test rapide paludisme"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Fasting Blood Glucose",
+    "term_fr": "Glycémie à jeun",
+    "synonyms_en": [
+      "FBG",
+      "blood sugar"
+    ],
+    "synonyms_fr": [
+      "sucre dans le sang"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Chest X-ray (PA)",
+    "term_fr": "Radiographie thoracique (PA)",
+    "synonyms_en": [
+      "CXR",
+      "chest radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du thorax"
+    ],
+    "order_type": "imaging"
+  }
+]

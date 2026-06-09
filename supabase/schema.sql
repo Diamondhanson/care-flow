@@ -137,6 +137,33 @@ do $$ begin
   create type subscription_status as enum ('trial', 'active', 'suspended');
 exception when duplicate_object then null; end $$;
 
+-- Billing & invoicing (Phase 16.9). `billing_category` groups the price catalog
+-- and hints how a charge is computed (flat per-item vs time-based);
+-- `billing_unit` is how a catalog item is quantified; `charge_source` is the
+-- provenance of a ledger line (auto vs manual/discount); `charge_status` is the
+-- settlement state of a single line.
+do $$ begin
+  create type billing_category as enum (
+    'consultation', 'lab_test', 'imaging', 'procedure', 'medication',
+    'bed_per_night', 'nursing_per_day', 'other'
+  );
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type billing_unit as enum ('per_item', 'per_night', 'per_day');
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type charge_source as enum (
+    'consultation', 'order', 'prescription', 'bed', 'nursing', 'procedure',
+    'manual', 'discount'
+  );
+exception when duplicate_object then null; end $$;
+
+do $$ begin
+  create type charge_status as enum ('pending', 'paid', 'waived');
+exception when duplicate_object then null; end $$;
+
 
 -- =============================================================================
 -- 3. HELPER FUNCTIONS
@@ -638,6 +665,46 @@ create table if not exists care_plan_entries (
   recorded_at        timestamptz not null default now()
 );
 
+-- ---- 4h-bis. Billing & invoicing (Phase 16.9) -------------------------------
+-- `billable_items` is the per-tenant price catalog: the current unit price (in
+-- whole XAF — the CFA franc has no minor unit) for each service/good a hospital
+-- can bill for. `ref_code` is a stable semantic key the app's auto-charge engine
+-- matches against to price clinical events.
+create table if not exists billable_items (
+  id           uuid primary key default gen_random_uuid(),
+  hospital_id  uuid not null references hospitals(id) on delete cascade,
+  category     billing_category not null,
+  name         text not null,
+  unit         billing_unit not null default 'per_item',
+  unit_price   integer not null default 0 check (unit_price >= 0),
+  ref_code     text,
+  is_active    boolean not null default true,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+-- `charges` is the per-visit billing ledger: one line per billable event. Auto
+-- lines (consultation/order/prescription/bed/nursing) are reconciled idempotently
+-- against their clinical origin via `source_ref_id`; manual lines and discounts
+-- (negative `amount`) are operator-entered and preserved. `unit_price` is
+-- snapshotted at creation so catalog edits never silently rewrite a raised bill.
+create table if not exists charges (
+  id               uuid primary key default gen_random_uuid(),
+  hospital_id      uuid not null references hospitals(id) on delete cascade,
+  visit_id         uuid not null references visits(id) on delete cascade,
+  billable_item_id uuid references billable_items(id) on delete set null,
+  source           charge_source not null,
+  source_ref_id    text,
+  description      text not null,
+  quantity         integer not null default 1,
+  unit_price       integer not null default 0,
+  amount           integer not null default 0,
+  status           charge_status not null default 'pending',
+  created_by_id    uuid references staff(id) on delete set null,
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
+);
+
 -- ---- 4i. Audit log ----------------------------------------------------------
 
 create table if not exists audit_log (
@@ -677,6 +744,10 @@ create index if not exists idx_care_plan_items_admission   on care_plan_items(ad
 create index if not exists idx_care_plan_items_status       on care_plan_items(status);
 create index if not exists idx_care_plan_entries_admission  on care_plan_entries(admission_id);
 create index if not exists idx_care_plan_entries_item       on care_plan_entries(care_plan_item_id);
+create index if not exists idx_billable_items_category on billable_items(category);
+create index if not exists idx_charges_visit          on charges(visit_id);
+create index if not exists idx_charges_item           on charges(billable_item_id);
+create index if not exists idx_charges_source         on charges(source, source_ref_id);
 create index if not exists idx_allergies_patient      on allergies(patient_id);
 create index if not exists idx_beds_ward              on beds(ward_id);
 create index if not exists idx_beds_status            on beds(status);
@@ -705,6 +776,8 @@ create index if not exists idx_admissions_hospital     on admissions(hospital_id
 create index if not exists idx_transfers_hospital      on transfers(hospital_id);
 create index if not exists idx_care_plan_items_hospital   on care_plan_items(hospital_id);
 create index if not exists idx_care_plan_entries_hospital on care_plan_entries(hospital_id);
+create index if not exists idx_billable_items_hospital    on billable_items(hospital_id);
+create index if not exists idx_charges_hospital           on charges(hospital_id);
 create index if not exists idx_audit_hospital          on audit_log(hospital_id);
 
 
@@ -719,7 +792,7 @@ begin
   foreach t in array array[
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
-    'care_plan_items'
+    'care_plan_items','billable_items','charges'
   ]
   loop
     execute format('drop trigger if exists trg_%I_updated_at on %I;', t, t);
@@ -740,7 +813,7 @@ begin
   foreach t in array array[
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
-    'care_plan_items'
+    'care_plan_items','billable_items','charges'
   ]
   loop
     execute format(
@@ -760,7 +833,7 @@ begin
     'patients','visits','consultations','diagnoses','orders','results',
     'prescriptions','medication_administrations','treatment_records',
     'admissions','transfers','beds','wards','departments','staff','allergies',
-    'care_plan_items','care_plan_entries'
+    'care_plan_items','care_plan_entries','billable_items','charges'
   ]
   loop
     execute format('drop trigger if exists trg_%I_audit on %I;', t, t);
@@ -944,7 +1017,8 @@ begin
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
     'medication_administrations','treatment_records','admissions','transfers',
-    'allergies','care_plan_items','care_plan_entries','audit_log'
+    'allergies','care_plan_items','care_plan_entries',
+    'billable_items','charges','audit_log'
   ]
   loop
     execute format('alter table %I enable row level security;', t);
@@ -975,7 +1049,7 @@ begin
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
     'medication_administrations','treatment_records','admissions','transfers',
-    'allergies','care_plan_items','care_plan_entries'
+    'allergies','care_plan_items','care_plan_entries','billable_items','charges'
   ]
   loop
     execute format('drop policy if exists "read for staff" on %I;', t);
@@ -1058,6 +1132,22 @@ create policy "nurse write care plan entries" on care_plan_entries
   for all to authenticated
   using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
   with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+
+-- Billing & invoicing (Phase 16.9). The price catalog and the charge ledger are
+-- maintained by the front office: admins and receptionists only. (All staff can
+-- still *read* them via the universal read policy above — billing is
+-- informational and surfaced on the patient record.)
+drop policy if exists "billing write items" on billable_items;
+create policy "billing write items" on billable_items
+  for all to authenticated
+  using (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id());
+
+drop policy if exists "billing write charges" on charges;
+create policy "billing write charges" on charges
+  for all to authenticated
+  using (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id());
 
 -- Allergies are safety-critical and recorded at the point of care by either a
 -- nurse (intake) or a doctor (consultation).

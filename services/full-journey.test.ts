@@ -21,6 +21,8 @@ import {
   addCarePlanItem,
   addConsultation,
   addDiagnosis,
+  addDiscount,
+  addManualCharge,
   addOrder,
   addPrescription,
   addResult,
@@ -41,14 +43,18 @@ import {
   getAllergiesForPatient,
   getBedById,
   getBeds,
+  getBillableItems,
   getCarePlanEntriesForAdmission,
   getCarePlanItemsForAdmission,
   getConsultationsForVisit,
   getDiagnosesForVisit,
+  getChargesForVisit,
   getOrdersForVisit,
   getPatientById,
   getPrescriptionsForVisit,
   getResultsForVisit,
+  recalculateAutoCharges,
+  settleBill,
   getStaffForHospital,
   getVisitById,
   getVisits,
@@ -72,6 +78,7 @@ import {
   updateWard,
 } from "@/services/mockStorage";
 import { computeKpis, outcomeDistribution, presetRange } from "@/components/reports/reports";
+import { summarizeBill } from "@/components/billing/billing";
 
 // ---------------------------------------------------------------------------
 // In-memory localStorage polyfill — makes isBrowser() true so writes persist.
@@ -513,5 +520,83 @@ describe("REPORTING — KPIs aggregate the journey data", () => {
     const labels = outcomes.map((o) => o.key);
     // Deceased is reported as a distinct outcome bucket.
     expect(labels).toContain("deceased");
+  });
+});
+
+// ===========================================================================
+// BILLING — auto-charges from the clinical record, manual line, discount, settle.
+// ===========================================================================
+
+describe("BILLING — itemized bill from a visit, then settlement", () => {
+  it("derives charges, adds a manual line + discount, and settles the bill", () => {
+    // RECEPTIONIST — register an outpatient visit.
+    const { visit } = createNewVisit(
+      { full_name: "Bilan Ngo", date_of_birth: "1988-04-12", sex: "female" },
+      { visit_type: "outpatient", chief_complaint: "Cough", registered_by_id: "staff_reception" },
+    );
+
+    // DOCTOR — consultation, a completed lab order, and a prescription drive the
+    // three core auto-charge sources.
+    addConsultation(visit.id, { doctor_id: "staff_chen", assessment: "URTI" });
+    const order = addOrder(visit.id, {
+      ordered_by_id: "staff_chen",
+      order_type: "lab",
+      description: "Full Blood Count",
+    });
+    updateOrderStatus(order.id, "completed");
+    addPrescription(visit.id, {
+      prescribed_by_id: "staff_chen",
+      drug_name: "Paracetamol",
+      dose: "1 g",
+      route: "PO",
+      frequency: "TID",
+      duration: "5 days",
+    });
+
+    // BILLING — derive the auto-charges from the clinical record.
+    const auto = recalculateAutoCharges(visit.id);
+    const sources = auto.map((c) => c.source);
+    expect(sources).toContain("consultation");
+    expect(sources).toContain("order");
+    expect(sources).toContain("prescription");
+    // Outpatient → no bed / nursing lines.
+    expect(sources).not.toContain("bed");
+    expect(sources).not.toContain("nursing");
+
+    const catalog = getBillableItems();
+    const afterAuto = summarizeBill(getChargesForVisit(visit.id), catalog);
+    const autoSubtotal = afterAuto.itemsSubtotal;
+    expect(autoSubtotal).toBeGreaterThan(0);
+
+    // Reconciliation is idempotent — running it again doesn't duplicate lines.
+    recalculateAutoCharges(visit.id);
+    expect(getChargesForVisit(visit.id).filter((c) => c.source !== "manual" && c.source !== "discount"))
+      .toHaveLength(auto.length);
+
+    // RECEPTIONIST — add a manual line and a discount; both survive a recalc.
+    addManualCharge(visit.id, {
+      description: "Wound dressing pack",
+      quantity: 2,
+      unit_price: 1_500,
+      created_by_id: "staff_reception",
+    });
+    addDiscount(visit.id, {
+      description: "Goodwill discount",
+      amount: 1_000,
+      created_by_id: "staff_reception",
+    });
+    recalculateAutoCharges(visit.id);
+
+    const billed = summarizeBill(getChargesForVisit(visit.id), catalog);
+    expect(billed.itemsSubtotal).toBe(autoSubtotal + 3_000); // 2 × 1,500 manual
+    expect(billed.discountTotal).toBe(1_000);
+    expect(billed.grandTotal).toBe(autoSubtotal + 3_000 - 1_000);
+    expect(billed.isFullySettled).toBe(false);
+
+    // SETTLE — every pending line flips to paid; the bill reads fully settled.
+    settleBill(visit.id, "staff_reception");
+    const settled = summarizeBill(getChargesForVisit(visit.id), catalog);
+    expect(settled.isFullySettled).toBe(true);
+    expect(getChargesForVisit(visit.id).every((c) => c.status === "paid")).toBe(true);
   });
 });

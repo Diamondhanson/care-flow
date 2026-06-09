@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  COMMON_ORDERS,
   ORDER_STATUS_LABEL,
   ORDER_STATUS_TOKEN,
   ORDER_TYPE_LABEL,
@@ -76,13 +75,5 @@ describe("hasAbnormalResult", () => {
     expect(
       hasAbnormalResult([result({ is_abnormal: false }), result({ is_abnormal: true })])
     ).toBe(true);
-  });
-});
-
-describe("COMMON_ORDERS quick-picks", () => {
-  it("offers suggestions for every order type", () => {
-    expect(COMMON_ORDERS.lab.length).toBeGreaterThan(0);
-    expect(COMMON_ORDERS.imaging.length).toBeGreaterThan(0);
-    expect(COMMON_ORDERS.procedure.length).toBeGreaterThan(0);
   });
 });

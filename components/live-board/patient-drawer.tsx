@@ -84,19 +84,21 @@ import {
 } from "@/services/mockStorage";
 import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
 import {
-  COMMON_ORDERS,
   ORDER_STATUS_LABEL,
   ORDER_STATUS_TOKEN,
   ORDER_TYPE_LABEL,
 } from "@/components/diagnostics/orders";
 import { ResultAttachment } from "@/components/diagnostics/result-attachment";
 import {
-  COMMON_DRUGS,
   FREQUENCY_OPTIONS,
   PRESCRIPTION_STATUS_LABEL,
   PRESCRIPTION_STATUS_TOKEN,
   ROUTE_OPTIONS,
 } from "@/components/medications/prescriptions";
+import {
+  TermAutocomplete,
+  TermChips,
+} from "@/components/clinical-terms/term-autocomplete";
 import {
   ALLERGY_CATEGORY_LABEL,
   ALLERGY_SEVERITY_LABEL,
@@ -124,6 +126,7 @@ import type {
   Bed,
   CarePlanEntry,
   CarePlanItem,
+  ClinicalTerm,
   Consultation,
   Diagnosis,
   Order,
@@ -137,20 +140,6 @@ import type {
   Visit,
   Ward,
 } from "@/types/healthcare";
-
-/** Lightweight ICD-10 quick-pick suggestions surfaced via a native datalist. */
-const COMMON_ICD10: { code: string; label: string }[] = [
-  { code: "E11.9", label: "Type 2 diabetes mellitus without complications" },
-  { code: "I10", label: "Essential (primary) hypertension" },
-  { code: "J18.9", label: "Pneumonia, unspecified organism" },
-  { code: "J45.909", label: "Unspecified asthma, uncomplicated" },
-  { code: "A09", label: "Infectious gastroenteritis and colitis" },
-  { code: "B54", label: "Unspecified malaria" },
-  { code: "N39.0", label: "Urinary tract infection, site not specified" },
-  { code: "S06.9", label: "Intracranial injury, unspecified" },
-  { code: "R07.9", label: "Chest pain, unspecified" },
-  { code: "K35.80", label: "Unspecified acute appendicitis" },
-];
 
 const DISPOSITIONS: {
   value: Disposition;
@@ -913,32 +902,36 @@ export function PatientDrawer({
                   <FileText className="size-4 text-muted-foreground" />
                   <span className="text-sm font-medium">{t("drawer.newConsultation")}</span>
                 </div>
-                <FieldArea
+                <TermChips
+                  category="subjective"
                   label={t("drawer.subjective")}
                   id="soap-s"
                   value={subjective}
-                  onChange={setSubjective}
+                  onValueChange={setSubjective}
                   placeholder={t("drawer.subjectivePlaceholder")}
                 />
-                <FieldArea
+                <TermChips
+                  category="examination"
                   label={t("drawer.examination")}
                   id="soap-o"
                   value={examination}
-                  onChange={setExamination}
+                  onValueChange={setExamination}
                   placeholder={t("drawer.examinationPlaceholder")}
                 />
-                <FieldArea
+                <TermChips
+                  category="assessment"
                   label={t("drawer.assessment")}
                   id="soap-a"
                   value={assessment}
-                  onChange={setAssessment}
+                  onValueChange={setAssessment}
                   placeholder={t("drawer.assessmentPlaceholder")}
                 />
-                <FieldArea
+                <TermChips
+                  category="plan"
                   label={t("drawer.plan")}
                   id="soap-p"
                   value={plan}
-                  onChange={setPlan}
+                  onValueChange={setPlan}
                   placeholder={t("drawer.planPlaceholder")}
                 />
                 <Button onClick={handleSaveConsultation} className="self-end">
@@ -951,44 +944,31 @@ export function PatientDrawer({
               {/* Structured diagnosis entry */}
               <div className="flex flex-col gap-3">
                 <span className="text-sm font-medium">{t("drawer.addDiagnosis")}</span>
-                <datalist id="icd10-options">
-                  {COMMON_ICD10.map((o) => (
-                    <option key={o.code} value={o.code}>
-                      {o.label}
-                    </option>
-                  ))}
-                </datalist>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="dx-desc" className="text-xs">
+                    {t("drawer.description")}
+                  </Label>
+                  <TermAutocomplete
+                    id="dx-desc"
+                    category="assessment"
+                    value={dxDescription}
+                    onChange={setDxDescription}
+                    onSelectTerm={(term: ClinicalTerm) => {
+                      if (term.icd10) setDxCode(term.icd10);
+                    }}
+                    placeholder={t("drawer.diagnosisDescPlaceholder")}
+                  />
+                </div>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="dx-code" className="text-xs">
                     {t("drawer.icd10Code")}
                   </Label>
                   <Input
                     id="dx-code"
-                    list="icd10-options"
                     value={dxCode}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setDxCode(next);
-                      const match = COMMON_ICD10.find(
-                        (o) => o.code.toLowerCase() === next.trim().toLowerCase(),
-                      );
-                      if (match && !dxDescription.trim()) {
-                        setDxDescription(match.label);
-                      }
-                    }}
+                    onChange={(e) => setDxCode(e.target.value)}
                     placeholder={t("drawer.icd10Placeholder")}
                     className="font-mono"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="dx-desc" className="text-xs">
-                    {t("drawer.description")}
-                  </Label>
-                  <Input
-                    id="dx-desc"
-                    value={dxDescription}
-                    onChange={(e) => setDxDescription(e.target.value)}
-                    placeholder={t("drawer.diagnosisDescPlaceholder")}
                   />
                 </div>
                 <label className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3">
@@ -1102,11 +1082,6 @@ export function PatientDrawer({
                 )}
 
                 {/* New order */}
-                <datalist id="order-options">
-                  {COMMON_ORDERS[orderType].map((label) => (
-                    <option key={label} value={label} />
-                  ))}
-                </datalist>
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="order-type" className="text-xs">
                     {t("drawer.testType")}
@@ -1140,11 +1115,14 @@ export function PatientDrawer({
                   <Label htmlFor="order-desc" className="text-xs">
                     {t("drawer.test")}
                   </Label>
-                  <Input
+                  <TermAutocomplete
                     id="order-desc"
-                    list="order-options"
+                    category="investigations"
                     value={orderDescription}
-                    onChange={(e) => setOrderDescription(e.target.value)}
+                    onChange={setOrderDescription}
+                    onSelectTerm={(term: ClinicalTerm) => {
+                      if (term.order_type) setOrderType(term.order_type);
+                    }}
                     placeholder={t("drawer.testPlaceholder")}
                   />
                 </div>
@@ -1250,11 +1228,6 @@ export function PatientDrawer({
                 )}
 
                 {/* New prescription */}
-                <datalist id="drug-options">
-                  {COMMON_DRUGS.map((d) => (
-                    <option key={d.name} value={d.name} />
-                  ))}
-                </datalist>
                 <datalist id="route-options">
                   {ROUTE_OPTIONS.map((r) => (
                     <option key={r} value={r} />
@@ -1269,21 +1242,15 @@ export function PatientDrawer({
                   <Label htmlFor="rx-drug" className="text-xs">
                     {t("drawer.drug")}
                   </Label>
-                  <Input
+                  <TermAutocomplete
                     id="rx-drug"
-                    list="drug-options"
+                    category="medication"
                     value={rxDrug}
-                    onChange={(e) => {
-                      const next = e.target.value;
-                      setRxDrug(next);
-                      const match = COMMON_DRUGS.find(
-                        (d) =>
-                          d.name.toLowerCase() === next.trim().toLowerCase(),
-                      );
-                      if (match) {
-                        if (!rxDose.trim()) setRxDose(match.dose);
-                        if (!rxRoute.trim()) setRxRoute(match.route);
-                      }
+                    onChange={setRxDrug}
+                    onSelectTerm={(term: ClinicalTerm) => {
+                      if (term.dose) setRxDose(term.dose);
+                      if (term.route) setRxRoute(term.route);
+                      if (term.frequency) setRxFrequency(term.frequency);
                     }}
                     placeholder={t("drawer.drugPlaceholder")}
                   />
@@ -2001,34 +1968,6 @@ function FieldNum({
   );
 }
 
-function FieldArea({
-  label,
-  id,
-  value,
-  onChange,
-  placeholder,
-}: {
-  label: string;
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id} className="text-xs">
-        {label}
-      </Label>
-      <Textarea
-        id={id}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="min-h-16"
-      />
-    </div>
-  );
-}
 
 function ConsultationNote({ consultation }: { consultation: Consultation }) {
   const { t, locale, mounted } = useT();

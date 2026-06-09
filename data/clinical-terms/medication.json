@@ -1,0 +1,5259 @@
+[
+  {
+    "term_en": "Abacavir",
+    "term_fr": "Abacavir",
+    "synonyms_en": [
+      "ABC",
+      "Ziagen"
+    ],
+    "synonyms_fr": [
+      "ABC",
+      "Ziagen"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (NRTI)"
+  },
+  {
+    "term_en": "Acetazolamide",
+    "term_fr": "Acétazolamide",
+    "synonyms_en": [
+      "Diamox",
+      "glaucoma pill"
+    ],
+    "synonyms_fr": [
+      "Diamox",
+      "comprimé pour tension de l'oeil"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Carbonic anhydrase inhibitor"
+  },
+  {
+    "term_en": "Acetylsalicylic acid",
+    "term_fr": "Acide acétylsalicylique",
+    "synonyms_en": [
+      "Aspirin",
+      "Aspegic"
+    ],
+    "synonyms_fr": [
+      "Aspirine",
+      "Aspégic"
+    ],
+    "dose": "75 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiplatelet / NSAID"
+  },
+  {
+    "term_en": "Aciclovir",
+    "term_fr": "Aciclovir",
+    "synonyms_en": [
+      "Zovirax",
+      "shingles pill",
+      "herpes cream"
+    ],
+    "synonyms_fr": [
+      "Zovirax",
+      "crème pour herpès",
+      "comprimé pour zona"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "5 times daily",
+    "form": "tablet",
+    "drug_class": "Antiviral"
+  },
+  {
+    "term_en": "Albendazole",
+    "term_fr": "Albendazole",
+    "synonyms_en": [
+      "Zentel",
+      "deworming medicine",
+      "worm pill"
+    ],
+    "synonyms_fr": [
+      "Zentel",
+      "déparasitant",
+      "remède contre les vers"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "tablet",
+    "drug_class": "Anthelmintic"
+  },
+  {
+    "term_en": "Albuterol (Salbutamol)",
+    "term_fr": "Salbutamol",
+    "synonyms_en": [
+      "Ventolin",
+      "asthma pump",
+      "blue inhaler"
+    ],
+    "synonyms_fr": [
+      "Ventoline",
+      "spray pour l'asthme",
+      "pompe"
+    ],
+    "dose": "100 mcg / puff",
+    "route": "Inhalation",
+    "frequency": "PRN",
+    "form": "inhaler",
+    "drug_class": "Beta-2 agonist"
+  },
+  {
+    "term_en": "Alendronate",
+    "term_fr": "Alendronate",
+    "synonyms_en": [
+      "Fosamax",
+      "bone strengthening pill"
+    ],
+    "synonyms_fr": [
+      "Fosamax",
+      "médicament pour les os fragiles"
+    ],
+    "dose": "70 mg",
+    "route": "PO",
+    "frequency": "Once weekly",
+    "form": "tablet",
+    "drug_class": "Bisphosphonate"
+  },
+  {
+    "term_en": "Allopurinol",
+    "term_fr": "Allopurinol",
+    "synonyms_en": [
+      "Zyloric",
+      "gout medicine"
+    ],
+    "synonyms_fr": [
+      "Zyloric",
+      "médicament pour la goutte"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Xanthine oxidase inhibitor"
+  },
+  {
+    "term_en": "Alprazolam",
+    "term_fr": "Alprazolam",
+    "synonyms_en": [
+      "Xanax",
+      "calming pill",
+      "sleeping pill"
+    ],
+    "synonyms_fr": [
+      "Xanax",
+      "calmant",
+      "comprimé pour dormir"
+    ],
+    "dose": "0.25 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Benzodiazepine"
+  },
+  {
+    "term_en": "Aluminum hydroxide / Magnesium hydroxide",
+    "term_fr": "Hydroxyde d'aluminium / Hydroxyde de magnésium",
+    "synonyms_en": [
+      "Maalox",
+      "antacid",
+      "heartburn syrup"
+    ],
+    "synonyms_fr": [
+      "Maalox",
+      "pansement gastrique",
+      "sirop pour l'estomac"
+    ],
+    "dose": "15 mL",
+    "route": "PO",
+    "frequency": "PRN",
+    "form": "suspension",
+    "drug_class": "Antacid"
+  },
+  {
+    "term_en": "Amikacin",
+    "term_fr": "Amikacine",
+    "synonyms_en": [
+      "Amikin",
+      "strong injection"
+    ],
+    "synonyms_fr": [
+      "Amiklin",
+      "injection forte"
+    ],
+    "dose": "15 mg/kg",
+    "route": "IV",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Aminoglycoside antibiotic"
+  },
+  {
+    "term_en": "Amiloride / Hydrochlorothiazide",
+    "term_fr": "Amiloride / Hydrochlorothiazide",
+    "synonyms_en": [
+      "Moduretic",
+      "BP pill",
+      "water pill"
+    ],
+    "synonyms_fr": [
+      "Moduretic",
+      "médicament de tension",
+      "diurétique"
+    ],
+    "dose": "5 mg / 50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antihypertensive (Diuretic combo)"
+  },
+  {
+    "term_en": "Aminophylline",
+    "term_fr": "Aminophylline",
+    "synonyms_en": [
+      "asthma injection"
+    ],
+    "synonyms_fr": [
+      "injection pour l'asthme",
+      "bronchodilatateur"
+    ],
+    "dose": "250 mg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Xanthine bronchodilator"
+  },
+  {
+    "term_en": "Amiodarone",
+    "term_fr": "Amiodarone",
+    "synonyms_en": [
+      "Cordarone",
+      "heart rhythm pill"
+    ],
+    "synonyms_fr": [
+      "Cordarone",
+      "médicament pour le rythme cardiaque"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiarrhythmic"
+  },
+  {
+    "term_en": "Amitriptyline",
+    "term_fr": "Amitriptyline",
+    "synonyms_en": [
+      "Laroxyl",
+      "nerve pain pill",
+      "antidepressant"
+    ],
+    "synonyms_fr": [
+      "Laroxyl",
+      "calmant des nerfs",
+      "antidépresseur"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Tricyclic antidepressant"
+  },
+  {
+    "term_en": "Amlodipine",
+    "term_fr": "Amlodipine",
+    "synonyms_en": [
+      "Amlor",
+      "BP capsule",
+      "hypertension pill"
+    ],
+    "synonyms_fr": [
+      "Amlor",
+      "comprimé de tension",
+      "anti-hypertenseur"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Calcium channel blocker"
+  },
+  {
+    "term_en": "Amoxicillin",
+    "term_fr": "Amoxicilline",
+    "synonyms_en": [
+      "Amoxil",
+      "capsule",
+      "antibiotic powder"
+    ],
+    "synonyms_fr": [
+      "Amoxil",
+      "gélule rouge et jaune",
+      "antibiotique"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "capsule",
+    "drug_class": "Penicillin antibiotic"
+  },
+  {
+    "term_en": "Amoxicillin / Clavulanic acid",
+    "term_fr": "Amoxicilline / Acide clavulanique",
+    "synonyms_en": [
+      "Augmentin",
+      "strong antibiotic",
+      "Clavamox"
+    ],
+    "synonyms_fr": [
+      "Augmentin",
+      "antibiotique fort",
+      "Ciblor"
+    ],
+    "dose": "1 g",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Penicillin combo antibiotic"
+  },
+  {
+    "term_en": "Amphotericin B",
+    "term_fr": "Amphotéricine B",
+    "synonyms_en": [
+      "Fungizone",
+      "strong antifungal drip"
+    ],
+    "synonyms_fr": [
+      "Fungizone",
+      "antifongique par perfusion"
+    ],
+    "dose": "0.7 mg/kg",
+    "route": "IV",
+    "frequency": "OD",
+    "form": "infusion",
+    "drug_class": "Polyene antifungal"
+  },
+  {
+    "term_en": "Ampicillin",
+    "term_fr": "Ampicilline",
+    "synonyms_en": [
+      "Ampicin",
+      "antibiotic injection"
+    ],
+    "synonyms_fr": [
+      "Ampiciline",
+      "injection d'antibiotique"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "QDS",
+    "form": "injection",
+    "drug_class": "Penicillin antibiotic"
+  },
+  {
+    "term_en": "Anti-D immunoglobulin",
+    "term_fr": "Immunoglobuline anti-D",
+    "synonyms_en": [
+      "Rhogam",
+      "Rhesus injection for pregnant woman"
+    ],
+    "synonyms_fr": [
+      "Rhogam",
+      "injection rhésus pour femme enceinte"
+    ],
+    "dose": "300 mcg",
+    "route": "IM",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Immunoglobulin"
+  },
+  {
+    "term_en": "Anti-rabies vaccine",
+    "term_fr": "Vaccin antirabique",
+    "synonyms_en": [
+      "Rabies shot",
+      "dog bite vaccine"
+    ],
+    "synonyms_fr": [
+      "Vaccin contre la rage",
+      "injection morsure de chien"
+    ],
+    "dose": "0.5 mL",
+    "route": "IM",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Vaccine"
+  },
+  {
+    "term_en": "Anti-tetanus serum (ATS)",
+    "term_fr": "Sérum antitétanique (SAT)",
+    "synonyms_en": [
+      "Tetanus serum",
+      "rusty nail injection"
+    ],
+    "synonyms_fr": [
+      "Sérum antitétanique",
+      "injection clou rouillé"
+    ],
+    "dose": "1500 IU",
+    "route": "IM",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Antitoxin"
+  },
+  {
+    "term_en": "Artemether",
+    "term_fr": "Artéméther",
+    "synonyms_en": [
+      "Paluther",
+      "malaria injection"
+    ],
+    "synonyms_fr": [
+      "Paluther",
+      "injection contre le paludisme"
+    ],
+    "dose": "80 mg",
+    "route": "IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Antimalarial"
+  },
+  {
+    "term_en": "Artemether / Lumefantrine",
+    "term_fr": "Artéméther / Luméfantrine",
+    "synonyms_en": [
+      "Coartem",
+      "Artefan",
+      "malaria yellow tablets"
+    ],
+    "synonyms_fr": [
+      "Coartem",
+      "Artefan",
+      "comprimés jaunes palu"
+    ],
+    "dose": "20 mg / 120 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antimalarial (ACT)"
+  },
+  {
+    "term_en": "Artesunate",
+    "term_fr": "Artésunate",
+    "synonyms_en": [
+      "Artesun",
+      "severe malaria drip"
+    ],
+    "synonyms_fr": [
+      "Artesun",
+      "injection palu grave"
+    ],
+    "dose": "2.4 mg/kg",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Antimalarial"
+  },
+  {
+    "term_en": "Ascorbic acid",
+    "term_fr": "Acide ascorbique",
+    "synonyms_en": [
+      "Vitamin C",
+      "chewable vitamin"
+    ],
+    "synonyms_fr": [
+      "Vitamine C",
+      "vitamine à croquer"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Vitamin"
+  },
+  {
+    "term_en": "Atenolol",
+    "term_fr": "Aténolol",
+    "synonyms_en": [
+      "Tenormin",
+      "heart and BP pill"
+    ],
+    "synonyms_fr": [
+      "Tenormine",
+      "médicament du cœur et tension"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Beta-blocker"
+  },
+  {
+    "term_en": "Atorvastatin",
+    "term_fr": "Atorvastatine",
+    "synonyms_en": [
+      "Lipitor",
+      "cholesterol medicine"
+    ],
+    "synonyms_fr": [
+      "Tahor",
+      "médicament pour le cholestérol"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Statin (HMG-CoA reductase inhibitor)"
+  },
+  {
+    "term_en": "Atropine",
+    "term_fr": "Atropine",
+    "synonyms_en": [
+      "atropine injection",
+      "slow heart rate injection"
+    ],
+    "synonyms_fr": [
+      "injection d'atropine",
+      "relance cardiaque"
+    ],
+    "dose": "1 mg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Anticholinergic"
+  },
+  {
+    "term_en": "Azithromycin",
+    "term_fr": "Azithromycine",
+    "synonyms_en": [
+      "Zithromax",
+      "3-day antibiotic",
+      "chlamydia capsule"
+    ],
+    "synonyms_fr": [
+      "Zithromax",
+      "antibiotique de 3 jours"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Macrolide antibiotic"
+  },
+  {
+    "term_en": "Aztreonam",
+    "term_fr": "Aztréonam",
+    "synonyms_en": [
+      "Azactam",
+      "ICU antibiotic"
+    ],
+    "synonyms_fr": [
+      "Azactam",
+      "antibiotique de réanimation"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Monobactam antibiotic"
+  },
+  {
+    "term_en": "Baclofen",
+    "term_fr": "Baclofène",
+    "synonyms_en": [
+      "Lioresal",
+      "muscle relaxer"
+    ],
+    "synonyms_fr": [
+      "Lioresal",
+      "décontracturant musculaire"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Muscle relaxant"
+  },
+  {
+    "term_en": "Beclometasone",
+    "term_fr": "Béclométasone",
+    "synonyms_en": [
+      "Becotide",
+      "brown inhaler",
+      "preventer puff"
+    ],
+    "synonyms_fr": [
+      "Bécotide",
+      "pompe de fond pour asthme"
+    ],
+    "dose": "100 mcg / puff",
+    "route": "Inhalation",
+    "frequency": "BD",
+    "form": "inhaler",
+    "drug_class": "Corticosteroid inhaler"
+  },
+  {
+    "term_en": "Benzathine benzylpenicillin",
+    "term_fr": "Benzathine benzylpénicilline",
+    "synonyms_en": [
+      "Extencilline",
+      "long-acting penicillin",
+      "syphilis injection"
+    ],
+    "synonyms_fr": [
+      "Extencilline",
+      "pénicilline retard",
+      "piqûre pour syphilis"
+    ],
+    "dose": "2.4 MUI",
+    "route": "IM",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Penicillin antibiotic"
+  },
+  {
+    "term_en": "Benzoyl peroxide",
+    "term_fr": "Peroxyde de benzoyle",
+    "synonyms_en": [
+      "Pannogel",
+      "pimple gel",
+      "acne cream"
+    ],
+    "synonyms_fr": [
+      "Pannogel",
+      "gel pour boutons",
+      "crème acné"
+    ],
+    "dose": "5%",
+    "route": "Topical",
+    "frequency": "ON",
+    "form": "gel",
+    "drug_class": "Anti-acne"
+  },
+  {
+    "term_en": "Benzyl benzoate",
+    "term_fr": "Benzoate de benzyle",
+    "synonyms_en": [
+      "Ascabiol",
+      "scabies lotion",
+      "craw-craw medicine"
+    ],
+    "synonyms_fr": [
+      "Ascabiol",
+      "lotion pour la gale",
+      "médicament gale"
+    ],
+    "dose": "25%",
+    "route": "Topical",
+    "frequency": "Apply as directed",
+    "form": "lotion",
+    "drug_class": "Scabicide"
+  },
+  {
+    "term_en": "Benzylpenicillin (Penicillin G)",
+    "term_fr": "Benzylpénicilline (Pénicilline G)",
+    "synonyms_en": [
+      "Crystapen",
+      "meningitis injection"
+    ],
+    "synonyms_fr": [
+      "Penicilline G",
+      "injection pour méningite"
+    ],
+    "dose": "24 MUI / day",
+    "route": "IV",
+    "frequency": "Continuous / Divided",
+    "form": "injection",
+    "drug_class": "Penicillin antibiotic"
+  },
+  {
+    "term_en": "Betamethasone",
+    "term_fr": "Bétaméthasone",
+    "synonyms_en": [
+      "Celestene",
+      "steroid cream",
+      "fetal lung shot"
+    ],
+    "synonyms_fr": [
+      "Célestène",
+      "corticoïde",
+      "injection maturation poumons"
+    ],
+    "dose": "12 mg",
+    "route": "IM",
+    "frequency": "Daily for 2 days",
+    "form": "injection",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Betaxolol",
+    "term_fr": "Bétaxolol",
+    "synonyms_en": [
+      "Betoptic",
+      "eye drops for tension"
+    ],
+    "synonyms_fr": [
+      "Betoptic",
+      "collyre pour la tension de l'œil"
+    ],
+    "dose": "0.5%",
+    "route": "Ophthalmic",
+    "frequency": "BD",
+    "form": "eye drops",
+    "drug_class": "Beta-blocker (Ophthalmic)"
+  },
+  {
+    "term_en": "Bicalutamide",
+    "term_fr": "Bicalutamide",
+    "synonyms_en": [
+      "Casodex",
+      "prostate cancer pill"
+    ],
+    "synonyms_fr": [
+      "Casodex",
+      "médicament cancer de la prostate"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiandrogen"
+  },
+  {
+    "term_en": "Bisacodyl",
+    "term_fr": "Bisacodyl",
+    "synonyms_en": [
+      "Dulcolax",
+      "constipation pill",
+      "laxative"
+    ],
+    "synonyms_fr": [
+      "Dulcolax",
+      "laxatif",
+      "comprimé pour déboucher le ventre"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Stimulant laxative"
+  },
+  {
+    "term_en": "Bisoprolol",
+    "term_fr": "Bisoprolol",
+    "synonyms_en": [
+      "Detensiel",
+      "Cardensiel",
+      "heart slows down pill"
+    ],
+    "synonyms_fr": [
+      "Détensiel",
+      "Cardensiel",
+      "bêtabloquant"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Beta-blocker"
+  },
+  {
+    "term_en": "Bleomycin",
+    "term_fr": "Bléomycine",
+    "synonyms_en": [
+      "cancer chemo injection"
+    ],
+    "synonyms_fr": [
+      "chimiothérapie",
+      "injection cancer"
+    ],
+    "dose": "15 units",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Cytotoxic antibiotic (Chemo)"
+  },
+  {
+    "term_en": "Bromocriptine",
+    "term_fr": "Bromocriptine",
+    "synonyms_en": [
+      "Parlodel",
+      "stop breast milk pill"
+    ],
+    "synonyms_fr": [
+      "Parlodel",
+      "médicament pour couper le lait"
+    ],
+    "dose": "2.5 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Dopamine agonist"
+  },
+  {
+    "term_en": "Budesonide",
+    "term_fr": "Budésonide",
+    "synonyms_en": [
+      "Pulmicort",
+      "asthma nebulizer fluid"
+    ],
+    "synonyms_fr": [
+      "Pulmicort",
+      "liquide pour nébulisation asthme"
+    ],
+    "dose": "0.5 mg",
+    "route": "Inhalation",
+    "frequency": "BD",
+    "form": "respule",
+    "drug_class": "Corticosteroid inhaler"
+  },
+  {
+    "term_en": "Bupivacaine",
+    "term_fr": "Bupivacaïne",
+    "synonyms_en": [
+      "Marcaine",
+      "spinal anesthesia injection"
+    ],
+    "synonyms_fr": [
+      "Marcaine",
+      "anesthésie péridurale",
+      "rachi-anesthésie"
+    ],
+    "dose": "0.5%",
+    "route": "Intrathecal",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Local anesthetic"
+  },
+  {
+    "term_en": "Cabergoline",
+    "term_fr": "Cabergoline",
+    "synonyms_en": [
+      "Dostinex",
+      "milk dry up pill"
+    ],
+    "synonyms_fr": [
+      "Dostinex",
+      "comprimé pour arrêter la lactation"
+    ],
+    "dose": "0.5 mg",
+    "route": "PO",
+    "frequency": "Once weekly",
+    "form": "tablet",
+    "drug_class": "Dopamine agonist"
+  },
+  {
+    "term_en": "Calcium gluconate",
+    "term_fr": "Gluconate de calcium",
+    "synonyms_en": [
+      "calcium ampoule",
+      "magnesium antidote shot"
+    ],
+    "synonyms_fr": [
+      "ampoule de calcium",
+      "antidote de la magnésie"
+    ],
+    "dose": "1 g (10 mL of 10%)",
+    "route": "IV",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Mineral supplement"
+  },
+  {
+    "term_en": "Candesartan",
+    "term_fr": "Candésartan",
+    "synonyms_en": [
+      "Kenzen",
+      "BP pill"
+    ],
+    "synonyms_fr": [
+      "Kenzen",
+      "comprimé d'hypertension"
+    ],
+    "dose": "8 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Angiotensin II receptor blocker"
+  },
+  {
+    "term_en": "Capreomycin",
+    "term_fr": "Capréomycine",
+    "synonyms_en": [
+      "MDR-TB injection"
+    ],
+    "synonyms_fr": [
+      "injection tuberculose résistante"
+    ],
+    "dose": "1 g",
+    "route": "IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Second-line antituberculosis"
+  },
+  {
+    "term_en": "Captopril",
+    "term_fr": "Captopril",
+    "synonyms_en": [
+      "Lopril",
+      "emergency BP pill under tongue"
+    ],
+    "synonyms_fr": [
+      "Lopril",
+      "comprimé sous la langue pour tension"
+    ],
+    "dose": "25 mg",
+    "route": "PO / Sublingual",
+    "frequency": "PRN",
+    "form": "tablet",
+    "drug_class": "ACE inhibitor"
+  },
+  {
+    "term_en": "Carbamazepine",
+    "term_fr": "Carbamazépine",
+    "synonyms_en": [
+      "Tegretol",
+      "epilepsy medicine",
+      "seizure pill"
+    ],
+    "synonyms_fr": [
+      "Tégrétol",
+      "médicament de l'épilepsie",
+      "crises"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Anticonvulsant"
+  },
+  {
+    "term_en": "Carbetocin",
+    "term_fr": "Carbétocine",
+    "synonyms_en": [
+      "Pabal",
+      "bleeding prevention after delivery"
+    ],
+    "synonyms_fr": [
+      "Pabal",
+      "prévention hémorragie délivrance"
+    ],
+    "dose": "100 mcg",
+    "route": "IV / IM",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Oxytocic analogue"
+  },
+  {
+    "term_en": "Carboplatin",
+    "term_fr": "Carboplatine",
+    "synonyms_en": [
+      "cancer chemotherapy"
+    ],
+    "synonyms_fr": [
+      "chimiothérapie perfusion"
+    ],
+    "dose": "AUC 5",
+    "route": "IV",
+    "frequency": "Every 3 weeks",
+    "form": "injection",
+    "drug_class": "Alkylating-like chemo"
+  },
+  {
+    "term_en": "Carvedilol",
+    "term_fr": "Carvédilol",
+    "synonyms_en": [
+      "Kredex",
+      "heart failure tablet"
+    ],
+    "synonyms_fr": [
+      "Kredex",
+      "médicament insuffisance cardiaque"
+    ],
+    "dose": "6.25 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Alpha/Beta-blocker"
+  },
+  {
+    "term_en": "Cefadroxil",
+    "term_fr": "Céfadroxil",
+    "synonyms_en": [
+      "Oracefal",
+      "skin antibiotic"
+    ],
+    "synonyms_fr": [
+      "Oracéfal",
+      "antibiotique pour la peau"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "capsule",
+    "drug_class": "First-generation cephalosporin"
+  },
+  {
+    "term_en": "Cefazolin",
+    "term_fr": "Céfazoline",
+    "synonyms_en": [
+      "Cefamezin",
+      "surgery antibiotic shot"
+    ],
+    "synonyms_fr": [
+      "Céfazoline",
+      "antibiotique bloc opératoire"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "Pre-op STAT",
+    "form": "injection",
+    "drug_class": "First-generation cephalosporin"
+  },
+  {
+    "term_en": "Cefixime",
+    "term_fr": "Céfixime",
+    "synonyms_en": [
+      "Oroken",
+      "typhoid pill",
+      "gonorrhea tablet"
+    ],
+    "synonyms_fr": [
+      "Oroken",
+      "antibiotique typhoïde oral"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Third-generation cephalosporin"
+  },
+  {
+    "term_en": "Cefotaxime",
+    "term_fr": "Céfotaxime",
+    "synonyms_en": [
+      "Claforan",
+      "baby sepsis injection"
+    ],
+    "synonyms_fr": [
+      "Claforan",
+      "antibiotique néonatologie"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Third-generation cephalosporin"
+  },
+  {
+    "term_en": "Ceftazidime",
+    "term_fr": "Ceftazidime",
+    "synonyms_en": [
+      "Fortum",
+      "pseudomonas antibiotic"
+    ],
+    "synonyms_fr": [
+      "Fortum",
+      "antibiotique infections sévères"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Third-generation cephalosporin"
+  },
+  {
+    "term_en": "Ceftriaxone",
+    "term_fr": "Ceftriaxone",
+    "synonyms_en": [
+      "Rocéphine",
+      "typhoid injection",
+      "one-gram injection"
+    ],
+    "synonyms_fr": [
+      "Rocéphine",
+      "injection un gramme",
+      "piqûre typhoïde"
+    ],
+    "dose": "1 g",
+    "route": "IV / IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Third-generation cephalosporin"
+  },
+  {
+    "term_en": "Cefuroxime",
+    "term_fr": "Céfuroxime",
+    "synonyms_en": [
+      "Zinnat",
+      "lung infection tablet"
+    ],
+    "synonyms_fr": [
+      "Zinnat",
+      "antibiotique bronchite"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Second-generation cephalosporin"
+  },
+  {
+    "term_en": "Celecoxib",
+    "term_fr": "Célécoxib",
+    "synonyms_en": [
+      "Celebrex",
+      "stomach-friendly rheumatism pill"
+    ],
+    "synonyms_fr": [
+      "Celebrex",
+      "anti-inflammatoire pour arthrose"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "NSAID (COX-2 inhibitor)"
+  },
+  {
+    "term_en": "Cetirizine",
+    "term_fr": "Cétirizine",
+    "synonyms_en": [
+      "Zyrtec",
+      "allergy pill",
+      "itchy body tablet"
+    ],
+    "synonyms_fr": [
+      "Zyrtec",
+      "anti-allergique",
+      "médicament pour les démangeaisons"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antihistamine"
+  },
+  {
+    "term_en": "Charcoal, activated",
+    "term_fr": "Charbon actif",
+    "synonyms_en": [
+      "black poison powder",
+      "Carbo vegetabilis"
+    ],
+    "synonyms_fr": [
+      "charbon de bois médical",
+      "antidote poison"
+    ],
+    "dose": "50 g",
+    "route": "PO / NG tube",
+    "frequency": "STAT",
+    "form": "powder",
+    "drug_class": "Adsorbent"
+  },
+  {
+    "term_en": "Chloramphenicol",
+    "term_fr": "Chloramphénicol",
+    "synonyms_en": [
+      "Chloromycetin",
+      "typhoid injection old"
+    ],
+    "synonyms_fr": [
+      "Chloromycétine",
+      "antibiotique collyre ou injection"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "QDS",
+    "form": "injection",
+    "drug_class": "Chloramphenicol antibiotic"
+  },
+  {
+    "term_en": "Chlorhexidine",
+    "term_fr": "Chlorhexidine",
+    "synonyms_en": [
+      "Biseptine",
+      "cord care gel",
+      "wound cleaner"
+    ],
+    "synonyms_fr": [
+      "Biseptine",
+      "gel pour le cordon ombilical",
+      "désinfectant"
+    ],
+    "dose": "7.1%",
+    "route": "Topical",
+    "frequency": "OD",
+    "form": "gel / solution",
+    "drug_class": "Antiseptic"
+  },
+  {
+    "term_en": "Chlormethine",
+    "term_fr": "Chlorméthine",
+    "synonyms_en": [
+      "Mustargen",
+      "Hodgkin lymphoma drug"
+    ],
+    "synonyms_fr": [
+      "Moutarde à l'azote",
+      "chimio lymphome"
+    ],
+    "dose": "6 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Alkylating chemotherapy"
+  },
+  {
+    "term_en": "Chloroquine",
+    "term_fr": "Chloroquine",
+    "synonyms_en": [
+      "Nivaquine",
+      "old malaria pill",
+      "itchy malaria drug"
+    ],
+    "synonyms_fr": [
+      "Nivaquine",
+      "ancien médicament palu"
+    ],
+    "dose": "150 mg",
+    "route": "PO",
+    "frequency": "Schedule",
+    "form": "tablet",
+    "drug_class": "Amoebicide / Antimalarial"
+  },
+  {
+    "term_en": "Chlorpromazine",
+    "term_fr": "Chlorpromazine",
+    "synonyms_en": [
+      "Largactil",
+      "madness injection",
+      "strong sedating pill"
+    ],
+    "synonyms_fr": [
+      "Largactil",
+      "injection pour agitation folle",
+      "neuroleptique"
+    ],
+    "dose": "25 mg",
+    "route": "PO / IM",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Phenothiazine antipsychotic"
+  },
+  {
+    "term_en": "Cimetidine",
+    "term_fr": "Cimétidine",
+    "synonyms_en": [
+      "Tagamet",
+      "ulcer capsule"
+    ],
+    "synonyms_fr": [
+      "Tagamet",
+      "comprimé d'estomac"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "H2 blocker"
+  },
+  {
+    "term_en": "Ciprofloxacin",
+    "term_fr": "Ciprofloxacine",
+    "synonyms_en": [
+      "Cipro",
+      "typhoid medicine",
+      "STI single dose"
+    ],
+    "synonyms_fr": [
+      "Cipro",
+      "antibiotique infection urinaire / typhoïde"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Fluoroquinolone antibiotic"
+  },
+  {
+    "term_en": "Cisplatin",
+    "term_fr": "Cisplatine",
+    "synonyms_en": [
+      "cancer chemo drip"
+    ],
+    "synonyms_fr": [
+      "chimiothérapie cisplatine"
+    ],
+    "dose": "75 mg/m2",
+    "route": "IV",
+    "frequency": "Every 3-4 weeks",
+    "form": "injection",
+    "drug_class": "Platinum chemotherapy"
+  },
+  {
+    "term_en": "Clarithromycin",
+    "term_fr": "Clarithromycine",
+    "synonyms_en": [
+      "Zeclar",
+      "stomach ulcer cocktail drug"
+    ],
+    "synonyms_fr": [
+      "Zeclar",
+      "antibiotique pour Helicobacter"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Macrolide antibiotic"
+  },
+  {
+    "term_en": "Clindamycin",
+    "term_fr": "Clindamycine",
+    "synonyms_en": [
+      "Dalacin",
+      "pelvic infection antibiotic"
+    ],
+    "synonyms_fr": [
+      "Dalacine",
+      "antibiotique tissus mous"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "QDS",
+    "form": "capsule",
+    "drug_class": "Lincosamide antibiotic"
+  },
+  {
+    "term_en": "Clobetasol",
+    "term_fr": "Clobétasol",
+    "synonyms_en": [
+      "Dermovate",
+      "strong skin bleaching cream"
+    ],
+    "synonyms_fr": [
+      "Dermovate",
+      "tube crème très fort"
+    ],
+    "dose": "0.05%",
+    "route": "Topical",
+    "frequency": "BD",
+    "form": "cream",
+    "drug_class": "Corticosteroid (Very High Potency)"
+  },
+  {
+    "term_en": "Clofazimine",
+    "term_fr": "Clofazimine",
+    "synonyms_en": [
+      "Lamprene",
+      "leprosy brown capsule"
+    ],
+    "synonyms_fr": [
+      "Lamprène",
+      "gélule pour la lèpre"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Antileprotic"
+  },
+  {
+    "term_en": "Clomifene",
+    "term_fr": "Clomifène",
+    "synonyms_en": [
+      "Clomid",
+      "pregnancy helper pill",
+      "twins pill"
+    ],
+    "synonyms_fr": [
+      "Clomid",
+      "médicament pour tomber enceinte"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "Daily for 5 days",
+    "form": "tablet",
+    "drug_class": "Ovulation inducer"
+  },
+  {
+    "term_en": "Clomipramine",
+    "term_fr": "Clomipramine",
+    "synonyms_en": [
+      "Anafranil",
+      "obsession pill"
+    ],
+    "synonyms_fr": [
+      "Anafranil",
+      "antidépresseur obsessions"
+    ],
+    "dose": "75 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Tricyclic antidepressant"
+  },
+  {
+    "term_en": "Clonazepam",
+    "term_fr": "Clonazépam",
+    "synonyms_en": [
+      "Rivotril",
+      "drops for epilepsy"
+    ],
+    "synonyms_fr": [
+      "Rivotril",
+      "gouttes pour convulsions / crises"
+    ],
+    "dose": "2 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Benzodiazepine"
+  },
+  {
+    "term_en": "Clopidogrel",
+    "term_fr": "Clopidogrel",
+    "synonyms_en": [
+      "Plavix",
+      "blood thinner pill"
+    ],
+    "synonyms_fr": [
+      "Plavix",
+      "médicament pour fluidifier le sang"
+    ],
+    "dose": "75 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiplatelet"
+  },
+  {
+    "term_en": "Clotrimazole",
+    "term_fr": "Clotrimazole",
+    "synonyms_en": [
+      "Canesten",
+      "white toilet ovule",
+      "yeast infection cream"
+    ],
+    "synonyms_fr": [
+      "Canestene",
+      "ovule pour les pertes blanches",
+      "crème de dartres"
+    ],
+    "dose": "500 mg",
+    "route": "Vaginal",
+    "frequency": "STAT",
+    "form": "pessary",
+    "drug_class": "Imidazole antifungal"
+  },
+  {
+    "term_en": "Cloxacillin",
+    "term_fr": "Cloxacilline",
+    "synonyms_en": [
+      "Orbinin",
+      "boil medicine",
+      "pus antibiotic"
+    ],
+    "synonyms_fr": [
+      "Cloxacilline",
+      "antibiotique pour panaris / abcès"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "QDS",
+    "form": "capsule",
+    "drug_class": "Penicillinase-resistant penicillin"
+  },
+  {
+    "term_en": "Co-trimoxazole (Sulfamethoxazole / Trimethoprim)",
+    "term_fr": "Co-trimoxazole",
+    "synonyms_en": [
+      "Bactrim",
+      "Cotrim",
+      "HIV prevention pill"
+    ],
+    "synonyms_fr": [
+      "Bactrim",
+      "Cotrim",
+      "comprimé pour sidéens"
+    ],
+    "dose": "960 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Sulfonamide combo antibiotic"
+  },
+  {
+    "term_en": "Codeine / Paracetamol",
+    "term_fr": "Codéine / Paracétamol",
+    "synonyms_en": [
+      "Efferalgan codeine",
+      "strong painkiller"
+    ],
+    "synonyms_fr": [
+      "Efferalgan codéiné",
+      "antalgique fort"
+    ],
+    "dose": "30 mg / 500 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "effervescent tablet",
+    "drug_class": "Opioid combo analgesic"
+  },
+  {
+    "term_en": "Colchicine",
+    "term_fr": "Colchicine",
+    "synonyms_en": [
+      "gout attack tablet"
+    ],
+    "synonyms_fr": [
+      "comprimé crise de goutte"
+    ],
+    "dose": "1 mg",
+    "route": "PO",
+    "frequency": "Schedule",
+    "form": "tablet",
+    "drug_class": "Antigout"
+  },
+  {
+    "term_en": "Cyclophosphamide",
+    "term_fr": "Cyclophosphamide",
+    "synonyms_en": [
+      "Endoxan",
+      "cancer injection"
+    ],
+    "synonyms_fr": [
+      "Endoxan",
+      "chimiothérapie cancer"
+    ],
+    "dose": "600 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Alkylating chemotherapy"
+  },
+  {
+    "term_en": "Cycloserine",
+    "term_fr": "Cyclosérine",
+    "synonyms_en": [
+      "MDR-TB capsule"
+    ],
+    "synonyms_fr": [
+      "gélule tuberculose résistante"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "capsule",
+    "drug_class": "Second-line antituberculosis"
+  },
+  {
+    "term_en": "Cytarabine",
+    "term_fr": "Cytarabine",
+    "synonyms_en": [
+      "Aracyt",
+      "leukemia chemo"
+    ],
+    "synonyms_fr": [
+      "Aracyt",
+      "chimio leucémie"
+    ],
+    "dose": "100 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Antimetabolite chemotherapy"
+  },
+  {
+    "term_en": "Dacarbazine",
+    "term_fr": "Dacarbazine",
+    "synonyms_en": [
+      "DTIC",
+      "melanoma chemo"
+    ],
+    "synonyms_fr": [
+      "DTIC",
+      "chimio mélanome"
+    ],
+    "dose": "250 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Alkylating chemotherapy"
+  },
+  {
+    "term_en": "Dactinomycin",
+    "term_fr": "Dactinomycine",
+    "synonyms_en": [
+      "Cosmegen",
+      "Wilms tumor drug"
+    ],
+    "synonyms_fr": [
+      "Cosmegen",
+      "chimio tumeur de Wilms"
+    ],
+    "dose": "15 mcg/kg",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Cytotoxic chemotherapy"
+  },
+  {
+    "term_en": "Dapsone",
+    "term_fr": "Dapsone",
+    "synonyms_en": [
+      "leprosy white tablet",
+      "PCP prevention pill"
+    ],
+    "synonyms_fr": [
+      "comprimé lèpre",
+      "prophylaxie pneumocystose"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Sulfone antileprotic"
+  },
+  {
+    "term_en": "Darbepoetin alfa",
+    "term_fr": "Darbépoétine alfa",
+    "synonyms_en": [
+      "Aranesp",
+      "kidney failure blood shot"
+    ],
+    "synonyms_fr": [
+      "Aranesp",
+      "injection pour fabriquer le sang"
+    ],
+    "dose": "40 mcg",
+    "route": "SC",
+    "frequency": "Once weekly",
+    "form": "injection",
+    "drug_class": "Erythropoiesis-stimulating agent"
+  },
+  {
+    "term_en": "Darunavir",
+    "term_fr": "Darunavir",
+    "synonyms_en": [
+      "Prezista",
+      "3rd line HIV pill"
+    ],
+    "synonyms_fr": [
+      "Prezista",
+      "antirétroviral 3ème ligne"
+    ],
+    "dose": "600 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (Protease Inhibitor)"
+  },
+  {
+    "term_en": "Daunorubicin",
+    "term_fr": "Daunorubicine",
+    "synonyms_en": [
+      "Cerubidine",
+      "leukemia red chemo"
+    ],
+    "synonyms_fr": [
+      "Cérubidine",
+      "chimio rouge leucémie"
+    ],
+    "dose": "45 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Anthracycline chemotherapy"
+  },
+  {
+    "term_en": "Dexamethasone",
+    "term_fr": "Dexaméthasone",
+    "synonyms_en": [
+      "Decadron",
+      "covid steroid injection",
+      "strong anti-inflammatory"
+    ],
+    "synonyms_fr": [
+      "Dectancyl",
+      "corticoïde fort injection",
+      "anti-inflammatoire stéroïdien"
+    ],
+    "dose": "4 mg",
+    "route": "IV / IM",
+    "frequency": "BD",
+    "form": "injection",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Diazepam",
+    "term_fr": "Diazépam",
+    "synonyms_en": [
+      "Valium",
+      "seizure injection",
+      "calming shot"
+    ],
+    "synonyms_fr": [
+      "Valium",
+      "injection convulsions",
+      "calmant fesse"
+    ],
+    "dose": "10 mg",
+    "route": "IV / IM / PR",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Benzodiazepine"
+  },
+  {
+    "term_en": "Diclofenac",
+    "term_fr": "Diclofénac",
+    "synonyms_en": [
+      "Voltaren",
+      "rheumatism injection",
+      "hip pain injection"
+    ],
+    "synonyms_fr": [
+      "Voltarène",
+      "piqûre pour les fesses douleurs",
+      "anti-inflammatoire fesse"
+    ],
+    "dose": "75 mg",
+    "route": "IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "NSAID"
+  },
+  {
+    "term_en": "Didanosine",
+    "term_fr": "Didanosine",
+    "synonyms_en": [
+      "ddI",
+      "Videx"
+    ],
+    "synonyms_fr": [
+      "ddI",
+      "Videx"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Antiretroviral (NRTI)"
+  },
+  {
+    "term_en": "Digoxin",
+    "term_fr": "Digoxine",
+    "synonyms_en": [
+      "Lanoxin",
+      "heart failure drops / pill"
+    ],
+    "synonyms_fr": [
+      "Digoxine",
+      "médicament pour le cœur fatigué"
+    ],
+    "dose": "0.25 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Cardiac glycoside"
+  },
+  {
+    "term_en": "Dihydroartemisinin / Piperaquine",
+    "term_fr": "Dihydroartémisinine / Pipéraquine",
+    "synonyms_en": [
+      "Eurartesim",
+      "Duo-cotecxin",
+      "malaria 3-day tablets"
+    ],
+    "synonyms_fr": [
+      "Eurartesim",
+      "Duo-cotecxin",
+      "antipaludique 3 jours"
+    ],
+    "dose": "40 mg / 320 mg",
+    "route": "PO",
+    "frequency": "OD for 3 days",
+    "form": "tablet",
+    "drug_class": "Antimalarial (ACT)"
+  },
+  {
+    "term_en": "Diltiazem",
+    "term_fr": "Diltiazem",
+    "synonyms_en": [
+      "Tildiem",
+      "pulse slowing capsule"
+    ],
+    "synonyms_fr": [
+      "Tildiem",
+      "médicament pour hypertension / angine"
+    ],
+    "dose": "60 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Calcium channel blocker"
+  },
+  {
+    "term_en": "Dinitrate d'isosorbide",
+    "term_fr": "Dinitrate d'isosorbide",
+    "synonyms_en": [
+      "Isordil",
+      "angina chest pain pill under tongue"
+    ],
+    "synonyms_fr": [
+      "Risordan",
+      "comprimé crise cardiaque sous la langue"
+    ],
+    "dose": "5 mg",
+    "route": "Sublingual",
+    "frequency": "PRN",
+    "form": "tablet",
+    "drug_class": "Vasodilator / Nitrate"
+  },
+  {
+    "term_en": "Dioctyl sodium sulfosuccinate",
+    "term_fr": "Docusate sodique",
+    "synonyms_en": [
+      "stool softener",
+      "constipation helper"
+    ],
+    "synonyms_fr": [
+      "ramollisseur de selles"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "capsule",
+    "drug_class": "Stool softener laxative"
+  },
+  {
+    "term_en": "Diphenhydramine",
+    "term_fr": "Diphénhydramine",
+    "synonyms_en": [
+      "Benadryl",
+      "allergy syrup that causes sleep"
+    ],
+    "synonyms_fr": [
+      "Benadryl",
+      "sirop allergie somnolent"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "capsule",
+    "drug_class": "Sedating antihistamine"
+  },
+  {
+    "term_en": "Dobutamine",
+    "term_fr": "Dobutamine",
+    "synonyms_en": [
+      "ICU heart shock syringe fluid"
+    ],
+    "synonyms_fr": [
+      "Dobutamine ampoule",
+      "choc cardiogénique réanimation"
+    ],
+    "dose": "5 mcg/kg/min",
+    "route": "IV",
+    "frequency": "Continuous",
+    "form": "infusion",
+    "drug_class": "Inotrope"
+  },
+  {
+    "term_en": "Docetaxel",
+    "term_fr": "Docétaxel",
+    "synonyms_en": [
+      "Taxotere",
+      "breast cancer chemo"
+    ],
+    "synonyms_fr": [
+      "Taxotere",
+      "chimio cancer du sein"
+    ],
+    "dose": "75 mg/m2",
+    "route": "IV",
+    "frequency": "Every 3 weeks",
+    "form": "injection",
+    "drug_class": "Taxane chemotherapy"
+  },
+  {
+    "term_en": "Dolutegravir",
+    "term_fr": "Dolutégravir",
+    "synonyms_en": [
+      "DTG",
+      "Tivicay",
+      "new HIV medicine"
+    ],
+    "synonyms_fr": [
+      "DTG",
+      "Tivicay",
+      "nouvel antirétroviral"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (INSTI)"
+  },
+  {
+    "term_en": "Dolutegravir / Lamivudine / Tenofovir disoproxil fumarate",
+    "term_fr": "Dolutégravir / Lamivudine / Fumarate de ténofovir disoproxil",
+    "synonyms_en": [
+      "TLD",
+      "three-in-one HIV pill"
+    ],
+    "synonyms_fr": [
+      "TLD",
+      "trithérapie un seul comprimé"
+    ],
+    "dose": "50 mg / 300 mg / 300 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral combination"
+  },
+  {
+    "term_en": "Domperidone",
+    "term_fr": "Dompéridone",
+    "synonyms_en": [
+      "Motilium",
+      "vomiting tablet",
+      "nausea syrup"
+    ],
+    "synonyms_fr": [
+      "Motilium",
+      "médicament contre les vomissements"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Antiemetic / Prokinetic"
+  },
+  {
+    "term_en": "Dopamine",
+    "term_fr": "Dopamine",
+    "synonyms_en": [
+      "ICU blood pressure drop drip"
+    ],
+    "synonyms_fr": [
+      "Dopamine ampoule",
+      "perfusion pour lever la tension"
+    ],
+    "dose": "5 mcg/kg/min",
+    "route": "IV",
+    "frequency": "Continuous",
+    "form": "infusion",
+    "drug_class": "Vasopressor / Inotrope"
+  },
+  {
+    "term_en": "Doxorubicin",
+    "term_fr": "Doxorubicine",
+    "synonyms_en": [
+      "Adriamycin",
+      "red chemo injection"
+    ],
+    "synonyms_fr": [
+      "Adriamycine",
+      "chimio rouge"
+    ],
+    "dose": "60 mg/m2",
+    "route": "IV",
+    "frequency": "Every 3 weeks",
+    "form": "injection",
+    "drug_class": "Anthracycline chemotherapy"
+  },
+  {
+    "term_en": "Doxycycline",
+    "term_fr": "Doxycycline",
+    "synonyms_en": [
+      "Vibramycin",
+      "STI capsule",
+      "pelvic infection drug"
+    ],
+    "synonyms_fr": [
+      "Vibramycine",
+      "gélule pour chlamydia / chaude-pisse"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "capsule",
+    "drug_class": "Tetracycline antibiotic"
+  },
+  {
+    "term_en": "Efavirenz",
+    "term_fr": "Éfavirenz",
+    "synonyms_en": [
+      "EFV",
+      "Sustiva",
+      "HIV night tablet"
+    ],
+    "synonyms_fr": [
+      "EFV",
+      "Sustiva",
+      "comprimé VIH du soir"
+    ],
+    "dose": "600 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (NNRTI)"
+  },
+  {
+    "term_en": "Efavirenz / Emtricitabine / Tenofovir disoproxil fumarate",
+    "term_fr": "Éfavirenz / Emtricitabine / Fumarate de ténofovir disoproxil",
+    "synonyms_en": [
+      "Atripla",
+      "TEE",
+      "old single HIV pill"
+    ],
+    "synonyms_fr": [
+      "Atripla",
+      "TEE",
+      "ancienne trithérapie dose fixe"
+    ],
+    "dose": "600 mg / 200 mg / 300 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Antiretroviral combination"
+  },
+  {
+    "term_en": "Enalapril",
+    "term_fr": "Énalapril",
+    "synonyms_en": [
+      "Renitec",
+      "coughing BP pill"
+    ],
+    "synonyms_fr": [
+      "Rénitec",
+      "inhibiteur de l'enzyme de conversion"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "ACE inhibitor"
+  },
+  {
+    "term_en": "Enoxaparin",
+    "term_fr": "Énoxaparine",
+    "synonyms_en": [
+      "Lovenox",
+      "belly prick injection for blood clots"
+    ],
+    "synonyms_fr": [
+      "Lovenox",
+      "injection anticoagulante dans le ventre"
+    ],
+    "dose": "1 mg/kg (e.g., 60 mg)",
+    "route": "SC",
+    "frequency": "BD",
+    "form": "pre-filled syringe",
+    "drug_class": "Low molecular weight heparin"
+  },
+  {
+    "term_en": "Epinephrine (Adrenaline)",
+    "term_fr": "Épinéphrine (Adrénaline)",
+    "synonyms_en": [
+      "Adrenaline shot",
+      "cardiac arrest ampoule"
+    ],
+    "synonyms_fr": [
+      "Adrénaline",
+      "injection choc anaphylactique / arrêt cardiaque"
+    ],
+    "dose": "1 mg",
+    "route": "IV / IM",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Vasopressor / Catecholamine"
+  },
+  {
+    "term_en": "Erythromycin",
+    "term_fr": "Érythromycine",
+    "synonyms_en": [
+      "Erythrocin",
+      "penicillin allergy alternative antibiotic"
+    ],
+    "synonyms_fr": [
+      "Érythrocine",
+      "antibiotique alternative pénicilline"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "QDS",
+    "form": "tablet",
+    "drug_class": "Macrolide antibiotic"
+  },
+  {
+    "term_en": "Erythropoietin (EPO)",
+    "term_fr": "Érythropoïétine (EPO)",
+    "synonyms_en": [
+      "Eprex",
+      "dialysis blood building shot"
+    ],
+    "synonyms_fr": [
+      "Eprex",
+      "injection anémie insuffisance rénale"
+    ],
+    "dose": "4000 IU",
+    "route": "SC",
+    "frequency": "3 times weekly",
+    "form": "injection",
+    "drug_class": "Erythropoiesis-stimulating agent"
+  },
+  {
+    "term_en": "Ethambutol",
+    "term_fr": "Éthambutol",
+    "synonyms_en": [
+      "E",
+      "TB eye damage pill"
+    ],
+    "synonyms_fr": [
+      "E",
+      "médicament tuberculose E"
+    ],
+    "dose": "15 mg/kg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antituberculosis"
+  },
+  {
+    "term_en": "Ethambutol / Isoniazid / Pyrazinamide / Rifampicin",
+    "term_fr": "Éthambutol / Isoniazide / Pyrazinamide / Rifampicine",
+    "synonyms_en": [
+      "RHZE",
+      "4-in-1 TB red tablets"
+    ],
+    "synonyms_fr": [
+      "RHZE",
+      "comprimés rouges tuberculose phase initiale"
+    ],
+    "dose": "Fixed-dose combo by weight",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antituberculosis combination"
+  },
+  {
+    "term_en": "Ethinylestradiol / Levonorgestrel",
+    "term_fr": "Éthinylestradiol / Lévonorgestrel",
+    "synonyms_en": [
+      "Minidril",
+      "birth control pill",
+      "family planning pill"
+    ],
+    "synonyms_fr": [
+      "Minidril",
+      "pilule contraceptive",
+      "planning familial"
+    ],
+    "dose": "30 mcg / 150 mcg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Oral contraceptive combo"
+  },
+  {
+    "term_en": "Etoposide",
+    "term_fr": "Étoposide",
+    "synonyms_en": [
+      "Vepesid",
+      "lung cancer chemo"
+    ],
+    "synonyms_fr": [
+      "Vepesid",
+      "chimio poumon / testicule"
+    ],
+    "dose": "100 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Podophyllotoxin derivative chemo"
+  },
+  {
+    "term_en": "Factor VIII",
+    "term_fr": "Facteur VIII de coagulation",
+    "synonyms_en": [
+      "hemophilia A injection"
+    ],
+    "synonyms_fr": [
+      "injection pour hémophilie A"
+    ],
+    "dose": "20-40 IU/kg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Clotting factor supplement"
+  },
+  {
+    "term_en": "Factor IX",
+    "term_fr": "Facteur IX de coagulation",
+    "synonyms_en": [
+      "hemophilia B injection"
+    ],
+    "synonyms_fr": [
+      "injection pour hémophilie B"
+    ],
+    "dose": "30-50 IU/kg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Clotting factor supplement"
+  },
+  {
+    "term_en": "Famotidine",
+    "term_fr": "Famotidine",
+    "synonyms_en": [
+      "Pepcid",
+      "stomach burn tablet"
+    ],
+    "synonyms_fr": [
+      "Pepcid",
+      "anti-ulcéreux"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "H2 blocker"
+  },
+  {
+    "term_en": "Fentanyl",
+    "term_fr": "Fentanyl",
+    "synonyms_en": [
+      "strong operation painkiller ampoule"
+    ],
+    "synonyms_fr": [
+      "fentanyl ampoule",
+      "morphinique bloc opératoire"
+    ],
+    "dose": "50 mcg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Opioid analgesic"
+  },
+  {
+    "term_en": "Ferrous sulfate",
+    "term_fr": "Sulfate ferreux",
+    "synonyms_en": [
+      "Iron pill",
+      "blood building pill",
+      "pregnant woman black stool pill"
+    ],
+    "synonyms_fr": [
+      "Fer",
+      "comprimé de sang",
+      "médicament fer femme enceinte"
+    ],
+    "dose": "200 mg (65 mg elemental iron)",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Iron supplement"
+  },
+  {
+    "term_en": "Ferrous sulfate / Folic acid",
+    "term_fr": "Sulfate ferreux / Acide folique",
+    "synonyms_en": [
+      "Iron + Folic",
+      "ANC blood tablets"
+    ],
+    "synonyms_fr": [
+      "Fer + Acide folique",
+      "comprimés de sang CPN"
+    ],
+    "dose": "200 mg / 0.4 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Iron + Vitamin combo"
+  },
+  {
+    "term_en": "Finasteride",
+    "term_fr": "Finastéride",
+    "synonyms_en": [
+      "Chibro-Proscar",
+      "prostate shrinking pill"
+    ],
+    "synonyms_fr": [
+      "Chibro-Proscar",
+      "médicament pour pisser prostate"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "5-alpha reductase inhibitor"
+  },
+  {
+    "term_en": "Fluconazole",
+    "term_fr": "Fluconazole",
+    "synonyms_en": [
+      "Triflucan",
+      "thrush pink capsule",
+      "severe yeast capsule"
+    ],
+    "synonyms_fr": [
+      "Triflucan",
+      "gélule pour candidose / champignons"
+    ],
+    "dose": "150 mg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "capsule",
+    "drug_class": "Triazole antifungal"
+  },
+  {
+    "term_en": "Flucytosine",
+    "term_fr": "Flucytosine",
+    "synonyms_en": [
+      "Ancotil",
+      "cryptococcal meningitis pill"
+    ],
+    "synonyms_fr": [
+      "Ancotil",
+      "médicament méningite à cryptocoque"
+    ],
+    "dose": "25 mg/kg",
+    "route": "PO / IV",
+    "frequency": "QDS",
+    "form": "tablet",
+    "drug_class": "Antifungal"
+  },
+  {
+    "term_en": "Fludrocortisone",
+    "term_fr": "Fludrocortisone",
+    "synonyms_en": [
+      "Florinef",
+      "adrenal failure pill"
+    ],
+    "synonyms_fr": [
+      "Florinef",
+      "minéralocorticoïde"
+    ],
+    "dose": "0.1 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Mineralocorticoid"
+  },
+  {
+    "term_en": "Flumazenil",
+    "term_fr": "Flumazénil",
+    "synonyms_en": [
+      "Anexate",
+      "Valium antidote"
+    ],
+    "synonyms_fr": [
+      "Anexate",
+      "antidote des benzodiazépines"
+    ],
+    "dose": "0.2 mg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Benzodiazepine antagonist"
+  },
+  {
+    "term_en": "Fluorouracil",
+    "term_fr": "Fluorouracile",
+    "synonyms_en": [
+      "5-FU",
+      "colon cancer chemo"
+    ],
+    "synonyms_fr": [
+      "5-FU",
+      "chimio 5-fluorouracile"
+    ],
+    "dose": "12 mg/kg",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Antimetabolite chemotherapy"
+  },
+  {
+    "term_en": "Fluoxetine",
+    "term_fr": "Fluoxétine",
+    "synonyms_en": [
+      "Prozac",
+      "depression green capsule"
+    ],
+    "synonyms_fr": [
+      "Prozac",
+      "gélule pour la dépression"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "SSRI antidepressant"
+  },
+  {
+    "term_en": "Fluphenazine decanoate",
+    "term_fr": "Décanoate de fluphénazine",
+    "synonyms_en": [
+      "Moditen depot",
+      "monthly madness injection"
+    ],
+    "synonyms_fr": [
+      "Moditen retard",
+      "injection mensuelle schizophrénie"
+    ],
+    "dose": "25 mg",
+    "route": "IM",
+    "frequency": "Every 4 weeks",
+    "form": "injection",
+    "drug_class": "Depot antipsychotic"
+  },
+  {
+    "term_en": "Folic acid",
+    "term_fr": "Acide folique",
+    "synonyms_en": [
+      "Vitamin B9",
+      "malformation prevention pill for pregnancy"
+    ],
+    "synonyms_fr": [
+      "Acide folique",
+      "vitamine CPN début grossesse"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Vitamin"
+  },
+  {
+    "term_en": "Foscarnet",
+    "term_fr": "Foscarnet",
+    "synonyms_en": [
+      "Foscavir",
+      "CMV eye virus infusion"
+    ],
+    "synonyms_fr": [
+      "Foscavir",
+      "antiviral perfusion"
+    ],
+    "dose": "60 mg/kg",
+    "route": "IV",
+    "frequency": "TDS",
+    "form": "infusion",
+    "drug_class": "Antiviral"
+  },
+  {
+    "term_en": "Furosemide",
+    "term_fr": "Furosémide",
+    "synonyms_en": [
+      "Lasilix",
+      "water injection",
+      "urine injection for heart failure"
+    ],
+    "synonyms_fr": [
+      "Lasilix",
+      "injection pour pisser beaucoup",
+      "diurétique flash"
+    ],
+    "dose": "40 mg",
+    "route": "IV / IM / PO",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Loop diuretic"
+  },
+  {
+    "term_en": "Gabapentin",
+    "term_fr": "Gabapentine",
+    "synonyms_en": [
+      "Neurontin",
+      "diabetic burning foot pill"
+    ],
+    "synonyms_fr": [
+      "Neurontin",
+      "médicament pour brûlures des pieds diabétiques"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "capsule",
+    "drug_class": "Gabapentinoid / Anticonvulsant"
+  },
+  {
+    "term_en": "Ganciclovir",
+    "term_fr": "Ganciclovir",
+    "synonyms_en": [
+      "Cymevan",
+      "HIV blindness virus drug"
+    ],
+    "synonyms_fr": [
+      "Cymévan",
+      "antiviral rétinite CMV"
+    ],
+    "dose": "5 mg/kg",
+    "route": "IV",
+    "frequency": "BD",
+    "form": "injection",
+    "drug_class": "Antiviral"
+  },
+  {
+    "term_en": "Gemcitabine",
+    "term_fr": "Gemcitabine",
+    "synonyms_en": [
+      "Gemzar",
+      "pancreatic cancer chemo"
+    ],
+    "synonyms_fr": [
+      "Gemzar",
+      "chimio pancréas / poumon"
+    ],
+    "dose": "1000 mg/m2",
+    "route": "IV",
+    "frequency": "Once weekly",
+    "form": "injection",
+    "drug_class": "Antimetabolite chemotherapy"
+  },
+  {
+    "term_en": "Gentamicin",
+    "term_fr": "Gentamicine",
+    "synonyms_en": [
+      "Genta",
+      "kidney damage risk antibiotic",
+      "baby injection"
+    ],
+    "synonyms_fr": [
+      "Gentalline",
+      "piqûre genta",
+      "antibiotique aminoside"
+    ],
+    "dose": "5 mg/kg",
+    "route": "IV / IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Aminoglycoside antibiotic"
+  },
+  {
+    "term_en": "Glibenclamide",
+    "term_fr": "Glibenclamide",
+    "synonyms_en": [
+      "Daonil",
+      "sugar small tablet"
+    ],
+    "synonyms_fr": [
+      "Daonil",
+      "comprimé pour le diabète sucré"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Sulfonylurea antidiabetic"
+  },
+  {
+    "term_en": "Gliclazide",
+    "term_fr": "Gliclazide",
+    "synonyms_en": [
+      "Diamicron",
+      "diabetes capsule"
+    ],
+    "synonyms_fr": [
+      "Diamicron",
+      "antidiabétique oral"
+    ],
+    "dose": "60 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "modified-release tablet",
+    "drug_class": "Sulfonylurea antidiabetic"
+  },
+  {
+    "term_en": "Glimepiride",
+    "term_fr": "Glimépiride",
+    "synonyms_en": [
+      "Amaryl",
+      "sugar pill"
+    ],
+    "synonyms_fr": [
+      "Amaryl",
+      "diabète comprimé"
+    ],
+    "dose": "2 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Sulfonylurea antidiabetic"
+  },
+  {
+    "term_en": "Glucose 5% (Dextrose 5%)",
+    "term_fr": "Glucose 5%",
+    "synonyms_en": [
+      "5% serum bag",
+      "sweet water drip"
+    ],
+    "synonyms_fr": [
+      "Sérum glucosé 5%",
+      "perfusion de sucre eau"
+    ],
+    "dose": "500 mL",
+    "route": "IV",
+    "frequency": "As directed",
+    "form": "infusion bag",
+    "drug_class": "Intravenous fluid"
+  },
+  {
+    "term_en": "Glucose 10%",
+    "term_fr": "Glucose 10%",
+    "synonyms_en": [
+      "10% sugar water drip"
+    ],
+    "synonyms_fr": [
+      "Sérum glucosé 10%"
+    ],
+    "dose": "500 mL",
+    "route": "IV",
+    "frequency": "As directed",
+    "form": "infusion bag",
+    "drug_class": "Intravenous fluid"
+  },
+  {
+    "term_en": "Glucose 50%",
+    "term_fr": "Glucose 50%",
+    "synonyms_en": [
+      "Hypertonic glucose ampoule",
+      "sugar coma injection"
+    ],
+    "synonyms_fr": [
+      "Sérum glucosé hypertonique 50%",
+      "ampoule de glucose flash"
+    ],
+    "dose": "50 mL",
+    "route": "IV",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Hypertonic fluid / Antidote"
+  },
+  {
+    "term_en": "Glycerol (Glycerin)",
+    "term_fr": "Glycérol (Glycérine)",
+    "synonyms_en": [
+      "constipation bullet",
+      "baby poop suppository"
+    ],
+    "synonyms_fr": [
+      "Suppositoire de glycérine",
+      "projectile constipation bébé"
+    ],
+    "dose": "1 suppository",
+    "route": "PR",
+    "frequency": "PRN",
+    "form": "suppository",
+    "drug_class": "Osmotic laxative"
+  },
+  {
+    "term_en": "Griseofulvin",
+    "term_fr": "Griséofulvine",
+    "synonyms_en": [
+      "ringworm pill",
+      "craw-craw tablet"
+    ],
+    "synonyms_fr": [
+      "Griséofulvine",
+      "comprimé pour teigne du cuir chevelu"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antifungal"
+  },
+  {
+    "term_en": "Haloperidol",
+    "term_fr": "Halopéridol",
+    "synonyms_en": [
+      "Haldol",
+      "agitation drop",
+      "madness drop"
+    ],
+    "synonyms_fr": [
+      "Haldol",
+      "gouttes pour malades mentaux / agitation"
+    ],
+    "dose": "5 mg",
+    "route": "PO / IM",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Butyrophenone antipsychotic"
+  },
+  {
+    "term_en": "Halothane",
+    "term_fr": "Halothane",
+    "synonyms_en": [
+      "operation gas sleeping gas"
+    ],
+    "synonyms_fr": [
+      "gaz anesthésique bloc"
+    ],
+    "dose": "0.5-1.5%",
+    "route": "Inhalation",
+    "frequency": "Continuous",
+    "form": "volatile liquid",
+    "drug_class": "General anesthetic gas"
+  },
+  {
+    "term_en": "Heparin (Unfractionated)",
+    "term_fr": "Héparine (non fractionnée)",
+    "synonyms_en": [
+      "clot dissolving drip",
+      "heparin flush"
+    ],
+    "synonyms_fr": [
+      "Héparine sodique ampoule",
+      "anticoagulant perfusion"
+    ],
+    "dose": "25000 IU / day",
+    "route": "IV",
+    "frequency": "Continuous",
+    "form": "injection",
+    "drug_class": "Anticoagulant"
+  },
+  {
+    "term_en": "Hydralazine",
+    "term_fr": "Hydralazine",
+    "synonyms_en": [
+      "Apresoline",
+      "pregnancy high BP injection"
+    ],
+    "synonyms_fr": [
+      "Népressol",
+      "injection tension femme enceinte / éclampsie"
+    ],
+    "dose": "5 mg",
+    "route": "IV",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Vasodilator antihypertensive"
+  },
+  {
+    "term_en": "Hydrochlorothiazide",
+    "term_fr": "Hydrochlorothiazide",
+    "synonyms_en": [
+      "HCTZ",
+      "Esidrex",
+      "BP water pill"
+    ],
+    "synonyms_fr": [
+      "Ésidrex",
+      "diurétique thiazidique pour la tension"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Thiazide diuretic"
+  },
+  {
+    "term_en": "Hydrocortisone",
+    "term_fr": "Hydrocortisone",
+    "synonyms_en": [
+      "Solu-Cortef",
+      "severe asthma attack injection",
+      "shock shot"
+    ],
+    "synonyms_fr": [
+      "Hemisuccinate d'hydrocortisone",
+      "injection crise d'asthme grave / choc"
+    ],
+    "dose": "100 mg",
+    "route": "IV",
+    "frequency": "QDS",
+    "form": "injection",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Hydroxocobalamin",
+    "term_fr": "Hydroxocobalamine",
+    "synonyms_en": [
+      "Vitamin B12",
+      "red anemia injection"
+    ],
+    "synonyms_fr": [
+      "Vitamine B12",
+      "injection rouge pour les nerfs / anémie"
+    ],
+    "dose": "1 mg",
+    "route": "IM",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Vitamin"
+  },
+  {
+    "term_en": "Hydroxyurea",
+    "term_fr": "Hydroxyurée",
+    "synonyms_en": [
+      "Hydrea",
+      "sickle cell crisis prevention pill"
+    ],
+    "synonyms_fr": [
+      "Hydréa",
+      "médicament crise de drépanocytose"
+    ],
+    "dose": "15 mg/kg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Antineoplastic / Sickle cell modifier"
+  },
+  {
+    "term_en": "Hydroxyzine",
+    "term_fr": "Hydroxyzine",
+    "synonyms_en": [
+      "Atarax",
+      "itching sleep tablet"
+    ],
+    "synonyms_fr": [
+      "Atarax",
+      "calmant pour démangeaison cutanée"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Antihistamine / Anxiolytic"
+  },
+  {
+    "term_en": "Ibuprofen",
+    "term_fr": "Ibuprofène",
+    "synonyms_en": [
+      "Brufen",
+      "pink painkiller pill",
+      "fever syrup"
+    ],
+    "synonyms_fr": [
+      "Advil",
+      "Brufen",
+      "comprimé rose douleur / fièvre"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "NSAID"
+  },
+  {
+    "term_en": "Ifosfamide",
+    "term_fr": "Ifosfamide",
+    "synonyms_en": [
+      "Holoxan",
+      "sarcoma chemo"
+    ],
+    "synonyms_fr": [
+      "Holoxan",
+      "chimio sarcome / testicule"
+    ],
+    "dose": "1.5 g/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Alkylating chemotherapy"
+  },
+  {
+    "term_en": "Imatinib",
+    "term_fr": "Imatinib",
+    "synonyms_en": [
+      "Glivec",
+      "CML cancer capsule"
+    ],
+    "synonyms_fr": [
+      "Glivec",
+      "thérapie ciblée leucémie"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Tyrosine kinase inhibitor"
+  },
+  {
+    "term_en": "Imipenem / Cilastatin",
+    "term_fr": "Imipénem / Cilastatine",
+    "synonyms_en": [
+      "Tienam",
+      "very strong ICU drip antibiotic"
+    ],
+    "synonyms_fr": [
+      "Tiénam",
+      "antibiotique de dernier recours perfusion"
+    ],
+    "dose": "500 mg / 500 mg",
+    "route": "IV",
+    "frequency": "QDS",
+    "form": "injection",
+    "drug_class": "Carbapenem antibiotic"
+  },
+  {
+    "term_en": "Imipramine",
+    "term_fr": "Imipramine",
+    "synonyms_en": [
+      "Tofranil",
+      "bedwetting pill for kids"
+    ],
+    "synonyms_fr": [
+      "Tofranil",
+      "comprimé pipi au lit enfant"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Tricyclic antidepressant"
+  },
+  {
+    "term_en": "Indapamide",
+    "term_fr": "Indapamide",
+    "synonyms_en": [
+      "Fludex",
+      "BP small pill"
+    ],
+    "synonyms_fr": [
+      "Fludex",
+      "diurétique pour la tension"
+    ],
+    "dose": "1.5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "sustained-release tablet",
+    "drug_class": "Thiazide-like diuretic"
+  },
+  {
+    "term_en": "Indomethacin",
+    "term_fr": "Indométacine",
+    "synonyms_en": [
+      "Indocin",
+      "strong rheumatism capsule"
+    ],
+    "synonyms_fr": [
+      "Indocid",
+      "gélule forte pour arthrose / sciatique"
+    ],
+    "dose": "25 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "capsule",
+    "drug_class": "NSAID"
+  },
+  {
+    "term_en": "Insulin, Soluble (Regular / Actrapid)",
+    "term_fr": "Insuline soluble (Rapide)",
+    "synonyms_en": [
+      "Actrapid",
+      "fast-acting insulin",
+      "clear insulin injection"
+    ],
+    "synonyms_fr": [
+      "Actrapid",
+      "insuline rapide",
+      "insuline claire urgence"
+    ],
+    "dose": "Sliding scale (e.g., 6 units)",
+    "route": "SC / IV",
+    "frequency": "PRN / Before meals",
+    "form": "injection",
+    "drug_class": "Short-acting insulin"
+  },
+  {
+    "term_en": "Insulin, Isophane (NPH / Insulatard)",
+    "term_fr": "Insuline isophane (NPH)",
+    "synonyms_en": [
+      "Insulatard",
+      "cloudy insulin injection",
+      "morning insulin"
+    ],
+    "synonyms_fr": [
+      "Insulatard",
+      "insuline intermédiaire NPH",
+      "insuline laiteuse"
+    ],
+    "dose": "According to requirement (e.g., 20 units)",
+    "route": "SC",
+    "frequency": "OD / BD",
+    "form": "injection",
+    "drug_class": "Intermediate-acting insulin"
+  },
+  {
+    "term_en": "Insulin, Premixed (Mixtard 30/70)",
+    "term_fr": "Insuline biphasique (Mixtard 30)",
+    "synonyms_en": [
+      "Mixtard 30",
+      "combo insulin shot"
+    ],
+    "synonyms_fr": [
+      "Mixtard 30",
+      "mélange d'insuline rapide et lente"
+    ],
+    "dose": "According to requirement",
+    "route": "SC",
+    "frequency": "BD",
+    "form": "injection",
+    "drug_class": "Biphasic insulin mix"
+  },
+  {
+    "term_en": "Iodized oil",
+    "term_fr": "Huile iodée",
+    "synonyms_en": [
+      "Lipiodol",
+      "goiter prevention capsule"
+    ],
+    "synonyms_fr": [
+      "Lipiodol",
+      "capsule pour carence en iode / goitre"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "Once yearly",
+    "form": "capsule",
+    "drug_class": "Iodine supplement"
+  },
+  {
+    "term_en": "Ipratropium bromide",
+    "term_fr": "Bromure d'ipratropium",
+    "synonyms_en": [
+      "Atrovent",
+      "COPD breathing machine nebulizer"
+    ],
+    "synonyms_fr": [
+      "Atrovent",
+      "solution pour nébulisation asthme sévère"
+    ],
+    "dose": "0.5 mg",
+    "route": "Inhalation",
+    "frequency": "TDS / PRN",
+    "form": "respule",
+    "drug_class": "Anticholinergic bronchodilator"
+  },
+  {
+    "term_en": "Irbesartan",
+    "term_fr": "Irbésartan",
+    "synonyms_en": [
+      "Aprovel",
+      "diabetic kidney protect BP pill"
+    ],
+    "synonyms_fr": [
+      "Aprovel",
+      "comprimé hypertension artérielle"
+    ],
+    "dose": "150 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Angiotensin II receptor blocker"
+  },
+  {
+    "term_en": "Iron sucrose",
+    "term_fr": "Saccharate de fer",
+    "synonyms_en": [
+      "Venofer",
+      "intravenous iron drip"
+    ],
+    "synonyms_fr": [
+      "Venofer",
+      "fer injectable par perfusion"
+    ],
+    "dose": "100 mg",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Parenteral iron supplement"
+  },
+  {
+    "term_en": "Isoniazid",
+    "term_fr": "Isoniazide",
+    "synonyms_en": [
+      "INH",
+      "H",
+      "TB nerve tingling pill"
+    ],
+    "synonyms_fr": [
+      "INH",
+      "H",
+      "comprimé tuberculose H"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antituberculosis"
+  },
+  {
+    "term_en": "Isoniazid / Rifampicin",
+    "term_fr": "Isoniazide / Rifampicine",
+    "synonyms_en": [
+      "RH",
+      "TB continuation phase pills"
+    ],
+    "synonyms_fr": [
+      "RH",
+      "comprimés phase d'entretien tuberculose"
+    ],
+    "dose": "150 mg / 300 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antituberculosis combination"
+  },
+  {
+    "term_en": "Isosorbide mononitrate",
+    "term_fr": "Mononitrate d'isosorbide",
+    "synonyms_en": [
+      "Monicor",
+      "heart pain prevention tablet"
+    ],
+    "synonyms_fr": [
+      "Monicor",
+      "médicament de fond pour l'angine de poitrine"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Vasodilator / Nitrate"
+  },
+  {
+    "term_en": "Ivermectin",
+    "term_fr": "Ivermectine",
+    "synonyms_en": [
+      "Mectizan",
+      "river blindness pill",
+      "filaria medicine"
+    ],
+    "synonyms_fr": [
+      "Mectizan",
+      "comprimé pour la cécité des rivières / filariose"
+    ],
+    "dose": "150 mcg/kg (e.g., 9 mg)",
+    "route": "PO",
+    "frequency": "STAT / Repeat schedule",
+    "form": "tablet",
+    "drug_class": "Anthelmintic / Antifilarial"
+  },
+  {
+    "term_en": "Ketamine",
+    "term_fr": "Kétamine",
+    "synonyms_en": [
+      "Keta",
+      "short operation sleep injection"
+    ],
+    "synonyms_fr": [
+      "Kétamine ampoule",
+      "anesthésique dissociatif bloc"
+    ],
+    "dose": "2 mg/kg",
+    "route": "IV",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "General anesthetic"
+  },
+  {
+    "term_en": "Ketoconazole",
+    "term_fr": "Kétoconazole",
+    "synonyms_en": [
+      "Nizoral",
+      "antifungal shampoo",
+      "skin flakes cream"
+    ],
+    "synonyms_fr": [
+      "Nizoral",
+      "shampoing pour pellicules / champignons"
+    ],
+    "dose": "2%",
+    "route": "Topical",
+    "frequency": "Twice weekly",
+    "form": "shampoo",
+    "drug_class": "Imidazole antifungal"
+  },
+  {
+    "term_en": "Labetalol",
+    "term_fr": "Labétalol",
+    "synonyms_en": [
+      "Trandate",
+      "pregnancy hypertension injection / pill"
+    ],
+    "synonyms_fr": [
+      "Trandate",
+      "antihypertenseur de choix pour femme enceinte"
+    ],
+    "dose": "100 mg",
+    "route": "PO / IV",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Alpha/Beta-blocker"
+  },
+  {
+    "term_en": "Lactulose",
+    "term_fr": "Lactulose",
+    "synonyms_en": [
+      "Duphalac",
+      "constipation syrup",
+      "liver failure confusion syrup"
+    ],
+    "synonyms_fr": [
+      "Duphalac",
+      "sirop laxatif pour déboucher le ventre"
+    ],
+    "dose": "15 mL",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "syrup",
+    "drug_class": "Osmotic laxative"
+  },
+  {
+    "term_en": "Lamivudine",
+    "term_fr": "Lamivudine",
+    "synonyms_en": [
+      "3TC",
+      "Epivir",
+      "hepatitis B pill"
+    ],
+    "synonyms_fr": [
+      "3TC",
+      "Epivir",
+      "médicament hépatite B / VIH"
+    ],
+    "dose": "150 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (NRTI)"
+  },
+  {
+    "term_en": "Lamivudine / Nevirapine / Zidovudine",
+    "term_fr": "Lamivudine / Névirapine / Zidovudine",
+    "synonyms_en": [
+      "Duovir-N",
+      "old 1st line HIV combo"
+    ],
+    "synonyms_fr": [
+      "Duovir-N",
+      "ancienne trithérapie VIH de première ligne"
+    ],
+    "dose": "150 mg / 200 mg / 300 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral combination"
+  },
+  {
+    "term_en": "Lamivudine / Zidovudine",
+    "term_fr": "Lamivudine / Zidovudine",
+    "synonyms_en": [
+      "Combivir",
+      "Duovir",
+      "HIV prick prevention pill"
+    ],
+    "synonyms_fr": [
+      "Combivir",
+      "Duovir",
+      "prophylaxie post-exposition AES"
+    ],
+    "dose": "150 mg / 300 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral combination"
+  },
+  {
+    "term_en": "Lansoprazole",
+    "term_fr": "Lansoprazole",
+    "synonyms_en": [
+      "Ogast",
+      "stomach capsule"
+    ],
+    "synonyms_fr": [
+      "Ogastoro",
+      "gélule pour brûlure d'estomac"
+    ],
+    "dose": "30 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Proton pump inhibitor"
+  },
+  {
+    "term_en": "Latanoprost",
+    "term_fr": "Latanoprost",
+    "synonyms_en": [
+      "Xalatan",
+      "glaucoma drops fridge"
+    ],
+    "synonyms_fr": [
+      "Xalatan",
+      "collyre pour baisser la tension oculaire"
+    ],
+    "dose": "0.005%",
+    "route": "Ophthalmic",
+    "frequency": "ON",
+    "form": "eye drops",
+    "drug_class": "Prostaglandin analogue (Ophthalmic)"
+  },
+  {
+    "term_en": "Levamisole",
+    "term_fr": "Lévamisole",
+    "synonyms_en": [
+      "Solaskil",
+      "worm pill"
+    ],
+    "synonyms_fr": [
+      "Solaskil",
+      "médicament contre les ascaris"
+    ],
+    "dose": "150 mg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "tablet",
+    "drug_class": "Anthelmintic"
+  },
+  {
+    "term_en": "Levetiracetam",
+    "term_fr": "Lévétiracétam",
+    "synonyms_en": [
+      "Keppra",
+      "modern epilepsy pill"
+    ],
+    "synonyms_fr": [
+      "Keppra",
+      "anti-épileptique de nouvelle génération"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Anticonvulsant"
+  },
+  {
+    "term_en": "Levofloxacin",
+    "term_fr": "Lévofloxacine",
+    "synonyms_en": [
+      "Tavanic",
+      "severe pneumonia pill"
+    ],
+    "synonyms_fr": [
+      "Tavanic",
+      "fluoroquinolone pour pneumopathie"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Fluoroquinolone antibiotic"
+  },
+  {
+    "term_en": "Levonorgestrel",
+    "term_fr": "Lévonorgestrel",
+    "synonyms_en": [
+      "Norlevo",
+      "morning after pill",
+      "emergency contraception"
+    ],
+    "synonyms_fr": [
+      "Norlevo",
+      "pilule du lendemain",
+      "contraception d'urgence"
+    ],
+    "dose": "1.5 mg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "tablet",
+    "drug_class": "Progestogen contraceptive"
+  },
+  {
+    "term_en": "Levothyroxine",
+    "term_fr": "Lévothyroxine",
+    "synonyms_en": [
+      "Levothrox",
+      "goiter surgery replacement pill"
+    ],
+    "synonyms_fr": [
+      "Lévothyrox",
+      "hormone pour thyroïde coupée"
+    ],
+    "dose": "50 mcg",
+    "route": "PO",
+    "frequency": "OD (morning)",
+    "form": "tablet",
+    "drug_class": "Thyroid hormone"
+  },
+  {
+    "term_en": "Lidocaine",
+    "term_fr": "Lidocaïne",
+    "synonyms_en": [
+      "Xylocaine",
+      "wound stitching numbness injection"
+    ],
+    "synonyms_fr": [
+      "Xylocaïne",
+      "injection anesthésie locale pour coudre"
+    ],
+    "dose": "1% or 2%",
+    "route": "Local infiltration",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Local anesthetic"
+  },
+  {
+    "term_en": "Linezolid",
+    "term_fr": "Linézolid",
+    "synonyms_en": [
+      "Zyvox",
+      "MRSA / MDR-TB strong pill"
+    ],
+    "synonyms_fr": [
+      "Zyvoxid",
+      "antibiotique résistant pour cas graves"
+    ],
+    "dose": "600 mg",
+    "route": "PO / IV",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Oxazolidinone antibiotic"
+  },
+  {
+    "term_en": "Loperamide",
+    "term_fr": "Lopéramide",
+    "synonyms_en": [
+      "Imodium",
+      "diarrhea stopper pill"
+    ],
+    "synonyms_fr": [
+      "Imodium",
+      "médicament pour bloquer la diarrhée liquide"
+    ],
+    "dose": "2 mg",
+    "route": "PO",
+    "frequency": "PRN (after loose stool)",
+    "form": "capsule",
+    "drug_class": "Antidiarrheal / Opioid analogue"
+  },
+  {
+    "term_en": "Lopinavir / Ritonavir",
+    "term_fr": "Lopinavir / Ritonavir",
+    "synonyms_en": [
+      "Aluvia",
+      "Kaletra",
+      "2nd line HIV big pill"
+    ],
+    "synonyms_fr": [
+      "Aluvia",
+      "Kaletra",
+      "antirétroviral de deuxième ligne"
+    ],
+    "dose": "200 mg / 50 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (Protease Inhibitor combo)"
+  },
+  {
+    "term_en": "Loratadine",
+    "term_fr": "Loratadine",
+    "synonyms_en": [
+      "Claritine",
+      "non-drowsy allergy pill"
+    ],
+    "synonyms_fr": [
+      "Claritine",
+      "anti-allergique qui ne fait pas dormir"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antihistamine"
+  },
+  {
+    "term_en": "Losartan",
+    "term_fr": "Losartan",
+    "synonyms_en": [
+      "Cozaar",
+      "hypertension pill"
+    ],
+    "synonyms_fr": [
+      "Cozaar",
+      "antihypertenseur"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Angiotensin II receptor blocker"
+  },
+  {
+    "term_en": "Magnesium hydroxide",
+    "term_fr": "Hydroxyde de magnésium",
+    "synonyms_en": [
+      "Milk of Magnesia",
+      "stomach / constipation white liquid"
+    ],
+    "synonyms_fr": [
+      "Lait de magnésie",
+      "laxatif / antiacide"
+    ],
+    "dose": "30 mL",
+    "route": "PO",
+    "frequency": "OD / PRN",
+    "form": "suspension",
+    "drug_class": "Osmotic laxative / Antacid"
+  },
+  {
+    "term_en": "Magnesium sulfate",
+    "term_fr": "Sulfate de magnésium",
+    "synonyms_en": [
+      "MgSO4",
+      "eclampsia fit prevention injection"
+    ],
+    "synonyms_fr": [
+      "Sulfate de magnésie ampoule",
+      "injection anti-crises éclampsie femme enceinte"
+    ],
+    "dose": "4 g IV + 10 g IM",
+    "route": "IV / IM",
+    "frequency": "Loading then schedule",
+    "form": "injection",
+    "drug_class": "Anticonvulsant / Mineral"
+  },
+  {
+    "term_en": "Mannitol",
+    "term_fr": "Mannitol",
+    "synonyms_en": [
+      "brain swelling reduction drip",
+      "head injury urine glass bottle"
+    ],
+    "synonyms_fr": [
+      "Mannitol 20%",
+      "perfusion pour baisser la tension du cerveau trauma crânien"
+    ],
+    "dose": "1 g/kg (e.g., 250 mL of 20%)",
+    "route": "IV",
+    "frequency": "STAT / PRN",
+    "form": "infusion bottle",
+    "drug_class": "Osmotic diuretic"
+  },
+  {
+    "term_en": "Mebendazole",
+    "term_fr": "Mébendazole",
+    "synonyms_en": [
+      "Vermox",
+      "worm syrup",
+      "belly worms tablet"
+    ],
+    "synonyms_fr": [
+      "Vermox",
+      "sirop contre les vers de ventre enfant"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "BD for 3 days",
+    "form": "tablet",
+    "drug_class": "Anthelmintic"
+  },
+  {
+    "term_en": "Medroxyprogesterone acetate",
+    "term_fr": "Acétate de médroxyprogestérone",
+    "synonyms_en": [
+      "Depo-Provera",
+      "3-month family planning injection"
+    ],
+    "synonyms_fr": [
+      "Dépôt-Provera",
+      "injection contraceptive de 3 mois"
+    ],
+    "dose": "150 mg",
+    "route": "IM",
+    "frequency": "Every 3 months",
+    "form": "injection",
+    "drug_class": "Progestogen contraceptive"
+  },
+  {
+    "term_en": "Mefloquine",
+    "term_fr": "Méfloquine",
+    "synonyms_en": [
+      "Lariam",
+      "malaria prevention pill for travelers"
+    ],
+    "synonyms_fr": [
+      "Lariam",
+      "prophylaxie palu voyageurs"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "Once weekly",
+    "form": "tablet",
+    "drug_class": "Antimalarial"
+  },
+  {
+    "term_en": "Mercaptopurine",
+    "term_fr": "Mercaptopurine",
+    "synonyms_en": [
+      "Puri-Nethol",
+      "leukemia chemotherapy tablet"
+    ],
+    "synonyms_fr": [
+      "Puri-Nethol",
+      "chimio orale leucémie"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antimetabolite chemotherapy"
+  },
+  {
+    "term_en": "Meropenem",
+    "term_fr": "Méropénem",
+    "synonyms_en": [
+      "Meronem",
+      "intensive care antibiotic drip"
+    ],
+    "synonyms_fr": [
+      "Méropénem injection",
+      "carbapénème infections graves"
+    ],
+    "dose": "1 g",
+    "route": "IV",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Carbapenem antibiotic"
+  },
+  {
+    "term_en": "Mesna",
+    "term_fr": "Mesna",
+    "synonyms_en": [
+      "Uromitexan",
+      "bladder protector for chemo"
+    ],
+    "synonyms_fr": [
+      "Uromitexan",
+      "protecteur de la vessie chimio"
+    ],
+    "dose": "Calculated by chemo dose",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Chemoprotectant"
+  },
+  {
+    "term_en": "Metformin",
+    "term_fr": "Metformine",
+    "synonyms_en": [
+      "Glucophage",
+      "diabetes big white tablet",
+      "sugar medicine"
+    ],
+    "synonyms_fr": [
+      "Glucophage",
+      "gros comprimé blanc pour le diabète de type 2"
+    ],
+    "dose": "850 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Biguanide antidiabetic"
+  },
+  {
+    "term_en": "Methadone",
+    "term_fr": "Méthadone",
+    "synonyms_en": [
+      "tramadol/heroin addiction syrup"
+    ],
+    "synonyms_fr": [
+      "sirop de substitution pour toxicomanie"
+    ],
+    "dose": "30 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "syrup",
+    "drug_class": "Opioid agonist / Substitution"
+  },
+  {
+    "term_en": "Methyldopa",
+    "term_fr": "Méthyldopa",
+    "synonyms_en": [
+      "Aldomet",
+      "pregnancy safe BP pill"
+    ],
+    "synonyms_fr": [
+      "Aldomet",
+      "comprimé tension de la femme enceinte"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Centrally acting antihypertensive"
+  },
+  {
+    "term_en": "Methylergometrine",
+    "term_fr": "Méthylergométrine",
+    "synonyms_en": [
+      "Methergin",
+      "after delivery bleeding stopper injection"
+    ],
+    "synonyms_fr": [
+      "Methergin",
+      "injection pour stopper l'hémorragie après accouchement"
+    ],
+    "dose": "0.2 mg",
+    "route": "IM / IV",
+    "frequency": "PRN / STAT",
+    "form": "injection",
+    "drug_class": "Ergot alkaloid oxytocic"
+  },
+  {
+    "term_en": "Methylprednisolone",
+    "term_fr": "Méthylprednisolone",
+    "synonyms_en": [
+      "Solu-Medrol",
+      "paralysis / spinal cord shock steroid injection"
+    ],
+    "synonyms_fr": [
+      "Solu-Médrol",
+      "flash de corticoïde réanimation"
+    ],
+    "dose": "125 mg",
+    "route": "IV",
+    "frequency": "OD / PRN",
+    "form": "injection",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Metoclopramide",
+    "term_fr": "Métoclopramide",
+    "synonyms_en": [
+      "Primpéran",
+      "vomiting injection",
+      "hiccup shot"
+    ],
+    "synonyms_fr": [
+      "Primpéran",
+      "injection fesse contre les vomissements"
+    ],
+    "dose": "10 mg",
+    "route": "IV / IM / PO",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Antiemetic"
+  },
+  {
+    "term_en": "Metoprolol",
+    "term_fr": "Métoprolol",
+    "synonyms_en": [
+      "Lopressor",
+      "beta blocker tablet"
+    ],
+    "synonyms_fr": [
+      "Lopressor",
+      "bêtabloquant rythme cardiaque"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Beta-blocker"
+  },
+  {
+    "term_en": "Metronidazole",
+    "term_fr": "Métronidazole",
+    "synonyms_en": [
+      "Flagyl",
+      "amoeba glass drip bottle",
+      "smelly discharge tablet"
+    ],
+    "synonyms_fr": [
+      "Flagyl",
+      "perfusion amibes",
+      "comprimé pour amibiase / odeurs vaginales"
+    ],
+    "dose": "500 mg",
+    "route": "IV / PO",
+    "frequency": "TDS",
+    "form": "infusion bottle",
+    "drug_class": "Nitroimidazole antibacterial / Antiprotozoal"
+  },
+  {
+    "term_en": "Miconazole",
+    "term_fr": "Miconazole",
+    "synonyms_en": [
+      "Daktarin",
+      "mouth thrush gel",
+      "baby white tongue gel"
+    ],
+    "synonyms_fr": [
+      "Daktarin",
+      "gel buccal pour champignons de la bouche / langue blanche"
+    ],
+    "dose": "2.5 mL",
+    "route": "Topical (Oral cavity)",
+    "frequency": "QDS",
+    "form": "oral gel",
+    "drug_class": "Imidazole antifungal"
+  },
+  {
+    "term_en": "Midazolam",
+    "term_fr": "Midazolam",
+    "synonyms_en": [
+      "Hypnovel",
+      "seizure stopping drip fluid",
+      "pre-op sedation ampoule"
+    ],
+    "synonyms_fr": [
+      "Hypnovel",
+      "sédation réanimation / bloc opératoire"
+    ],
+    "dose": "5 mg",
+    "route": "IV / IM",
+    "frequency": "PRN / Continuous",
+    "form": "injection",
+    "drug_class": "Benzodiazepine (Short-acting)"
+  },
+  {
+    "term_en": "Mifepristone",
+    "term_fr": "Mifépristone",
+    "synonyms_en": [
+      "RU-486",
+      "abortion pill",
+      "missed abortion capsule"
+    ],
+    "synonyms_fr": [
+      "Mifégyne",
+      "pilule pour avortement médicalisé"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "tablet",
+    "drug_class": "Progesterone receptor antagonist"
+  },
+  {
+    "term_en": "Misoprostol",
+    "term_fr": "Misoprostol",
+    "synonyms_en": [
+      "Cytotec",
+      "retained placenta pill",
+      "incomplete abortion tablet"
+    ],
+    "synonyms_fr": [
+      "Cytotec",
+      "comprimé pour nettoyer le ventre après fausse couche"
+    ],
+    "dose": "200 mcg - 800 mcg",
+    "route": "PO / Vaginal / Sublingual",
+    "frequency": "STAT / Schedule",
+    "form": "tablet",
+    "drug_class": "Prostaglandin E1 analogue"
+  },
+  {
+    "term_en": "Morphine",
+    "term_fr": "Morphine",
+    "synonyms_en": [
+      "Morphine ampoule",
+      "severe accident painkiller injection"
+    ],
+    "synonyms_fr": [
+      "Morphine injectable",
+      "antalgique palier 3 pour douleur extrême"
+    ],
+    "dose": "5 mg - 10 mg",
+    "route": "SC / IM / IV",
+    "frequency": "4-6 hourly PRN",
+    "form": "injection",
+    "drug_class": "Opioid analgesic"
+  },
+  {
+    "term_en": "Moxifloxacin",
+    "term_fr": "Moxifloxacine",
+    "synonyms_en": [
+      "Izilox",
+      "MDR-TB quinolone pill"
+    ],
+    "synonyms_fr": [
+      "Izilox",
+      "fluoroquinolone tuberculose résistante"
+    ],
+    "dose": "400 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Fluoroquinolone antibiotic"
+  },
+  {
+    "term_en": "Mupirocin",
+    "term_fr": "Mupirocine",
+    "synonyms_en": [
+      "Bactroban",
+      "impetigo antibiotic ointment"
+    ],
+    "synonyms_fr": [
+      "Bactroban",
+      "pommade pour croûtes / impétigo"
+    ],
+    "dose": "2%",
+    "route": "Topical",
+    "frequency": "TDS",
+    "form": "ointment",
+    "drug_class": "Topical antibiotic"
+  },
+  {
+    "term_en": "Naloxone",
+    "term_fr": "Naloxone",
+    "synonyms_en": [
+      "Narcan",
+      "morphine overdose antidote shot"
+    ],
+    "synonyms_fr": [
+      "Narcan",
+      "antidote des surdosages de morphine / tramadol"
+    ],
+    "dose": "0.4 mg",
+    "route": "IV / IM",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Opioid antagonist"
+  },
+  {
+    "term_en": "Nelfinavir",
+    "term_fr": "Nelfinavir",
+    "synonyms_en": [
+      "Viracept",
+      "old protease inhibitor"
+    ],
+    "synonyms_fr": [
+      "Viracept",
+      "ancien antirétroviral"
+    ],
+    "dose": "1250 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (Protease Inhibitor)"
+  },
+  {
+    "term_en": "Neostigmine",
+    "term_fr": "Néostigmine",
+    "synonyms_en": [
+      "Prostigmin",
+      "surgery wake up injection",
+      "myasthenia drug"
+    ],
+    "synonyms_fr": [
+      "Prostigmine",
+      "antidote des curares bloc opératoire"
+    ],
+    "dose": "2.5 mg",
+    "route": "IV / IM",
+    "frequency": "PRN",
+    "form": "injection",
+    "drug_class": "Acetylcholinesterase inhibitor"
+  },
+  {
+    "term_en": "Nevirapine",
+    "term_fr": "Névirapine",
+    "synonyms_en": [
+      "NVP",
+      "Viramune",
+      "baby PMTCT syrup"
+    ],
+    "synonyms_fr": [
+      "NVP",
+      "Viramune",
+      "sirop VIH bébé prévention transmission mère-enfant"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "OD for 14 days then BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (NNRTI)"
+  },
+  {
+    "term_en": "Niclosamide",
+    "term_fr": "Niclosamide",
+    "synonyms_en": [
+      "Trédémine",
+      "tapeworm chewable pill"
+    ],
+    "synonyms_fr": [
+      "Trédémine",
+      "médicament contre le ver solitaire / ténia"
+    ],
+    "dose": "2 g",
+    "route": "PO",
+    "frequency": "STAT (chewed)",
+    "form": "chewable tablet",
+    "drug_class": "Anthelmintic (Taenicide)"
+  },
+  {
+    "term_en": "Nicardipine",
+    "term_fr": "Nicardipine",
+    "synonyms_en": [
+      "Loxen",
+      "severe hypertension electric pump drip"
+    ],
+    "synonyms_fr": [
+      "Loxen",
+      "antihypertenseur injectable pour poussée de tension grave"
+    ],
+    "dose": "5 mg/h",
+    "route": "IV (infusion pump)",
+    "frequency": "Continuous titrated",
+    "form": "injection",
+    "drug_class": "Calcium channel blocker (Dihydropyridine)"
+  },
+  {
+    "term_en": "Nifedipine",
+    "term_fr": "Nifédipine",
+    "synonyms_en": [
+      "Adalat",
+      "Chronadalate",
+      "premature labor stopping capsule"
+    ],
+    "synonyms_fr": [
+      "Adalate",
+      "Chronadalate",
+      "médicament pour stopper les contractions précoces"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "BD / TDS",
+    "form": "prolonged-release tablet",
+    "drug_class": "Calcium channel blocker / Tocolytic"
+  },
+  {
+    "term_en": "Nitrofurantoin",
+    "term_fr": "Nitrofurantoïne",
+    "synonyms_en": [
+      "Furadantine",
+      "urine burning capsule",
+      "cystitis drug"
+    ],
+    "synonyms_fr": [
+      "Furadantine",
+      "gélule pour infection urinaire / pipi qui brûle"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "QDS",
+    "form": "capsule",
+    "drug_class": "Nitrofuran antibacterial"
+  },
+  {
+    "term_en": "Norepinephrine (Noradrenaline)",
+    "term_fr": "Norépinéphrine (Noradrénaline)",
+    "synonyms_en": [
+      "ICU blood pressure lifter",
+      "septic shock syringe"
+    ],
+    "synonyms_fr": [
+      "Noradrénaline ampoule",
+      "perfusion de réanimation choc septique"
+    ],
+    "dose": "0.1 mcg/kg/min",
+    "route": "IV central line",
+    "frequency": "Continuous titrated",
+    "form": "injection",
+    "drug_class": "Vasopressor"
+  },
+  {
+    "term_en": "Norethisterone",
+    "term_fr": "Noréthistérone",
+    "synonyms_en": [
+      "Primolut-Nor",
+      "period stopping pill",
+      "heavy bleeding tablet"
+    ],
+    "synonyms_fr": [
+      "Primolut-Nor",
+      "médicament pour bloquer les règles / saignements"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Progestogen"
+  },
+  {
+    "term_en": "Nystatin",
+    "term_fr": "Nystatine",
+    "synonyms_en": [
+      "Mycostatin",
+      "yellow mouth thrush drops"
+    ],
+    "synonyms_fr": [
+      "Mycostatine",
+      "suspension jaune champignons bouche bébé"
+    ],
+    "dose": "100,000 IU / mL",
+    "route": "PO (swish and swallow)",
+    "frequency": "QDS",
+    "form": "oral suspension",
+    "drug_class": "Polyene antifungal"
+  },
+  {
+    "term_en": "Olanzapine",
+    "term_fr": "Olanzapine",
+    "synonyms_en": [
+      "Zyprexa",
+      "psychosis tablet that causes weight gain"
+    ],
+    "synonyms_fr": [
+      "Zyprexa",
+      "neuroleptique atypique schizophrénie"
+    ],
+    "dose": "10 mg",
+    "route": "PO",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Atypical antipsychotic"
+  },
+  {
+    "term_en": "Omeprazole",
+    "term_fr": "Oméprazole",
+    "synonyms_en": [
+      "Mopral",
+      "ulcer capsule",
+      "stomach protector capsule"
+    ],
+    "synonyms_fr": [
+      "Mopral",
+      "Zoltum",
+      "gélule pour estomac / ulcère"
+    ],
+    "dose": "20 mg",
+    "route": "PO / IV",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Proton pump inhibitor"
+  },
+  {
+    "term_en": "Ondansetron",
+    "term_fr": "Ondansétron",
+    "synonyms_en": [
+      "Zofer",
+      "Zofren",
+      "chemotherapy vomiting injection"
+    ],
+    "synonyms_fr": [
+      "Zofren",
+      "injection anti-vomissement pour chimiothérapie"
+    ],
+    "dose": "8 mg",
+    "route": "IV / PO",
+    "frequency": "BD",
+    "form": "injection",
+    "drug_class": "5-HT3 receptor antagonist (Antiemetic)"
+  },
+  {
+    "term_en": "Oral Rehydration Salts (ORS)",
+    "term_fr": "Sels de réhydratation orale (SRO)",
+    "synonyms_en": [
+      "ORS sachet",
+      "diarrhea water powder sachet"
+    ],
+    "synonyms_fr": [
+      "Sachet SRO",
+      "poudre de réhydratation diarrhée enfant"
+    ],
+    "dose": "1 sachet in 1L water",
+    "route": "PO",
+    "frequency": "PRN (after loose stool)",
+    "form": "sachet of powder",
+    "drug_class": "Oral rehydration fluid"
+  },
+  {
+    "term_en": "Oxaliplatin",
+    "term_fr": "Oxaliplatine",
+    "synonyms_en": [
+      "Eloxatin",
+      "colon cancer chemotherapy drip"
+    ],
+    "synonyms_fr": [
+      "Eloxatine",
+      "chimio cancer colorectal"
+    ],
+    "dose": "85 mg/m2",
+    "route": "IV",
+    "frequency": "Every 2 weeks",
+    "form": "injection",
+    "drug_class": "Platinum chemotherapy"
+  },
+  {
+    "term_en": "Oxamniquine",
+    "term_fr": "Oxamniquine",
+    "synonyms_en": [
+      "Vansil",
+      "bilharzia medicine"
+    ],
+    "synonyms_fr": [
+      "Vansil",
+      "médicament contre la bilharziose"
+    ],
+    "dose": "15 mg/kg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "capsule",
+    "drug_class": "Antischistosomal"
+  },
+  {
+    "term_en": "Oxygen",
+    "term_fr": "Oxygène",
+    "synonyms_en": [
+      "Oxygen cylinder",
+      "breathing gas",
+      "concentrator gas"
+    ],
+    "synonyms_fr": [
+      "Oxygène médical",
+      "bouteille d'oxygène",
+      "gaz pour respirer"
+    ],
+    "dose": "2-5 L/min",
+    "route": "Inhalation (Nasal prongs)",
+    "frequency": "Continuous",
+    "form": "medicinal gas",
+    "drug_class": "Medicinal gas"
+  },
+  {
+    "term_en": "Oxytocin",
+    "term_fr": "Oxytocine",
+    "synonyms_en": [
+      "Syntocinon",
+      "labor inducing injection",
+      "delivery speed up drip"
+    ],
+    "synonyms_fr": [
+      "Syntocinon",
+      "perfusion pour déclencher l'accouchement / contractions"
+    ],
+    "dose": "5 IU - 10 IU",
+    "route": "IV infusion / IM",
+    "frequency": "STAT / Titrated drip",
+    "form": "injection",
+    "drug_class": "Oxytocic hormone"
+  },
+  {
+    "term_en": "Paclitaxel",
+    "term_fr": "Paclitaxel",
+    "synonyms_en": [
+      "Taxol",
+      "ovarian cancer chemo"
+    ],
+    "synonyms_fr": [
+      "Taxol",
+      "chimio cancer du sein / ovaire"
+    ],
+    "dose": "175 mg/m2",
+    "route": "IV",
+    "frequency": "Every 3 weeks",
+    "form": "injection",
+    "drug_class": "Taxane chemotherapy"
+  },
+  {
+    "term_en": "Pantoprazole",
+    "term_fr": "Pantoprazole",
+    "synonyms_en": [
+      "Inipomp",
+      "stomach ulcer ampoule"
+    ],
+    "synonyms_fr": [
+      "Inipomp",
+      "pantoprazole injectable protecteur estomac"
+    ],
+    "dose": "40 mg",
+    "route": "IV / PO",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Proton pump inhibitor"
+  },
+  {
+    "term_en": "Paracetamol (Acetaminophen)",
+    "term_fr": "Paracétamol",
+    "synonyms_en": [
+      "Panadol",
+      "Doliprane",
+      "headache pill",
+      "fever capsule"
+    ],
+    "synonyms_fr": [
+      "Doliprane",
+      "Efferalgan",
+      "comprimé pour la fièvre / maux de tête"
+    ],
+    "dose": "1 g",
+    "route": "PO / IV / PR",
+    "frequency": "QDS / PRN",
+    "form": "tablet",
+    "drug_class": "Analgesic / Antipyretic"
+  },
+  {
+    "term_en": "Paromomycin",
+    "term_fr": "Paromomycine",
+    "synonyms_en": [
+      "Humatin",
+      "leishmaniasis injection"
+    ],
+    "synonyms_fr": [
+      "Humatin",
+      "aminoside pour leishmaniose"
+    ],
+    "dose": "15 mg/kg",
+    "route": "IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Aminoglycoside / Antiprotozoal"
+  },
+  {
+    "term_en": "Penicillamine",
+    "term_fr": "Pénicillamine",
+    "synonyms_en": [
+      "Cuprimine",
+      "lead heavy metal antidote"
+    ],
+    "synonyms_fr": [
+      "Trolovol",
+      "chélateur de métaux lourds"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "QDS",
+    "form": "capsule",
+    "drug_class": "Chelating agent"
+  },
+  {
+    "term_en": "Permethrin",
+    "term_fr": "Perméthrine",
+    "synonyms_en": [
+      "scabies overnight cream",
+      "lice wash"
+    ],
+    "synonyms_fr": [
+      "Topiscab",
+      "crème pour la gale de corps entière"
+    ],
+    "dose": "5%",
+    "route": "Topical",
+    "frequency": "STAT (leave 8 hours)",
+    "form": "cream",
+    "drug_class": "Scabicide / Pediculicide"
+  },
+  {
+    "term_en": "Phenobarbital",
+    "term_fr": "Phénobarbital",
+    "synonyms_en": [
+      "Gardenal",
+      "cheap epilepsy pill",
+      "child convulsion drop"
+    ],
+    "synonyms_fr": [
+      "Gardénal",
+      "médicament des crises d'épilepsie pas cher"
+    ],
+    "dose": "100 mg",
+    "route": "PO / IM / IV",
+    "frequency": "ON",
+    "form": "tablet",
+    "drug_class": "Barbiturate anticonvulsant"
+  },
+  {
+    "term_en": "Phenoxymethylpenicillin (Penicillin V)",
+    "term_fr": "Phénoxyméthylpénicilline (Pénicilline V)",
+    "synonyms_en": [
+      "Oracilline",
+      "sickle cell child preventative penicillin"
+    ],
+    "synonyms_fr": [
+      "Oracilline",
+      "pénicilline orale enfant drépanocytaire"
+    ],
+    "dose": "250 mg",
+    "route": "PO",
+    "frequency": "BD / TDS",
+    "form": "tablet",
+    "drug_class": "Penicillin antibiotic"
+  },
+  {
+    "term_en": "Phenytoin",
+    "term_fr": "Phénytoïne",
+    "synonyms_en": [
+      "Dilantin",
+      "Di-Hydan",
+      "epilepsy tablet"
+    ],
+    "synonyms_fr": [
+      "Di-Hydan",
+      "anti-épileptique historique"
+    ],
+    "dose": "100 mg",
+    "route": "PO / IV",
+    "frequency": "TDS / ON",
+    "form": "tablet",
+    "drug_class": "Hydantoin anticonvulsant"
+  },
+  {
+    "term_en": "Phytomenadione (Vitamin K1)",
+    "term_fr": "Phytoménadione (Vitamine K1)",
+    "synonyms_en": [
+      "Vitamin K injection",
+      "newborn bleeding prevention drop"
+    ],
+    "synonyms_fr": [
+      "Vitamine K1 ampoule",
+      "injection nouveau-né cuisse pour saignement"
+    ],
+    "dose": "1 mg (newborn) / 10 mg (adult)",
+    "route": "IM / IV / PO",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Vitamin / Coagulant factor cofactor"
+  },
+  {
+    "term_en": "Pilocarpine",
+    "term_fr": "Pilocarpine",
+    "synonyms_en": [
+      "glaucoma pupil shrinking drops"
+    ],
+    "synonyms_fr": [
+      "Isopto-Pilocarpine",
+      "collyre glaucome resserre la pupille"
+    ],
+    "dose": "2%",
+    "route": "Ophthalmic",
+    "frequency": "QDS",
+    "form": "eye drops",
+    "drug_class": "Miotic / Parasympathomimetic"
+  },
+  {
+    "term_en": "Piperacillin / Tazobactam",
+    "term_fr": "Pipéracilline / Tazobactam",
+    "synonyms_en": [
+      "Pip Taz",
+      "Zosyn",
+      "diabetic foot bone infection drip"
+    ],
+    "synonyms_fr": [
+      "Tazocilline",
+      "antibiotique hospitalier large spectre perfusion"
+    ],
+    "dose": "4.5 g",
+    "route": "IV",
+    "frequency": "TDS / QDS",
+    "form": "injection",
+    "drug_class": "Extended-spectrum penicillin combo"
+  },
+  {
+    "term_en": "Podophyllum resin",
+    "term_fr": "Résine de podophylle",
+    "synonyms_en": [
+      "genital wart burning liquid"
+    ],
+    "synonyms_fr": [
+      "solution pour brûler les crêtes de coq / condylomes"
+    ],
+    "dose": "20%",
+    "route": "Topical (by doctor)",
+    "frequency": "Weekly",
+    "form": "topical solution",
+    "drug_class": "Keratolytic / Antimitotic"
+  },
+  {
+    "term_en": "Potassium chloride",
+    "term_fr": "Chlorure de potassium (KCl)",
+    "synonyms_en": [
+      "KCl ampoule",
+      "dangerous heart stop ampoule",
+      "potassium deficiency fluid"
+    ],
+    "synonyms_fr": [
+      "KCl ampoule",
+      "chlorure de potassium injectable à diluer"
+    ],
+    "dose": "1 g - 2 g (diluted in drip)",
+    "route": "IV infusion (NEVER PUSH)",
+    "frequency": "Slowly as directed",
+    "form": "injection",
+    "drug_class": "Electrolyte supplement"
+  },
+  {
+    "term_en": "Praziquantel",
+    "term_fr": "Praziquantel",
+    "synonyms_en": [
+      "Biltricide",
+      "bilharzia big pills",
+      "lake water worm pill"
+    ],
+    "synonyms_fr": [
+      "Biltricide",
+      "médicament contre la bilharziose / pipi de sang"
+    ],
+    "dose": "40 mg/kg",
+    "route": "PO",
+    "frequency": "STAT (divided dose)",
+    "form": "tablet",
+    "drug_class": "Anthelmintic (Antischistosomal)"
+  },
+  {
+    "term_en": "Prednisolone",
+    "term_fr": "Prednisolone",
+    "synonyms_en": [
+      "Solupred",
+      "asthma soluble steroid tablets"
+    ],
+    "synonyms_fr": [
+      "Solupred",
+      "comprimé effervescent corticoïde asthme"
+    ],
+    "dose": "40 mg",
+    "route": "PO",
+    "frequency": "OD (morning)",
+    "form": "soluble tablet",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Prednisone",
+    "term_fr": "Prednisone",
+    "synonyms_en": [
+      "Cortancyl",
+      "steroid tablet"
+    ],
+    "synonyms_fr": [
+      "Cortancyl",
+      "comprimé de cortisone"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Corticosteroid"
+  },
+  {
+    "term_en": "Primaquine",
+    "term_fr": "Primaquine",
+    "synonyms_en": [
+      "malaria liver relapse pill"
+    ],
+    "synonyms_fr": [
+      "antipaludique pour rechute vivax"
+    ],
+    "dose": "15 mg",
+    "route": "PO",
+    "frequency": "OD for 14 days",
+    "form": "tablet",
+    "drug_class": "Antimalarial (8-aminoquinoline)"
+  },
+  {
+    "term_en": "Procarbazine",
+    "term_fr": "Procarbazine",
+    "synonyms_en": [
+      "Natulan",
+      "lymphoma chemo capsule"
+    ],
+    "synonyms_fr": [
+      "Natulan",
+      "chimio orale lymphome de Hodgkin"
+    ],
+    "dose": "100 mg/m2",
+    "route": "PO",
+    "frequency": "Schedule",
+    "form": "capsule",
+    "drug_class": "Alkylating chemotherapy"
+  },
+  {
+    "term_en": "Proguanil",
+    "term_fr": "Proguanil",
+    "synonyms_en": [
+      "Paludrine",
+      "old malaria preventative pill"
+    ],
+    "synonyms_fr": [
+      "Paludrine",
+      "ancien préventif palu quotidien"
+    ],
+    "dose": "200 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antimalarial"
+  },
+  {
+    "term_en": "Promethazine",
+    "term_fr": "Prométhazine",
+    "synonyms_en": [
+      "Phénergan",
+      "vomiting travel pill",
+      "itching sedating injection"
+    ],
+    "synonyms_fr": [
+      "Phénergan",
+      "sirop allergies ou injection pour dormir / vomir"
+    ],
+    "dose": "25 mg",
+    "route": "PO / IM",
+    "frequency": "ON / PRN",
+    "form": "tablet",
+    "drug_class": "Phenothiazine antihistamine"
+  },
+  {
+    "term_en": "Propranolol",
+    "term_fr": "Propranolol",
+    "synonyms_en": [
+      "Avlocardyl",
+      "beating heart fast pill",
+      "stage fright pill"
+    ],
+    "synonyms_fr": [
+      "Avlocardyl",
+      "bêtabloquant palpitations / tremblements"
+    ],
+    "dose": "40 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Non-selective beta-blocker"
+  },
+  {
+    "term_en": "Propylthiouracil (PTU)",
+    "term_fr": "Propylthiouracile",
+    "synonyms_en": [
+      "overactive thyroid pill pregnancy"
+    ],
+    "synonyms_fr": [
+      "Antithyroïdien pour hyperthyroïdie grossesse"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Antithyroid"
+  },
+  {
+    "term_en": "Pyrantel",
+    "term_fr": "Pyrantel",
+    "synonyms_en": [
+      "Combantrin",
+      "hookworm orange syrup"
+    ],
+    "synonyms_fr": [
+      "Combantrin",
+      "médicament vers intestinaux oxyures"
+    ],
+    "dose": "10 mg/kg",
+    "route": "PO",
+    "frequency": "STAT",
+    "form": "chewable tablet / syrup",
+    "drug_class": "Anthelmintic"
+  },
+  {
+    "term_en": "Pyrazinamide",
+    "term_fr": "Pyrazinamide",
+    "synonyms_en": [
+      "Z",
+      "TB joint pain pill"
+    ],
+    "synonyms_fr": [
+      "Z",
+      "comprimé tuberculose Z"
+    ],
+    "dose": "25 mg/kg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antituberculosis"
+  },
+  {
+    "term_en": "Pyridoxine (Vitamin B6)",
+    "term_fr": "Pyridoxine (Vitamine B6)",
+    "synonyms_en": [
+      "Vitamin B6",
+      "TB nerve prevention pill"
+    ],
+    "synonyms_fr": [
+      "Vitamine B6",
+      "comprimé pour éviter picotements des pieds sous traitement tuberculose"
+    ],
+    "dose": "25 mg - 50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Vitamin"
+  },
+  {
+    "term_en": "Pyrimethamine",
+    "term_fr": "Pyriméthamine",
+    "synonyms_en": [
+      "Malocide",
+      "toxoplasmosis AIDS brain infection pill"
+    ],
+    "synonyms_fr": [
+      "Malocide",
+      "médicament toxoplasmose cérébrale VIH"
+    ],
+    "dose": "50 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiprotozoal"
+  },
+  {
+    "term_en": "Quinine",
+    "term_fr": "Quinine",
+    "synonyms_en": [
+      "Quimax",
+      "Surquina",
+      "bitter malaria drip ampoule",
+      "deafness malaria drug"
+    ],
+    "synonyms_fr": [
+      "Quinimax",
+      "Surquina",
+      "ampoule amère pour perfusion paludisme grave"
+    ],
+    "dose": "8.3 mg/kg (e.g., 500 mg)",
+    "route": "IV slow infusion",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Cinchona alkaloid antimalarial"
+  },
+  {
+    "term_en": "Ramipril",
+    "term_fr": "Ramipril",
+    "synonyms_en": [
+      "Triatec",
+      "BP heart protector pill"
+    ],
+    "synonyms_fr": [
+      "Triatec",
+      "inhibiteur de l'enzyme de conversion"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "ACE inhibitor"
+  },
+  {
+    "term_en": "Ranitidine",
+    "term_fr": "Ranitidine",
+    "synonyms_en": [
+      "Zantac",
+      "ulcer stomach injection ampoule"
+    ],
+    "synonyms_fr": [
+      "Azantac",
+      "injection pour brûlure d'estomac historique"
+    ],
+    "dose": "50 mg",
+    "route": "IV / PO",
+    "frequency": "TDS / BD",
+    "form": "injection",
+    "drug_class": "H2 blocker"
+  },
+  {
+    "term_en": "Rifampicin",
+    "term_fr": "Rifampicine",
+    "synonyms_en": [
+      "Rifadin",
+      "R",
+      "TB red urine capsule"
+    ],
+    "synonyms_fr": [
+      "Rifadine",
+      "R",
+      "gélule tuberculose urines rouges"
+    ],
+    "dose": "10 mg/kg (e.g., 600 mg)",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "capsule",
+    "drug_class": "Rifamycine antituberculosis"
+  },
+  {
+    "term_en": "Ringer's Lactate",
+    "term_fr": "Ringer Lactate",
+    "synonyms_en": [
+      "Hartmann's solution",
+      "cholera severe diarrhea drip bag"
+    ],
+    "synonyms_fr": [
+      "Ringer Lactate perfusion",
+      "poche de liquide pour choléra / déshydratation grave"
+    ],
+    "dose": "1000 mL",
+    "route": "IV",
+    "frequency": "As directed",
+    "form": "infusion bag",
+    "drug_class": "Crystalloid intravenous fluid"
+  },
+  {
+    "term_en": "Ritonavir",
+    "term_fr": "Ritonavir",
+    "synonyms_en": [
+      "Norvir",
+      "HIV booster capsule"
+    ],
+    "synonyms_fr": [
+      "Norvir",
+      "antirétroviral booster de dose"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "OD / BD",
+    "form": "capsule",
+    "drug_class": "Antiretroviral (Protease Inhibitor)"
+  },
+  {
+    "term_en": "Salicylic acid",
+    "term_fr": "Acide salicylique",
+    "synonyms_en": [
+      "Duofilm",
+      "wart remover liquid",
+      "foot scales ointment"
+    ],
+    "synonyms_fr": [
+      "Pommade salicylée",
+      "préparation pour enlever les croûtes de peau"
+    ],
+    "dose": "5% - 10%",
+    "route": "Topical",
+    "frequency": "OD",
+    "form": "ointment",
+    "drug_class": "Keratolytic"
+  },
+  {
+    "term_en": "Silver sulfadiazine",
+    "term_fr": "Sulfadiazine argentique",
+    "synonyms_en": [
+      "Flammazine",
+      "burn wound white cream"
+    ],
+    "synonyms_fr": [
+      "Flammazine",
+      "crème blanche pour brûlures graves"
+    ],
+    "dose": "1%",
+    "route": "Topical",
+    "frequency": "OD / BD",
+    "form": "cream",
+    "drug_class": "Topical sulfonamide antibacterial"
+  },
+  {
+    "term_en": "Sodium chloride 0.9% (Normal Saline)",
+    "term_fr": "Chlorure de sodium 0,9% (Sérum Salé)",
+    "synonyms_en": [
+      "Normal saline bag",
+      "salt water drip",
+      "wound wash bottle"
+    ],
+    "synonyms_fr": [
+      "Sérum salé isotonique 0,9%",
+      "perfusion de sel eau",
+      "poche de rinçage"
+    ],
+    "dose": "500 mL - 1000 mL",
+    "route": "IV / Topical",
+    "frequency": "As directed",
+    "form": "infusion bag",
+    "drug_class": "Crystalloid intravenous fluid"
+  },
+  {
+    "term_en": "Sodium valproate",
+    "term_fr": "Valproate de sodium",
+    "synonyms_en": [
+      "Depakine",
+      "epilepsy syrup",
+      "bipolar mania pill"
+    ],
+    "synonyms_fr": [
+      "Dépakine",
+      "sirop crises convulsives enfant / épilepsie"
+    ],
+    "dose": "500 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Anticonvulsant / Mood stabilizer"
+  },
+  {
+    "term_en": "Spironolactone",
+    "term_fr": "Spironolactone",
+    "synonyms_en": [
+      "Aldactone",
+      "swollen belly liver failure water pill"
+    ],
+    "synonyms_fr": [
+      "Aldactone",
+      "diurétique pour gros ventre de cirrhose / ascite"
+    ],
+    "dose": "100 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Aldosterone antagonist diuretic"
+  },
+  {
+    "term_en": "Streptomycin",
+    "term_fr": "Streptomycine",
+    "synonyms_en": [
+      "S",
+      "old TB injection",
+      "deafness risk antibiotic shot"
+    ],
+    "synonyms_fr": [
+      "Streptomycine",
+      "S",
+      "ancienne injection fesse tuberculose"
+    ],
+    "dose": "1 g",
+    "route": "IM",
+    "frequency": "OD",
+    "form": "injection",
+    "drug_class": "Aminoglycoside antituberculosis"
+  },
+  {
+    "term_en": "Sulfadoxine / Pyrimethamine",
+    "term_fr": "Sulfadoxine / Pyriméthamine",
+    "synonyms_en": [
+      "Fansidar",
+      "SP",
+      "pregnant woman malaria preventative tablets"
+    ],
+    "synonyms_fr": [
+      "Fansidar",
+      "SP",
+      "comprimés blancs CPN prévention palu femme enceinte"
+    ],
+    "dose": "500 mg / 25 mg (3 tablets)",
+    "route": "PO",
+    "frequency": "STAT every trimester from 2nd",
+    "form": "tablet",
+    "drug_class": "Antimalarial combination (IPTp)"
+  },
+  {
+    "term_en": "Suxamethonium chloride",
+    "term_fr": "Chlorure de suxaméthonium",
+    "synonyms_en": [
+      "Succinylcholine",
+      "Scoline",
+      "surgery throat tube breathing paralyzer injection"
+    ],
+    "synonyms_fr": [
+      "Célocurine",
+      "curare flash pour intubation bloc opératoire"
+    ],
+    "dose": "1 mg/kg",
+    "route": "IV",
+    "frequency": "STAT",
+    "form": "injection",
+    "drug_class": "Depolarizing neuromuscular blocker"
+  },
+  {
+    "term_en": "Tamoxifen",
+    "term_fr": "Tamoxifène",
+    "synonyms_en": [
+      "Nolvadex",
+      "breast cancer prevention pill"
+    ],
+    "synonyms_fr": [
+      "Nolvadex",
+      "hormonothérapie cancer du sein"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "SERM (Antiestrogen)"
+  },
+  {
+    "term_en": "Tenofovir disoproxil fumarate",
+    "term_fr": "Fumarate de ténofovir disoproxil",
+    "synonyms_en": [
+      "TDF",
+      "Viread",
+      "chronic hepatitis B tablet"
+    ],
+    "synonyms_fr": [
+      "TDF",
+      "Viread",
+      "médicament de choix hépatite B chronique / VIH"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral / Antiviral (NRTI)"
+  },
+  {
+    "term_en": "Tenofovir / Lamivudine",
+    "term_fr": "Ténofovir / Lamivudine",
+    "synonyms_en": [
+      "TL",
+      "HIV dual backbone pill"
+    ],
+    "synonyms_fr": [
+      "TL",
+      "antirétroviral duo de base"
+    ],
+    "dose": "300 mg / 300 mg",
+    "route": "PO",
+    "frequency": "OD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral combination"
+  },
+  {
+    "term_en": "Tetanus toxoid vaccine",
+    "term_fr": "Vaccin antitétanique (VAT)",
+    "synonyms_en": [
+      "TT shot",
+      "pregnancy vaccine injection arm"
+    ],
+    "synonyms_fr": [
+      "VAT arm",
+      "injection antitétanique femme enceinte épaule"
+    ],
+    "dose": "0.5 mL",
+    "route": "IM",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Vaccine"
+  },
+  {
+    "term_en": "Timolol",
+    "term_fr": "Timolol",
+    "synonyms_en": [
+      "Timoptol",
+      "glaucoma eye drops twice daily"
+    ],
+    "synonyms_fr": [
+      "Timoptol",
+      "collyre bêtabloquant pour tension oculaire"
+    ],
+    "dose": "0.5%",
+    "route": "Ophthalmic",
+    "frequency": "BD",
+    "form": "eye drops",
+    "drug_class": "Beta-blocker (Ophthalmic)"
+  },
+  {
+    "term_en": "Tramadol",
+    "term_fr": "Tramadol",
+    "synonyms_en": [
+      "Tramol",
+      "green capsule",
+      "broken bone strong pain capsule"
+    ],
+    "synonyms_fr": [
+      "Tramal",
+      "gélule verte drogue",
+      "antalgique fort palier 2"
+    ],
+    "dose": "50 mg - 100 mg",
+    "route": "PO / IV / IM",
+    "frequency": "TDS / PRN",
+    "form": "capsule",
+    "drug_class": "Opioid analgesic"
+  },
+  {
+    "term_en": "Tranexamic acid",
+    "term_fr": "Acide tranexamique",
+    "synonyms_en": [
+      "Exacyl",
+      "car accident bleeding stopper ampoule",
+      "heavy periods ampoule"
+    ],
+    "synonyms_fr": [
+      "Exacyl",
+      "ampoule injectable pour arrêter les saignements / règles hémorragiques"
+    ],
+    "dose": "1 g",
+    "route": "IV / PO",
+    "frequency": "TDS",
+    "form": "injection",
+    "drug_class": "Antifibrinolytic hemostatic"
+  },
+  {
+    "term_en": "Trastuzumab",
+    "term_fr": "Trastuzumab",
+    "synonyms_en": [
+      "Herceptin",
+      "breast cancer targeted therapy injection"
+    ],
+    "synonyms_fr": [
+      "Herceptin",
+      "anticorps monoclonal cancer du sein HER2+"
+    ],
+    "dose": "6 mg/kg",
+    "route": "IV",
+    "frequency": "Every 3 weeks",
+    "form": "injection",
+    "drug_class": "Monoclonal antibody chemotherapy"
+  },
+  {
+    "term_en": "Triamcinolone acetonide",
+    "term_fr": "Acétonide de triamcinolone",
+    "synonyms_en": [
+      "Kenacort",
+      "keloid scar skin flattening injection"
+    ],
+    "synonyms_fr": [
+      "Kénacort",
+      "injection retard dans la cicatrice chéloïde / articulation"
+    ],
+    "dose": "40 mg",
+    "route": "Intralesional / Intra-articular",
+    "frequency": "Monthly PRN",
+    "form": "suspension injection",
+    "drug_class": "Corticosteroid depot"
+  },
+  {
+    "term_en": "Verapamil",
+    "term_fr": "Vérapamil",
+    "synonyms_en": [
+      "Isoptin",
+      "fast heartbeat tablet"
+    ],
+    "synonyms_fr": [
+      "Isoptine",
+      "médicament troubles du rythme cardiaque"
+    ],
+    "dose": "80 mg",
+    "route": "PO",
+    "frequency": "TDS",
+    "form": "tablet",
+    "drug_class": "Calcium channel blocker (Non-dihydropyridine)"
+  },
+  {
+    "term_en": "Vinblastine",
+    "term_fr": "Vinblastine",
+    "synonyms_en": [
+      "Velbe",
+      "lymphoma chemo plant drug"
+    ],
+    "synonyms_fr": [
+      "Velbe",
+      "alcaloïde de la pervenche chimio"
+    ],
+    "dose": "6 mg/m2",
+    "route": "IV",
+    "frequency": "Schedule",
+    "form": "injection",
+    "drug_class": "Vinca alkaloid chemotherapy"
+  },
+  {
+    "term_en": "Vincristine",
+    "term_fr": "Vincristine",
+    "synonyms_en": [
+      "Oncovin",
+      "pediatric cancer tumor nerve damage chemo"
+    ],
+    "synonyms_fr": [
+      "Oncovin",
+      "chimio tumeur de l'enfant / leucémie"
+    ],
+    "dose": "1.4 mg/m2",
+    "route": "IV",
+    "frequency": "Weekly",
+    "form": "injection",
+    "drug_class": "Vinca alkaloid chemotherapy"
+  },
+  {
+    "term_en": "Vitamin A (Retinol)",
+    "term_fr": "Vitamine A (Rétinol)",
+    "synonyms_en": [
+      "measles eye protection capsule blue/red",
+      "infant vitamin drop capsule"
+    ],
+    "synonyms_fr": [
+      "Vitamine A capsule",
+      "capsule de campagne rouge/bleue rougeole enfant"
+    ],
+    "dose": "200,000 IU",
+    "route": "PO",
+    "frequency": "STAT / Schedule",
+    "form": "capsule (oil squeezed)",
+    "drug_class": "Vitamin"
+  },
+  {
+    "term_en": "Warfarin",
+    "term_fr": "Warfarine",
+    "synonyms_en": [
+      "Coumadin",
+      "rat poison pill blood thinner",
+      "INR test pill"
+    ],
+    "synonyms_fr": [
+      "Coumadine",
+      "antivitamine K fluidifiant du sang"
+    ],
+    "dose": "5 mg",
+    "route": "PO",
+    "frequency": "OD (evening)",
+    "form": "tablet",
+    "drug_class": "Vitamin K antagonist anticoagulant"
+  },
+  {
+    "term_en": "Water for injection",
+    "term_fr": "Eau pour préparation injectable (EPPI)",
+    "synonyms_en": [
+      "sterile water plastic ampoule",
+      "antibiotic powder mixing fluid"
+    ],
+    "synonyms_fr": [
+      "Ampoule EPPI",
+      "eau distillée pour diluer la poudre d'antibiotique"
+    ],
+    "dose": "5 mL - 10 mL",
+    "route": "IV / IM solvent",
+    "frequency": "PRN",
+    "form": "ampoule",
+    "drug_class": "Pharmaceutical solvent"
+  },
+  {
+    "term_en": "Zidovudine",
+    "term_fr": "Zidovudine",
+    "synonyms_en": [
+      "AZT",
+      "Retrovir",
+      "HIV anemia pill"
+    ],
+    "synonyms_fr": [
+      "AZT",
+      "Retrovir",
+      "antirétroviral qui baisse les globules rouges"
+    ],
+    "dose": "300 mg",
+    "route": "PO",
+    "frequency": "BD",
+    "form": "tablet",
+    "drug_class": "Antiretroviral (NRTI)"
+  },
+  {
+    "term_en": "Zinc sulfate",
+    "term_fr": "Sulfate de zinc",
+    "synonyms_en": [
+      "child diarrhea 10-day zinc dispersible tablet"
+    ],
+    "synonyms_fr": [
+      "Zinc comprimé hydrosoluble",
+      "médicament zinc diarrhée bébé pour couper l'eau"
+    ],
+    "dose": "20 mg",
+    "route": "PO",
+    "frequency": "OD for 10-14 days",
+    "form": "dispersible tablet",
+    "drug_class": "Mineral supplement"
+  }
+]

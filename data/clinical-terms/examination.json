@@ -1,0 +1,2356 @@
+[
+  {
+    "term_en": "Apex beat displaced",
+    "term_fr": "Choc de pointe dévié",
+    "synonyms_en": [
+      "displaced apex beat",
+      "enlarged heart sign"
+    ],
+    "synonyms_fr": [
+      "choc de pointe déplacé",
+      "gros cœur à la palpation"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Apex beat in 5th intercostal space, midclavicular line",
+    "term_fr": "Choc de pointe au 5ème espace intercostal, ligne médioclaviculaire",
+    "synonyms_en": [
+      "normal apex beat",
+      "normal heart position"
+    ],
+    "synonyms_fr": [
+      "choc de pointe normal",
+      "palpation cardiaque normale"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Bradycardia",
+    "term_fr": "Bradycardie",
+    "synonyms_en": [
+      "slow heart rate",
+      "slow pulse"
+    ],
+    "synonyms_fr": [
+      "pouls lent",
+      "coeur lent"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Capillary refill time less than 2 seconds",
+    "term_fr": "Temps de recoloration cutanée inférieur à 2 secondes",
+    "synonyms_en": [
+      "normal capillary refill",
+      "good perfusion"
+    ],
+    "synonyms_fr": [
+      "TRC normal",
+      "bonne perfusion périphérique"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Capillary refill time prolonged",
+    "term_fr": "Temps de recoloration cutanée allongé",
+    "synonyms_en": [
+      "prolonged capillary refill",
+      "poor perfusion"
+    ],
+    "synonyms_fr": [
+      "TRC allongé",
+      "mauvaise perfusion",
+      "signe de choc"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Carotid bruit present",
+    "term_fr": "Souffle carotidien présent",
+    "synonyms_en": [
+      "carotid murmur"
+    ],
+    "synonyms_fr": [
+      "bruit vasculaire au cou",
+      "souffle à l'auscultation des carotides"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Cold extremities",
+    "term_fr": "Extrémités froides",
+    "synonyms_en": [
+      "cold hands and feet",
+      "poor peripheral circulation"
+    ],
+    "synonyms_fr": [
+      "mains et pieds froids",
+      "refroidissement des extrémités"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Diastolic murmur",
+    "term_fr": "Souffle diastolique",
+    "synonyms_en": [
+      "heart murmur during diastole"
+    ],
+    "synonyms_fr": [
+      "souffle cardiaque diastolique"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Elevated jugular venous pressure",
+    "term_fr": "Turgescence jugulaire présente",
+    "synonyms_en": [
+      "raised JVP",
+      "distended neck veins"
+    ],
+    "synonyms_fr": [
+      "veines du cou gonflées",
+      "jugulaires distendues",
+      "TJV"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Gallop rhythm present",
+    "term_fr": "Bruit de galop présent",
+    "synonyms_en": [
+      "S3 or S4 gallop",
+      "triple heart rhythm"
+    ],
+    "synonyms_fr": [
+      "rythme de galop",
+      "galop auscultatoire",
+      "B3 ou B4 présent"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Heart sounds normal",
+    "term_fr": "Bruits du cœur réguliers, bien frappés",
+    "synonyms_en": [
+      "normal S1 S2",
+      "no murmurs"
+    ],
+    "synonyms_fr": [
+      "bruits du cœur normaux",
+      "B1 B2 normaux",
+      "absence de souffle"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Irregularly irregular pulse",
+    "term_fr": "Arythmie complète",
+    "synonyms_en": [
+      "completely irregular heartbeat",
+      "arrhythmic pulse"
+    ],
+    "synonyms_fr": [
+      "pouls irrégulier",
+      "rythme cardiaque irrégulier",
+      "pouls en arythmie"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Jugular venous pressure normal",
+    "term_fr": "Absence de turgescence jugulaire",
+    "synonyms_en": [
+      "normal JVP",
+      "flat neck veins"
+    ],
+    "synonyms_fr": [
+      "veines du cou normales",
+      "pas de reflux hépato-jugulaire"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Muffled heart sounds",
+    "term_fr": "Bruits du cœur assourdis",
+    "synonyms_en": [
+      "distant heart sounds",
+      "faint heart sounds"
+    ],
+    "synonyms_fr": [
+      "bruits du cœur lointains",
+      "assourdissement des bruits du cœur"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Pericardial friction rub",
+    "term_fr": "Frottement péricardique",
+    "synonyms_en": [
+      "pericardial rub"
+    ],
+    "synonyms_fr": [
+      "bruit de va-et-vient péricardique"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Peripheral pulses palpable",
+    "term_fr": "Pouls périphériques présents",
+    "synonyms_en": [
+      "good pulses",
+      "pulses intact"
+    ],
+    "synonyms_fr": [
+      "pouls bien perçus",
+      "pouls périphériques palpables"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Systolic murmur",
+    "term_fr": "Souffle systolique",
+    "synonyms_en": [
+      "heart murmur during systole"
+    ],
+    "synonyms_fr": [
+      "souffle cardiaque systolique"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Tachycardia",
+    "term_fr": "Tachycardie",
+    "synonyms_en": [
+      "fast heart rate",
+      "rapid pulse"
+    ],
+    "synonyms_fr": [
+      "pouls rapide",
+      "coeur qui bat vite"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Thrills present",
+    "term_fr": "Frémissement palpatoire présent",
+    "synonyms_en": [
+      "palpable murmur",
+      "cardiac thrill"
+    ],
+    "synonyms_fr": [
+      "vibration à la palpation du coeur"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Warm extremities",
+    "term_fr": "Extrémités chaudes",
+    "synonyms_en": [
+      "warm hands and feet",
+      "good peripheral perfusion"
+    ],
+    "synonyms_fr": [
+      "mains et pieds chauds",
+      "bonne chaleur des extrémités"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Cerumen impaction",
+    "term_fr": "Bouchon de cérumen",
+    "synonyms_en": [
+      "earwax blockage",
+      "blocked ear canal"
+    ],
+    "synonyms_fr": [
+      "cérumen obstruant",
+      "bouchon d'oreille"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Deviated nasal septum",
+    "term_fr": "Déviation de la cloison nasale",
+    "synonyms_en": [
+      "crooked nose septum"
+    ],
+    "synonyms_fr": [
+      "cloison nasale déviée"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "External auditory canal normal",
+    "term_fr": "Conduit auditif externe sain",
+    "synonyms_en": [
+      "clear ear canal"
+    ],
+    "synonyms_fr": [
+      "conduit auditif externe libre et propre"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Hyperemic tympanic membrane",
+    "term_fr": "Membrane tympanique hyperémiée",
+    "synonyms_en": [
+      "red eardrum",
+      "congested eardrum"
+    ],
+    "synonyms_fr": [
+      "tympan rouge",
+      "tympan congestif"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Nasal mucosa normal",
+    "term_fr": "Muqueuse nasale normale",
+    "synonyms_en": [
+      "pink nasal lining"
+    ],
+    "synonyms_fr": [
+      "muqueuse nasale rose et saine"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Nasal polyps present",
+    "term_fr": "Polypose nasale visible",
+    "synonyms_en": [
+      "growths in nose"
+    ],
+    "synonyms_fr": [
+      "polypes dans le nez",
+      "excroissances nasales"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Oral thrush present",
+    "term_fr": "Candidose buccale présente",
+    "synonyms_en": [
+      "white coating on tongue",
+      "mouth thrush"
+    ],
+    "synonyms_fr": [
+      "muguet buccal",
+      "blancheur dans la bouche",
+      "champignon sur la langue"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Pharyngeal erythema",
+    "term_fr": "Érythème pharyngé",
+    "synonyms_en": [
+      "red throat",
+      "congested throat"
+    ],
+    "synonyms_fr": [
+      "gorge rouge",
+      "pharynx rouge",
+      "inflammation de la gorge"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tonsillar enlargement",
+    "term_fr": "Hypertrophie amygdalienne",
+    "synonyms_en": [
+      "swollen tonsils",
+      "big tonsils"
+    ],
+    "synonyms_fr": [
+      "grosses amygdales",
+      "amygdales hypertrophiées"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tonsillar exudate present",
+    "term_fr": "Exsudat amygdalien présent",
+    "synonyms_en": [
+      "pus on tonsils",
+      "white spots on throat"
+    ],
+    "synonyms_fr": [
+      "pus sur les amygdales",
+      "enduit blanchâtre sur les amygdales",
+      "amygdales pultacées"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tympanic membrane perforated",
+    "term_fr": "Perforation tympanique",
+    "synonyms_en": [
+      "burst eardrum",
+      "hole in eardrum"
+    ],
+    "synonyms_fr": [
+      "tympan perforé",
+      "trou dans le tympan"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tympanic membrane normal",
+    "term_fr": "Membrane tympanique normale",
+    "synonyms_en": [
+      "pearly grey eardrum",
+      "normal eardrum"
+    ],
+    "synonyms_fr": [
+      "tympan gris perle",
+      "tympan sain",
+      "aspect normal du tympan"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Conjunctival discharge",
+    "term_fr": "Sécrétion conjonctivale",
+    "synonyms_en": [
+      "pus in eye",
+      "eye discharge",
+      "sticky eyelids"
+    ],
+    "synonyms_fr": [
+      "écoulement oculaire",
+      "yeux collés",
+      "pus dans l'œil"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Conjunctival injection",
+    "term_fr": "Injection conjonctivale",
+    "synonyms_en": [
+      "red eyes",
+      "bloodshot eyes"
+    ],
+    "synonyms_fr": [
+      "yeux rouges",
+      "hyperémie conjonctivale"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Conjunctival pallor",
+    "term_fr": "Pâleur conjonctivale",
+    "synonyms_en": [
+      "pale inner eyelids",
+      "pale eyes sign of anemia"
+    ],
+    "synonyms_fr": [
+      "conjonctives pâles",
+      "pâleur des conjonctives",
+      "manque de sang dans les yeux"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Corneal ulcer visible",
+    "term_fr": "Ulcère de cornée visible",
+    "synonyms_en": [
+      "sore on eyeball",
+      "white spot on cornea"
+    ],
+    "synonyms_fr": [
+      "ulcère cornéen",
+      "blessure sur la cornée"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Exophthalmos",
+    "term_fr": "Exophtalmie",
+    "synonyms_en": [
+      "bulging eyes",
+      "protruding eyeballs"
+    ],
+    "synonyms_fr": [
+      "yeux exorbités",
+      "yeux sortis"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Icteric sclerae",
+    "term_fr": "Ictère scléral",
+    "synonyms_en": [
+      "yellow eyes",
+      "jaundice in eyes"
+    ],
+    "synonyms_fr": [
+      "yeux jaunes",
+      "jaunisse oculaire",
+      "sclérotiques ictériques"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Nystagmus present",
+    "term_fr": "Nystagmus présent",
+    "synonyms_en": [
+      "dancing eyes",
+      "twitching eyes"
+    ],
+    "synonyms_fr": [
+      "mouvements involontaires des yeux",
+      "secousses des globes oculaires"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Pupils equal, round, and reactive to light",
+    "term_fr": "Pupilles égales, rondes et réactives à la lumière",
+    "synonyms_en": [
+      "PEERLA",
+      "normal pupils"
+    ],
+    "synonyms_fr": [
+      "pupilles isocores et réactives",
+      "pupilles normales"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Pupils unequal",
+    "term_fr": "Anisocorie",
+    "synonyms_en": [
+      "unequal pupils",
+      "asymmetric pupils"
+    ],
+    "synonyms_fr": [
+      "pupilles asymétriques",
+      "inégalité pupillaire"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Sclerae anicteric",
+    "term_fr": "Sclérotiques anictériques",
+    "synonyms_en": [
+      "white eyes",
+      "no jaundice in eyes"
+    ],
+    "synonyms_fr": [
+      "yeux blancs",
+      "absence d'ictère scléral"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Abdomen flat",
+    "term_fr": "Abdomen plat",
+    "synonyms_en": [
+      "scaphoid abdomen",
+      "flat belly"
+    ],
+    "synonyms_fr": [
+      "ventre plat"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Abdomen distended",
+    "term_fr": "Abdomen distendu",
+    "synonyms_en": [
+      "swollen belly",
+      "bloated abdomen"
+    ],
+    "synonyms_fr": [
+      "gros ventre",
+      "météorisme abdominal",
+      "ventre ballonné"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Abdomen soft, non-tender",
+    "term_fr": "Abdomen souple, indolore",
+    "synonyms_en": [
+      "normal belly exam",
+      "soft stomach"
+    ],
+    "synonyms_fr": [
+      "ventre souple et sans douleur",
+      "examen de l'abdomen normal"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Abdominal defense present",
+    "term_fr": "Défense abdominale présente",
+    "synonyms_en": [
+      "abdominal guarding",
+      "muscle tensing in belly"
+    ],
+    "synonyms_fr": [
+      "ventre défendu",
+      "contraction musculaire réflexe du ventre"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Abdominal rigidity",
+    "term_fr": "Ventre de bois",
+    "synonyms_en": [
+      "board-like rigidity",
+      "severe abdominal guarding"
+    ],
+    "synonyms_fr": [
+      "rigidité abdominale",
+      "ventre rigide",
+      "péritonite aiguë"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Ascites clinically present",
+    "term_fr": "Ascite cliniquement décelable",
+    "synonyms_en": [
+      "fluid in belly",
+      "water in the abdomen"
+    ],
+    "synonyms_fr": [
+      "liquide dans le ventre",
+      "épanchement liquidien abdominal"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Bowel sounds absent",
+    "term_fr": "Silence auscultatoire abdominal",
+    "synonyms_en": [
+      "silent abdomen",
+      "no bowel movements noise"
+    ],
+    "synonyms_fr": [
+      "absence de bruits hydro-aériques",
+      "silence abdominal"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Bowel sounds hyperactive",
+    "term_fr": "Bruits hydro-aériques exagérés",
+    "synonyms_en": [
+      "loud bowel sounds",
+      "stomach rumbling"
+    ],
+    "synonyms_fr": [
+      "BHA augmentés",
+      "gargouillements intestinaux importants",
+      "borborygmes"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Bowel sounds normal",
+    "term_fr": "Bruits hydro-aériques présents",
+    "synonyms_en": [
+      "normal bowel noises",
+      "BHA present"
+    ],
+    "synonyms_fr": [
+      "BHA normaux",
+      "gargouillements normaux"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Epigastric tenderness",
+    "term_fr": "Sensibilité de l'épigastre",
+    "synonyms_en": [
+      "pain when pressing upper stomach",
+      "pain at the pit of stomach"
+    ],
+    "synonyms_fr": [
+      "douleur à la palpation de l'épigastre",
+      "creux de l'estomac sensible"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Fluid thrill present",
+    "term_fr": "Signe du flot présent",
+    "synonyms_en": [
+      "ascites wave test positive"
+    ],
+    "synonyms_fr": [
+      "signe du flot abdominal positif",
+      "vibration du liquide"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Hepatomegaly present",
+    "term_fr": "Hépatomégalie présente",
+    "synonyms_en": [
+      "enlarged liver",
+      "big liver"
+    ],
+    "synonyms_fr": [
+      "gros foie",
+      "augmentation du volume du foie"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "McBurney's point tenderness",
+    "term_fr": "Sensibilité au point de Mac Burney",
+    "synonyms_en": [
+      "appendix pain on pressure",
+      "right lower quadrant tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur au point de McBurney",
+      "signe de l'appendicite à la palpation"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Murphy's sign positive",
+    "term_fr": "Signe de Murphy positif",
+    "synonyms_en": [
+      "gallbladder pain on deep breath"
+    ],
+    "synonyms_fr": [
+      "douleur à la palpation de la vésicule en inspiration"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Palpable abdominal mass",
+    "term_fr": "Masse abdominale palpable",
+    "synonyms_en": [
+      "lump in belly",
+      "abdominal mass"
+    ],
+    "synonyms_fr": [
+      "boule dans le ventre",
+      "masse au niveau de l'abdomen"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Rebound tenderness present",
+    "term_fr": "Douleur à la décompression",
+    "synonyms_en": [
+      "Blumberg sign",
+      "rebound pain in abdomen"
+    ],
+    "synonyms_fr": [
+      "signe du rebond positif",
+      "douleur vive au relâchement de la main"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Shifting dullness present",
+    "term_fr": "Matité déclive changeante",
+    "synonyms_en": [
+      "fluid movement in belly test"
+    ],
+    "synonyms_fr": [
+      "matité changeante à la percussion",
+      "signe d'ascite à la percussion"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Splenomegaly present",
+    "term_fr": "Splénomégalie présente",
+    "synonyms_en": [
+      "enlarged spleen",
+      "big spleen"
+    ],
+    "synonyms_fr": [
+      "grosse rate",
+      "augmentation de la taille de la rate"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Tympanitic abdomen",
+    "term_fr": "Tympanisme abdominal",
+    "synonyms_en": [
+      "gas sound in belly",
+      "hollow abdomen sound"
+    ],
+    "synonyms_fr": [
+      "ventre tympanique",
+      "bruit creux à la percussion du ventre"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Umbilical hernia present",
+    "term_fr": "Hernie ombilicale",
+    "synonyms_en": [
+      "belly button hernia",
+      "outward navel bulge"
+    ],
+    "synonyms_fr": [
+      "nombril sorti",
+      "hernie au nombril"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Acutely ill appearance",
+    "term_fr": "Altération aiguë de l'état général",
+    "synonyms_en": [
+      "looking very sick",
+      "toxic appearance"
+    ],
+    "synonyms_fr": [
+      "patient d'aspect très malade",
+      "visage fatigué de façon aiguë"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Cachexia present",
+    "term_fr": "Cachexie",
+    "synonyms_en": [
+      "severe muscle wasting",
+      "extreme thinness"
+    ],
+    "synonyms_fr": [
+      "maigreur extrême",
+      "émaciation sévère",
+      "fonte musculaire globale"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Central cyanosis",
+    "term_fr": "Cyanose centrale",
+    "synonyms_en": [
+      "blue tongue and lips",
+      "bluish discoloration due to low oxygen"
+    ],
+    "synonyms_fr": [
+      "langue et lèvres bleues",
+      "teinte bleuâtre des muqueuses"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Chronic ill appearance",
+    "term_fr": "Altération chronique de l'état général",
+    "synonyms_en": [
+      "chronically wasted look"
+    ],
+    "synonyms_fr": [
+      "faciès de maladie chronique",
+      "altération au long cours"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Dehydration, mild",
+    "term_fr": "Déshydratation légère",
+    "synonyms_en": [
+      "mild fluid loss",
+      "slightly dry mouth"
+    ],
+    "synonyms_fr": [
+      "manque d'eau léger",
+      "bouche un peu sèche"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Dehydration, severe",
+    "term_fr": "Déshydratation sévère",
+    "synonyms_en": [
+      "sunken eyes",
+      "dry skin fold test positive",
+      "severe fluid loss"
+    ],
+    "synonyms_fr": [
+      "yeux enfoncés",
+      "pli cutané persistant",
+      "manque d'eau grave"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Febrile to touch",
+    "term_fr": "Chaud au toucher",
+    "synonyms_en": [
+      "body feels hot",
+      "feverish"
+    ],
+    "synonyms_fr": [
+      "corps chaud",
+      "fièvre au toucher"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Generalized lymphadenopathy",
+    "term_fr": "Polyadénopathie",
+    "synonyms_en": [
+      "swollen lymph nodes everywhere",
+      "multiple big lymph nodes"
+    ],
+    "synonyms_fr": [
+      "ganglions partout",
+      "plusieurs ganglions augmentés de volume"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Good general condition",
+    "term_fr": "Bon état général",
+    "synonyms_en": [
+      "patient looks well",
+      "healthy looking"
+    ],
+    "synonyms_fr": [
+      "patient bien portant",
+      "BEG"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Jaundice present",
+    "term_fr": "Ictère généralisé",
+    "synonyms_en": [
+      "yellow skin",
+      "yellow body"
+    ],
+    "synonyms_fr": [
+      "jaunisse",
+      "corps jaune",
+      "peau jaune"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Obesity",
+    "term_fr": "Obésité",
+    "synonyms_en": [
+      "severely overweight"
+    ],
+    "synonyms_fr": [
+      "surpoids important",
+      "corpulence très forte"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Pallor of mucous membranes",
+    "term_fr": "Pâleur des muqueuses",
+    "synonyms_en": [
+      "pale lips and tongue",
+      "anaemic look"
+    ],
+    "synonyms_fr": [
+      "muqueuses pâles",
+      "manque de sang visible dans la bouche"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Peripheral cyanosis",
+    "term_fr": "Cyanose périphérique",
+    "synonyms_en": [
+      "blue fingers and toes",
+      "blue cold extremities"
+    ],
+    "synonyms_fr": [
+      "doigts et orteils bleus",
+      "extrémités bleutées"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Severe wasting",
+    "term_fr": "Émaciation sévère",
+    "synonyms_en": [
+      "skin and bones",
+      "extreme weight loss"
+    ],
+    "synonyms_fr": [
+      "très maigre",
+      "fonte de graisse et muscles importante"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Adnexal mass palpable",
+    "term_fr": "Masse annexielle palpable",
+    "synonyms_en": [
+      "lump near uterus",
+      "ovarian mass"
+    ],
+    "synonyms_fr": [
+      "masse au niveau des annexes",
+      "tumeur ovarienne à la palpation"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Adnexal tenderness",
+    "term_fr": "Sensibilité des annexes",
+    "synonyms_en": [
+      "pain in ovary area during pelvic exam"
+    ],
+    "synonyms_fr": [
+      "douleur à la palpation des annexes"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Bladder distension",
+    "term_fr": "Globe vésical",
+    "synonyms_en": [
+      "full bladder swelling",
+      "palpable bladder"
+    ],
+    "synonyms_fr": [
+      "vessie pleine gonflée",
+      "rétention d'urine palpable"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Cervical motion tenderness",
+    "term_fr": "Douleur à la mobilisation utérine",
+    "synonyms_en": [
+      "chandelier sign",
+      "pain when cervix is moved"
+    ],
+    "synonyms_fr": [
+      "douleur au toucher vaginal en bougeant le col",
+      "signe d'infection utérine"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Costovertebral angle tenderness",
+    "term_fr": "Douleur à la percussion de l'angle costo-vertébral",
+    "synonyms_en": [
+      "kidney punch pain",
+      "CVA tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur lombaire à la percussion",
+      "signe de pyélonéphrite"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Epididymal tenderness",
+    "term_fr": "Sensibilité de l'épididyme",
+    "synonyms_en": [
+      "painful swelling behind testicle"
+    ],
+    "synonyms_fr": [
+      "douleur à la palpation de l'épididyme"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "External genitalia normal",
+    "term_fr": "Organes génitaux externes sains",
+    "synonyms_en": [
+      "normal private parts exam"
+    ],
+    "synonyms_fr": [
+      "absence de lésion génitale externe"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Hydrocele present",
+    "term_fr": "Hydrocèle scrotale",
+    "synonyms_en": [
+      "fluid in scrotum",
+      "swollen testicle with fluid"
+    ],
+    "synonyms_fr": [
+      "liquide dans les bourses",
+      "grosse bourse d'eau"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Inguinal lymphadenopathy",
+    "term_fr": "Adénopathie inguinale",
+    "synonyms_en": [
+      "swollen groin lymph nodes",
+      "lump in groin"
+    ],
+    "synonyms_fr": [
+      "ganglion à l'aine",
+      "ganglions inguinaux augmentés de volume"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Phimosis",
+    "term_fr": "Phimosis",
+    "synonyms_en": [
+      "tight foreskin"
+    ],
+    "synonyms_fr": [
+      "calotte du pénis serrée",
+      "impossibilité de décalotter"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Prostate enlarged, smooth",
+    "term_fr": "Hypertrophie prostatique bénigne au toucher rectal",
+    "synonyms_en": [
+      "BPH on rectal exam",
+      "smooth big prostate"
+    ],
+    "synonyms_fr": [
+      "grosse prostate lisse",
+      "HPB au TR"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Prostate nodular and hard",
+    "term_fr": "Prostate nodulaire et pierreuse au toucher rectal",
+    "synonyms_en": [
+      "hard prostate",
+      "suspicious prostate nodule"
+    ],
+    "synonyms_fr": [
+      "prostate dure et irrégulière",
+      "suspicion de cancer de la prostate au TR"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Prostatic tenderness",
+    "term_fr": "Prostate douloureuse au toucher rectal",
+    "synonyms_en": [
+      "painful prostate exam",
+      "prostatitis sign"
+    ],
+    "synonyms_fr": [
+      "douleur vive à la palpation de la prostate",
+      "prostatite au TR"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Scrotal edema",
+    "term_fr": "Œdème scrotal",
+    "synonyms_en": [
+      "swollen scrotum",
+      "swollen testicle sac"
+    ],
+    "synonyms_fr": [
+      "gonflement des bourses",
+      "bourses enflées"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Testicular mass palpable",
+    "term_fr": "Masse testiculaire palpable",
+    "synonyms_en": [
+      "lump in testicle"
+    ],
+    "synonyms_fr": [
+      "boule dans le testicule"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Urethral discharge visible",
+    "term_fr": "Écoulement urétral visible",
+    "synonyms_en": [
+      "pus from penis seen on exam"
+    ],
+    "synonyms_fr": [
+      "écoulement de pus méatique",
+      "chaude-pisse visible"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Uterine enlargement",
+    "term_fr": "Hypertrophie utérine",
+    "synonyms_en": [
+      "enlarged uterus",
+      "big womb"
+    ],
+    "synonyms_fr": [
+      "gros utérus",
+      "augmentation de la taille de l'utérus"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Vaginal discharge abnormal",
+    "term_fr": "Leucorrhées pathologiques",
+    "synonyms_en": [
+      "foul vaginal discharge",
+      "abnormal whites"
+    ],
+    "synonyms_fr": [
+      "pertes vaginales anormales",
+      "écoulement vaginal suspect"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Arthritic deformity",
+    "term_fr": "Déformation articulaire",
+    "synonyms_en": [
+      "crooked joints",
+      "joint deformity"
+    ],
+    "synonyms_fr": [
+      "déformation des articulations",
+      "destruction articulaire"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Bony crepitus",
+    "term_fr": "Crépitation osseuse",
+    "synonyms_en": [
+      "grating feeling in broken bone",
+      "bone grinding"
+    ],
+    "synonyms_fr": [
+      "frottement d'os cassé",
+      "crépitement à la palpation d'une fracture"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Clubbing of fingers",
+    "term_fr": "Hippocratisme digital",
+    "synonyms_en": [
+      "drumstick fingers",
+      "clubbed nails"
+    ],
+    "synonyms_fr": [
+      "ongles bombés en verre de montre",
+      "doigts en baguettes de tambour"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint effusion",
+    "term_fr": "Épanchement articulaire",
+    "synonyms_en": [
+      "fluid in joint",
+      "water in knee"
+    ],
+    "synonyms_fr": [
+      "liquide dans l'articulation",
+      "épanchement de synovie"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint erythema",
+    "term_fr": "Érythème articulaire",
+    "synonyms_en": [
+      "red joint"
+    ],
+    "synonyms_fr": [
+      "articulation rouge",
+      "rougeur sur l'articulation"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint range of motion normal",
+    "term_fr": "Mobilité articulaire normale",
+    "synonyms_en": [
+      "full joint movement"
+    ],
+    "synonyms_fr": [
+      "articulations libres",
+      "amplitude de mouvement normale"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint tenderness",
+    "term_fr": "Douleur à la palpation articulaire",
+    "synonyms_en": [
+      "painful joint on pressure"
+    ],
+    "synonyms_fr": [
+      "sensibilité de l'articulation"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Kyphosis",
+    "term_fr": "Cyphose dorsale",
+    "synonyms_en": [
+      "hunchback",
+      "curved upper back"
+    ],
+    "synonyms_fr": [
+      "dos bossu",
+      "courbure excessive du dos"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Limb deformity",
+    "term_fr": "Déformation de membre",
+    "synonyms_en": [
+      "crooked arm or leg",
+      "misshapen limb"
+    ],
+    "synonyms_fr": [
+      "membre déformé",
+      "attitude vicieuse d'un membre"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Limb shortening",
+    "term_fr": "Raccourcissement de membre",
+    "synonyms_en": [
+      "one leg shorter than other"
+    ],
+    "synonyms_fr": [
+      "raccourcissement d'un membre",
+      "asymétrie de longueur des membres"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle atrophy",
+    "term_fr": "Amyotrophie",
+    "synonyms_en": [
+      "muscle wasting",
+      "thin muscles"
+    ],
+    "synonyms_fr": [
+      "fonte musculaire",
+      "diminution du volume du muscle"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle tone normal",
+    "term_fr": "Tonus musculaire normal",
+    "synonyms_en": [
+      "normal muscle stiffness"
+    ],
+    "synonyms_fr": [
+      "tonus musculaire conservé"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Pitting edema of lower limbs",
+    "term_fr": "Œdème des membres inférieurs prenant le godet",
+    "synonyms_en": [
+      "swollen legs leaving finger mark",
+      "pitting pedal edema"
+    ],
+    "synonyms_fr": [
+      "jambes gonflées signe du godet positif",
+      "œdème malléolaire prenant le godet"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Scoliosis",
+    "term_fr": "Scoliose",
+    "synonyms_en": [
+      "S-shaped spine",
+      "crooked back"
+    ],
+    "synonyms_fr": [
+      "déviation latérale de la colonne",
+      "dos dévié"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Spine tenderness",
+    "term_fr": "Douleur à la palpation épineuse",
+    "synonyms_en": [
+      "backbone pain on pressure"
+    ],
+    "synonyms_fr": [
+      "douleur sur la colonne vertébrale"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Altered mental status",
+    "term_fr": "Altération de l'état de conscience",
+    "synonyms_en": [
+      "confusion",
+      "not awake fully",
+      "sluggish mind"
+    ],
+    "synonyms_fr": [
+      "trouble de la conscience",
+      "obnubilation",
+      "patient non lucide"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Babinski sign negative",
+    "term_fr": "Réflexe cutané plantaire en flexion",
+    "synonyms_en": [
+      "normal plantar reflex",
+      "downgoing toes"
+    ],
+    "synonyms_fr": [
+      "signe de Babinski négatif",
+      "réflexe plantaire normal"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Babinski sign positive",
+    "term_fr": "Signe de Babinski positif",
+    "synonyms_en": [
+      "upgoing big toe reflex"
+    ],
+    "synonyms_fr": [
+      "réflexe cutané plantaire en extension",
+      "signe de Babinski présent"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Clonus present",
+    "term_fr": "Clonus présent",
+    "synonyms_en": [
+      "rhythmic muscle spasms on stretching"
+    ],
+    "synonyms_fr": [
+      "trépidation épileptoïde",
+      "clonisme de la cheville"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Comatose state",
+    "term_fr": "Coma cliniquement constaté",
+    "synonyms_en": [
+      "unconscious",
+      "cannot wake up",
+      "deep unresponsiveness"
+    ],
+    "synonyms_fr": [
+      "état de coma",
+      "inconscience totale",
+      "coma"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Cranial nerves intact",
+    "term_fr": "Paires crâniennes sans particularité",
+    "synonyms_en": [
+      "normal cranial nerve exam"
+    ],
+    "synonyms_fr": [
+      "examen des paires crâniennes normal"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Deep tendon reflexes normal",
+    "term_fr": "Réflexes ostéotendineux normaux",
+    "synonyms_en": [
+      "normal reflexes",
+      "ROT present and symmetric"
+    ],
+    "synonyms_fr": [
+      "ROT normaux et symétriques"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Dysarthria",
+    "term_fr": "Dysarthrie",
+    "synonyms_en": [
+      "slurred speech",
+      "difficulty articulating words"
+    ],
+    "synonyms_fr": [
+      "parole articulée difficile",
+      "langue lourde",
+      "difficulté à parler distinctement"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Facial asymmetry",
+    "term_fr": "Asymétrie faciale",
+    "synonyms_en": [
+      "facial droop",
+      "crooked smile",
+      "one sided mouth drop"
+    ],
+    "synonyms_fr": [
+      "paralysie faciale",
+      "visage dévié",
+      "bouche tordue"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Focal neurological deficit",
+    "term_fr": "Déficit neurologique focalisé",
+    "synonyms_en": [
+      "localized weakness",
+      "one sided weakness"
+    ],
+    "synonyms_fr": [
+      "déficit neurologique ciblé",
+      "perte de force localisée"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Gait abnormal",
+    "term_fr": "Troubles de la marche",
+    "synonyms_en": [
+      "unsteady walking",
+      "limping gait"
+    ],
+    "synonyms_fr": [
+      "marche anormale",
+      "boiterie",
+      "instabilité à la marche"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Gait normal",
+    "term_fr": "Marche normale",
+    "synonyms_en": [
+      "steady walking"
+    ],
+    "synonyms_fr": [
+      "démarche normale",
+      "station debout et marche stables"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Hyperreflexia",
+    "term_fr": "Hyperréflexie",
+    "synonyms_en": [
+      "brisk reflexes",
+      "exaggerated tendon reflexes"
+    ],
+    "synonyms_fr": [
+      "ROT vifs",
+      "réflexes exagérés"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Hyporeflexia",
+    "term_fr": "Hyporréflexie",
+    "synonyms_en": [
+      "diminished reflexes",
+      "weak tendon reflexes"
+    ],
+    "synonyms_fr": [
+      "ROT diminués",
+      "faiblesse des réflexes"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Hypotonia",
+    "term_fr": "Hypotonie",
+    "synonyms_en": [
+      "floppy muscles",
+      "low muscle tone"
+    ],
+    "synonyms_fr": [
+      "mollesse musculaire",
+      "diminution du tonus"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Kernig's sign positive",
+    "term_fr": "Signe de Kernig positif",
+    "synonyms_en": [
+      "meningitis leg extension pain test"
+    ],
+    "synonyms_fr": [
+      "signe de Kernig présent",
+      "raideur méningée des membres inférieurs"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Motor strength reduced",
+    "term_fr": "Déficit de la force motrice",
+    "synonyms_en": [
+      "muscle weakness",
+      "loss of power in limbs"
+    ],
+    "synonyms_fr": [
+      "baisse de la force musculaire",
+      "parésie"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Motor strength 5/5 in all limbs",
+    "term_fr": "Force motrice cotée à 5/5 aux 4 membres",
+    "synonyms_en": [
+      "normal muscle strength",
+      "full muscle power"
+    ],
+    "synonyms_fr": [
+      "force musculaire normale",
+      "motricité conservée de façon symétrique"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Neck stiffness present",
+    "term_fr": "Raideur de la nuque présente",
+    "synonyms_en": [
+      "stiff neck on exam",
+      "meningismus sign"
+    ],
+    "synonyms_fr": [
+      "nuque raide",
+      "syndrome méningé clinique"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "No neck stiffness",
+    "term_fr": "Nuque souple",
+    "synonyms_en": [
+      "supple neck",
+      "no signs of meningitis"
+    ],
+    "synonyms_fr": [
+      "nuque libre et souple",
+      "absence de raideur méningée"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Oriented to time, place, and person",
+    "term_fr": "Conscient et orienté dans le temps et l'espace",
+    "synonyms_en": [
+      "alert and oriented x3",
+      "lucid patient"
+    ],
+    "synonyms_fr": [
+      "patient lucide, bien orienté",
+      "conscience claire"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Sensory deficit present",
+    "term_fr": "Déficit sensitif objectivé",
+    "synonyms_en": [
+      "loss of feeling",
+      "numb area on exam"
+    ],
+    "synonyms_fr": [
+      "perte de sensibilité",
+      "anesthésie ou hypoesthésie localisée"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Spasticity present",
+    "term_fr": "Spasticité musculaire",
+    "synonyms_en": [
+      "increased muscle tightness",
+      "stiff spastic muscles"
+    ],
+    "synonyms_fr": [
+      "raideur de type spastique",
+      "hypertonie pyramidale"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Tremor at rest",
+    "term_fr": "Tremblement de repos",
+    "synonyms_en": [
+      "shaking while resting"
+    ],
+    "synonyms_fr": [
+      "tremblement au repos"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Breast lump palpable",
+    "term_fr": "Nodule mammaire palpable",
+    "synonyms_en": [
+      "breast mass",
+      "lump in breast"
+    ],
+    "synonyms_fr": [
+      "boule dans le sein",
+      "masse mammaire"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Breast normal on palpation",
+    "term_fr": "Seins sans particularité à la palpation",
+    "synonyms_en": [
+      "normal breasts exam",
+      "no breast lumps"
+    ],
+    "synonyms_fr": [
+      "examen des seins normal",
+      "absence de nodule mammaire"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Cervix closed",
+    "term_fr": "Col utérin fermé",
+    "synonyms_en": [
+      "closed cervix on speculum / vaginal exam"
+    ],
+    "synonyms_fr": [
+      "col fermé au toucher vaginal"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Cervix dilated",
+    "term_fr": "Col utérin dilaté",
+    "synonyms_en": [
+      "open cervix during labor"
+    ],
+    "synonyms_fr": [
+      "col ouvert",
+      "dilatation du col"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fetal heart rate audible and regular",
+    "term_fr": "Bruit du cœur fœtal perçu et régulier",
+    "synonyms_en": [
+      "FHR present",
+      "baby heartbeat normal"
+    ],
+    "synonyms_fr": [
+      "BCF présents et réguliers",
+      "cœur du bébé bat bien"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fundal height consistent with gestational age",
+    "term_fr": "Hauteur utérine conforme au terme",
+    "synonyms_en": [
+      "normal uterine growth in pregnancy"
+    ],
+    "synonyms_fr": [
+      "HU normale pour l'âge de la grossesse",
+      "hauteur utérine normale"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Uterus firm and contracted postpartum",
+    "term_fr": "Globe utérin de sécurité bien formé",
+    "synonyms_en": [
+      "firm uterus after delivery",
+      "contracted womb"
+    ],
+    "synonyms_fr": [
+      "utérus bien rétracté après accouchement",
+      "globe de sécurité présent"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Uterus soft and boggy postpartum",
+    "term_fr": "Atonie utérine post-partum",
+    "synonyms_en": [
+      "soft boggy uterus",
+      "uncontracted uterus after birth"
+    ],
+    "synonyms_fr": [
+      "utérus mou après accouchement",
+      "absence de globe de sécurité"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Delusion present",
+    "term_fr": "Délire systématisé",
+    "synonyms_en": [
+      "false beliefs",
+      "delusional speech"
+    ],
+    "synonyms_fr": [
+      "idées délirantes",
+      "patient qui délire"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Depressed affect",
+    "term_fr": "Émoussement affectif",
+    "synonyms_en": [
+      "sad appearance",
+      "flat emotional expression"
+    ],
+    "synonyms_fr": [
+      "triste d'allure",
+      "faciès inexpressif",
+      "tristesse de l'humeur"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Incoherent speech",
+    "term_fr": "Propos incohérents",
+    "synonyms_en": [
+      "speech makes no sense",
+      "jumbled words"
+    ],
+    "synonyms_fr": [
+      "discours décousu",
+      "paroles bizarres sans sens"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Logorrhea",
+    "term_fr": "Logorrhée",
+    "synonyms_en": [
+      "talking non-stop",
+      "excessive talkativeness"
+    ],
+    "synonyms_fr": [
+      "parler de façon intarissable",
+      "flux de paroles incontrôlable"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Psychomotor retardation",
+    "term_fr": "Ralentissement psychomoteur",
+    "synonyms_en": [
+      "very slow movements and response"
+    ],
+    "synonyms_fr": [
+      "lenteur des mouvements et de la parole",
+      "ralentissement global"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Suicidal ideation expressed",
+    "term_fr": "Idées suicidaires exprimées",
+    "synonyms_en": [
+      "thoughts of killing self",
+      "wanting to die"
+    ],
+    "synonyms_fr": [
+      "envie de mourir",
+      "idées de suicide"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Asymmetrical chest expansion",
+    "term_fr": "Ampliation thoracique asymétrique",
+    "synonyms_en": [
+      "unequal chest rise",
+      "one side of chest moves less"
+    ],
+    "synonyms_fr": [
+      "le thorax ne se soulève pas de façon symétrique",
+      "asymétrie respiratoire"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Bronchial breath sounds",
+    "term_fr": "Souffle tubaire",
+    "synonyms_en": [
+      "harsh breath sounds",
+      "tubular breathing noise over lungs"
+    ],
+    "synonyms_fr": [
+      "bruit respiratoire soufflant",
+      "souffle bronchique audible"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Chest clear on auscultation",
+    "term_fr": "Champs pulmonaires libres à l'auscultation",
+    "synonyms_en": [
+      "lungs clear",
+      "normal lung sounds",
+      "no crackles or wheezes"
+    ],
+    "synonyms_fr": [
+      "poumons libres",
+      "murmure vésiculaire normal",
+      "absence de bruits surajoutés"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Coarse crackles",
+    "term_fr": "Râles crépitants grossiers",
+    "synonyms_en": [
+      "loud rattling lung sounds",
+      "coarse rales"
+    ],
+    "synonyms_fr": [
+      "gros râles dans la poitrine",
+      "râles sous-crépitants"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Decreased breath sounds",
+    "term_fr": "Diminution du murmure vésiculaire",
+    "synonyms_en": [
+      "faint lung sounds",
+      "quiet breathing noise"
+    ],
+    "synonyms_fr": [
+      "murmure vésiculaire diminué",
+      "bruit de la respiration affaibli"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Fine end-inspiratory crackles",
+    "term_fr": "Râles crépitants de fin d'inspiration",
+    "synonyms_en": [
+      "fine crackles",
+      "velcro crackles in lungs"
+    ],
+    "synonyms_fr": [
+      "râles crépitants fins",
+      "bruit de pas dans la neige à l'auscultation"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Hyperresonance on percussion",
+    "term_fr": "Hypertympanisme à la percussion thoracique",
+    "synonyms_en": [
+      "booming percussion sound over lung",
+      "pneumothorax sign"
+    ],
+    "synonyms_fr": [
+      "tympanisme du thorax",
+      "bruit trop creux à la percussion du poumon"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Intercostal recession",
+    "term_fr": "Tirage intercostal",
+    "synonyms_en": [
+      "skin pulling between ribs",
+      "increased work of breathing"
+    ],
+    "synonyms_fr": [
+      "tirage respiratoire entre les côtes",
+      "difficulté à respirer avec creusement"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Nasal flaring",
+    "term_fr": "Battement des ailes du nez",
+    "synonyms_en": [
+      "nostrils widening during breathing",
+      "respiratory distress in infants"
+    ],
+    "synonyms_fr": [
+      "les narines s'ouvrent fort en respirant",
+      "signe de détresse respiratoire"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Pleural friction rub",
+    "term_fr": "Frottement pleural",
+    "synonyms_en": [
+      "pleural rub",
+      "leather grating lung noise"
+    ],
+    "synonyms_fr": [
+      "bruit de frottement de la plèvre"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Symmetric chest expansion",
+    "term_fr": "Ampliation thoracique symétrique",
+    "synonyms_en": [
+      "equal chest rise",
+      "normal chest expansion"
+    ],
+    "synonyms_fr": [
+      "le thorax se soulève bien des deux côtés",
+      "ampliation pulmonaire symétrique"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Stridor",
+    "term_fr": "Stridor",
+    "synonyms_en": [
+      "high pitched upper airway noise",
+      "crowing breathing noise"
+    ],
+    "synonyms_fr": [
+      "bruit aigu inspiratoire au cou",
+      "sifflement laryngé"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Subcostal recession",
+    "term_fr": "Tirage sous-costal",
+    "synonyms_en": [
+      "skin pulling under ribs during breathing"
+    ],
+    "synonyms_fr": [
+      "creusement sous les côtes en respirant"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Tactile fremitus decreased",
+    "term_fr": "Vibrations vocales diminuées",
+    "synonyms_en": [
+      "reduced chest vibrations when speaking"
+    ],
+    "synonyms_fr": [
+      "diminution des vibrations vocales",
+      "VV abolies"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Tactile fremitus increased",
+    "term_fr": "Vibrations vocales augmentées",
+    "synonyms_en": [
+      "increased chest vibrations when speaking",
+      "consolidation sign"
+    ],
+    "synonyms_fr": [
+      "augmentation des vibrations vocales",
+      "VV augmentées"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Trachea midline",
+    "term_fr": "Trachée médiane",
+    "synonyms_en": [
+      "centered windpipe",
+      "no tracheal deviation"
+    ],
+    "synonyms_fr": [
+      "trachée centrée",
+      "absence de déviation de la trachée"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Wheezing, bilateral",
+    "term_fr": "Râles sibilants bilatéraux",
+    "synonyms_en": [
+      "whistling in both lungs",
+      "asthma wheezing"
+    ],
+    "synonyms_fr": [
+      "sifflements dans toute la poitrine",
+      "sibilances bilatérales"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Albinism skin changes",
+    "term_fr": "Lésions cutanées liées à l'albinisme",
+    "synonyms_en": [
+      "sun damage on hypopigmented skin"
+    ],
+    "synonyms_fr": [
+      "lésions solaires sur peau d'albinos"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Alopecia",
+    "term_fr": "Alopécie",
+    "synonyms_en": [
+      "hair loss",
+      "bald patches"
+    ],
+    "synonyms_fr": [
+      "perte de cheveux",
+      "chute de cheveux",
+      "plaques sans cheveux"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Burrows visible in web spaces",
+    "term_fr": "Sillons scabieux visibles dans les espaces interdigitaux",
+    "synonyms_en": [
+      "scabies lines between fingers"
+    ],
+    "synonyms_fr": [
+      "sillons de la gale entre les doigts"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Cold sweat",
+    "term_fr": "Sueurs froides",
+    "synonyms_en": [
+      "clammy skin",
+      "sweating while cold"
+    ],
+    "synonyms_fr": [
+      "peau moite et froide",
+      "sueurs de choc"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Dry skin",
+    "term_fr": "Xérose cutanée",
+    "synonyms_en": [
+      "dry peeling skin"
+    ],
+    "synonyms_fr": [
+      "peau sèche",
+      "sécheresse de la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Erythema",
+    "term_fr": "Érythème cutané",
+    "synonyms_en": [
+      "skin redness"
+    ],
+    "synonyms_fr": [
+      "rougeur de la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Flaky paint dermatosis",
+    "term_fr": "Dermatose en écaille de peinture",
+    "synonyms_en": [
+      "kwashiorkor skin peeling",
+      "crazy paving dermatosis"
+    ],
+    "synonyms_fr": [
+      "lésions cutanées du kwashiorkor",
+      "peau qui pèle en plaques écaillées"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hyperpigmented macules",
+    "term_fr": "Macules hyperpigmentées",
+    "synonyms_en": [
+      "dark spots on skin"
+    ],
+    "synonyms_fr": [
+      "taches noires sur la peau",
+      "taches sombres"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hypopigmented macules",
+    "term_fr": "Macules hypopigmentées",
+    "synonyms_en": [
+      "light patches on skin",
+      "white spots"
+    ],
+    "synonyms_fr": [
+      "taches blanches sur la peau",
+      "taches claires"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Jaundice of skin",
+    "term_fr": "Ictère cutané",
+    "synonyms_en": [
+      "yellow skin"
+    ],
+    "synonyms_fr": [
+      "jaunisse sur la peau",
+      "teinte jaune de la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Maculopapular rash",
+    "term_fr": "Éruption maculo-papuleuse",
+    "synonyms_en": [
+      "bumpy flat rash",
+      "measles-like rash"
+    ],
+    "synonyms_fr": [
+      "boutons rouges plats et surélevés",
+      "exanthème maculopapuleux"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Nail changes, koilonychia",
+    "term_fr": "Koïlonychie",
+    "synonyms_en": [
+      "spoon-shaped nails",
+      "severe anemia nail sign"
+    ],
+    "synonyms_fr": [
+      "ongles en cuillère",
+      "déformation des ongles par manque de fer"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Necrotic ulceration",
+    "term_fr": "Ulcération nécrotique",
+    "synonyms_en": [
+      "black dead skin wound"
+    ],
+    "synonyms_fr": [
+      "plaie noire",
+      "ulcère avec tissus morts"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "No skin lesions",
+    "term_fr": "Absence de lésion cutanée",
+    "synonyms_en": [
+      "clear skin",
+      "normal skin exam"
+    ],
+    "synonyms_fr": [
+      "peau saine",
+      "pas de bouton ni de plaie"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Petechiae present",
+    "term_fr": "Pétéchies présentes",
+    "synonyms_en": [
+      "tiny red spots on skin",
+      "pinpoint bleeding in skin"
+    ],
+    "synonyms_fr": [
+      "petites taches rouges de sang sous la peau",
+      "pétéchies"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Purpura present",
+    "term_fr": "Purpura",
+    "synonyms_en": [
+      "purple skin spots from internal bleeding"
+    ],
+    "synonyms_fr": [
+      "taches violacées ne s'effaçant pas à la vitropression"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Pustular lesions",
+    "term_fr": "Lésions pustuleuses",
+    "synonyms_en": [
+      "pimples with pus",
+      "pus spots"
+    ],
+    "synonyms_fr": [
+      "boutons de pus",
+      "pustules"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Skin turgor normal",
+    "term_fr": "Élasticité cutanée normale",
+    "synonyms_en": [
+      "normal skin snapback",
+      "no signs of dehydration on skin"
+    ],
+    "synonyms_fr": [
+      "pas de pli cutané",
+      "hydratation cutanée normale"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Subcutaneous nodules",
+    "term_fr": "Nodules sous-cutanés",
+    "synonyms_en": [
+      "lumps under the skin",
+      "onchocerciasis nodules"
+    ],
+    "synonyms_fr": [
+      "boules sous la peau",
+      "nodules d'onchocercose"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Vesicular rash",
+    "term_fr": "Éruption vésiculeuse",
+    "synonyms_en": [
+      "fluid-filled blisters",
+      "chickenpox-like rash"
+    ],
+    "synonyms_fr": [
+      "boutons d'eau",
+      "petites ampoules sur la peau",
+      "vésicules"
+    ],
+    "system": "Skin"
+  }
+]

@@ -40,6 +40,8 @@ export type TransferId = string;
 export type AllergyId = string;
 export type CarePlanItemId = string;
 export type CarePlanEntryId = string;
+export type BillableItemId = string;
+export type ChargeId = string;
 export type AuditLogId = number;
 
 /** Supabase `auth.users(id)` — the authenticated user a Staff row links to. */
@@ -107,8 +109,104 @@ export type CareStage =
 /** `order_type` — category of a recommended test. */
 export type OrderType = "lab" | "imaging" | "procedure";
 
+// ---------------------------------------------------------------------------
+// Clinical term library (Phase 16.10) — autocomplete dictionary for clinical
+// fields. The seed layer is bundled JSON (one file per category); the learned
+// layer (custom terms + usage counts) grows at runtime. Both share this shape.
+// ---------------------------------------------------------------------------
+
+/** The six clinical fields the term-autocomplete library serves. */
+export type ClinicalTermCategory =
+  | "subjective"
+  | "examination"
+  | "assessment"
+  | "plan"
+  | "medication"
+  | "investigations";
+
+/**
+ * A single entry in the clinical-term library. Bilingual, with synonyms (incl.
+ * lay terms) so partial/colloquial spellings still surface it. Category-specific
+ * fields are populated only for their own category and are `null`/absent
+ * otherwise. `investigations` is one combined bucket for lab + imaging +
+ * procedure — `order_type` routes a selected term to the right `Order` type.
+ *
+ * Seed files omit `category` (it is stamped from the filename by the loader);
+ * the in-memory shape always carries it.
+ */
+export interface ClinicalTerm {
+  category: ClinicalTermCategory;
+  /** Canonical English term (display + match). */
+  term_en: string;
+  /** Canonical French term (display + match). */
+  term_fr: string;
+  /** Alternative English spellings / lay terms (match only). */
+  synonyms_en?: string[];
+  /** Alternative French spellings / lay terms (match only). */
+  synonyms_fr?: string[];
+  /** Body system (subjective / examination), else null. */
+  system?: string | null;
+  /** ICD-10 code (assessment), else null. */
+  icd10?: string | null;
+  /** Routing for investigations (lab / imaging / procedure), else null. */
+  order_type?: OrderType | null;
+  /** Medication: typical dose (e.g. "500 mg"), else null. */
+  dose?: string | null;
+  /** Medication: route (e.g. "oral", "IV"), else null. */
+  route?: string | null;
+  /** Medication: frequency (e.g. "every 8 hours"), else null. */
+  frequency?: string | null;
+  /** Medication: dose form (e.g. "tablet", "syrup"), else null. */
+  form?: string | null;
+  /** Medication: drug class (e.g. "antibiotic"), else null. */
+  drug_class?: string | null;
+}
+
+/** The file shape pasted into `data/clinical-terms/<category>.json` — no `category`. */
+export type ClinicalTermSeed = Omit<ClinicalTerm, "category">;
+
 /** `order_status` — lifecycle of an order until its result closes the loop. */
 export type OrderStatus = "requested" | "in_progress" | "completed" | "cancelled";
+
+/**
+ * `billing_category` — the kind of billable line item, used to group the price
+ * catalog and to drive how a charge is computed (flat per-item vs time-based).
+ */
+export type BillingCategory =
+  | "consultation"
+  | "lab_test"
+  | "imaging"
+  | "procedure"
+  | "medication"
+  | "bed_per_night"
+  | "nursing_per_day"
+  | "other";
+
+/**
+ * `billing_unit` — how a billable item is quantified. `per_item` is a flat
+ * one-off; `per_night`/`per_day` are time-based and computed at billing time
+ * from the admission/transfers timeline.
+ */
+export type BillingUnit = "per_item" | "per_night" | "per_day";
+
+/**
+ * `charge_source` — provenance of a ledger charge. Auto-generated charges
+ * (everything except `manual`/`discount`) are reconciled idempotently against
+ * their originating clinical record via `Charge.source_ref_id`. `manual` and
+ * `discount` rows are operator-entered and never reconciled away.
+ */
+export type ChargeSource =
+  | "consultation"
+  | "order"
+  | "prescription"
+  | "bed"
+  | "nursing"
+  | "procedure"
+  | "manual"
+  | "discount";
+
+/** `charge_status` — settlement state of a single ledger line. */
+export type ChargeStatus = "pending" | "paid" | "waived";
 
 /** `bed_status` — drives live occupancy on the floor map. */
 export type BedStatus =
@@ -621,6 +719,88 @@ export interface CarePlanEntry {
   is_handover: boolean;
   recorded_by_id: StaffId | null;
   recorded_at: ISODateString;
+}
+
+// ---------------------------------------------------------------------------
+// 4g-bis. Billing & invoicing (Phase 16.9)
+// ---------------------------------------------------------------------------
+
+/**
+ * `billable_items` — the **price catalog**: a per-tenant list of services and
+ * goods the hospital can bill for, each with a current unit price in whole XAF
+ * (West African CFA franc has no minor unit, so prices are integers). The
+ * catalog is the source of the *current* price; a `Charge` snapshots the price
+ * at the moment it is raised, so later edits to the catalog never rewrite an
+ * existing bill.
+ */
+export interface BillableItem {
+  id: BillableItemId;
+  hospital_id: HospitalId;
+  /** Grouping + computation hint (flat vs time-based). */
+  category: BillingCategory;
+  /** Human label shown on the bill and in the catalog admin, e.g. "Chest X-ray". */
+  name: string;
+  /** How the item is quantified (per_item / per_night / per_day). */
+  unit: BillingUnit;
+  /** Current unit price in whole XAF. */
+  unit_price: number;
+  /**
+   * Stable code linking auto-generated charges back to their origin. For beds
+   * this is the ward id (`ward_*`), for nursing a fixed sentinel, for
+   * order/consultation items the order/visit-type key. `null` for free-form
+   * manual catalog entries. Lets the catalog drive auto-charge pricing.
+   */
+  ref_code: string | null;
+  /** Soft toggle: inactive items stay on old bills but can't be newly charged. */
+  is_active: boolean;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
+}
+
+/**
+ * `charges` — the **billing ledger**: one line per billable event on a visit.
+ * Auto-generated lines (beds, nursing, ordered tests, consultations) are
+ * reconciled idempotently against their clinical origin via `source_ref_id`,
+ * so re-running the auto-charge pass never double-bills. `manual` lines (extra
+ * goods/services) and `discount` lines (negative amounts) are operator-entered
+ * and preserved across reconciliation. The unit price is **snapshotted** at
+ * creation time so catalog edits never silently rewrite a raised bill.
+ */
+export interface Charge {
+  id: ChargeId;
+  hospital_id: HospitalId;
+  /** The visit this charge belongs to (bills are scoped per visit). */
+  visit_id: VisitId;
+  /** Catalog item this charge priced from, when applicable. */
+  billable_item_id: BillableItemId | null;
+  /** Provenance — drives reconciliation behaviour. */
+  source: ChargeSource;
+  /**
+   * Idempotency key for auto-generated charges: the id of the originating row
+   * (order id, ward-segment key, nursing-day key, consultation/visit key).
+   * `null` for `manual`/`discount` lines, which are never auto-reconciled.
+   */
+  source_ref_id: string | null;
+  /** Snapshotted human label shown on the bill, e.g. "Bed — ICU (3 nights)". */
+  description: string;
+  /** Quantity (nights, days, or item count). Integer. */
+  quantity: number;
+  /** Snapshotted unit price in whole XAF at the time the charge was raised. */
+  unit_price: number;
+  /**
+   * Line total in whole XAF (`quantity * unit_price`), persisted for audit and
+   * to keep totals stable even if the formula changes. Negative for discounts.
+   */
+  amount: number;
+  /** Settlement state of this line. */
+  status: ChargeStatus;
+  created_by_id: StaffId | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 // ---------------------------------------------------------------------------

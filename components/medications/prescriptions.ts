@@ -91,20 +91,6 @@ export const FREQUENCY_OPTIONS: string[] = [
   "as required",
 ];
 
-/** A few high-frequency drugs to speed up entry, with a sensible default dose. */
-export const COMMON_DRUGS: { name: string; dose: string; route: string }[] = [
-  { name: "Paracetamol", dose: "1 g", route: "oral" },
-  { name: "Ibuprofen", dose: "400 mg", route: "oral" },
-  { name: "Amoxicillin-clavulanate", dose: "625 mg", route: "oral" },
-  { name: "Ceftriaxone", dose: "1 g", route: "IV" },
-  { name: "Metronidazole", dose: "500 mg", route: "IV" },
-  { name: "Enoxaparin", dose: "40 mg", route: "SC" },
-  { name: "Metformin", dose: "1 g", route: "oral" },
-  { name: "Omeprazole", dose: "40 mg", route: "oral" },
-  { name: "Salbutamol", dose: "2.5 mg", route: "inhaled" },
-  { name: "Morphine", dose: "5 mg", route: "IV" },
-];
-
 // ---------------------------------------------------------------------------
 // Status predicate
 // ---------------------------------------------------------------------------

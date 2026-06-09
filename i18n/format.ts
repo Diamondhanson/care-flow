@@ -46,6 +46,20 @@ export function formatNumber(
   return new Intl.NumberFormat(LOCALE_TAG[locale], options).format(value);
 }
 
+/**
+ * Format a whole-XAF amount (West African CFA franc — no minor unit, so always
+ * integer francs). e.g. 20000 → "FCFA 20,000" / "20 000 FCFA". Negative amounts
+ * (discounts) keep their sign. Uses the XAF currency style so the locale picks
+ * the right grouping + symbol placement.
+ */
+export function formatXaf(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(LOCALE_TAG[locale], {
+    style: "currency",
+    currency: "XAF",
+    maximumFractionDigits: 0,
+  }).format(Math.round(value));
+}
+
 /** `whole` is a 0–100 percentage (e.g. 87 → "87%" / "87 %"). */
 export function formatPercent(
   whole: number,

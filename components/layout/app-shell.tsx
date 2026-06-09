@@ -16,6 +16,7 @@ import {
   LogOut,
   Menu,
   Pill,
+  Receipt,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -66,6 +67,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "nav.medications", href: "/medications", icon: Pill },
   { title: "nav.carePlans", href: "/care-plans", icon: ClipboardList },
   { title: "nav.reconciliation", href: "/reconciliation", icon: GitMerge },
+  { title: "nav.billing", href: "/billing", icon: Receipt },
   { title: "nav.departments", href: "/departments", icon: Building2 },
   { title: "nav.floorMap", href: "/floor-map", icon: LayoutGrid },
   { title: "nav.reports", href: "/reports", icon: BarChart3 },
@@ -81,7 +83,7 @@ const NAV_ITEMS: NavItem[] = [
  */
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
-  receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation"],
+  receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation", "/billing"],
   // Nurse: the board, medications due, care plans, and bed/ward status.
   nurse: ["/dashboard", "/medications", "/care-plans", "/floor-map"],
   // Doctor: the board (their patients), tests & results, prescribing, care plans.

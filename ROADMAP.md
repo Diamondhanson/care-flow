@@ -598,19 +598,26 @@ registration form** that gives the anonymous patient a real identity **in-place*
       (no duplicate created); the optional merge path reassigns visits to the linked patient and removes
       the anonymous record; FR + EN clean; `tsc` clean; 183 tests pass.
 
-## PHASE 16.9 — Patient Billing & Expenditure Tracking (Optional Module) 🔜
+## PHASE 16.9 — Patient Billing & Expenditure Tracking ✅ DONE
 
-**Goal:** let a hospital price every chargeable activity (per department) and **automatically accumulate
-a patient's expenditure across their journey**, then generate, adjust, and print an itemized bill. Most
-charge lines come from events CareFlow *already* records — billing is a price layer on top of the
-journey.
+**Goal:** let a hospital price every chargeable activity and **automatically accumulate a patient's
+expenditure across their journey**, then generate, adjust, and print an itemized bill. Most charge lines
+come from events CareFlow *already* records — billing is a price layer on top of the journey.
 
 **Scope boundary:** this is **billing / invoicing only** — *not* payment processing, mobile-money
 collection, or insurance/NHIS claims (those stay in the parking lot). The deliverable is: a price
 catalog, automatic charge accrual, and a printable bill with discounts + manual items.
 
-**Optional & paid-tier:** toggleable per hospital, **off by default** — a natural paid-tier feature that
-ties back to the monetization plan.
+> **Deviations from the original spec (decided with the user at implementation time):**
+> 1. **Live & free for everyone, not paid-tier-gated.** The "optional, off-by-default, paid tier" idea
+>    was dropped — every hospital gets billing now so it can be tested. No subscription gate.
+> 2. **Informational billing — it does NOT block discharge.** Settling a bill ticks the admission's
+>    `is_financial_cleared` flag as a *convenience*, but **no new discharge-blocking logic was added**;
+>    the discharge gate is unchanged. (Originally the spec had "unpaid bill blocks discharge".)
+> 3. **Catalog pricing is decoupled via a semantic `ref_code`** (e.g. `bed_icu`, `lab_fbc`) that the
+>    auto-charge resolvers match, rather than `department_id`/`ward_id` columns. Bed price is resolved by
+>    ward *name* (ICU / Maternity / general). Each `charge` carries a `source_ref_id` for idempotent
+>    reconciliation, and the manual/discount "reason" lives in the line `description`.
 
 ### Decisions (locked)
 * **Drugs:** a small **common-drugs price list** for auto-charging + the ability to add any other drug
@@ -625,53 +632,138 @@ ties back to the monetization plan.
   francs, never floats.
 
 ### Data model
-* [ ] `billable_items` (the **price catalog / fee schedule**): `department_id` (nullable = hospital-wide),
-      `ward_id` (nullable, for bed/nursing items), `category` enum (`consultation`, `lab_test`,
+* [x] `billable_items` (the **price catalog / fee schedule**): `category` enum (`consultation`, `lab_test`,
       `imaging`, `procedure`, `medication`, `bed_per_night`, `nursing_per_day`, `other`), `name`,
-      `unit` enum (`per_item` / `per_night` / `per_day`), `unit_price` (int XAF), `is_active`, timestamps.
-* [ ] `charges` (the **bill ledger** — one row per line): `visit_id`, `patient_id`,
-      `billable_item_id` (nullable for manual/discount), `category`, `description`, `quantity`,
-      `unit_price` **(snapshotted at creation — later price changes must NOT alter past bills)**,
+      `unit` enum (`per_item` / `per_night` / `per_day`), `unit_price` (int XAF), `ref_code` (semantic
+      auto-charge key, e.g. `bed_icu`), `is_active`, timestamps. *(Used `ref_code` instead of
+      `department_id`/`ward_id` columns — see deviation #3.)*
+* [x] `charges` (the **bill ledger** — one row per line): `visit_id`,
+      `billable_item_id` (nullable for manual/discount), `source_ref_id` (idempotency key → originating
+      record/segment), `description`, `quantity`,
+      `unit_price` **(snapshotted at creation — later price changes do NOT alter past bills)**,
       `amount`, `source` enum (`consultation`, `order`, `prescription`, `bed`, `nursing`, `procedure`,
-      `manual`, `discount`), `reason` (for manual/discount), `status` (`pending`/`paid`/`waived`),
-      `created_by_id`, `created_at`. Discounts are negative-amount rows with a required reason.
-* [ ] Mirror both into `supabase/schema.sql` with `updated_at`/audit/RLS wiring (admin + receptionist
-      write). **Multi-tenant:** both tables get `hospital_id` in Phase 17 with all other domain tables.
+      `manual`, `discount`), `status` (`pending`/`paid`/`waived`),
+      `created_by_id`, timestamps. Discounts are negative-amount rows (reason in `description`).
+* [x] Mirrored both into `supabase/schema.sql` with `updated_at`/version/audit/RLS wiring (admin +
+      receptionist write), `hospital_id` on both. *(Schema applied to the live DB on 2026-06-09 via
+      `psql supabase/schema.sql`; sample billing data seeded for all 51 demo visits — 18 catalog items +
+      160 charges — via `scripts/seed-billing-live.ts`, computed with the same `computeAutoChargeLines` engine.)*
 
 ### Price catalog admin UI
-* [ ] A new admin settings page to manage `billable_items` grouped by department + category: consultation
-      price per department; the lab's test menu + prices; procedures; bed-per-night per ward;
-      nursing-per-day; misc. (Built like the existing departments / floor-map admin.)
+* [x] A new admin page (`/billing/prices`) to manage `billable_items` grouped by category: consultation
+      prices, the lab's test menu + prices, imaging, procedures, bed-per-night, nursing-per-day, drugs,
+      misc — add/edit price, unit, ref-code, active toggle. (Built like the existing admin screens.)
 
 ### Automatic charge accrual (event → charge)
-* [ ] Consultation recorded → consultation fee for the visit's department.
-* [ ] Each `order` (lab/imaging/procedure) → that item's price.
-* [ ] Each prescription dispensed → drug price from the common-drugs list (else flag for manual entry).
-* [ ] Admission (at billing time) → bed nights **per ward segment** using the `transfers` timestamps
+* [x] Consultation recorded → consultation fee (one line per consultation).
+* [x] Each non-cancelled `order` (lab/imaging/procedure) → that item's price (cancelled orders skipped).
+* [x] Each prescription → drug price from the common-drugs list (else `drug_other` fallback).
+* [x] Admission (at billing time) → bed nights **per ward segment** using the `transfers` timestamps
       (e.g. 3 nights ICU + 2 nights general ward, each at its ward's rate) + nursing days × nursing rate.
-* [ ] Procedure → procedure price. Snapshot `unit_price` onto every charge.
+* [x] Procedure → procedure price. `unit_price` snapshotted onto every charge; reconciliation is
+      idempotent (keyed by `source` + `source_ref_id`) and preserves manual lines + discounts.
 
 ### Billing screen (`/billing`)
-* [ ] Admin/receptionist: search/select patient (reuse global search) → itemized bill grouped by
-      category with running total → **apply discount** (amount or %, requires reason, audited) → **add
-      manual line items** (description + amount, audited) → final total → **export PDF** (reuse the
-      visit-summary PDF machinery) + print.
-* [ ] **Mark settled → flips `is_financial_cleared`** on the admission, so an unpaid bill automatically
-      blocks discharge (the gate already checks this).
-* [ ] Fully FR/EN; all amounts formatted as XAF.
+* [x] Admin/receptionist: search/select a visit → itemized bill grouped by category with running total →
+      **apply discount** (amount + reason) → **add manual line items** (catalog or custom) → per-line
+      status (paid/waive/remove) → final total → **export PDF** (reuses the visit-summary PDF machinery).
+* [x] **Mark settled → flips `is_financial_cleared`** on the admission *as a convenience only* —
+      **informational, does NOT block discharge** (deviation #2; the discharge gate is unchanged).
+* [x] Fully FR/EN; all amounts formatted as XAF via `formatXaf`.
 
 ### Seed price catalog (so it demos with real numbers)
-* [ ] Consultation: General Medicine 5,000; Ophthalmology 7,000. Beds: ICU 20,000/night, Maternity
+* [x] Consultation: General Medicine 5,000; Ophthalmology 7,000. Beds: ICU 20,000/night, Maternity
       10,000/night, General ward 6,000/night. Nursing care 3,000/day. Lab: FBC 3,000, Malaria RDT 1,500,
       Blood sugar 2,000. Imaging: Chest X-ray 12,000. Procedure: Delivery (Maternity) 50,000. Common
-      drugs: Paracetamol 500, Amoxicillin 2,500, Artemether-Lumefantrine 3,500.
+      drugs: Paracetamol 500, Amoxicillin 2,500, Artemether-Lumefantrine 3,500. **Plus sample charges
+      seeded for every visit** (auto-derived from each visit's record; closed visits `paid`, open
+      `pending`) so the screen has real data to view while testing.
 
 ### Verify
-* [ ] Admin sets prices per department; a patient walks the journey (consultation → 2 tests → drugs →
-      2 nights ICU + nursing) and the bill auto-totals correctly, with the bed charge respecting a ward
-      transfer; a 10% discount + a manual line are applied and both appear in the audit log; the PDF
-      exports itemized XAF totals in FR + EN; marking settled flips financial clearance; `tsc` clean,
-      unit tests for the pure total/aggregation helpers green.
+* [x] Pure-helper unit tests (catalog resolution, ward-segment/night math, auto-charge derivation, bill
+      summary) — 14 tests; a full-journey billing leg (derive → manual line → discount → settle, asserting
+      idempotent reconcile + XAF totals); the PDF exports itemized XAF totals; `tsc` clean, **234 unit
+      tests green**, eslint clean, `next build` green (both `/billing` + `/billing/prices` routes build).
+
+## PHASE 16.10 — Clinical Term Autocomplete & Library 🚧 (implementation done; seed lists + manual UI pass pending)
+
+**Goal:** reduce clinical typing to near-zero. As a doctor types 3–4 letters in any clinical field, a
+menu of common medical terms pops up; they select it, it drops in as an entry, and they add as many as
+needed. Built for clinicians who type slowly, works offline, **usable from day one** via a large seed
+library that **improves with use**. Side benefit: turns free text into consistent, reportable data.
+
+**Categories (6):** `subjective`, `examination`, `assessment`, `plan`, `medication`, `investigations`.
+> **NOTE:** `investigations` is **one combined category** for lab tests + imaging + procedures. Each
+> investigation term carries an `order_type` (`lab` / `imaging` / `procedure`) so selecting it sets the
+> right type on the created `Order` automatically.
+
+### Architecture — two layers
+* **Seed layer (static, bundled, offline):** one JSON file per category, each a flat array of term
+  objects, shipped with the app. **Drop-in by design — to add more terms you just edit/paste into the
+  file; the next build picks them up automatically with NO code change.**
+* **Learned layer (grows over time):** a runtime store (localStorage in the mock → a `clinical_terms`
+  table per hospital in Phase 17/18) holding (a) doctor-added custom terms from the free-text fallback,
+  and (b) usage counts so frequently-picked terms rank higher. Merged with the seed at search time.
+
+### Term schema (`ClinicalTerm`)
+`category`, `term_en`, `term_fr`, `synonyms_en[]`, `synonyms_fr[]` (incl. lay terms),
+`system` (for subjective/examination, else null), `icd10` (for assessment, else null),
+`order_type` (`lab`/`imaging`/`procedure` for investigations, else null),
+`dose` / `route` / `frequency` / `form` / `drug_class` (for medication, else null).
+
+### Files the user pastes the generated terms into (Claude Code surfaces these)
+* [x] `data/clinical-terms/subjective.json`
+* [x] `data/clinical-terms/examination.json`
+* [x] `data/clinical-terms/assessment.json`
+* [x] `data/clinical-terms/plan.json`
+* [x] `data/clinical-terms/medication.json`
+* [x] `data/clinical-terms/investigations.json`
+Each ships with **six** well-formed bilingual example entries (format template) so the build works and
+the paste format is obvious before the real lists are dropped in.
+
+### Implementation
+* [x] Add the `ClinicalTerm` type and create the six JSON files above (six example entries each).
+* [x] `lib/clinical-terms` loader (`index.ts`): **statically imports all six files** (so pasted entries
+      are bundled on build, zero code change), stamps `category`, de-dupes, and exposes
+      `searchTerms(category, query, locale, { limit })` — prefix + synonym + **accent-insensitive**
+      matching, ranked match-strength → usage → recency → alphabetical, capped. Pure matching/ranking
+      lives in `lib/clinical-terms/search.ts` (node-unit-testable).
+* [x] Learned-layer service (`lib/clinical-terms/learned.ts`): custom terms + usage counts in
+      localStorage now (SSR-guarded, **scoped per active hospital**); schema-ready for a `clinical_terms`
+      table in Phase 17/18. Wraps the pure reducers in `search.ts`; increments the count on each select.
+* [x] Reusable `TermAutocomplete` combobox + `TermChips` multi-add input
+      (`components/clinical-terms/term-autocomplete.tsx`; keyboard nav, ~100 ms debounce, themed
+      dropdown), applied to:
+  * [x] Doctor console **subjective / examination / assessment / plan** → multi-add chips with a
+        **free-text fallback** (unknown term still addable, saved to the learned layer); persisted into
+        the existing `Consultation` fields as a newline-joined list (no data-model change).
+  * [x] **Medication** prescribe form → autocomplete; selecting a drug auto-fills dose/route/frequency
+        from the term.
+  * [x] **Investigations** order form → autocomplete; selecting a term sets the description and
+        `Order.order_type` from the term's `order_type`.
+  * [x] **Assessment/diagnosis** form → autocomplete; selecting a term auto-fills the ICD-10 code.
+* [x] Retired the ad-hoc `COMMON_DRUGS` / `COMMON_ORDERS` / `COMMON_ICD10` datalists in favour of the
+      library (single source of truth); updated their unit tests.
+* [x] Performance: debounce (~100 ms), cap rendered rows (default 8), accent-insensitive match. Seed
+      stays in bundled files, not localStorage.
+* [x] Localization: display each term in the active locale (FR/EN), but **search across both languages
+      + synonyms** so partial/lay spellings still surface the right term.
+* [ ] **Multi-tenant:** the learned/custom terms get a real `hospital_id` column in Phase 17 (today the
+      localStorage key is already scoped per active hospital); the static seed is shared across tenants.
+
+> **Clinical safety:** the AI-generated seed will contain occasional errors (especially drug doses and
+> ICD-10 codes). A clinician should review the `medication` and `assessment` lists before real-patient
+> use; for testing it's fine to start as-is and let the learned layer capture corrections.
+
+### Verify
+* [x] `tsc` clean; **258 unit tests green** (incl. 25 new pure search/rank/learned-reducer + loader
+      tests in `lib/clinical-terms/*.test.ts`); eslint clean; `next build` green.
+* [ ] Manual UI pass (in browser): typing 3–4 letters shows ranked matches; selecting adds a chip;
+      multiple entries add cleanly; a free-text fallback saves a custom term that reappears next time
+      and climbs the ranking with use; a medication selection auto-fills dose/route/frequency; an
+      investigation selection sets the right `order_type`; a diagnosis selection fills the ICD-10 code;
+      **pasting more entries into a JSON file + rebuilding surfaces them with no code change**; FR + EN
+      clean in both light + dark.
 
 ## PHASE 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding 🔜
 
@@ -833,6 +925,35 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-02: **Added Phase 16.10 — Clinical Term Autocomplete & Library.** Type-ahead over curated
+  bilingual (FR/EN) medical-term libraries so doctors who type slowly enter notes by selecting from a
+  pop-up menu, across six categories: subjective, examination, assessment, plan, medication, and
+  **investigations** (lab + imaging + procedure combined, each term carrying an `order_type` so the
+  created Order gets the right type). Two-layer design: a static, bundled, offline **seed** (one JSON
+  file per category under `data/clinical-terms/`) plus a **learned** layer (custom terms + usage-based
+  ranking) that grows with use. **Drop-in extensibility is explicit:** the loader statically imports the
+  six files, so pasting more terms into a file is picked up on the next build with no code change —
+  matching the user's workflow (they've pre-generated the lists and will paste them into the files
+  Claude Code surfaces). Performance confirmed fine at ~700/category via lazy-load + result cap +
+  debounce. Learned terms get `hospital_id` in Phase 17. No code changed — phase spec only.
+
+* 2026-06-09: **Phase 16.9 — Billing & Invoicing shipped end-to-end.** Implemented the full module: a
+  pure computation layer (`components/billing/billing.ts` — seed catalog, `ref_code`-keyed resolvers,
+  ward-segment/night math from the transfers timeline, idempotent auto-charge derivation, bill summary)
+  with 14 unit tests; service layer in `mockStorage.ts` (`billable_items` + `charges` collections,
+  `recalculateAutoCharges` idempotent reconcile, manual line + discount + per-line status + `settleBill`,
+  sample charges seeded for **every** visit); `/billing` master-detail screen + `/billing/prices` catalog
+  admin (admin + receptionist), nav entry; a bill-PDF exporter reusing the visit-summary jsPDF helpers;
+  full EN/FR i18n + `formatXaf`; and the Supabase schema (`billable_items`/`charges` enums, tables,
+  indexes, triggers, admin+receptionist RLS — **applied to the live DB on 2026-06-09, with sample
+  billing data seeded for all 51 production demo visits**).
+  **Deviations from the original spec, decided with the user:** (1) **live & free for all hospitals**, not
+  a paid-tier toggle; (2) **informational only — settling ticks `is_financial_cleared` as a convenience
+  but adds no discharge-blocking logic** (the gate is unchanged); (3) catalog priced via a semantic
+  `ref_code` + ward-name bed resolution rather than `department_id`/`ward_id` columns, each charge
+  carrying a `source_ref_id` for idempotent reconciliation. Verify gate green: `tsc` clean, **234 tests**
+  (incl. a full-journey billing leg), eslint clean, `next build` green with both billing routes.
 
 * 2026-06-02: **Added Phase 16.9 — Patient Billing & Expenditure Tracking (optional module).** An
   optional, paid-tier, per-hospital-toggleable module that prices every chargeable activity by
