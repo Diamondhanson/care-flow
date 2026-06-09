@@ -292,6 +292,16 @@ const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
 };
 
 /**
+ * Reverse of {@link COLLECTION_TO_TABLE}: Postgres table name → in-memory
+ * collection. Used by the optimistic-concurrency write-back path (Phase 19),
+ * where the sync layer speaks in table names and needs to land a
+ * server-authoritative row or version back in the right local collection.
+ */
+const TABLE_TO_COLLECTION: Record<string, keyof Database> = Object.fromEntries(
+  DB_COLLECTIONS.map((c) => [COLLECTION_TO_TABLE[c], c]),
+) as Record<string, keyof Database>;
+
+/**
  * Every Postgres table the local cache mirrors, in dependency-friendly order
  * (parents before children). Phase 18b hydration fetches each of these and the
  * outbox replays writes against them, so this is the canonical table list for
@@ -380,6 +390,52 @@ export function replaceDatabaseFromTables(
     }
   }
   persist(db, { track: false });
+}
+
+/**
+ * Stamp the server-authoritative `version` onto a single cached row after a
+ * successful sync (Phase 19 optimistic concurrency). The local row already holds
+ * the new field values — only its version was unknown until the server bumped it
+ * — so we patch just `version` and leave everything else intact. Untracked: a
+ * version write-back must never re-enqueue the row it just confirmed. Returns
+ * true when a matching row was found and updated.
+ */
+export function applyServerVersionToCache(
+  table: string,
+  id: string,
+  version: number,
+): boolean {
+  const collection = TABLE_TO_COLLECTION[table];
+  if (!collection) return false;
+  const db = loadDatabase();
+  const rows = db[collection] as unknown as (Identified & { version?: number })[];
+  const row = rows.find((r) => r.id === id);
+  if (!row || row.version === version) return false;
+  row.version = version;
+  persist(db, { track: false });
+  return true;
+}
+
+/**
+ * Replace (or insert) a single cached row with the server's authoritative copy
+ * (Phase 19 conflict resolution). When a write is rejected because it targeted a
+ * stale version, the sync layer refetches the live row and calls this to re-sync
+ * the cache to the winning state. Untracked so the refresh never re-enqueues.
+ * Returns true when the row landed in a known collection.
+ */
+export function upsertRowFromServer(table: string, row: Identified): boolean {
+  const collection = TABLE_TO_COLLECTION[table];
+  if (!collection) return false;
+  const db = loadDatabase();
+  const rows = db[collection] as unknown as Identified[];
+  const idx = rows.findIndex((r) => r.id === row.id);
+  if (idx >= 0) {
+    rows[idx] = row;
+  } else {
+    rows.push(row);
+  }
+  persist(db, { track: false });
+  return true;
 }
 
 /**

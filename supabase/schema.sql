@@ -149,6 +149,22 @@ begin
 end;
 $$;
 
+-- ---- 3a-bis. Optimistic-concurrency version bump ---------------------------
+-- Every UPDATE to a versioned row increments its version. Clients send the
+-- base version they read; the conditional update in the sync layer guards on
+-- it (.eq('version', base)), so a write targeting a stale version matches zero
+-- rows and is surfaced as a conflict. We force the bump here (rather than
+-- trusting the client payload) so the server is always the source of truth.
+create or replace function bump_version()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.version := old.version + 1;
+  return new;
+end;
+$$;
+
 -- ---- 3b. Resolve the staff row / role of the currently logged-in user -------
 -- staff.user_id is linked to Supabase auth.users(id). These helpers are used
 -- throughout the RLS policies so a doctor sees doctor things, etc.
@@ -706,6 +722,29 @@ begin
     execute format(
       'create trigger trg_%I_updated_at before update on %I
          for each row execute function set_updated_at();', t, t);
+  end loop;
+end $$;
+
+-- ---- 6a-bis. Optimistic-concurrency version column + bump trigger ----------
+-- Same set of mutable tables that carry updated_at. Append-only tables
+-- (results, diagnoses, medication_administrations, treatment_records,
+-- transfers, care_plan_entries, audit_log) are never updated, so they need no
+-- version. Adding the column is idempotent so re-applying schema.sql is safe.
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'hospitals','departments','wards','beds','staff','patients','visits',
+    'consultations','orders','prescriptions','admissions','allergies',
+    'care_plan_items'
+  ]
+  loop
+    execute format(
+      'alter table %I add column if not exists version integer not null default 1;', t);
+    execute format('drop trigger if exists trg_%I_version on %I;', t, t);
+    execute format(
+      'create trigger trg_%I_version before update on %I
+         for each row execute function bump_version();', t, t);
   end loop;
 end $$;
 

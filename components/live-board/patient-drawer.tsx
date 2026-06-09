@@ -87,6 +87,7 @@ import {
   ORDER_STATUS_TOKEN,
   ORDER_TYPE_LABEL,
 } from "@/components/diagnostics/orders";
+import { ResultAttachment } from "@/components/diagnostics/result-attachment";
 import {
   COMMON_DRUGS,
   FREQUENCY_OPTIONS,
@@ -1069,10 +1070,7 @@ export function PatientDrawer({
                                 </p>
                               ) : null}
                               {r.attachment_path ? (
-                                <span className="inline-flex items-center gap-1 font-mono text-[11px] text-muted-foreground">
-                                  <FileText className="size-3" />
-                                  {r.attachment_path}
-                                </span>
+                                <ResultAttachment path={r.attachment_path} />
                               ) : null}
                             </div>
                           ))}

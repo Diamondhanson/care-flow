@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   appendToQueue,
+  applyServerVersion,
   drainOutbox,
   isSyncConfigured,
   markFailed,
@@ -103,6 +104,49 @@ describe("markFailed", () => {
     queue = markFailed(queue, "a", "first");
     queue = markFailed(queue, "a", "second");
     expect(queue[0]).toMatchObject({ attempts: 2, last_error: "second" });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// applyServerVersion — carry a server-confirmed version onto pending same-row
+// edits so the next queued write guards on a fresh base (Phase 19).
+// ---------------------------------------------------------------------------
+
+describe("applyServerVersion", () => {
+  it("stamps the version onto pending insert/update entries for the same row", () => {
+    const queue = [
+      entry({ id: "a", table: "orders", row_id: "o1", op: "update", payload: { id: "o1" } }),
+      entry({ id: "b", table: "orders", row_id: "o1", op: "update", payload: { id: "o1" } }),
+    ];
+    const next = applyServerVersion(queue, "orders", "o1", 5);
+    expect(next[0].payload.version).toBe(5);
+    expect(next[1].payload.version).toBe(5);
+  });
+
+  it("only touches entries matching both table and row id", () => {
+    const queue = [
+      entry({ id: "a", table: "orders", row_id: "o1", payload: { id: "o1" } }),
+      entry({ id: "b", table: "orders", row_id: "o2", payload: { id: "o2" } }),
+      entry({ id: "c", table: "visits", row_id: "o1", payload: { id: "o1" } }),
+    ];
+    const next = applyServerVersion(queue, "orders", "o1", 3);
+    expect(next[0].payload.version).toBe(3);
+    expect(next[1].payload.version).toBeUndefined();
+    expect(next[2].payload.version).toBeUndefined();
+  });
+
+  it("never rewrites a delete (its payload is just { id })", () => {
+    const queue = [
+      entry({ id: "a", table: "orders", row_id: "o1", op: "delete", payload: { id: "o1" } }),
+    ];
+    const next = applyServerVersion(queue, "orders", "o1", 9);
+    expect(next[0].payload.version).toBeUndefined();
+  });
+
+  it("does not mutate the input queue (pure)", () => {
+    const queue = [entry({ id: "a", table: "orders", row_id: "o1", payload: { id: "o1" } })];
+    applyServerVersion(queue, "orders", "o1", 2);
+    expect(queue[0].payload.version).toBeUndefined();
   });
 });
 

@@ -19,12 +19,43 @@
  * └──────────────────────────────────────────────────────────────────────────┘
  */
 
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
 const OUTBOX_KEY = "careflow_outbox_v1";
 
 /** A window event fired whenever the outbox changes, so the UI chip can react. */
 export const OUTBOX_EVENT = "careflow:outbox";
+
+/**
+ * A window event fired when a queued write was rejected because it targeted a
+ * stale version (Phase 19 optimistic concurrency). The SyncEngine refetches the
+ * losing row before this fires; the UI may use it to surface a "refreshed from
+ * server" cue or simply to re-render.
+ */
+export const CONFLICT_EVENT = "careflow:conflict";
+
+/**
+ * Tables that carry an optimistic-concurrency `version` column (mirrors the
+ * `bump_version` trigger set in supabase/schema.sql). Updates to these are
+ * guarded on the base version; everything else (append-only clinical tables)
+ * stays a plain last-write-wins upsert.
+ */
+const VERSIONED_TABLES: ReadonlySet<string> = new Set([
+  "hospitals",
+  "departments",
+  "wards",
+  "beds",
+  "staff",
+  "patients",
+  "visits",
+  "consultations",
+  "orders",
+  "prescriptions",
+  "admissions",
+  "allergies",
+  "care_plan_items",
+]);
 
 /** The kind of row change to replay against the server. */
 export type ChangeOp = "insert" | "update" | "delete";
@@ -83,6 +114,12 @@ function emitChanged(): void {
   }
 }
 
+function emitConflict(): void {
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event(CONFLICT_EVENT));
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Pure reducers (no storage access — unit-testable in node)
 // ---------------------------------------------------------------------------
@@ -125,6 +162,26 @@ export function markFailed(
 ): OutboxChange[] {
   return queue.map((c) =>
     c.id === id ? { ...c, attempts: c.attempts + 1, last_error: error } : c
+  );
+}
+
+/**
+ * Propagate a server-confirmed `version` onto every still-pending insert/update
+ * for the same row, so a later queued edit guards on the fresh base instead of
+ * the stale one it was captured with. Without this, two edits to one row made
+ * back-to-back offline would have the second carry the pre-sync version and be
+ * rejected as a (self-)conflict once the first lands. Pure — no storage access.
+ */
+export function applyServerVersion(
+  queue: OutboxChange[],
+  table: string,
+  rowId: string,
+  version: number
+): OutboxChange[] {
+  return queue.map((c) =>
+    c.table === table && c.row_id === rowId && c.op !== "delete"
+      ? { ...c, payload: { ...c.payload, version } }
+      : c
   );
 }
 
@@ -195,21 +252,111 @@ export function isSyncConfigured(): boolean {
 }
 
 /**
- * Upload a single queued change to Supabase (Phase 18b). Inserts and updates are
- * a row-level `upsert` keyed on the primary key; deletes remove by id. The drain
- * runs as the signed-in user, so Row-Level-Security authorizes each write.
- *
- * Field names already match the Postgres columns, so the captured row payload is
- * uploaded as-is. This is a single-row, last-write-wins replay; multi-device
- * conflict merging is a later phase.
+ * The result of replaying one change against the server.
+ *  - `ok`: the write landed. For versioned tables `version` carries the server's
+ *    new authoritative version, to write back to the cache and forward onto any
+ *    later queued edit of the same row.
+ *  - `conflict`: a versioned update targeted a stale version (someone else moved
+ *    the row first). The change is dropped and the row refetched, not retried.
  */
-export async function pushChangeToServer(change: OutboxChange): Promise<void> {
-  const supabase = getSupabaseClient();
-  const { error } =
-    change.op === "delete"
-      ? await supabase.from(change.table).delete().eq("id", change.row_id)
-      : await supabase.from(change.table).upsert(change.payload);
+export type PushOutcome =
+  | { status: "ok"; version?: number }
+  | { status: "conflict" };
+
+/** Drop the optimistic `version` from a payload — the DB trigger owns it. */
+function stripVersion(payload: Record<string, unknown>): Record<string, unknown> {
+  if (!("version" in payload)) return payload;
+  const rest = { ...payload };
+  delete rest.version;
+  return rest;
+}
+
+/**
+ * Upload a single queued change to Supabase (Phase 18b + Phase 19 optimistic
+ * concurrency). Deletes remove by id; inserts upsert by primary key. Updates to
+ * a {@link VERSIONED_TABLES versioned} table are guarded: the conditional
+ * `.eq("version", base)` only matches while the row still sits at the version
+ * the client read, so a write racing another device matches zero rows and is
+ * surfaced as a `conflict` rather than silently clobbering. Non-versioned
+ * (append-only) tables keep the simple last-write-wins upsert.
+ *
+ * The drain runs as the signed-in user, so Row-Level-Security authorizes each
+ * write. `client` is injectable so integration tests can drive a specific
+ * authenticated session.
+ */
+export async function pushChangeToServer(
+  change: OutboxChange,
+  client: SupabaseClient = getSupabaseClient()
+): Promise<PushOutcome> {
+  if (change.op === "delete") {
+    const { error } = await client.from(change.table).delete().eq("id", change.row_id);
+    if (error) throw error;
+    return { status: "ok" };
+  }
+
+  const versioned = VERSIONED_TABLES.has(change.table);
+  const base = change.payload.version;
+
+  // Guarded update: only succeeds while the server row still sits at `base`.
+  if (versioned && change.op === "update" && typeof base === "number") {
+    const { data, error } = await client
+      .from(change.table)
+      .update(stripVersion(change.payload))
+      .eq("id", change.row_id)
+      .eq("version", base)
+      .select("version");
+    if (error) throw error;
+    if (!data || data.length === 0) return { status: "conflict" };
+    const newVersion = (data[0] as { version?: number }).version;
+    return { status: "ok", version: typeof newVersion === "number" ? newVersion : undefined };
+  }
+
+  // Insert, or an update on a row not yet server-synced (no base to guard on):
+  // upsert by primary key. On a versioned table, capture the resulting version
+  // so the cache + later queued edits pick up a real base to guard on next time.
+  if (versioned) {
+    const { data, error } = await client
+      .from(change.table)
+      .upsert(stripVersion(change.payload))
+      .select("version");
+    if (error) throw error;
+    const newVersion = data && data[0] ? (data[0] as { version?: number }).version : undefined;
+    return { status: "ok", version: typeof newVersion === "number" ? newVersion : undefined };
+  }
+
+  const { error } = await client.from(change.table).upsert(change.payload);
   if (error) throw error;
+  return { status: "ok" };
+}
+
+// ---------------------------------------------------------------------------
+// Sync hooks — the bridge back into the local cache.
+//
+// drainOutbox lives in the sync layer but must write server-authoritative state
+// (a bumped version, or a refetched row after a conflict) back into mockStorage.
+// Importing mockStorage here would create a cycle (mockStorage → syncQueue →
+// mockStorage), so instead the SyncEngine registers these callbacks at runtime.
+// ---------------------------------------------------------------------------
+
+export interface SyncHooks {
+  /**
+   * Called after a successful versioned write with the server's new version, so
+   * the local cache row can be stamped (its next edit then guards on this base).
+   */
+  onVersionApplied?: (table: string, rowId: string, version: number) => void;
+  /**
+   * Called when a write was rejected as stale. Should refetch the live row from
+   * the server and re-sync the cache to it. The stale change is dropped either
+   * way; this is how the losing edit's device converges on the winning state.
+   */
+  onConflict?: (table: string, rowId: string) => void | Promise<void>;
+}
+
+let syncHooks: SyncHooks = {};
+
+/** Register the cache write-back callbacks (called once by the SyncEngine). */
+export function setSyncHooks(hooks: SyncHooks): void {
+  syncHooks = hooks;
 }
 
 // ===========================================================================
@@ -223,6 +370,8 @@ export interface DrainResult {
   uploaded: number;
   /** Changes that failed to upload this run (kept for retry). */
   failed: number;
+  /** Stale-version changes dropped + refetched this run (not retried). */
+  conflicts: number;
   /** Changes still in the queue after this run. */
   remaining: number;
 }
@@ -237,17 +386,40 @@ export async function drainOutbox(): Promise<DrainResult> {
   const queue = readOutbox();
 
   if (!isSyncConfigured()) {
-    return { skipped: true, uploaded: 0, failed: 0, remaining: queue.length };
+    return { skipped: true, uploaded: 0, failed: 0, conflicts: 0, remaining: queue.length };
   }
 
   let working = queue;
   const uploadedIds: string[] = [];
+  const conflictedIds: string[] = [];
   let failed = 0;
 
   for (const change of queue) {
     try {
-      await pushChangeToServer(change);
-      uploadedIds.push(change.id);
+      const outcome = await pushChangeToServer(change);
+      if (outcome.status === "conflict") {
+        // The row moved under us. Refetch the winning state into the cache, then
+        // drop the stale change — retrying it would just conflict again.
+        conflictedIds.push(change.id);
+        try {
+          await syncHooks.onConflict?.(change.table, change.row_id);
+        } catch {
+          // Best-effort convergence; the stale change is dropped regardless.
+        }
+      } else {
+        uploadedIds.push(change.id);
+        if (typeof outcome.version === "number") {
+          // Carry the new base forward to later queued edits of the same row…
+          working = applyServerVersion(
+            working,
+            change.table,
+            change.row_id,
+            outcome.version
+          );
+          // …and stamp it onto the local cache row.
+          syncHooks.onVersionApplied?.(change.table, change.row_id, outcome.version);
+        }
+      }
     } catch (err) {
       failed += 1;
       working = markFailed(
@@ -258,17 +430,20 @@ export async function drainOutbox(): Promise<DrainResult> {
     }
   }
 
-  working = removeFromQueue(working, uploadedIds);
+  const resolvedIds = [...uploadedIds, ...conflictedIds];
+  working = removeFromQueue(working, resolvedIds);
   // Only fire the change event when the pending set actually shrank. A pass that
   // only failed (e.g. offline) changes nothing the UI tracks and must not wake
   // the engine again, or it would re-drain in a tight loop. Real retries come
   // from the next `online` event, mount, or a fresh enqueue.
-  writeOutbox(working, { emit: uploadedIds.length > 0 });
+  writeOutbox(working, { emit: resolvedIds.length > 0 });
+  if (conflictedIds.length > 0) emitConflict();
 
   return {
     skipped: false,
     uploaded: uploadedIds.length,
     failed,
+    conflicts: conflictedIds.length,
     remaining: working.length,
   };
 }

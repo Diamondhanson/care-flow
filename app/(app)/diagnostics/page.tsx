@@ -42,6 +42,10 @@ import {
 } from "@/components/diagnostics/orders";
 import { useRole } from "@/components/role-provider";
 import { useT, type TFunction } from "@/components/locale-provider";
+import {
+  uploadClinicalFile,
+  LAB_RESULTS_BUCKET,
+} from "@/lib/supabase/storage";
 import type { Order, OrderType } from "@/types/healthcare";
 
 const TYPE_ICON: Record<OrderType, LucideIcon> = {
@@ -233,7 +237,9 @@ function ResultFormSheet({
   const [referenceRange, setReferenceRange] = useState("");
   const [summary, setSummary] = useState("");
   const [isAbnormal, setIsAbnormal] = useState(false);
-  const [attachment, setAttachment] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Reset the form whenever a different order is opened.
   useEffect(() => {
@@ -241,23 +247,57 @@ function ResultFormSheet({
     setReferenceRange("");
     setSummary("");
     setIsAbnormal(false);
-    setAttachment("");
+    setFile(null);
+    setUploading(false);
+    setUploadError(null);
   }, [order]);
 
-  function handleSave() {
-    if (!order) return;
+  async function handleSave() {
+    if (!order || uploading) return;
+    let attachmentPath: string | null = null;
+
+    // Upload the attachment first (when present). Storage is online-only and
+    // RLS-scoped to the hospital prefix; if it fails we abort so the user can
+    // retry rather than recording a result that references a missing file.
+    if (file) {
+      if (!actingStaff?.hospital_id) {
+        setUploadError(t("diagnostics.attachmentNoHospital"));
+        return;
+      }
+      setUploading(true);
+      setUploadError(null);
+      try {
+        const { path } = await uploadClinicalFile({
+          bucket: LAB_RESULTS_BUCKET,
+          hospitalId: actingStaff.hospital_id,
+          segments: ["orders", order.id],
+          filename: file.name,
+          body: file,
+          contentType: file.type || undefined,
+        });
+        attachmentPath = path;
+      } catch (err) {
+        setUploading(false);
+        setUploadError(
+          err instanceof Error ? err.message : t("diagnostics.attachmentFailed"),
+        );
+        return;
+      }
+      setUploading(false);
+    }
+
     addResult(order.id, {
       recorded_by_id: actingStaff?.id ?? null,
       value: value || null,
       reference_range: referenceRange || null,
       summary: summary || null,
       is_abnormal: isAbnormal,
-      attachment_path: attachment || null,
+      attachment_path: attachmentPath,
     });
     onSaved();
   }
 
-  const canSave = Boolean(value.trim() || summary.trim());
+  const canSave = Boolean(value.trim() || summary.trim()) && !uploading;
 
   return (
     <Sheet
@@ -310,14 +350,23 @@ function ResultFormSheet({
             <Label htmlFor="res_attachment">{t("diagnostics.attachment")}</Label>
             <Input
               id="res_attachment"
-              value={attachment}
-              onChange={(e) => setAttachment(e.target.value)}
-              placeholder={t("diagnostics.attachmentPlaceholder")}
-              className="font-mono"
+              type="file"
+              accept="image/*,application/pdf"
+              onChange={(e) => {
+                setUploadError(null);
+                setFile(e.target.files?.[0] ?? null);
+              }}
+              disabled={uploading}
+              className="font-mono file:mr-3 file:rounded file:border-0 file:bg-muted file:px-2 file:py-1 file:text-xs file:text-foreground"
             />
             <span className="text-[11px] text-muted-foreground">
               {t("diagnostics.attachmentHint")}
             </span>
+            {uploadError ? (
+              <span className="text-[11px] text-[var(--status-treatment)]">
+                {uploadError}
+              </span>
+            ) : null}
           </div>
 
           <label className="flex items-center justify-between gap-4 rounded-md border border-border p-3">
@@ -344,7 +393,9 @@ function ResultFormSheet({
             {t("common.cancel")}
           </Button>
           <Button onClick={handleSave} disabled={!canSave}>
-            {t("diagnostics.recordResult")}
+            {uploading
+              ? t("diagnostics.attachmentUploading")
+              : t("diagnostics.recordResult")}
           </Button>
         </SheetFooter>
       </SheetContent>

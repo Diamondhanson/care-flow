@@ -20,7 +20,7 @@ import {
   useState,
 } from "react";
 
-import { signUpHospital, type SignUpHospitalInput } from "@/services/mockAuth";
+import { type SignUpHospitalInput } from "@/services/mockAuth";
 import {
   getActiveIdentity,
   onAuthChange,
@@ -28,7 +28,7 @@ import {
   signOutSupabase,
   type AuthIdentity,
 } from "@/services/supabaseAuth";
-import { provisionStaffLogin } from "@/app/actions/auth";
+import { provisionHospital } from "@/app/actions/auth";
 import {
   clearLocalCache,
   getHospitalById,
@@ -171,36 +171,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(
     async (input: SignUpInput) => {
-      // 1. Create the tenant + founder admin in the mock data layer.
-      const { hospital, admin } = signUpHospital({
+      // 1. Provision the real tenant server-side: the hospitals row, the admin's
+      //    Supabase Auth login, and the linked founding-admin staff row (the
+      //    hospitals table has no client INSERT policy, so this needs the
+      //    service role). Rolls back on failure — no orphan rows.
+      const result = await provisionHospital({
         name: input.name,
-        region: input.region,
-        contact_email: input.contact_email,
-        contact_phone: input.contact_phone,
+        region: input.region ?? null,
+        contact_email: input.contact_email ?? null,
+        contact_phone: input.contact_phone ?? null,
         admin_full_name: input.admin_full_name,
+        admin_username: input.admin_username,
+        admin_password: input.admin_password,
         admin_email: input.admin_email ?? input.contact_email ?? null,
       });
-      // 2. Provision a real Supabase Auth login for the admin.
-      const result = await provisionStaffLogin({
-        username: input.admin_username,
-        password: input.admin_password,
-        full_name: admin.full_name,
-        role: "admin",
-        // No Supabase hospitals row yet for mock-only tenants (Phase 18a).
-        hospital_id: hospital.id,
-        mock_hospital_id: hospital.id,
-        mock_staff_id: admin.id,
-      });
       if (!result.ok) throw new Error(result.error);
-      // 3. Sign in for real. A brand-new tenant has no Supabase rows yet, so
-      //    don't hydrate (that would wipe the just-created mock tenant from the
-      //    cache); resolve straight from the mock store. Real Supabase-backed
-      //    onboarding is a follow-up.
+      // 2. Sign in for real, then hydrate: the new hospital + admin staff rows
+      //    now exist in Supabase, so the cache loads the fresh (near-empty)
+      //    tenant scoped by RLS.
       const identity = await signInWithUsername(
         input.admin_username,
         input.admin_password,
       );
-      await bridge(identity, { hydrate: false });
+      await bridge(identity);
     },
     [bridge],
   );

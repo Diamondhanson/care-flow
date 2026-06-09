@@ -187,6 +187,8 @@ export interface Hospital {
   subscription_status: SubscriptionStatus;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -205,6 +207,8 @@ export interface Department {
   is_active: boolean;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /** `wards` — a floor/unit belonging to a department; holds beds. */
@@ -218,6 +222,8 @@ export interface Ward {
   is_active: boolean;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /** `beds` — one row per physical bed; status + admission link keep occupancy live. */
@@ -232,6 +238,8 @@ export interface Bed {
   current_admission_id: AdmissionId | null;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -255,6 +263,8 @@ export interface Staff {
   is_active: boolean;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /** `patients` — the stable person record, referenced by every visit. */
@@ -301,6 +311,8 @@ export interface Patient {
 
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /**
@@ -322,6 +334,8 @@ export interface Allergy {
   noted_by_id: StaffId | null;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -353,6 +367,8 @@ export interface Visit {
   closed_at: ISODateString | null;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -375,6 +391,8 @@ export interface Consultation {
   plan: string | null;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /** `diagnoses` — structured diagnosis (ICD-10 where possible). */
@@ -404,6 +422,8 @@ export interface Order {
   created_at: ISODateString;
   completed_at: ISODateString | null;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /**
@@ -444,6 +464,8 @@ export interface Prescription {
   status: PrescriptionStatus;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /**
@@ -520,6 +542,8 @@ export interface Admission {
   admitted_at: ISODateString;
   discharged_at: ISODateString | null;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /**
@@ -573,6 +597,8 @@ export interface CarePlanItem {
   created_by_id: StaffId | null;
   created_at: ISODateString;
   updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
 }
 
 /**
