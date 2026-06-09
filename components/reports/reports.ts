@@ -89,6 +89,7 @@ export const CARE_STAGE_LABEL: Record<CareStage, string> = {
   discharge_planning: "stage.discharge_planning",
   discharged: "stage.discharged",
   followed_up: "stage.followed_up",
+  deceased: "stage.deceased",
 };
 
 const SEX_LABEL: Record<Sex, string> = {
@@ -197,6 +198,7 @@ export interface ReportKpis {
   emergency: number;
   admissionsStarted: number;
   discharges: number;
+  deaths: number;
   currentInpatients: number;
   bedOccupancyPct: number;
   avgLosDays: number | null;
@@ -210,7 +212,16 @@ export function computeKpis(
 ): ReportKpis {
   const ranged = visits.filter((v) => inRange(v.arrived_at, range));
   const byType = tally(ranged, (v) => v.visit_type);
-  const discharged = admissions.filter((a) => inRange(a.discharged_at, range));
+  // A death frees the bed and stamps discharged_at like a discharge, but must
+  // never be counted as one — exclude deceased admissions from the discharge KPI.
+  const discharged = admissions.filter(
+    (a) => inRange(a.discharged_at, range) && a.stage !== "deceased",
+  );
+  // Deaths are counted at the visit level (by close time) so a patient who died
+  // without ever being admitted (outpatient/emergency) is still counted.
+  const deaths = visits.filter(
+    (v) => v.stage === "deceased" && inRange(v.closed_at, range),
+  ).length;
   const los = lengthOfStay(admissions, range);
   const occupiedBeds = beds.filter(
     (b) => b.status === "occupied" || b.status === "reserved",
@@ -224,6 +235,7 @@ export function computeKpis(
     emergency: byType.get("emergency") ?? 0,
     admissionsStarted: admissions.filter((a) => inRange(a.admitted_at, range)).length,
     discharges: discharged.length,
+    deaths,
     currentInpatients: admissions.filter((a) => a.status === "active").length,
     bedOccupancyPct: beds.length ? Math.round((occupiedBeds / beds.length) * 100) : 0,
     avgLosDays: los.avgDays,
@@ -435,6 +447,34 @@ export function stageDistribution(visits: Visit[]): CountSlice[] {
     .filter((slice) => slice.value > 0);
 }
 
+/** Terminal stages a closed visit can end in (the recorded outcome). */
+const OUTCOME_STAGES: CareStage[] = ["discharged", "followed_up", "deceased"];
+
+/**
+ * Closed visits within the range grouped by their final outcome — the
+ * client-side mirror of the `visit_outcomes` SQL view. Counts at the visit
+ * level so a death of a never-admitted patient is still represented; ranged by
+ * close time (`closed_at`).
+ */
+export function outcomeDistribution(
+  visits: Visit[],
+  range: DateRange,
+): CountSlice[] {
+  const closed = visits.filter(
+    (v) =>
+      v.status === "closed" &&
+      OUTCOME_STAGES.includes(v.stage) &&
+      inRange(v.closed_at, range),
+  );
+  const counts = tally(closed, (v) => v.stage);
+  return OUTCOME_STAGES.map((s) => ({
+    key: s,
+    label: en(CARE_STAGE_LABEL[s]),
+    labelKey: CARE_STAGE_LABEL[s],
+    value: counts.get(s) ?? 0,
+  })).filter((slice) => slice.value > 0);
+}
+
 // ---------------------------------------------------------------------------
 // Diagnostics
 // ---------------------------------------------------------------------------
@@ -570,6 +610,7 @@ export interface FullReport {
   los: LosReport;
   wardOccupancy: WardOccupancyRow[];
   stageDistribution: CountSlice[];
+  outcomes: CountSlice[];
   abnormal: AbnormalRate;
   sexMix: CountSlice[];
   ageDistribution: CountSlice[];
@@ -592,6 +633,7 @@ export function buildReport(
     los: lengthOfStay(data.admissions, range),
     wardOccupancy: wardOccupancy(data.wards, data.beds),
     stageDistribution: stageDistribution(data.visits),
+    outcomes: outcomeDistribution(data.visits, range),
     abnormal: abnormalRate(data.results, range),
     sexMix: sexMix(data.patients, data.visits, range),
     ageDistribution: ageDistribution(data.patients, data.visits, range, nowMs),

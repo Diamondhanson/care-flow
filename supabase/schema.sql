@@ -66,11 +66,15 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 -- The care-journey stage (drives the live kanban board columns).
+-- `deceased` is a terminal outcome (patient died in care) — counted separately
+-- from discharges in the reporting views below.
 do $$ begin
   create type care_stage as enum
     ('registration', 'triage', 'consultation', 'diagnostics',
-     'treatment', 'discharge_planning', 'discharged', 'followed_up');
+     'treatment', 'discharge_planning', 'discharged', 'followed_up', 'deceased');
 exception when duplicate_object then null; end $$;
+-- Idempotent top-up for databases created before `deceased` existed.
+alter type care_stage add value if not exists 'deceased';
 
 do $$ begin
   create type order_type as enum ('lab', 'imaging', 'procedure');
@@ -829,6 +833,8 @@ left join beds b        on b.ward_id = w.id
 group by w.hospital_id, w.id, w.name, w.floor_label, d.name;
 
 -- Admissions enriched for length-of-stay reporting.
+-- `outcome` distinguishes a death in care from a live discharge so mortality is
+-- never conflated with discharges; `is_deceased` is a convenience flag.
 create or replace view admission_report
 with (security_invoker = true) as
 select
@@ -838,6 +844,12 @@ select
   a.admitted_at,
   a.discharged_at,
   a.status,
+  case
+    when a.stage = 'deceased'    then 'deceased'
+    when a.status = 'discharged' then 'discharged'
+    else 'active'
+  end                                                    as outcome,
+  (a.stage = 'deceased')                                 as is_deceased,
   w.name                                                 as ward_name,
   d.name                                                 as department_name,
   extract(epoch from (coalesce(a.discharged_at, now()) - a.admitted_at)) / 86400.0
@@ -846,6 +858,23 @@ from admissions a
 join patients p     on p.id = a.patient_id
 left join wards w   on w.id = a.ward_id
 left join departments d on d.id = w.department_id;
+
+-- Closed-visit outcome counts per hospital — the server-side mirror of the
+-- client report's outcome breakdown (discharged / followed-up / deceased).
+-- Counting at the VISIT level captures deaths of outpatient/emergency patients
+-- who were never admitted, not just inpatients. Date-range filtering on
+-- closed_at is left to the querying consumer.
+create or replace view visit_outcomes
+with (security_invoker = true) as
+select
+  v.hospital_id                                          as hospital_id,
+  v.stage                                                as outcome,
+  count(*)                                               as visit_count,
+  max(v.closed_at)                                       as last_closed_at
+from visits v
+where v.status = 'closed'
+  and v.stage in ('discharged', 'followed_up', 'deceased')
+group by v.hospital_id, v.stage;
 
 
 -- =============================================================================

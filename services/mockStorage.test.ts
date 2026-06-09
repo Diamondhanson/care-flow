@@ -12,10 +12,12 @@ import {
   getLatestVisitForPatient,
   isTerminalStage,
   normalizeDatabase,
+  recordDeath,
   searchPatients,
   SUPABASE_TABLES,
   transferAdmission,
   uniquePatientId,
+  updateVisitStage,
 } from "@/services/mockStorage";
 import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
 
@@ -169,9 +171,10 @@ describe("uniquePatientId", () => {
 // ---------------------------------------------------------------------------
 
 describe("isTerminalStage", () => {
-  it("treats discharged and followed_up as terminal", () => {
+  it("treats discharged, followed_up and deceased as terminal", () => {
     expect(isTerminalStage("discharged")).toBe(true);
     expect(isTerminalStage("followed_up")).toBe(true);
+    expect(isTerminalStage("deceased")).toBe(true);
   });
 
   it("treats all in-progress stages as non-terminal", () => {
@@ -347,6 +350,35 @@ describe("transferAdmission", () => {
 
   it("throws for an unknown admission", () => {
     expect(() => transferAdmission("nope", {})).toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// recordDeath / updateVisitStage(deceased) — terminal outcome, Block C #4.
+// `vis_idris` is a seeded OPEN inpatient visit whose admission (`adm_idris`)
+// has pending medical & pharmacy clearances — so a discharge is gated, but a
+// death must never be withheld over clearances.
+// ---------------------------------------------------------------------------
+
+describe("recordDeath", () => {
+  it("closes the visit as deceased even with clearances pending", () => {
+    const visit = recordDeath("vis_idris", "staff_chen", "Cardiac arrest");
+    expect(visit.stage).toBe("deceased");
+    expect(visit.status).toBe("closed");
+    expect(visit.closed_at).not.toBeNull();
+  });
+
+  it("bypasses the discharge clearance gate that blocks a discharge", () => {
+    // A normal discharge of the same visit is blocked by pending clearances…
+    expect(() => updateVisitStage("vis_idris", "discharged")).toThrow(
+      /Cannot discharge/i,
+    );
+    // …but recording the death succeeds.
+    expect(() => recordDeath("vis_idris")).not.toThrow();
+  });
+
+  it("throws for an unknown visit", () => {
+    expect(() => recordDeath("nope")).toThrow();
   });
 });
 

@@ -196,6 +196,7 @@ export default function ReportsPage() {
         <Kpi icon={Stethoscope} label={t("reports.kpi.uniquePatients")} value={report.kpis.uniquePatients} />
         <Kpi label={t("reports.kpi.admissions")} value={report.kpis.admissionsStarted} />
         <Kpi label={t("reports.kpi.discharges")} value={report.kpis.discharges} />
+        <Kpi label={t("reports.kpi.deaths")} value={report.kpis.deaths} />
         <Kpi
           icon={BedDouble}
           label={t("reports.kpi.bedOccupancy")}
@@ -247,6 +248,13 @@ export default function ReportsPage() {
         </ChartCard>
         <ChartCard title={t("reports.chart.openByStage")}>
           <VerticalBars data={loc(report.stageDistribution)} colorIndex={1} />
+        </ChartCard>
+
+        <ChartCard
+          title={t("reports.chart.outcomes")}
+          description={t("reports.chart.outcomesDesc")}
+        >
+          <Donut data={loc(report.outcomes)} />
         </ChartCard>
 
         <ChartCard title={t("reports.chart.patientsBySex")}>

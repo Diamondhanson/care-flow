@@ -79,6 +79,7 @@ export const en = {
     discharge_planning: "Discharge planning",
     discharged: "Discharged",
     followed_up: "Followed up",
+    deceased: "Deceased",
   },
 
   boardColumn: {
@@ -324,6 +325,15 @@ export const en = {
     dischargeConfirmBody:
       "This closes {name}'s visit and moves them off the board. Their record stays on file.",
     advanceTo: "Advance to {stage}",
+    deceasedRecorded: "Recorded as deceased.",
+    deceasedRecordedOn: "Recorded as deceased on {date}.",
+    recordDeath: "Record death",
+    recordDeathConfirmTitle: "Record death",
+    recordDeathConfirmBody:
+      "This records {name} as deceased and closes their visit. This is a terminal outcome and skips the discharge clearance checks. Their record stays on file.",
+    recordDeathNote: "Note (optional)",
+    recordDeathNotePlaceholder: "Circumstances or cause, if known",
+    recordDeathConfirm: "Confirm",
     logVitals: "Log vitals & assessment",
     vitalsSpo2: "SpO₂ (%)",
     vitalsPulse: "Pulse (bpm)",
@@ -375,6 +385,7 @@ export const en = {
       admissions: "Admissions",
       admissionsStarted: "Admissions started",
       discharges: "Discharges",
+      deaths: "Deaths",
       bedOccupancy: "Bed occupancy",
       outpatient: "Outpatient",
       inpatient: "Inpatient",
@@ -394,6 +405,8 @@ export const en = {
       lengthOfStayDesc: "Discharged admissions in period.",
       wardOccupancy: "Ward occupancy",
       openByStage: "Open visits by care stage",
+      outcomes: "Visit outcomes",
+      outcomesDesc: "Closed visits in period, by terminal outcome.",
       patientsBySex: "Patients by sex",
       patientsByAge: "Patients by age",
       clearanceBottlenecks: "Discharge clearance bottlenecks",
@@ -437,6 +450,7 @@ export const en = {
       lengthOfStay: "Length of stay",
       wardOccupancy: "Ward occupancy",
       careStages: "Care stages",
+      outcomes: "Visit outcomes",
       sexMix: "Sex mix",
       ageMix: "Age mix",
       clearanceGates: "Clearance gates",
@@ -930,8 +944,70 @@ export const en = {
     heroTitle: "Run your whole hospital from one clear record.",
     heroSubtitle:
       "CareFlow tracks every patient from arrival to discharge — intake, consultation, tests, medication, beds and reports — so your team works from one shared, accurate record instead of scattered paper.",
+    heroExplore: "See how it works",
     heroNote: "Built for clinics and hospitals in Cameroon. French and English.",
+
+    // Mockup preview (decorative product UI in the hero / showcases)
+    mockBoardTitle: "Live board",
+    mockBoardWaiting: "waiting",
+    mockReportsTitle: "This week",
+    mockReportsAdmissions: "Admissions",
+    mockReportsOutpatients: "Outpatients",
+    mockReportsOccupancy: "Bed occupancy",
+
+    // Trust / outcome strip
+    statRecordValue: "1",
+    statRecordLabel: "Shared record across every department",
+    statRolesValue: "6",
+    statRolesLabel: "Clinical roles, one workflow",
+    statBilingualValue: "FR · EN",
+    statBilingualLabel: "Fully bilingual interface",
+    statOfflineValue: "Offline",
+    statOfflineLabel: "Keeps working when the internet drops",
+
+    // Patient journey
+    journeyEyebrow: "The patient journey",
+    journeyTitle: "Every step, handed cleanly to the next",
+    journeySubtitle:
+      "CareFlow mirrors how your floor already works — so nothing is lost between the registration desk, the consulting room and the ward.",
+    journeyStep1Title: "Intake & triage",
+    journeyStep1Body:
+      "Register a patient in seconds, capture vitals, and set acuity so the sickest are seen first.",
+    journeyStep2Title: "Consultation",
+    journeyStep2Body:
+      "The doctor records history, examination, assessment and plan against the full picture.",
+    journeyStep3Title: "Tests & results",
+    journeyStep3Body:
+      "Order labs and imaging, then attach the results straight onto the visit.",
+    journeyStep4Title: "Treatment & beds",
+    journeyStep4Body:
+      "Prescribe, give bedside medication, and assign a ward and bed — occupancy updates live.",
+    journeyStep5Title: "Discharge & follow-up",
+    journeyStep5Body:
+      "Confirm clearances, generate a summary, and schedule the follow-up.",
+
+    // Showcase — live board
+    showcaseBoardEyebrow: "Live board",
+    showcaseBoardTitle: "See where every patient is — at a glance",
+    showcaseBoardBody:
+      "One board groups everyone by where they are in their care, from intake to discharge. No more walking the wards to find out who is still waiting.",
+    showcaseBoardPoint1: "Colour-coded by care stage and triage acuity",
+    showcaseBoardPoint2: "Tap any patient for their complete clinical record",
+    showcaseBoardPoint3: "Updates the moment a colleague makes a change",
+
+    // Showcase — reports & beds
+    showcaseReportsEyebrow: "Reports & beds",
+    showcaseReportsTitle: "The numbers your review board asks for, ready to export",
+    showcaseReportsBody:
+      "Admissions, outpatients, bed occupancy, length of stay and outcomes — counted automatically and exported to PDF or Excel in two clicks.",
+    showcaseReportsPoint1: "Live bed and ward occupancy",
+    showcaseReportsPoint2: "Weekly and monthly summaries",
+    showcaseReportsPoint3: "One-click PDF and Excel export",
+
+    // Feature grid
     featuresTitle: "Everything the hospital does, in one place",
+    featuresSubtitle:
+      "One system that replaces the admission register, the bed whiteboard and the reporting spreadsheet.",
     f1Title: "The whole patient journey",
     f1Body:
       "From nurse intake and triage, through the doctor's consultation, tests and results, prescriptions and bedside medication, to admission, beds and discharge.",
@@ -944,9 +1020,34 @@ export const en = {
     f4Title: "Bilingual and works offline",
     f4Body:
       "Full French and English, and a record that keeps working when the internet drops — changes sync automatically when it returns.",
+    f5Title: "Your data, isolated and secure",
+    f5Body:
+      "Every hospital's records are fully separated. Staff only ever see their own hospital — enforced right at the database, not just the screen.",
+    f6Title: "Set up in minutes",
+    f6Body:
+      "Create your hospital, add departments, wards, beds and staff, and start admitting patients the same day. No installation, no servers.",
+
+    // Roles band
+    rolesTitle: "Built for everyone on the floor",
+    rolesSubtitle:
+      "Each role sees exactly what their job needs — no clutter, no training manual.",
+    roleReception: "Reception",
+    roleReceptionDesc: "Register arrivals and find any patient fast.",
+    roleNurse: "Nurses",
+    roleNurseDesc: "Triage, vitals, bedside care and handover.",
+    roleDoctor: "Doctors",
+    roleDoctorDesc: "Consults, orders, diagnoses and prescriptions.",
+    roleLab: "Lab & imaging",
+    roleLabDesc: "Work the order queue and attach results.",
+    rolePharmacy: "Pharmacy",
+    rolePharmacyDesc: "Dispense and confirm medication readiness.",
+    roleAdmin: "Administration",
+    roleAdminDesc: "Staff, beds, reports and oversight.",
+
     ctaTitle: "Bring your hospital online today",
     ctaBody:
       "Create your hospital account in a minute. Your data stays yours — every hospital is fully isolated.",
+    ctaNote: "Free during your trial — no card required.",
     footerNote: "CareFlow — the hospital's own operational record.",
   },
 

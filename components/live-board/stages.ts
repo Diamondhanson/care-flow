@@ -1,10 +1,10 @@
 import type { CareStage, VisitType } from "@/types/healthcare";
 
 /**
- * The live board groups the eight `care_stage` values into four scannable
- * columns that mirror the physical flow of the floor. The two terminal stages
- * (`discharged`, `followed_up`) close the visit and drop it off the board, so
- * they have no column here.
+ * The live board groups the active `care_stage` values into four scannable
+ * columns that mirror the physical flow of the floor. The terminal stages
+ * (`discharged`, `followed_up`, `deceased`) close the visit and drop it off the
+ * board, so they have no column here.
  *
  * Each column maps to a `--status-{token}` theme token defined in globals.css
  * (light + dark). Shared by the journey board, patient cards, and the stat
@@ -81,6 +81,7 @@ const STAGE_LABELS: Record<CareStage, string> = {
   discharge_planning: "stage.discharge_planning",
   discharged: "stage.discharged",
   followed_up: "stage.followed_up",
+  deceased: "stage.deceased",
 };
 
 /** i18n message key for a care stage — resolve with `t(stageLabel(stage))`. */
@@ -105,6 +106,9 @@ const NEXT_STEP_LABELS: Record<CareStage, string> = {
   discharge_planning: "nextStep.discharge_planning",
   discharged: "nextStep.discharged",
   followed_up: "nextStep.followed_up",
+  // Terminal: a death is never a "next step" the board nudges toward; this entry
+  // exists only to satisfy the exhaustive CareStage record and is never read.
+  deceased: "nextStep.followed_up",
 };
 
 /**

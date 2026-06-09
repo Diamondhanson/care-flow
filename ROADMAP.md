@@ -598,6 +598,81 @@ registration form** that gives the anonymous patient a real identity **in-place*
       (no duplicate created); the optional merge path reassigns visits to the linked patient and removes
       the anonymous record; FR + EN clean; `tsc` clean; 183 tests pass.
 
+## PHASE 16.9 — Patient Billing & Expenditure Tracking (Optional Module) 🔜
+
+**Goal:** let a hospital price every chargeable activity (per department) and **automatically accumulate
+a patient's expenditure across their journey**, then generate, adjust, and print an itemized bill. Most
+charge lines come from events CareFlow *already* records — billing is a price layer on top of the
+journey.
+
+**Scope boundary:** this is **billing / invoicing only** — *not* payment processing, mobile-money
+collection, or insurance/NHIS claims (those stay in the parking lot). The deliverable is: a price
+catalog, automatic charge accrual, and a printable bill with discounts + manual items.
+
+**Optional & paid-tier:** toggleable per hospital, **off by default** — a natural paid-tier feature that
+ties back to the monetization plan.
+
+### Decisions (locked)
+* **Drugs:** a small **common-drugs price list** for auto-charging + the ability to add any other drug
+  price **manually**. Expandable to a full catalog later.
+* **Time-based charges (bed/nursing):** **computed at billing time** from the admission length and ward
+  transfers — no background scheduler.
+* **Billing actors:** **admin + receptionist** (no new role). Every discount, manual line, and waiver is
+  **audited** (who, when, reason) via the existing `audit_log`.
+* **Bill scope:** **per visit / episode** (covers the current visit incl. its admission); past visits
+  are viewable as history.
+* **Currency:** integer **XAF** (the CFA franc has no decimal subunit) — store as integers, format as
+  francs, never floats.
+
+### Data model
+* [ ] `billable_items` (the **price catalog / fee schedule**): `department_id` (nullable = hospital-wide),
+      `ward_id` (nullable, for bed/nursing items), `category` enum (`consultation`, `lab_test`,
+      `imaging`, `procedure`, `medication`, `bed_per_night`, `nursing_per_day`, `other`), `name`,
+      `unit` enum (`per_item` / `per_night` / `per_day`), `unit_price` (int XAF), `is_active`, timestamps.
+* [ ] `charges` (the **bill ledger** — one row per line): `visit_id`, `patient_id`,
+      `billable_item_id` (nullable for manual/discount), `category`, `description`, `quantity`,
+      `unit_price` **(snapshotted at creation — later price changes must NOT alter past bills)**,
+      `amount`, `source` enum (`consultation`, `order`, `prescription`, `bed`, `nursing`, `procedure`,
+      `manual`, `discount`), `reason` (for manual/discount), `status` (`pending`/`paid`/`waived`),
+      `created_by_id`, `created_at`. Discounts are negative-amount rows with a required reason.
+* [ ] Mirror both into `supabase/schema.sql` with `updated_at`/audit/RLS wiring (admin + receptionist
+      write). **Multi-tenant:** both tables get `hospital_id` in Phase 17 with all other domain tables.
+
+### Price catalog admin UI
+* [ ] A new admin settings page to manage `billable_items` grouped by department + category: consultation
+      price per department; the lab's test menu + prices; procedures; bed-per-night per ward;
+      nursing-per-day; misc. (Built like the existing departments / floor-map admin.)
+
+### Automatic charge accrual (event → charge)
+* [ ] Consultation recorded → consultation fee for the visit's department.
+* [ ] Each `order` (lab/imaging/procedure) → that item's price.
+* [ ] Each prescription dispensed → drug price from the common-drugs list (else flag for manual entry).
+* [ ] Admission (at billing time) → bed nights **per ward segment** using the `transfers` timestamps
+      (e.g. 3 nights ICU + 2 nights general ward, each at its ward's rate) + nursing days × nursing rate.
+* [ ] Procedure → procedure price. Snapshot `unit_price` onto every charge.
+
+### Billing screen (`/billing`)
+* [ ] Admin/receptionist: search/select patient (reuse global search) → itemized bill grouped by
+      category with running total → **apply discount** (amount or %, requires reason, audited) → **add
+      manual line items** (description + amount, audited) → final total → **export PDF** (reuse the
+      visit-summary PDF machinery) + print.
+* [ ] **Mark settled → flips `is_financial_cleared`** on the admission, so an unpaid bill automatically
+      blocks discharge (the gate already checks this).
+* [ ] Fully FR/EN; all amounts formatted as XAF.
+
+### Seed price catalog (so it demos with real numbers)
+* [ ] Consultation: General Medicine 5,000; Ophthalmology 7,000. Beds: ICU 20,000/night, Maternity
+      10,000/night, General ward 6,000/night. Nursing care 3,000/day. Lab: FBC 3,000, Malaria RDT 1,500,
+      Blood sugar 2,000. Imaging: Chest X-ray 12,000. Procedure: Delivery (Maternity) 50,000. Common
+      drugs: Paracetamol 500, Amoxicillin 2,500, Artemether-Lumefantrine 3,500.
+
+### Verify
+* [ ] Admin sets prices per department; a patient walks the journey (consultation → 2 tests → drugs →
+      2 nights ICU + nursing) and the bill auto-totals correctly, with the bed charge respecting a ward
+      transfer; a 10% discount + a manual line are applied and both appear in the audit log; the PDF
+      exports itemized XAF totals in FR + EN; marking settled flips financial clearance; `tsc` clean,
+      unit tests for the pure total/aggregation helpers green.
+
 ## PHASE 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding 🔜
 
 **Goal:** turn CareFlow into a SaaS where **each hospital is an isolated tenant/account.** A hospital
@@ -617,7 +692,8 @@ future premium option for any tenant demanding hard physical isolation.
 * [x] **Add `hospital_id` (FK → hospitals) to every domain table:** `staff`, `patients`, `allergies`,
       `visits`, `consultations`, `diagnoses`, `orders`, `results`, `prescriptions`,
       `medication_administrations`, `treatment_records`, `admissions`, `transfers`, `departments`,
-      `wards`, `beds`, `care_plan_items`, `care_plan_entries`, `audit_log`. (The patient **UUID** stays
+      `wards`, `beds`, `care_plan_items`, `care_plan_entries`, `billable_items`, `charges`, `audit_log`.
+      (The patient **UUID** stays
       the internal key; `hospital_id` is an added dimension, not a replacement.)
 * [x] **Per-tenant uniqueness:** make patient ID, bed labels, department/ward names unique **within a
       hospital** (composite `unique (hospital_id, …)`). The Cameroon patient-ID clash check + suffix
@@ -696,8 +772,9 @@ future premium option for any tenant demanding hard physical isolation.
 
 ## 🅿️ Future / parking lot (out of current scope)
 
-* **Billing & payments** — invoices, line items, payments, NHIS/insurance, receipts. Would feed
-  the existing financial-clearance gate. Deliberately deferred.
+* **Payments & insurance** — actual payment processing (mobile money), NHIS/insurance claims, and
+  formal receipts/accounting. The *billing/invoicing* half (price catalog, charge accrual, printable
+  bill) is now promoted to **Phase 16.9**; collecting the money stays parked.
 * **Patient-facing access** — a portal or QR on the booklet linking to the hospital record.
 * **Inter-hospital referral exchange** — sharing a discharge summary with another facility.
 * **Appointments / scheduling** for outpatient clinics.
@@ -756,6 +833,18 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-02: **Added Phase 16.9 — Patient Billing & Expenditure Tracking (optional module).** An
+  optional, paid-tier, per-hospital-toggleable module that prices every chargeable activity by
+  department and auto-accrues a patient's bill from events already recorded (consultation, orders,
+  prescriptions, bed-nights per ward segment via the transfers timeline, nursing/day, procedures), then
+  exposes a `/billing` screen (admin + receptionist) to discount, add manual lines, total, and export a
+  PDF — with settling the bill flipping `is_financial_cleared` so unpaid blocks discharge. Locked
+  decisions: small common-drugs price list + manual; time-based charges computed at billing time;
+  admin+receptionist billing actors (all discounts/manual lines audited); per-visit bill scope; integer
+  XAF. Data model = `billable_items` (catalog) + `charges` (ledger, snapshotted prices); both get
+  `hospital_id` in Phase 17. Scope is invoicing only — payment collection/insurance stay parked.
+  Includes a seed price catalog so it demos with real numbers. No code changed — phase spec only.
 
 * 2026-06-07: **Phase 17 — mock multi-tenancy + the SaaS front door (signup / login / landing / auth
   boundary).** Made the mock a real pooled-tenant store, then built the public entry. **Tenancy:** a

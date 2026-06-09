@@ -26,7 +26,6 @@ import type {
   BedStatus,
   CareNeedCategory,
   CarePlanEntry,
-  CarePlanEntryId,
   CarePlanItem,
   CarePlanItemId,
   CareStage,
@@ -56,7 +55,6 @@ import type {
   StaffRole,
   SubscriptionStatus,
   Transfer,
-  TransferId,
   TreatmentRecord,
   TriageLevel,
   Visit,
@@ -810,7 +808,9 @@ export function generateAnonymousIdentifier(seedIndex?: number): string {
 
 /** A visit has left the floor once it reaches one of these stages. */
 export function isTerminalStage(stage: CareStage): boolean {
-  return stage === "discharged" || stage === "followed_up";
+  return (
+    stage === "discharged" || stage === "followed_up" || stage === "deceased"
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -1948,7 +1948,12 @@ export function addDiagnosis(
  * mutations (no new schema field) plus an audit note in the treatment record so
  * the choice is visible in history and survives a reload.
  */
-export type Disposition = "discharge_home" | "admit" | "observation" | "refer";
+export type Disposition =
+  | "discharge_home"
+  | "admit"
+  | "observation"
+  | "refer"
+  | "deceased";
 
 const DISPOSITION_PLAN: Record<
   Disposition,
@@ -1972,6 +1977,13 @@ const DISPOSITION_PLAN: Record<
   refer: {
     note: "Disposition: Refer to specialist / external facility",
     stage: "discharge_planning",
+    admit: false,
+  },
+  // A death recorded at the consultation (e.g. brought in deceased / died during
+  // the encounter). Terminal: closes the visit without admitting.
+  deceased: {
+    note: "Disposition: Patient deceased",
+    stage: "deceased",
     admit: false,
   },
 };
@@ -2004,6 +2016,30 @@ export function recordDisposition(
   });
 
   return updateVisitStage(visitId, plan.stage);
+}
+
+/**
+ * Record that a patient died in care — a terminal outcome reachable at any
+ * stage (not only at the consultation disposition). Logs a respectful,
+ * timestamped audit note (with an optional cause/circumstances), then moves the
+ * visit to the `deceased` terminal stage. Unlike a discharge this is never
+ * blocked by pending clearances; `updateVisitStage` frees the bed and closes
+ * the admission. Returns the closed visit.
+ */
+export function recordDeath(
+  visitId: VisitId,
+  recordedById?: StaffId | null,
+  note?: string | null
+): Visit {
+  const detail = note?.trim();
+  addTreatmentLog(visitId, {
+    recorded_by_id: recordedById ?? null,
+    notes: detail
+      ? `Patient deceased — ${detail}`
+      : "Patient deceased",
+  });
+
+  return updateVisitStage(visitId, "deceased");
 }
 
 // ---------------------------------------------------------------------------
@@ -2473,7 +2509,9 @@ export function updateVisitStage(visitId: VisitId, newStage: CareStage): Visit {
   const becomingTerminal = isTerminalStage(newStage) && visit.status === "open";
 
   // Verification gate — block the final discharge transition until ready.
-  if (becomingTerminal && admission && patient) {
+  // A death is exempt: recording a patient's death is never withheld over a
+  // pending clearance (financial/pharmacy/medical) or an unreconciled identity.
+  if (becomingTerminal && newStage !== "deceased" && admission && patient) {
     const { ready, blockers } = evaluateDischargeReadiness(admission, patient);
     if (!ready) {
       throw new Error(`Cannot discharge: ${blockers.join("; ")}`);
@@ -2512,7 +2550,8 @@ export function updateVisitStage(visitId: VisitId, newStage: CareStage): Visit {
 
   persist(db);
 
-  if (becomingTerminal) {
+  // Fire the simulated post-discharge follow-up — but never for a death.
+  if (becomingTerminal && newStage !== "deceased") {
     logFollowUpTransmission(visit, patient);
   }
 

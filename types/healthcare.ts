@@ -99,7 +99,10 @@ export type CareStage =
   | "treatment"
   | "discharge_planning"
   | "discharged"
-  | "followed_up";
+  | "followed_up"
+  // Terminal outcome: the patient died in care. Closes the visit (like a
+  // discharge) but is counted separately from discharges in reporting.
+  | "deceased";
 
 /** `order_type` — category of a recommended test. */
 export type OrderType = "lab" | "imaging" | "procedure";

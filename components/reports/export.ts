@@ -70,6 +70,7 @@ function kpiCells(report: FullReport, t: Translate): KpiCell[] {
     { label: t("reports.kpi.emergency"), value: String(k.emergency) },
     { label: t("reports.kpi.admissions"), value: String(k.admissionsStarted) },
     { label: t("reports.kpi.discharges"), value: String(k.discharges) },
+    { label: t("reports.kpi.deaths"), value: String(k.deaths) },
     { label: t("reports.kpi.currentInpatients"), value: String(k.currentInpatients) },
     { label: t("reports.kpi.bedOccupancy"), value: `${k.bedOccupancyPct}%` },
     { label: t("reports.kpi.avgLos"), value: k.avgLosDays == null ? "—" : `${k.avgLosDays}d` },
@@ -267,6 +268,11 @@ export function exportReportPdf(report: FullReport, t: Translate, locale: Locale
       body: sliceRows(report.stageDistribution, t),
     },
     {
+      title: t("reports.chart.outcomes"),
+      head: [t("reports.table.outcome"), t("reports.table.visits")],
+      body: sliceRows(report.outcomes, t),
+    },
+    {
       title: t("reports.table.abnormal"),
       head: [t("reports.table.outcome"), t("reports.table.count")],
       body: [
@@ -349,6 +355,7 @@ export function exportReportXlsx(report: FullReport, t: Translate, locale: Local
     [t("reports.kpi.emergency"), k.emergency],
     [t("reports.kpi.admissionsStarted"), k.admissionsStarted],
     [t("reports.kpi.discharges"), k.discharges],
+    [t("reports.kpi.deaths"), k.deaths],
     [t("reports.kpi.currentInpatients"), k.currentInpatients],
     [`${t("reports.kpi.bedOccupancy")} %`, k.bedOccupancyPct],
     [t("reports.kpi.avgLos"), k.avgLosDays ?? "—"],
@@ -416,6 +423,11 @@ export function exportReportXlsx(report: FullReport, t: Translate, locale: Local
     wb,
     sliceSheet(report.stageDistribution, t, t("reports.table.visits")),
     t("reports.sheet.careStages"),
+  );
+  XLSX.utils.book_append_sheet(
+    wb,
+    sliceSheet(report.outcomes, t, t("reports.table.visits")),
+    t("reports.sheet.outcomes"),
   );
   XLSX.utils.book_append_sheet(
     wb,

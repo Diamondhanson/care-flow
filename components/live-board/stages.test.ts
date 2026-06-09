@@ -23,6 +23,7 @@ describe("columnForStage", () => {
   it("returns null for terminal stages (off the board)", () => {
     expect(columnForStage("discharged")).toBeNull();
     expect(columnForStage("followed_up")).toBeNull();
+    expect(columnForStage("deceased")).toBeNull();
   });
 
   it("partitions all four columns without overlap", () => {

@@ -23,6 +23,7 @@ import {
   ChevronDown,
   FileDown,
   HeartHandshake,
+  HeartOff,
 } from "lucide-react";
 
 import {
@@ -73,6 +74,7 @@ import {
   addPrescription,
   addTreatmentLog,
   recordDisposition,
+  recordDeath,
   transferAdmission,
   updateAdmissionClearances,
   updateVisitStage,
@@ -256,6 +258,10 @@ export function PatientDrawer({
   // Discharge is a closing action, so it's gated behind an explicit confirm step
   // that states the outcome before the visit drops off the board.
   const [confirmingDischarge, setConfirmingDischarge] = useState(false);
+  // Recording a death is a closing action too — confirm-gated, with an optional
+  // note for cause/circumstances. Exempt from the discharge clearance gates.
+  const [confirmingDeath, setConfirmingDeath] = useState(false);
+  const [deathNote, setDeathNote] = useState("");
 
   // SOAP consultation form
   const [subjective, setSubjective] = useState("");
@@ -416,6 +422,10 @@ export function PatientDrawer({
     : { ready: true, blockers: [] as string[] };
   const advancingToDischarge = target === "discharged";
   const dischargeBlocked = advancingToDischarge && !readiness.ready;
+  const isDeceased = visit.stage === "deceased";
+  // A death can be recorded from any active stage (incl. on arrival), but not
+  // once the visit has already closed (discharged / followed-up / deceased).
+  const canRecordDeath = visit.status === "open" && !isDeceased;
 
   const sortedAllergies = sortAllergiesBySeverity(allergies);
   const allergyState = allergyDisplayState(
@@ -541,6 +551,13 @@ export function PatientDrawer({
   function handleDisposition(disposition: Disposition) {
     recordDisposition(visit!.id, disposition, recorderId);
     refresh();
+  }
+
+  function handleRecordDeath() {
+    recordDeath(visit!.id, recorderId, deathNote.trim() || null);
+    // The visit closes and drops off the active board, like a discharge.
+    onMutate();
+    onOpenChange(false);
   }
 
   function toggleClearance(key: (typeof CLEARANCE_FIELDS)[number]["key"]) {
@@ -1593,12 +1610,37 @@ export function PatientDrawer({
               <span
                 aria-hidden
                 className="size-2 rounded-full"
-                style={{ backgroundColor: `var(--status-${currentToken})` }}
+                style={{
+                  backgroundColor: isDeceased
+                    ? "var(--status-deceased)"
+                    : `var(--status-${currentToken})`,
+                }}
               />
               <span className="text-sm font-medium">{t(stageLabel(visit.stage))}</span>
             </div>
 
-            {target === null ? (
+            {isDeceased ? (
+              <div
+                className="flex items-center gap-2 rounded-md border px-3 py-2.5 text-sm"
+                style={{
+                  borderColor: "var(--status-deceased)",
+                  backgroundColor:
+                    "color-mix(in oklab, var(--status-deceased) 12%, transparent)",
+                }}
+              >
+                <HeartOff
+                  className="size-4 shrink-0"
+                  style={{ color: "var(--status-deceased)" }}
+                />
+                <span>
+                  {visit.closed_at
+                    ? t("drawer.deceasedRecordedOn", {
+                        date: formatDateTime(visit.closed_at, activeLocale),
+                      })
+                    : t("drawer.deceasedRecorded")}
+                </span>
+              </div>
+            ) : target === null ? (
               <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground">
                 <CheckCircle2
                   className="size-4 shrink-0"
@@ -1676,6 +1718,76 @@ export function PatientDrawer({
                 )}
               </>
             )}
+
+            {/* Record death — confirm-gated terminal outcome, available at any
+                active stage; bypasses the discharge clearance gate. */}
+            {canRecordDeath ? (
+              confirmingDeath ? (
+                <div
+                  className="flex flex-col gap-3 rounded-md border p-3"
+                  style={{
+                    borderColor: "var(--status-deceased)",
+                    backgroundColor:
+                      "color-mix(in oklab, var(--status-deceased) 10%, transparent)",
+                  }}
+                >
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <HeartOff
+                      className="size-4 shrink-0"
+                      style={{ color: "var(--status-deceased)" }}
+                    />
+                    {t("drawer.recordDeathConfirmTitle")}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    {t("drawer.recordDeathConfirmBody", { name: displayName })}
+                  </p>
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="death-note">
+                      {t("drawer.recordDeathNote")}
+                    </Label>
+                    <Textarea
+                      id="death-note"
+                      value={deathNote}
+                      onChange={(e) => setDeathNote(e.target.value)}
+                      placeholder={t("drawer.recordDeathNotePlaceholder")}
+                    />
+                  </div>
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setConfirmingDeath(false);
+                        setDeathNote("");
+                      }}
+                    >
+                      {t("common.cancel")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleRecordDeath}
+                      style={{
+                        backgroundColor: "var(--status-deceased)",
+                        color: "var(--status-deceased-foreground)",
+                      }}
+                    >
+                      <HeartOff className="size-4" />
+                      {t("drawer.recordDeathConfirm")}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setConfirmingDeath(true)}
+                  className="self-end text-muted-foreground hover:text-foreground"
+                >
+                  <HeartOff className="size-4" />
+                  {t("drawer.recordDeath")}
+                </Button>
+              )
+            ) : null}
           </section>
 
           {/* Vitals + GCS log entry */}

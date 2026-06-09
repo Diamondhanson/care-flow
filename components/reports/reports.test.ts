@@ -11,6 +11,7 @@ import {
   computeKpis,
   departmentThroughput,
   lengthOfStay,
+  outcomeDistribution,
   presetRange,
   stageDistribution,
   topDiagnoses,
@@ -388,6 +389,45 @@ describe("stageDistribution", () => {
     expect(dist.find((s) => s.key === "triage")!.value).toBe(2);
     expect(dist.find((s) => s.key === "treatment")!.value).toBe(1);
     expect(dist.some((s) => s.key === "discharged")).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// deaths KPI + outcomeDistribution — Block C #4 terminal outcome
+// ---------------------------------------------------------------------------
+
+describe("computeKpis deaths", () => {
+  it("counts deceased visits separately from discharges", () => {
+    const visits = [
+      makeVisit({ id: "v1", status: "closed", stage: "discharged", closed_at: daysAgoIso(1) }),
+      makeVisit({ id: "v2", status: "closed", stage: "deceased", closed_at: daysAgoIso(1) }),
+      makeVisit({ id: "v3", status: "closed", stage: "deceased", closed_at: daysAgoIso(2) }),
+    ];
+    // Discharges are counted off admissions; a deceased admission is excluded.
+    const admissions = [
+      makeAdmission({ id: "a1", stage: "discharged", discharged_at: daysAgoIso(1) }),
+      makeAdmission({ id: "a2", stage: "deceased", discharged_at: daysAgoIso(1) }),
+    ];
+    const kpis = computeKpis(visits, admissions, [], RANGE);
+    expect(kpis.deaths).toBe(2);
+    expect(kpis.discharges).toBe(1);
+  });
+});
+
+describe("outcomeDistribution", () => {
+  it("groups closed visits by terminal outcome, dropping empty buckets", () => {
+    const visits = [
+      makeVisit({ id: "v1", status: "closed", stage: "discharged", closed_at: daysAgoIso(1) }),
+      makeVisit({ id: "v2", status: "closed", stage: "discharged", closed_at: daysAgoIso(2) }),
+      makeVisit({ id: "v3", status: "closed", stage: "deceased", closed_at: daysAgoIso(1) }),
+      // Open visits and non-terminal stages are excluded.
+      makeVisit({ id: "v4", status: "open", stage: "treatment" }),
+    ];
+    const dist = outcomeDistribution(visits, RANGE);
+    expect(dist.find((s) => s.key === "discharged")!.value).toBe(2);
+    expect(dist.find((s) => s.key === "deceased")!.value).toBe(1);
+    // followed_up has no visits → dropped.
+    expect(dist.some((s) => s.key === "followed_up")).toBe(false);
   });
 });
 

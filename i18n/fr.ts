@@ -76,6 +76,7 @@ export const fr = {
     discharge_planning: "Préparation de sortie",
     discharged: "Sorti",
     followed_up: "Suivi effectué",
+    deceased: "Décédé",
   },
 
   boardColumn: {
@@ -321,6 +322,15 @@ export const fr = {
     dischargeConfirmBody:
       "Ceci clôt la visite de {name} et le retire du tableau. Son dossier reste conservé.",
     advanceTo: "Passer à {stage}",
+    deceasedRecorded: "Enregistré comme décédé.",
+    deceasedRecordedOn: "Enregistré comme décédé le {date}.",
+    recordDeath: "Enregistrer le décès",
+    recordDeathConfirmTitle: "Enregistrer le décès",
+    recordDeathConfirmBody:
+      "Ceci enregistre {name} comme décédé et clôt sa visite. Il s'agit d'une issue terminale qui ignore les vérifications de sortie. Son dossier reste conservé.",
+    recordDeathNote: "Note (facultatif)",
+    recordDeathNotePlaceholder: "Circonstances ou cause, si connues",
+    recordDeathConfirm: "Confirmer",
     logVitals: "Consigner constantes & évaluation",
     vitalsSpo2: "SpO₂ (%)",
     vitalsPulse: "Pouls (bpm)",
@@ -372,6 +382,7 @@ export const fr = {
       admissions: "Admissions",
       admissionsStarted: "Admissions ouvertes",
       discharges: "Sorties",
+      deaths: "Décès",
       bedOccupancy: "Taux d'occupation",
       outpatient: "Ambulatoire",
       inpatient: "Hospitalisé",
@@ -391,6 +402,8 @@ export const fr = {
       lengthOfStayDesc: "Admissions sorties sur la période.",
       wardOccupancy: "Occupation des services",
       openByStage: "Visites en cours par étape de soins",
+      outcomes: "Issues des visites",
+      outcomesDesc: "Visites clôturées sur la période, par issue terminale.",
       patientsBySex: "Patients par sexe",
       patientsByAge: "Patients par âge",
       clearanceBottlenecks: "Blocages d'autorisation de sortie",
@@ -434,6 +447,7 @@ export const fr = {
       lengthOfStay: "Durée de séjour",
       wardOccupancy: "Occupation services",
       careStages: "Étapes de soins",
+      outcomes: "Issues des visites",
       sexMix: "Répartition sexe",
       ageMix: "Répartition âge",
       clearanceGates: "Autorisations",
@@ -934,9 +948,71 @@ export const fr = {
     heroTitle: "Gérez tout votre hôpital à partir d'un seul dossier clair.",
     heroSubtitle:
       "CareFlow suit chaque patient de l'arrivée à la sortie — accueil, consultation, examens, médicaments, lits et rapports — pour que votre équipe travaille sur un dossier unique et fiable plutôt que sur des papiers éparpillés.",
+    heroExplore: "Voir comment ça marche",
     heroNote:
       "Conçu pour les cliniques et hôpitaux du Cameroun. Français et anglais.",
+
+    // Aperçu maquette (interface produit décorative)
+    mockBoardTitle: "Tableau en direct",
+    mockBoardWaiting: "en attente",
+    mockReportsTitle: "Cette semaine",
+    mockReportsAdmissions: "Admissions",
+    mockReportsOutpatients: "Externes",
+    mockReportsOccupancy: "Occupation des lits",
+
+    // Bande de confiance
+    statRecordValue: "1",
+    statRecordLabel: "Dossier partagé entre tous les services",
+    statRolesValue: "6",
+    statRolesLabel: "Rôles cliniques, un seul flux",
+    statBilingualValue: "FR · EN",
+    statBilingualLabel: "Interface entièrement bilingue",
+    statOfflineValue: "Hors ligne",
+    statOfflineLabel: "Fonctionne même quand internet coupe",
+
+    // Parcours du patient
+    journeyEyebrow: "Le parcours du patient",
+    journeyTitle: "Chaque étape, transmise proprement à la suivante",
+    journeySubtitle:
+      "CareFlow épouse le fonctionnement réel de votre service — pour que rien ne se perde entre l'accueil, la salle de consultation et le service d'hospitalisation.",
+    journeyStep1Title: "Accueil & triage",
+    journeyStep1Body:
+      "Enregistrez un patient en quelques secondes, prenez les constantes et fixez l'acuité pour voir d'abord les plus graves.",
+    journeyStep2Title: "Consultation",
+    journeyStep2Body:
+      "Le médecin consigne l'anamnèse, l'examen, le diagnostic et le plan à partir d'une vue complète.",
+    journeyStep3Title: "Examens & résultats",
+    journeyStep3Body:
+      "Prescrivez analyses et imagerie, puis rattachez les résultats directement à la visite.",
+    journeyStep4Title: "Traitement & lits",
+    journeyStep4Body:
+      "Prescrivez, administrez les médicaments au lit et attribuez un service et un lit — l'occupation se met à jour en direct.",
+    journeyStep5Title: "Sortie & suivi",
+    journeyStep5Body:
+      "Validez les autorisations, générez un résumé et planifiez le suivi.",
+
+    // Vitrine — tableau en direct
+    showcaseBoardEyebrow: "Tableau en direct",
+    showcaseBoardTitle: "Voyez où en est chaque patient — d'un coup d'œil",
+    showcaseBoardBody:
+      "Un seul tableau regroupe tout le monde selon l'étape de soins, de l'accueil à la sortie. Fini les allers-retours dans les services pour savoir qui attend encore.",
+    showcaseBoardPoint1: "Code couleur par étape de soins et acuité de triage",
+    showcaseBoardPoint2: "Touchez un patient pour son dossier clinique complet",
+    showcaseBoardPoint3: "Mise à jour dès qu'un collègue modifie quelque chose",
+
+    // Vitrine — rapports & lits
+    showcaseReportsEyebrow: "Rapports & lits",
+    showcaseReportsTitle: "Les chiffres demandés par le conseil, prêts à exporter",
+    showcaseReportsBody:
+      "Admissions, externes, occupation des lits, durée de séjour et issues — comptés automatiquement et exportés en PDF ou Excel en deux clics.",
+    showcaseReportsPoint1: "Occupation des lits et services en direct",
+    showcaseReportsPoint2: "Synthèses hebdomadaires et mensuelles",
+    showcaseReportsPoint3: "Export PDF et Excel en un clic",
+
+    // Grille de fonctionnalités
     featuresTitle: "Tout ce que fait l'hôpital, au même endroit",
+    featuresSubtitle:
+      "Un seul système qui remplace le registre d'admission, le tableau des lits et le tableur de reporting.",
     f1Title: "Tout le parcours du patient",
     f1Body:
       "De l'accueil et du triage par l'infirmier, à la consultation du médecin, aux examens et résultats, aux ordonnances et aux soins au lit, jusqu'à l'admission, les lits et la sortie.",
@@ -949,9 +1025,34 @@ export const fr = {
     f4Title: "Bilingue et fonctionne hors ligne",
     f4Body:
       "Français et anglais complets, et un dossier qui continue de fonctionner quand internet coupe — les changements se synchronisent automatiquement au retour.",
+    f5Title: "Vos données, isolées et sécurisées",
+    f5Body:
+      "Les dossiers de chaque hôpital sont totalement séparés. Le personnel ne voit que son propre hôpital — appliqué au niveau de la base de données, pas seulement à l'écran.",
+    f6Title: "Opérationnel en quelques minutes",
+    f6Body:
+      "Créez votre hôpital, ajoutez services, unités, lits et personnel, et commencez à admettre des patients le jour même. Sans installation ni serveurs.",
+
+    // Bande des rôles
+    rolesTitle: "Pensé pour toute l'équipe du service",
+    rolesSubtitle:
+      "Chaque rôle voit exactement ce dont son métier a besoin — sans encombrement, sans manuel de formation.",
+    roleReception: "Accueil",
+    roleReceptionDesc: "Enregistrez les arrivées et trouvez vite un patient.",
+    roleNurse: "Infirmiers",
+    roleNurseDesc: "Triage, constantes, soins au lit et transmission.",
+    roleDoctor: "Médecins",
+    roleDoctorDesc: "Consultations, prescriptions, diagnostics et ordonnances.",
+    roleLab: "Labo & imagerie",
+    roleLabDesc: "Traitez la file d'examens et rattachez les résultats.",
+    rolePharmacy: "Pharmacie",
+    rolePharmacyDesc: "Délivrez et confirmez la disponibilité des médicaments.",
+    roleAdmin: "Administration",
+    roleAdminDesc: "Personnel, lits, rapports et supervision.",
+
     ctaTitle: "Mettez votre hôpital en ligne dès aujourd'hui",
     ctaBody:
       "Créez le compte de votre hôpital en une minute. Vos données restent les vôtres — chaque hôpital est totalement isolé.",
+    ctaNote: "Gratuit pendant votre essai — sans carte bancaire.",
     footerNote: "CareFlow — le dossier opérationnel propre à l'hôpital.",
   },
 
