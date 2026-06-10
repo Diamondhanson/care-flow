@@ -3,15 +3,17 @@
 /**
  * Clinical-term autocomplete (Phase 16.10).
  *
- * Two surfaces share one combobox engine:
+ * Two surfaces share one combobox engine ({@link useTermCombobox} +
+ * {@link SuggestionList}):
  *
  *  - `TermAutocomplete` — a controlled single-line combobox. The parent owns the
  *    text (`value`/`onChange`); picking a suggestion additionally fires
  *    `onSelectTerm(term)` so callers can autofill sibling fields (drug → dose /
  *    route / frequency, investigation → order type, diagnosis → ICD-10 code).
  *
- *  - `TermChips` — a multi-add field built on the engine: each pick (or typed
- *    free-text + Enter) becomes a removable chip. The chip set is serialized to a
+ *  - `TermChips` — a multi-add field where the picked chips live *inside* a
+ *    taller box and the caret flows below them, so the doctor keeps typing and
+ *    selecting more terms in place. The chip set is serialized to a
  *    newline-joined string so it drops straight into the existing free-text SOAP
  *    fields with no data-model change.
  *
@@ -20,7 +22,14 @@
  * from semantic tokens so light/dark both work.
  */
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -34,6 +43,7 @@ import {
 } from "@/lib/clinical-terms";
 import { displayTerm } from "@/lib/clinical-terms/search";
 import type { ClinicalTerm, ClinicalTermCategory } from "@/types/healthcare";
+import type { Locale } from "@/i18n";
 
 /** A short secondary line for a suggestion (ICD-10, dose·route, order type, system). */
 function termMeta(term: ClinicalTerm): string | null {
@@ -47,39 +57,30 @@ function termMeta(term: ClinicalTerm): string | null {
 }
 
 // ---------------------------------------------------------------------------
-// Core combobox
+// Shared combobox engine
 // ---------------------------------------------------------------------------
 
-export interface TermAutocompleteProps {
+interface UseTermComboboxArgs {
   category: ClinicalTermCategory;
-  /** Controlled input text. */
+  /** Current input text. */
   value: string;
   onChange: (value: string) => void;
-  /** Fired when a suggestion is picked (in addition to `onChange`). */
-  onSelectTerm?: (term: ClinicalTerm) => void;
+  /** Fired when a suggestion is chosen. */
+  onPick: (term: ClinicalTerm) => void;
   /** Fired when Enter is pressed on free text with no highlighted suggestion. */
   onCommit?: (label: string) => void;
-  placeholder?: string;
-  id?: string;
-  inputClassName?: string;
-  /** Max suggestions to show. */
-  limit?: number;
-  /** Clear the input after a pick/commit (used by the chip field). */
-  clearOnSelect?: boolean;
+  limit: number;
 }
 
-export function TermAutocomplete({
+/** Open/highlight/debounce/keyboard state shared by both surfaces. */
+function useTermCombobox({
   category,
   value,
   onChange,
-  onSelectTerm,
+  onPick,
   onCommit,
-  placeholder,
-  id,
-  inputClassName,
-  limit = 8,
-  clearOnSelect = false,
-}: TermAutocompleteProps) {
+  limit,
+}: UseTermComboboxArgs) {
   const { locale } = useT();
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(-1);
@@ -103,9 +104,7 @@ export function TermAutocomplete({
   }, []);
 
   function pick(term: ClinicalTerm) {
-    recordTermUse(category, term);
-    onChange(clearOnSelect ? "" : displayTerm(term, locale));
-    onSelectTerm?.(term);
+    onPick(term);
     setOpen(false);
     setHighlight(-1);
   }
@@ -114,12 +113,11 @@ export function TermAutocomplete({
     const label = value.trim();
     if (!label) return;
     onCommit?.(label);
-    if (clearOnSelect) onChange("");
     setOpen(false);
     setHighlight(-1);
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setOpen(true);
@@ -146,72 +144,177 @@ export function TermAutocomplete({
 
   const showDropdown = open && results.length > 0;
 
+  const inputProps = {
+    value,
+    autoComplete: "off" as const,
+    role: "combobox" as const,
+    "aria-expanded": showDropdown,
+    "aria-controls": listId,
+    "aria-autocomplete": "list" as const,
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value);
+      setOpen(true);
+      setHighlight(-1);
+    },
+    onFocus: () => setOpen(true),
+    onBlur: () => {
+      // Delay so a click on a suggestion lands before we close.
+      blurTimer.current = setTimeout(() => setOpen(false), 120);
+    },
+    onKeyDown: handleKeyDown,
+  };
+
+  return {
+    locale,
+    results,
+    highlight,
+    setHighlight,
+    listId,
+    showDropdown,
+    inputProps,
+    pick,
+  };
+}
+
+interface SuggestionListProps {
+  id: string;
+  results: readonly ClinicalTerm[];
+  highlight: number;
+  setHighlight: (i: number) => void;
+  locale: Locale;
+  onPick: (term: ClinicalTerm) => void;
+}
+
+/** The popover list of ranked suggestions, anchored below the field. */
+function SuggestionList({
+  id,
+  results,
+  highlight,
+  setHighlight,
+  locale,
+  onPick,
+}: SuggestionListProps) {
+  return (
+    <ul
+      id={id}
+      role="listbox"
+      className="absolute left-0 top-full z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md"
+    >
+      {results.map((term, i) => {
+        const label = displayTerm(term, locale);
+        const meta = termMeta(term);
+        return (
+          <li
+            key={`${term.category}:${term.term_en}`}
+            role="option"
+            aria-selected={i === highlight}
+          >
+            <button
+              type="button"
+              // onMouseDown (not onClick) so it fires before the input blur.
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onPick(term);
+              }}
+              onMouseEnter={() => setHighlight(i)}
+              className={cn(
+                "flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-sm",
+                i === highlight
+                  ? "bg-accent text-accent-foreground"
+                  : "text-foreground",
+              )}
+            >
+              <span className="truncate">{label}</span>
+              {meta ? (
+                <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
+                  {meta}
+                </span>
+              ) : null}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Single-line combobox
+// ---------------------------------------------------------------------------
+
+export interface TermAutocompleteProps {
+  category: ClinicalTermCategory;
+  /** Controlled input text. */
+  value: string;
+  onChange: (value: string) => void;
+  /** Fired when a suggestion is picked (in addition to `onChange`). */
+  onSelectTerm?: (term: ClinicalTerm) => void;
+  /** Fired when Enter is pressed on free text with no highlighted suggestion. */
+  onCommit?: (label: string) => void;
+  placeholder?: string;
+  id?: string;
+  inputClassName?: string;
+  /** Max suggestions to show. */
+  limit?: number;
+  /** Clear the input after a pick/commit (used by the instant-add lists). */
+  clearOnSelect?: boolean;
+}
+
+export function TermAutocomplete({
+  category,
+  value,
+  onChange,
+  onSelectTerm,
+  onCommit,
+  placeholder,
+  id,
+  inputClassName,
+  limit = 8,
+  clearOnSelect = false,
+}: TermAutocompleteProps) {
+  const { locale } = useT();
+  const cb = useTermCombobox({
+    category,
+    value,
+    onChange,
+    onPick: (term) => {
+      recordTermUse(category, term);
+      onChange(clearOnSelect ? "" : displayTerm(term, locale));
+      onSelectTerm?.(term);
+    },
+    onCommit: onCommit
+      ? (label) => {
+          onCommit(label);
+          if (clearOnSelect) onChange("");
+        }
+      : undefined,
+    limit,
+  });
+
   return (
     <div className="relative">
       <Input
         id={id}
-        value={value}
-        autoComplete="off"
-        role="combobox"
-        aria-expanded={showDropdown}
-        aria-controls={listId}
-        aria-autocomplete="list"
-        onChange={(e) => {
-          onChange(e.target.value);
-          setOpen(true);
-          setHighlight(-1);
-        }}
-        onFocus={() => setOpen(true)}
-        onBlur={() => {
-          // Delay so a click on a suggestion lands before we close.
-          blurTimer.current = setTimeout(() => setOpen(false), 120);
-        }}
-        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={inputClassName}
+        {...cb.inputProps}
       />
-      {showDropdown ? (
-        <ul
-          id={listId}
-          role="listbox"
-          className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-md"
-        >
-          {results.map((term, i) => {
-            const label = displayTerm(term, locale);
-            const meta = termMeta(term);
-            return (
-              <li key={`${term.category}:${term.term_en}`} role="option" aria-selected={i === highlight}>
-                <button
-                  type="button"
-                  // onMouseDown (not onClick) so it fires before the input blur.
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    pick(term);
-                  }}
-                  onMouseEnter={() => setHighlight(i)}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-2 rounded-md px-2.5 py-1.5 text-left text-sm",
-                    i === highlight ? "bg-accent text-accent-foreground" : "text-foreground",
-                  )}
-                >
-                  <span className="truncate">{label}</span>
-                  {meta ? (
-                    <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-                      {meta}
-                    </span>
-                  ) : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+      {cb.showDropdown ? (
+        <SuggestionList
+          id={cb.listId}
+          results={cb.results}
+          highlight={cb.highlight}
+          setHighlight={cb.setHighlight}
+          locale={cb.locale}
+          onPick={cb.pick}
+        />
       ) : null}
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Multi-add chip field (SOAP)
+// Multi-add chips-in-box field (SOAP)
 // ---------------------------------------------------------------------------
 
 export interface TermChipsProps {
@@ -243,6 +346,7 @@ export function TermChips({
   const { locale } = useT();
   const [text, setText] = useState("");
   const chips = useMemo(() => splitChips(value), [value]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function addChip(chipLabel: string, term?: ClinicalTerm) {
     const trimmed = chipLabel.trim();
@@ -262,40 +366,75 @@ export function TermChips({
     onValueChange(chips.filter((_, i) => i !== index).join("\n"));
   }
 
+  const cb = useTermCombobox({
+    category,
+    value: text,
+    onChange: setText,
+    onPick: (term) => addChip(displayTerm(term, locale), term),
+    onCommit: (freeText) => addChip(freeText),
+    limit: 8,
+  });
+
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={id} className="text-xs">
         {label}
       </Label>
-      {chips.length > 0 ? (
-        <ul className="flex flex-wrap gap-1.5">
+      <div className="relative">
+        <div
+          className="flex min-h-16 w-full cursor-text flex-wrap content-start items-start gap-1.5 rounded-md border border-input bg-transparent p-2 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50"
+          onMouseDown={(e) => {
+            // Clicking the empty area of the box focuses the input.
+            if (e.target === e.currentTarget) {
+              e.preventDefault();
+              inputRef.current?.focus();
+            }
+          }}
+        >
           {chips.map((chip, i) => (
-            <li key={`${chip}-${i}`}>
-              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/60 py-0.5 pl-2 pr-1 text-xs">
-                {chip}
-                <button
-                  type="button"
-                  onClick={() => removeChip(i)}
-                  className="rounded-sm p-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                  aria-label={`Remove ${chip}`}
-                >
-                  <X className="size-3" />
-                </button>
-              </span>
-            </li>
+            <span
+              key={`${chip}-${i}`}
+              className="inline-flex h-6 items-center gap-1 rounded-md border border-border bg-muted/60 pl-2 pr-1 text-xs"
+            >
+              {chip}
+              <button
+                type="button"
+                onClick={() => removeChip(i)}
+                className="rounded-sm p-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                aria-label={`Remove ${chip}`}
+              >
+                <X className="size-3" />
+              </button>
+            </span>
           ))}
-        </ul>
-      ) : null}
-      <TermAutocomplete
-        id={id}
-        category={category}
-        value={text}
-        onChange={setText}
-        onSelectTerm={(term) => addChip(displayTerm(term, locale), term)}
-        onCommit={(freeText) => addChip(freeText)}
-        placeholder={placeholder}
-        clearOnSelect
-      />
+          <input
+            ref={inputRef}
+            id={id}
+            placeholder={chips.length === 0 ? placeholder : ""}
+            className="h-6 min-w-[10ch] flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            {...cb.inputProps}
+            onKeyDown={(e) => {
+              // Backspace on an empty input pops the last chip.
+              if (e.key === "Backspace" && text === "" && chips.length > 0) {
+                e.preventDefault();
+                removeChip(chips.length - 1);
+                return;
+              }
+              cb.inputProps.onKeyDown(e);
+            }}
+          />
+        </div>
+        {cb.showDropdown ? (
+          <SuggestionList
+            id={cb.listId}
+            results={cb.results}
+            highlight={cb.highlight}
+            setHighlight={cb.setHighlight}
+            locale={cb.locale}
+            onPick={cb.pick}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -2463,6 +2463,37 @@ export function updateOrderStatus(
   return order;
 }
 
+export interface UpdateOrderInput {
+  order_type?: OrderType;
+  description?: string;
+}
+
+/**
+ * Edit an order's content in place — the doctor adjusting the test or its type
+ * after instant-adding it to the list. Empty descriptions are rejected so a row
+ * never loses its label. Returns the updated order.
+ */
+export function updateOrder(orderId: OrderId, input: UpdateOrderInput): Order {
+  const db = loadDatabase();
+  const order = db.orders.find((o) => o.id === orderId);
+  if (!order) {
+    throw new Error(`updateOrder: order "${orderId}" not found`);
+  }
+
+  if (input.order_type !== undefined) order.order_type = input.order_type;
+  if (input.description !== undefined) {
+    const description = input.description.trim();
+    if (!description) {
+      throw new Error("updateOrder: an order description is required");
+    }
+    order.description = description;
+  }
+  order.updated_at = nowISO();
+
+  persist(db);
+  return order;
+}
+
 /**
  * Record a result against an order — the lab tech closing the loop. The parent
  * order is marked "completed" (with `completed_at`) so it leaves the queue and
@@ -2565,6 +2596,55 @@ export function updatePrescriptionStatus(
   }
   prescription.status = status;
   prescription.updated_at = nowISO();
+  persist(db);
+  return prescription;
+}
+
+export interface UpdatePrescriptionInput {
+  drug_name?: string;
+  dose?: string | null;
+  route?: string | null;
+  frequency?: string | null;
+  duration?: string | null;
+  instructions?: string | null;
+}
+
+/**
+ * Edit a prescription's structure in place — the doctor filling in dose / route
+ * / frequency / duration / instructions on a row that was instant-added from a
+ * drug pick. An empty drug name is rejected; the other fields normalise blanks
+ * to null. Returns the updated row.
+ */
+export function updatePrescription(
+  prescriptionId: PrescriptionId,
+  input: UpdatePrescriptionInput
+): Prescription {
+  const db = loadDatabase();
+  const prescription = db.prescriptions.find((p) => p.id === prescriptionId);
+  if (!prescription) {
+    throw new Error(
+      `updatePrescription: prescription "${prescriptionId}" not found`
+    );
+  }
+
+  if (input.drug_name !== undefined) {
+    const drugName = input.drug_name.trim();
+    if (!drugName) {
+      throw new Error("updatePrescription: a drug name is required");
+    }
+    prescription.drug_name = drugName;
+  }
+  if (input.dose !== undefined) prescription.dose = input.dose?.trim() || null;
+  if (input.route !== undefined)
+    prescription.route = input.route?.trim() || null;
+  if (input.frequency !== undefined)
+    prescription.frequency = input.frequency?.trim() || null;
+  if (input.duration !== undefined)
+    prescription.duration = input.duration?.trim() || null;
+  if (input.instructions !== undefined)
+    prescription.instructions = input.instructions?.trim() || null;
+  prescription.updated_at = nowISO();
+
   persist(db);
   return prescription;
 }

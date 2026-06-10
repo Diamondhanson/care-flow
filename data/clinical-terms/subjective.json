@@ -1253,5 +1253,2662 @@
       "bras enflé"
     ],
     "system": "Skin"
+  },
+  {
+    "term_en": "Exertional dyspnea",
+    "term_fr": "Dyspnée d'effort",
+    "synonyms_en": [
+      "short of breath when walking",
+      "breathless on exertion"
+    ],
+    "synonyms_fr": [
+      "essoufflement à la marche",
+      "manque d'air à l'effort"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Ankle swelling",
+    "term_fr": "Œdème des chevilles",
+    "synonyms_en": [
+      "swollen ankles",
+      "swollen feet"
+    ],
+    "synonyms_fr": [
+      "chevilles gonflées",
+      "pieds enflés"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Bilateral leg edema",
+    "term_fr": "Œdème des membres inférieurs",
+    "synonyms_en": [
+      "both legs swollen",
+      "swelling of the legs"
+    ],
+    "synonyms_fr": [
+      "jambes gonflées",
+      "gonflement des deux jambes"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Cyanosis",
+    "term_fr": "Cyanose",
+    "synonyms_en": [
+      "blue lips",
+      "blue discoloration"
+    ],
+    "synonyms_fr": [
+      "lèvres bleues",
+      "coloration bleue de la peau"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Presyncope",
+    "term_fr": "Lipothymie",
+    "synonyms_en": [
+      "feeling faint",
+      "near fainting"
+    ],
+    "synonyms_fr": [
+      "sensation de malaise",
+      "impression de tomber"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Retrosternal chest pain",
+    "term_fr": "Douleur rétrosternale",
+    "synonyms_en": [
+      "pain behind the breastbone",
+      "central chest pain"
+    ],
+    "synonyms_fr": [
+      "douleur derrière le sternum",
+      "douleur au centre de la poitrine"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Cold extremities",
+    "term_fr": "Extrémités froides",
+    "synonyms_en": [
+      "cold hands and feet"
+    ],
+    "synonyms_fr": [
+      "mains et pieds froids"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Calf swelling",
+    "term_fr": "Œdème du mollet",
+    "synonyms_en": [
+      "one swollen calf",
+      "painful swollen leg"
+    ],
+    "synonyms_fr": [
+      "mollet gonflé",
+      "jambe enflée douloureuse"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Exertional fatigue",
+    "term_fr": "Fatigue à l'effort",
+    "synonyms_en": [
+      "tired with little activity",
+      "easily exhausted"
+    ],
+    "synonyms_fr": [
+      "fatigue au moindre effort",
+      "vite épuisé"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Left arm pain",
+    "term_fr": "Douleur du bras gauche",
+    "synonyms_en": [
+      "pain radiating to left arm"
+    ],
+    "synonyms_fr": [
+      "douleur irradiant au bras gauche"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Chest tightness",
+    "term_fr": "Oppression thoracique",
+    "synonyms_en": [
+      "tight chest",
+      "chest pressure"
+    ],
+    "synonyms_fr": [
+      "poitrine serrée",
+      "sensation d'écrasement"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Pleuritic chest pain",
+    "term_fr": "Douleur thoracique pleurétique",
+    "synonyms_en": [
+      "chest pain on breathing",
+      "pain worse with deep breath"
+    ],
+    "synonyms_fr": [
+      "douleur en respirant",
+      "douleur à l'inspiration profonde"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Sputum production",
+    "term_fr": "Expectoration",
+    "synonyms_en": [
+      "bringing up phlegm",
+      "spitting mucus"
+    ],
+    "synonyms_fr": [
+      "crachats",
+      "glaires"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Purulent sputum",
+    "term_fr": "Expectoration purulente",
+    "synonyms_en": [
+      "green phlegm",
+      "yellow sputum"
+    ],
+    "synonyms_fr": [
+      "crachats jaunes",
+      "crachats verts"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Nocturnal cough",
+    "term_fr": "Toux nocturne",
+    "synonyms_en": [
+      "cough at night",
+      "coughing while sleeping"
+    ],
+    "synonyms_fr": [
+      "toux la nuit",
+      "tousser en dormant"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Chronic cough",
+    "term_fr": "Toux chronique",
+    "synonyms_en": [
+      "long-lasting cough",
+      "cough for weeks"
+    ],
+    "synonyms_fr": [
+      "toux qui dure",
+      "toux depuis des semaines"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Barking cough",
+    "term_fr": "Toux aboyante",
+    "synonyms_en": [
+      "seal-like cough",
+      "croupy cough"
+    ],
+    "synonyms_fr": [
+      "toux de chien",
+      "toux rauque"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Stridor",
+    "term_fr": "Stridor",
+    "synonyms_en": [
+      "noisy breathing in",
+      "harsh breathing sound"
+    ],
+    "synonyms_fr": [
+      "respiration bruyante",
+      "sifflement à l'inspiration"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Tachypnea",
+    "term_fr": "Polypnée",
+    "synonyms_en": [
+      "rapid breathing",
+      "fast breathing"
+    ],
+    "synonyms_fr": [
+      "respiration rapide",
+      "respiration accélérée"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Snoring",
+    "term_fr": "Ronflement",
+    "synonyms_en": [
+      "loud breathing in sleep"
+    ],
+    "synonyms_fr": [
+      "ronfler la nuit"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Sneezing",
+    "term_fr": "Éternuements",
+    "synonyms_en": [
+      "repeated sneezing"
+    ],
+    "synonyms_fr": [
+      "éternuer",
+      "éternuements répétés"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Choking sensation",
+    "term_fr": "Sensation d'étouffement",
+    "synonyms_en": [
+      "feeling of suffocation",
+      "cannot get air"
+    ],
+    "synonyms_fr": [
+      "impression d'étouffer",
+      "manque d'air"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Apnea",
+    "term_fr": "Apnée",
+    "synonyms_en": [
+      "stops breathing in sleep",
+      "pauses in breathing"
+    ],
+    "synonyms_fr": [
+      "arrêt de la respiration en dormant",
+      "pauses respiratoires"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Aural fullness",
+    "term_fr": "Sensation d'oreille bouchée",
+    "synonyms_en": [
+      "blocked ear",
+      "plugged ear"
+    ],
+    "synonyms_fr": [
+      "oreille bouchée",
+      "oreille pleine"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Otorrhagia",
+    "term_fr": "Otorragie",
+    "synonyms_en": [
+      "bleeding from the ear",
+      "blood from ear"
+    ],
+    "synonyms_fr": [
+      "saignement de l'oreille",
+      "sang qui sort de l'oreille"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Throat foreign body sensation",
+    "term_fr": "Sensation de corps étranger pharyngé",
+    "synonyms_en": [
+      "lump in throat",
+      "something stuck in throat"
+    ],
+    "synonyms_fr": [
+      "boule dans la gorge",
+      "quelque chose coincé dans la gorge"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Postnasal drip",
+    "term_fr": "Écoulement nasal postérieur",
+    "synonyms_en": [
+      "mucus dripping down throat"
+    ],
+    "synonyms_fr": [
+      "glaires qui descendent dans la gorge"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Anosmia",
+    "term_fr": "Anosmie",
+    "synonyms_en": [
+      "loss of smell",
+      "cannot smell"
+    ],
+    "synonyms_fr": [
+      "perte de l'odorat",
+      "ne sent plus les odeurs"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Dysgeusia",
+    "term_fr": "Dysgueusie",
+    "synonyms_en": [
+      "altered taste",
+      "bad taste in mouth"
+    ],
+    "synonyms_fr": [
+      "goût altéré",
+      "mauvais goût dans la bouche"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Toothache",
+    "term_fr": "Odontalgie",
+    "synonyms_en": [
+      "tooth pain",
+      "dental pain"
+    ],
+    "synonyms_fr": [
+      "mal aux dents",
+      "rage de dents"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Gum bleeding",
+    "term_fr": "Gingivorragie",
+    "synonyms_en": [
+      "bleeding gums"
+    ],
+    "synonyms_fr": [
+      "gencives qui saignent",
+      "saignement des gencives"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Mouth ulcers",
+    "term_fr": "Aphtes",
+    "synonyms_en": [
+      "sores in the mouth",
+      "canker sores"
+    ],
+    "synonyms_fr": [
+      "plaies dans la bouche",
+      "ulcérations buccales"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Halitosis",
+    "term_fr": "Halitose",
+    "synonyms_en": [
+      "bad breath",
+      "foul breath"
+    ],
+    "synonyms_fr": [
+      "mauvaise haleine"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Xerostomia",
+    "term_fr": "Xérostomie",
+    "synonyms_en": [
+      "dry mouth"
+    ],
+    "synonyms_fr": [
+      "bouche sèche"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Sialorrhea",
+    "term_fr": "Hypersialorrhée",
+    "synonyms_en": [
+      "excessive salivation",
+      "drooling"
+    ],
+    "synonyms_fr": [
+      "salivation excessive",
+      "baver"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Neck swelling",
+    "term_fr": "Tuméfaction cervicale",
+    "synonyms_en": [
+      "lump in the neck",
+      "swollen neck"
+    ],
+    "synonyms_fr": [
+      "masse au cou",
+      "gonflement du cou"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Trismus",
+    "term_fr": "Trismus",
+    "synonyms_en": [
+      "difficulty opening mouth",
+      "locked jaw"
+    ],
+    "synonyms_fr": [
+      "difficulté à ouvrir la bouche",
+      "mâchoire bloquée"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Goitre",
+    "term_fr": "Goitre",
+    "synonyms_en": [
+      "swelling at front of neck",
+      "enlarged thyroid"
+    ],
+    "synonyms_fr": [
+      "gonflement de la thyroïde",
+      "grosse gorge"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Red eye",
+    "term_fr": "Œil rouge",
+    "synonyms_en": [
+      "bloodshot eye",
+      "redness of eye"
+    ],
+    "synonyms_fr": [
+      "yeux rouges",
+      "rougeur de l'œil"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Eye discharge",
+    "term_fr": "Sécrétions oculaires",
+    "synonyms_en": [
+      "pus from the eye",
+      "sticky eye"
+    ],
+    "synonyms_fr": [
+      "pus dans l'œil",
+      "œil collé"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Diplopia",
+    "term_fr": "Diplopie",
+    "synonyms_en": [
+      "double vision",
+      "seeing double"
+    ],
+    "synonyms_fr": [
+      "vision double",
+      "voir double"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Visual floaters",
+    "term_fr": "Corps flottants",
+    "synonyms_en": [
+      "spots in vision",
+      "flying flies"
+    ],
+    "synonyms_fr": [
+      "mouches volantes",
+      "points devant les yeux"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Ocular foreign body sensation",
+    "term_fr": "Sensation de corps étranger oculaire",
+    "synonyms_en": [
+      "something in the eye",
+      "grit in eye"
+    ],
+    "synonyms_fr": [
+      "impression d'avoir quelque chose dans l'œil"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Sudden vision loss",
+    "term_fr": "Perte brutale de la vision",
+    "synonyms_en": [
+      "sudden blindness",
+      "cannot see suddenly"
+    ],
+    "synonyms_fr": [
+      "cécité brutale",
+      "perte soudaine de la vue"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Night blindness",
+    "term_fr": "Héméralopie",
+    "synonyms_en": [
+      "poor vision at night",
+      "cannot see in the dark"
+    ],
+    "synonyms_fr": [
+      "ne voit pas la nuit",
+      "mauvaise vision nocturne"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Eyelid swelling",
+    "term_fr": "Œdème palpébral",
+    "synonyms_en": [
+      "swollen eyelid",
+      "puffy eyes"
+    ],
+    "synonyms_fr": [
+      "paupière gonflée",
+      "yeux bouffis"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Ocular burning",
+    "term_fr": "Brûlure oculaire",
+    "synonyms_en": [
+      "burning eyes",
+      "stinging eyes"
+    ],
+    "synonyms_fr": [
+      "yeux qui brûlent",
+      "sensation de brûlure aux yeux"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Strabismus",
+    "term_fr": "Strabisme",
+    "synonyms_en": [
+      "squint",
+      "crossed eyes"
+    ],
+    "synonyms_fr": [
+      "œil qui louche",
+      "loucher"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Regurgitation",
+    "term_fr": "Régurgitation",
+    "synonyms_en": [
+      "food coming back up",
+      "reflux of food"
+    ],
+    "synonyms_fr": [
+      "remontée d'aliments",
+      "renvoi de nourriture"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Belching",
+    "term_fr": "Éructations",
+    "synonyms_en": [
+      "burping"
+    ],
+    "synonyms_fr": [
+      "roter",
+      "rots"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Early satiety",
+    "term_fr": "Satiété précoce",
+    "synonyms_en": [
+      "feeling full quickly"
+    ],
+    "synonyms_fr": [
+      "vite rassasié",
+      "ventre plein rapidement"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Dyspepsia",
+    "term_fr": "Dyspepsie",
+    "synonyms_en": [
+      "indigestion",
+      "upset stomach"
+    ],
+    "synonyms_fr": [
+      "mauvaise digestion",
+      "digestion difficile"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Anal pain",
+    "term_fr": "Douleur anale",
+    "synonyms_en": [
+      "pain at the anus",
+      "rectal pain"
+    ],
+    "synonyms_fr": [
+      "mal à l'anus",
+      "douleur rectale"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Anal pruritus",
+    "term_fr": "Prurit anal",
+    "synonyms_en": [
+      "itchy anus",
+      "itching at the bottom"
+    ],
+    "synonyms_fr": [
+      "anus qui gratte",
+      "démangeaison de l'anus"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Rectal prolapse",
+    "term_fr": "Prolapsus rectal",
+    "synonyms_en": [
+      "something coming out of the anus"
+    ],
+    "synonyms_fr": [
+      "sortie du rectum",
+      "boyau qui sort"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Hemorrhoids",
+    "term_fr": "Hémorroïdes",
+    "synonyms_en": [
+      "piles",
+      "swelling at the anus"
+    ],
+    "synonyms_fr": [
+      "crises hémorroïdaires",
+      "boules à l'anus"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Jaundice",
+    "term_fr": "Ictère",
+    "synonyms_en": [
+      "yellow eyes",
+      "yellow skin"
+    ],
+    "synonyms_fr": [
+      "jaunisse",
+      "yeux jaunes",
+      "peau jaune"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Pale stools",
+    "term_fr": "Selles décolorées",
+    "synonyms_en": [
+      "clay-colored stool",
+      "white stool"
+    ],
+    "synonyms_fr": [
+      "selles blanches",
+      "selles claires"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Hiccups",
+    "term_fr": "Hoquet",
+    "synonyms_en": [
+      "persistent hiccups"
+    ],
+    "synonyms_fr": [
+      "avoir le hoquet"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Mucoid stools",
+    "term_fr": "Selles glaireuses",
+    "synonyms_en": [
+      "mucus in stool"
+    ],
+    "synonyms_fr": [
+      "glaires dans les selles"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Steatorrhea",
+    "term_fr": "Stéatorrhée",
+    "synonyms_en": [
+      "greasy stools",
+      "fatty stool that floats"
+    ],
+    "synonyms_fr": [
+      "selles grasses",
+      "selles huileuses"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Right upper quadrant pain",
+    "term_fr": "Douleur de l'hypochondre droit",
+    "synonyms_en": [
+      "pain under right ribs",
+      "liver area pain"
+    ],
+    "synonyms_fr": [
+      "douleur sous les côtes droites",
+      "mal au foie"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Right iliac fossa pain",
+    "term_fr": "Douleur de la fosse iliaque droite",
+    "synonyms_en": [
+      "pain in lower right belly",
+      "appendix area pain"
+    ],
+    "synonyms_fr": [
+      "douleur en bas à droite du ventre"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Left iliac fossa pain",
+    "term_fr": "Douleur de la fosse iliaque gauche",
+    "synonyms_en": [
+      "pain in lower left belly"
+    ],
+    "synonyms_fr": [
+      "douleur en bas à gauche du ventre"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Periumbilical pain",
+    "term_fr": "Douleur péri-ombilicale",
+    "synonyms_en": [
+      "pain around the navel",
+      "pain near belly button"
+    ],
+    "synonyms_fr": [
+      "douleur autour du nombril"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Worms in stool",
+    "term_fr": "Présence de vers dans les selles",
+    "synonyms_en": [
+      "passing worms",
+      "worms in the toilet"
+    ],
+    "synonyms_fr": [
+      "vers dans les selles",
+      "rejet de vers"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Food intolerance",
+    "term_fr": "Intolérance alimentaire",
+    "synonyms_en": [
+      "stomach upset after certain foods"
+    ],
+    "synonyms_fr": [
+      "maux de ventre après certains aliments"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Malaise",
+    "term_fr": "Malaise général",
+    "synonyms_en": [
+      "feeling unwell",
+      "generally feeling sick"
+    ],
+    "synonyms_fr": [
+      "sensation de mal-être",
+      "ne pas se sentir bien"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Hyperhidrosis",
+    "term_fr": "Sudation excessive",
+    "synonyms_en": [
+      "excessive sweating",
+      "sweating a lot"
+    ],
+    "synonyms_fr": [
+      "transpiration excessive",
+      "transpirer beaucoup"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Hot flushes",
+    "term_fr": "Bouffées de chaleur",
+    "synonyms_en": [
+      "sudden feeling of heat",
+      "flushing"
+    ],
+    "synonyms_fr": [
+      "coups de chaleur",
+      "vagues de chaleur"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Pallor",
+    "term_fr": "Pâleur",
+    "synonyms_en": [
+      "looking pale",
+      "white palms"
+    ],
+    "synonyms_fr": [
+      "teint pâle",
+      "paumes blanches"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Lethargy",
+    "term_fr": "Léthargie",
+    "synonyms_en": [
+      "sluggishness",
+      "lack of energy"
+    ],
+    "synonyms_fr": [
+      "abattement",
+      "manque d'énergie"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Somnolence",
+    "term_fr": "Somnolence",
+    "synonyms_en": [
+      "drowsiness",
+      "sleepy all the time"
+    ],
+    "synonyms_fr": [
+      "envie de dormir constante",
+      "endormissement"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Lymphadenopathy",
+    "term_fr": "Adénopathie",
+    "synonyms_en": [
+      "swollen glands",
+      "swollen lymph nodes"
+    ],
+    "synonyms_fr": [
+      "ganglions gonflés",
+      "ganglions enflés"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Heat intolerance",
+    "term_fr": "Intolérance à la chaleur",
+    "synonyms_en": [
+      "cannot tolerate heat",
+      "always feeling hot"
+    ],
+    "synonyms_fr": [
+      "ne supporte pas la chaleur",
+      "toujours chaud"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Cold intolerance",
+    "term_fr": "Intolérance au froid",
+    "synonyms_en": [
+      "always feeling cold",
+      "cannot tolerate cold"
+    ],
+    "synonyms_fr": [
+      "ne supporte pas le froid",
+      "toujours froid"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Poor feeding",
+    "term_fr": "Refus de téter",
+    "synonyms_en": [
+      "baby not feeding well",
+      "refusing the breast"
+    ],
+    "synonyms_fr": [
+      "bébé qui ne tète pas",
+      "refus du sein"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Excessive crying",
+    "term_fr": "Pleurs excessifs",
+    "synonyms_en": [
+      "baby crying a lot",
+      "inconsolable crying"
+    ],
+    "synonyms_fr": [
+      "bébé qui pleure beaucoup",
+      "pleurs incessants"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Failure to thrive",
+    "term_fr": "Retard staturo-pondéral",
+    "synonyms_en": [
+      "child not growing",
+      "poor weight gain"
+    ],
+    "synonyms_fr": [
+      "enfant qui ne grandit pas",
+      "mauvaise prise de poids"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Cloudy urine",
+    "term_fr": "Urines troubles",
+    "synonyms_en": [
+      "murky urine"
+    ],
+    "synonyms_fr": [
+      "urines pas claires"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Foamy urine",
+    "term_fr": "Urines mousseuses",
+    "synonyms_en": [
+      "bubbles in urine"
+    ],
+    "synonyms_fr": [
+      "urines avec de la mousse"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Dark urine",
+    "term_fr": "Urines foncées",
+    "synonyms_en": [
+      "brown urine",
+      "tea-colored urine"
+    ],
+    "synonyms_fr": [
+      "urines marron",
+      "urines couleur thé"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Oliguria",
+    "term_fr": "Oligurie",
+    "synonyms_en": [
+      "passing little urine",
+      "reduced urine"
+    ],
+    "synonyms_fr": [
+      "uriner peu",
+      "diminution des urines"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Anuria",
+    "term_fr": "Anurie",
+    "synonyms_en": [
+      "no urine",
+      "not passing urine at all"
+    ],
+    "synonyms_fr": [
+      "absence d'urine",
+      "ne pisse plus du tout"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Urinary urgency",
+    "term_fr": "Mictions impérieuses",
+    "synonyms_en": [
+      "sudden urge to urinate",
+      "cannot hold urine"
+    ],
+    "synonyms_fr": [
+      "envie pressante d'uriner",
+      "besoin urgent de pisser"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Urinary hesitancy",
+    "term_fr": "Dysurie d'attente",
+    "synonyms_en": [
+      "difficulty starting urination",
+      "waiting to pass urine"
+    ],
+    "synonyms_fr": [
+      "difficulté à commencer à uriner",
+      "attente avant de pisser"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Weak urinary stream",
+    "term_fr": "Jet urinaire faible",
+    "synonyms_en": [
+      "poor urine flow",
+      "dribbling urine"
+    ],
+    "synonyms_fr": [
+      "jet d'urine faible",
+      "filet d'urine"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Terminal dribbling",
+    "term_fr": "Gouttes retardataires",
+    "synonyms_en": [
+      "dribbling at end of urination"
+    ],
+    "synonyms_fr": [
+      "gouttes après avoir uriné"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Scrotal swelling",
+    "term_fr": "Tuméfaction scrotale",
+    "synonyms_en": [
+      "swollen scrotum",
+      "swollen testicle bag"
+    ],
+    "synonyms_fr": [
+      "bourses gonflées",
+      "scrotum gonflé"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Testicular pain",
+    "term_fr": "Douleur testiculaire",
+    "synonyms_en": [
+      "pain in the testicle"
+    ],
+    "synonyms_fr": [
+      "mal aux testicules",
+      "douleur aux bourses"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Erectile dysfunction",
+    "term_fr": "Dysfonction érectile",
+    "synonyms_en": [
+      "impotence",
+      "cannot get an erection"
+    ],
+    "synonyms_fr": [
+      "impuissance",
+      "troubles de l'érection"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Genital ulcer",
+    "term_fr": "Ulcération génitale",
+    "synonyms_en": [
+      "sore on private parts",
+      "genital wound"
+    ],
+    "synonyms_fr": [
+      "plaie sur les parties génitales",
+      "chancre"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Renal colic",
+    "term_fr": "Colique néphrétique",
+    "synonyms_en": [
+      "severe loin pain",
+      "kidney stone pain"
+    ],
+    "synonyms_fr": [
+      "crise de colique néphrétique",
+      "douleur intense au flanc"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Reduced libido",
+    "term_fr": "Baisse de la libido",
+    "synonyms_en": [
+      "low sex drive",
+      "loss of desire"
+    ],
+    "synonyms_fr": [
+      "baisse du désir",
+      "manque d'envie sexuelle"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Joint stiffness",
+    "term_fr": "Raideur articulaire",
+    "synonyms_en": [
+      "stiff joints",
+      "morning stiffness"
+    ],
+    "synonyms_fr": [
+      "articulations raides",
+      "raideur le matin"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle weakness",
+    "term_fr": "Faiblesse musculaire",
+    "synonyms_en": [
+      "weak muscles",
+      "loss of strength"
+    ],
+    "synonyms_fr": [
+      "muscles faibles",
+      "perte de force"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Limping",
+    "term_fr": "Boiterie",
+    "synonyms_en": [
+      "walking with a limp"
+    ],
+    "synonyms_fr": [
+      "marcher en boitant",
+      "boiter"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Difficulty walking",
+    "term_fr": "Difficulté à la marche",
+    "synonyms_en": [
+      "trouble walking",
+      "cannot walk well"
+    ],
+    "synonyms_fr": [
+      "mal à marcher",
+      "marche difficile"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Knee pain",
+    "term_fr": "Gonalgie",
+    "synonyms_en": [
+      "pain in the knee",
+      "sore knee"
+    ],
+    "synonyms_fr": [
+      "mal au genou",
+      "douleur au genou"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Shoulder pain",
+    "term_fr": "Omalgie",
+    "synonyms_en": [
+      "pain in the shoulder"
+    ],
+    "synonyms_fr": [
+      "mal à l'épaule",
+      "douleur d'épaule"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Hip pain",
+    "term_fr": "Douleur de la hanche",
+    "synonyms_en": [
+      "pain in the hip"
+    ],
+    "synonyms_fr": [
+      "mal à la hanche"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Sciatica",
+    "term_fr": "Sciatique",
+    "synonyms_en": [
+      "leg pain from the back",
+      "shooting pain down the leg"
+    ],
+    "synonyms_fr": [
+      "douleur du nerf sciatique",
+      "douleur qui descend dans la jambe"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle cramps",
+    "term_fr": "Crampes musculaires",
+    "synonyms_en": [
+      "leg cramps",
+      "muscle spasms"
+    ],
+    "synonyms_fr": [
+      "crampes",
+      "contractures douloureuses"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint deformity",
+    "term_fr": "Déformation articulaire",
+    "synonyms_en": [
+      "bent joint",
+      "deformed joint"
+    ],
+    "synonyms_fr": [
+      "articulation déformée",
+      "joint tordu"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Reduced range of motion",
+    "term_fr": "Limitation des mouvements",
+    "synonyms_en": [
+      "cannot move the joint fully",
+      "restricted movement"
+    ],
+    "synonyms_fr": [
+      "mouvements limités",
+      "articulation bloquée"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Heel pain",
+    "term_fr": "Talalgie",
+    "synonyms_en": [
+      "pain in the heel"
+    ],
+    "synonyms_fr": [
+      "mal au talon",
+      "douleur au talon"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Wrist pain",
+    "term_fr": "Douleur du poignet",
+    "synonyms_en": [
+      "sore wrist"
+    ],
+    "synonyms_fr": [
+      "mal au poignet"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Foot pain",
+    "term_fr": "Douleur du pied",
+    "synonyms_en": [
+      "sore foot",
+      "pain in the foot"
+    ],
+    "synonyms_fr": [
+      "mal au pied"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Neck pain",
+    "term_fr": "Cervicalgie",
+    "synonyms_en": [
+      "pain in the neck",
+      "sore neck"
+    ],
+    "synonyms_fr": [
+      "mal au cou",
+      "douleur cervicale"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Migraine",
+    "term_fr": "Migraine",
+    "synonyms_en": [
+      "one-sided headache",
+      "throbbing headache with nausea"
+    ],
+    "synonyms_fr": [
+      "mal de tête d'un côté",
+      "migraine avec nausées"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Loss of balance",
+    "term_fr": "Trouble de l'équilibre",
+    "synonyms_en": [
+      "unsteady",
+      "off balance"
+    ],
+    "synonyms_fr": [
+      "perte d'équilibre",
+      "instabilité"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Gait disturbance",
+    "term_fr": "Trouble de la marche",
+    "synonyms_en": [
+      "abnormal walking",
+      "staggering walk"
+    ],
+    "synonyms_fr": [
+      "marche anormale",
+      "démarche instable"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Tremor",
+    "term_fr": "Tremblements",
+    "synonyms_en": [
+      "shaking hands",
+      "trembling"
+    ],
+    "synonyms_fr": [
+      "mains qui tremblent",
+      "tremblement"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Memory loss",
+    "term_fr": "Troubles de la mémoire",
+    "synonyms_en": [
+      "forgetfulness",
+      "poor memory"
+    ],
+    "synonyms_fr": [
+      "pertes de mémoire",
+      "oublis fréquents"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Dysarthria",
+    "term_fr": "Dysarthrie",
+    "synonyms_en": [
+      "slurred speech",
+      "difficulty articulating"
+    ],
+    "synonyms_fr": [
+      "parole pâteuse",
+      "difficulté à articuler"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Aphasia",
+    "term_fr": "Aphasie",
+    "synonyms_en": [
+      "cannot find words",
+      "loss of speech"
+    ],
+    "synonyms_fr": [
+      "difficulté à parler",
+      "perte du langage"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Facial palsy",
+    "term_fr": "Paralysie faciale",
+    "synonyms_en": [
+      "drooping face",
+      "one side of face weak"
+    ],
+    "synonyms_fr": [
+      "visage qui tombe",
+      "bouche déviée"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Limb weakness",
+    "term_fr": "Faiblesse d'un membre",
+    "synonyms_en": [
+      "weak arm or leg",
+      "heavy limb"
+    ],
+    "synonyms_fr": [
+      "bras ou jambe faible",
+      "membre lourd"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Sensory loss",
+    "term_fr": "Perte de sensibilité",
+    "synonyms_en": [
+      "numbness of a part",
+      "cannot feel touch"
+    ],
+    "synonyms_fr": [
+      "zone insensible",
+      "ne sent pas le toucher"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Burning feet",
+    "term_fr": "Brûlures des pieds",
+    "synonyms_en": [
+      "burning sensation in feet",
+      "hot feet"
+    ],
+    "synonyms_fr": [
+      "pieds qui brûlent",
+      "sensation de brûlure aux pieds"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Difficulty concentrating",
+    "term_fr": "Troubles de la concentration",
+    "synonyms_en": [
+      "poor concentration",
+      "cannot focus"
+    ],
+    "synonyms_fr": [
+      "manque de concentration",
+      "difficulté à se concentrer"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Abnormal movements",
+    "term_fr": "Mouvements anormaux",
+    "synonyms_en": [
+      "jerking movements",
+      "involuntary movements"
+    ],
+    "synonyms_fr": [
+      "mouvements involontaires",
+      "secousses"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Facial pain",
+    "term_fr": "Douleur faciale",
+    "synonyms_en": [
+      "pain in the face"
+    ],
+    "synonyms_fr": [
+      "mal au visage",
+      "douleur du visage"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Drowsiness",
+    "term_fr": "Obnubilation",
+    "synonyms_en": [
+      "reduced alertness",
+      "hard to wake"
+    ],
+    "synonyms_fr": [
+      "somnolence excessive",
+      "difficile à réveiller"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Lower limb weakness",
+    "term_fr": "Faiblesse des membres inférieurs",
+    "synonyms_en": [
+      "both legs weak",
+      "weak legs"
+    ],
+    "synonyms_fr": [
+      "jambes faibles",
+      "faiblesse des deux jambes"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Suicidal ideation",
+    "term_fr": "Idées suicidaires",
+    "synonyms_en": [
+      "thoughts of ending life",
+      "wanting to die"
+    ],
+    "synonyms_fr": [
+      "envie de mourir",
+      "pensées de suicide"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Irritability",
+    "term_fr": "Irritabilité",
+    "synonyms_en": [
+      "easily angered",
+      "short temper"
+    ],
+    "synonyms_fr": [
+      "s'énerve facilement",
+      "nervosité"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Anhedonia",
+    "term_fr": "Anhédonie",
+    "synonyms_en": [
+      "loss of interest",
+      "no pleasure in anything"
+    ],
+    "synonyms_fr": [
+      "perte d'intérêt",
+      "plus de plaisir à rien"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Panic attacks",
+    "term_fr": "Crises de panique",
+    "synonyms_en": [
+      "sudden intense fear",
+      "panic episodes"
+    ],
+    "synonyms_fr": [
+      "crises d'angoisse",
+      "attaques de panique"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Aggressive behavior",
+    "term_fr": "Comportement agressif",
+    "synonyms_en": [
+      "violent behavior",
+      "aggression"
+    ],
+    "synonyms_fr": [
+      "comportement violent",
+      "agressivité"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Social withdrawal",
+    "term_fr": "Repli sur soi",
+    "synonyms_en": [
+      "isolating from others",
+      "avoiding people"
+    ],
+    "synonyms_fr": [
+      "isolement",
+      "évite les gens"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Delusions",
+    "term_fr": "Idées délirantes",
+    "synonyms_en": [
+      "false beliefs",
+      "paranoid ideas"
+    ],
+    "synonyms_fr": [
+      "idées fausses",
+      "délire"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Mood lability",
+    "term_fr": "Labilité de l'humeur",
+    "synonyms_en": [
+      "mood swings",
+      "changing emotions"
+    ],
+    "synonyms_fr": [
+      "humeur changeante",
+      "sautes d'humeur"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Nightmares",
+    "term_fr": "Cauchemars",
+    "synonyms_en": [
+      "bad dreams",
+      "frightening dreams"
+    ],
+    "synonyms_fr": [
+      "mauvais rêves",
+      "rêves effrayants"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Crying spells",
+    "term_fr": "Crises de larmes",
+    "synonyms_en": [
+      "frequent crying",
+      "tearfulness"
+    ],
+    "synonyms_fr": [
+      "pleurs fréquents",
+      "envie de pleurer"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Skin discoloration",
+    "term_fr": "Dyschromie cutanée",
+    "synonyms_en": [
+      "change in skin color",
+      "patches of color"
+    ],
+    "synonyms_fr": [
+      "changement de couleur de la peau",
+      "taches colorées"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hyperpigmentation",
+    "term_fr": "Hyperpigmentation",
+    "synonyms_en": [
+      "dark patches on skin",
+      "skin darkening"
+    ],
+    "synonyms_fr": [
+      "taches foncées",
+      "peau qui fonce"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hypopigmentation",
+    "term_fr": "Hypopigmentation",
+    "synonyms_en": [
+      "light patches on skin",
+      "white spots"
+    ],
+    "synonyms_fr": [
+      "taches claires",
+      "dépigmentation"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Cutaneous nodule",
+    "term_fr": "Nodule cutané",
+    "synonyms_en": [
+      "lump under the skin",
+      "skin bump"
+    ],
+    "synonyms_fr": [
+      "boule sous la peau",
+      "nodule sous-cutané"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Skin abscess",
+    "term_fr": "Abcès cutané",
+    "synonyms_en": [
+      "boil",
+      "collection of pus"
+    ],
+    "synonyms_fr": [
+      "furoncle",
+      "abcès",
+      "clou"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Skin blisters",
+    "term_fr": "Vésicules cutanées",
+    "synonyms_en": [
+      "water blisters",
+      "fluid-filled bumps"
+    ],
+    "synonyms_fr": [
+      "cloques",
+      "ampoules"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Skin peeling",
+    "term_fr": "Desquamation",
+    "synonyms_en": [
+      "flaking skin",
+      "skin coming off"
+    ],
+    "synonyms_fr": [
+      "peau qui pèle",
+      "peau qui s'écaille"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Dry skin",
+    "term_fr": "Xérose cutanée",
+    "synonyms_en": [
+      "rough skin",
+      "scaly skin"
+    ],
+    "synonyms_fr": [
+      "peau sèche",
+      "peau rêche"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hair loss",
+    "term_fr": "Alopécie",
+    "synonyms_en": [
+      "losing hair",
+      "bald patches"
+    ],
+    "synonyms_fr": [
+      "chute de cheveux",
+      "perte de cheveux"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Nail changes",
+    "term_fr": "Anomalies des ongles",
+    "synonyms_en": [
+      "discolored nails",
+      "deformed nails"
+    ],
+    "synonyms_fr": [
+      "ongles abîmés",
+      "ongles décolorés"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Easy bruising",
+    "term_fr": "Ecchymoses faciles",
+    "synonyms_en": [
+      "bruises easily",
+      "blue marks on skin"
+    ],
+    "synonyms_fr": [
+      "bleus faciles",
+      "marques bleues sur la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Petechiae",
+    "term_fr": "Pétéchies",
+    "synonyms_en": [
+      "tiny red spots on skin",
+      "pinpoint red dots"
+    ],
+    "synonyms_fr": [
+      "petits points rouges",
+      "taches rouges minuscules"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Urticaria",
+    "term_fr": "Urticaire",
+    "synonyms_en": [
+      "hives",
+      "raised itchy welts"
+    ],
+    "synonyms_fr": [
+      "plaques d'urticaire",
+      "boutons qui grattent"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Changing mole",
+    "term_fr": "Modification d'un grain de beauté",
+    "synonyms_en": [
+      "mole getting bigger",
+      "changing skin spot"
+    ],
+    "synonyms_fr": [
+      "grain de beauté qui change",
+      "tache qui grandit"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Skin lump",
+    "term_fr": "Tuméfaction cutanée",
+    "synonyms_en": [
+      "swelling on the skin",
+      "growth on skin"
+    ],
+    "synonyms_fr": [
+      "masse sur la peau",
+      "grosseur sous la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Antepartum hemorrhage",
+    "term_fr": "Hémorragie antepartum",
+    "synonyms_en": [
+      "bleeding during pregnancy",
+      "vaginal bleeding while pregnant"
+    ],
+    "synonyms_fr": [
+      "saignement pendant la grossesse",
+      "perte de sang enceinte"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Postmenopausal bleeding",
+    "term_fr": "Saignement post-ménopausique",
+    "synonyms_en": [
+      "bleeding after menopause"
+    ],
+    "synonyms_fr": [
+      "saignement après la ménopause"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Breast pain",
+    "term_fr": "Mastodynie",
+    "synonyms_en": [
+      "painful breast",
+      "sore breast"
+    ],
+    "synonyms_fr": [
+      "mal au sein",
+      "douleur des seins"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Breast lump",
+    "term_fr": "Masse mammaire",
+    "synonyms_en": [
+      "lump in the breast",
+      "breast nodule"
+    ],
+    "synonyms_fr": [
+      "boule dans le sein",
+      "nodule du sein"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Nipple discharge",
+    "term_fr": "Écoulement mamelonnaire",
+    "synonyms_en": [
+      "fluid from the nipple",
+      "discharge from breast"
+    ],
+    "synonyms_fr": [
+      "liquide qui sort du mamelon",
+      "écoulement du sein"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Galactorrhea",
+    "term_fr": "Galactorrhée",
+    "synonyms_en": [
+      "milk discharge when not breastfeeding"
+    ],
+    "synonyms_fr": [
+      "écoulement de lait hors allaitement"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Rupture of membranes",
+    "term_fr": "Rupture des membranes",
+    "synonyms_en": [
+      "water breaking",
+      "loss of fluid per vagina"
+    ],
+    "synonyms_fr": [
+      "perte des eaux",
+      "rupture de la poche des eaux"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Infertility",
+    "term_fr": "Infertilité",
+    "synonyms_en": [
+      "unable to conceive",
+      "cannot get pregnant"
+    ],
+    "synonyms_fr": [
+      "impossibilité de tomber enceinte",
+      "stérilité"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Irregular menstruation",
+    "term_fr": "Cycles irréguliers",
+    "synonyms_en": [
+      "irregular periods",
+      "unpredictable periods"
+    ],
+    "synonyms_fr": [
+      "règles irrégulières",
+      "cycles menstruels irréguliers"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Vulval swelling",
+    "term_fr": "Tuméfaction vulvaire",
+    "synonyms_en": [
+      "swelling of the vulva",
+      "swollen private parts"
+    ],
+    "synonyms_fr": [
+      "gonflement de la vulve",
+      "parties gonflées"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Hyperemesis in pregnancy",
+    "term_fr": "Vomissements gravidiques",
+    "synonyms_en": [
+      "severe vomiting in pregnancy",
+      "morning sickness"
+    ],
+    "synonyms_fr": [
+      "vomissements de la grossesse",
+      "nausées de grossesse"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Prolonged bleeding",
+    "term_fr": "Saignement prolongé",
+    "synonyms_en": [
+      "bleeding that won't stop",
+      "slow to clot"
+    ],
+    "synonyms_fr": [
+      "saignement qui ne s'arrête pas",
+      "sang qui ne coagule pas"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Spontaneous bruising",
+    "term_fr": "Hématomes spontanés",
+    "synonyms_en": [
+      "bruises without injury"
+    ],
+    "synonyms_fr": [
+      "bleus sans choc",
+      "hématomes sans cause"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Facial swelling",
+    "term_fr": "Œdème du visage",
+    "synonyms_en": [
+      "swollen face",
+      "puffy face"
+    ],
+    "synonyms_fr": [
+      "visage gonflé",
+      "figure enflée"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Lip swelling",
+    "term_fr": "Œdème des lèvres",
+    "synonyms_en": [
+      "swollen lips"
+    ],
+    "synonyms_fr": [
+      "lèvres gonflées"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Tongue swelling",
+    "term_fr": "Œdème de la langue",
+    "synonyms_en": [
+      "swollen tongue",
+      "big tongue"
+    ],
+    "synonyms_fr": [
+      "langue gonflée"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Hypersomnia",
+    "term_fr": "Hypersomnie",
+    "synonyms_en": [
+      "sleeping too much",
+      "excessive sleep"
+    ],
+    "synonyms_fr": [
+      "dormir trop",
+      "sommeil excessif"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Weight gain",
+    "term_fr": "Prise de poids",
+    "synonyms_en": [
+      "gaining weight",
+      "getting fatter"
+    ],
+    "synonyms_fr": [
+      "grossir",
+      "prendre du poids"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Irregular heartbeat sensation",
+    "term_fr": "Sensation de battements irréguliers",
+    "synonyms_en": [
+      "skipped beats",
+      "irregular pulse"
+    ],
+    "synonyms_fr": [
+      "coeur qui saute des battements",
+      "pouls irrégulier"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Orthostatic dizziness",
+    "term_fr": "Vertige au lever",
+    "synonyms_en": [
+      "dizzy on standing",
+      "lightheaded when getting up"
+    ],
+    "synonyms_fr": [
+      "étourdissement en se levant",
+      "tête qui tourne au lever"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Hyperventilation",
+    "term_fr": "Hyperventilation",
+    "synonyms_en": [
+      "breathing too fast and deep",
+      "over-breathing"
+    ],
+    "synonyms_fr": [
+      "respiration trop rapide",
+      "respirer trop fort"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Glossodynia",
+    "term_fr": "Glossodynie",
+    "synonyms_en": [
+      "burning tongue",
+      "sore tongue"
+    ],
+    "synonyms_fr": [
+      "langue qui brûle",
+      "langue douloureuse"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Ear canal itching",
+    "term_fr": "Prurit du conduit auditif",
+    "synonyms_en": [
+      "itchy ear",
+      "itching inside the ear"
+    ],
+    "synonyms_fr": [
+      "oreille qui gratte",
+      "démangeaison dans l'oreille"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Temporomandibular joint pain",
+    "term_fr": "Douleur temporo-mandibulaire",
+    "synonyms_en": [
+      "jaw joint pain",
+      "pain when chewing"
+    ],
+    "synonyms_fr": [
+      "douleur de la mâchoire",
+      "mal en mâchant"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Gum swelling",
+    "term_fr": "Gonflement des gencives",
+    "synonyms_en": [
+      "swollen gums"
+    ],
+    "synonyms_fr": [
+      "gencives gonflées",
+      "gencives enflées"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Throat tightness",
+    "term_fr": "Constriction de la gorge",
+    "synonyms_en": [
+      "tight throat",
+      "throat closing up"
+    ],
+    "synonyms_fr": [
+      "gorge serrée",
+      "sensation de gorge qui se ferme"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Cerumen impaction",
+    "term_fr": "Bouchon de cérumen",
+    "synonyms_en": [
+      "earwax blockage",
+      "blocked ear with wax"
+    ],
+    "synonyms_fr": [
+      "bouchon de cire",
+      "oreille bouchée par la cire"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Eyelid twitching",
+    "term_fr": "Myokymie palpébrale",
+    "synonyms_en": [
+      "twitching eyelid",
+      "eye spasm"
+    ],
+    "synonyms_fr": [
+      "paupière qui saute",
+      "tic de la paupière"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Dry eyes",
+    "term_fr": "Sécheresse oculaire",
+    "synonyms_en": [
+      "gritty dry eyes",
+      "lack of tears"
+    ],
+    "synonyms_fr": [
+      "yeux secs",
+      "manque de larmes"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Halos around lights",
+    "term_fr": "Halos lumineux",
+    "synonyms_en": [
+      "rings around lights",
+      "glare halos"
+    ],
+    "synonyms_fr": [
+      "halos autour des lumières",
+      "cercles autour des lampes"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Exophthalmos",
+    "term_fr": "Exophtalmie",
+    "synonyms_en": [
+      "bulging eyes",
+      "protruding eyes"
+    ],
+    "synonyms_fr": [
+      "yeux saillants",
+      "yeux qui sortent"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Ptosis",
+    "term_fr": "Ptôsis palpébral",
+    "synonyms_en": [
+      "drooping eyelid",
+      "falling eyelid"
+    ],
+    "synonyms_fr": [
+      "paupière tombante",
+      "paupière qui tombe"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Asthenopia",
+    "term_fr": "Asthénopie",
+    "synonyms_en": [
+      "eye strain",
+      "tired eyes"
+    ],
+    "synonyms_fr": [
+      "fatigue oculaire",
+      "yeux fatigués"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Abdominal mass",
+    "term_fr": "Masse abdominale",
+    "synonyms_en": [
+      "lump in the belly",
+      "swelling in abdomen"
+    ],
+    "synonyms_fr": [
+      "masse dans le ventre",
+      "boule dans l'abdomen"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Fecal incontinence",
+    "term_fr": "Incontinence fécale",
+    "synonyms_en": [
+      "loss of bowel control",
+      "soiling"
+    ],
+    "synonyms_fr": [
+      "perte de contrôle des selles",
+      "selles involontaires"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Coffee-ground vomitus",
+    "term_fr": "Vomissements marc de café",
+    "synonyms_en": [
+      "dark grainy vomit",
+      "brown vomit"
+    ],
+    "synonyms_fr": [
+      "vomissements couleur marc de café",
+      "vomi marron"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Abdominal cramps",
+    "term_fr": "Crampes abdominales",
+    "synonyms_en": [
+      "belly cramps",
+      "griping stomach pain"
+    ],
+    "synonyms_fr": [
+      "crampes au ventre",
+      "coliques"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Nocturnal enuresis",
+    "term_fr": "Énurésie nocturne",
+    "synonyms_en": [
+      "bedwetting",
+      "wetting the bed at night"
+    ],
+    "synonyms_fr": [
+      "pipi au lit",
+      "uriner au lit la nuit"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Painful ejaculation",
+    "term_fr": "Éjaculation douloureuse",
+    "synonyms_en": [
+      "pain on ejaculation"
+    ],
+    "synonyms_fr": [
+      "douleur à l'éjaculation"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Hematospermia",
+    "term_fr": "Hémospermie",
+    "synonyms_en": [
+      "blood in semen"
+    ],
+    "synonyms_fr": [
+      "sang dans le sperme"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Elbow pain",
+    "term_fr": "Douleur du coude",
+    "synonyms_en": [
+      "sore elbow",
+      "pain in the elbow"
+    ],
+    "synonyms_fr": [
+      "mal au coude"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Ankle pain",
+    "term_fr": "Douleur de la cheville",
+    "synonyms_en": [
+      "sore ankle"
+    ],
+    "synonyms_fr": [
+      "mal à la cheville"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle wasting",
+    "term_fr": "Amyotrophie",
+    "synonyms_en": [
+      "muscle loss",
+      "muscles getting smaller"
+    ],
+    "synonyms_fr": [
+      "fonte musculaire",
+      "muscles qui diminuent"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Nocturnal leg cramps",
+    "term_fr": "Crampes nocturnes des mollets",
+    "synonyms_en": [
+      "leg cramps at night"
+    ],
+    "synonyms_fr": [
+      "crampes aux jambes la nuit"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint redness",
+    "term_fr": "Rougeur articulaire",
+    "synonyms_en": [
+      "red hot joint",
+      "inflamed joint"
+    ],
+    "synonyms_fr": [
+      "articulation rouge",
+      "joint chaud et rouge"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Difficulty climbing stairs",
+    "term_fr": "Difficulté à monter les escaliers",
+    "synonyms_en": [
+      "trouble with stairs",
+      "legs give way on stairs"
+    ],
+    "synonyms_fr": [
+      "mal à monter les marches",
+      "jambes faibles dans les escaliers"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Restless legs",
+    "term_fr": "Syndrome des jambes sans repos",
+    "synonyms_en": [
+      "urge to move the legs",
+      "crawling sensation in legs"
+    ],
+    "synonyms_fr": [
+      "besoin de bouger les jambes",
+      "impatiences dans les jambes"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Foot drop",
+    "term_fr": "Pied tombant",
+    "synonyms_en": [
+      "dragging the foot",
+      "cannot lift the foot"
+    ],
+    "synonyms_fr": [
+      "pied qui traîne",
+      "steppage"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Perioral paresthesia",
+    "term_fr": "Paresthésies péribuccales",
+    "synonyms_en": [
+      "tingling around the mouth",
+      "numb lips"
+    ],
+    "synonyms_fr": [
+      "fourmillements autour de la bouche",
+      "lèvres engourdies"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Obsessive thoughts",
+    "term_fr": "Pensées obsédantes",
+    "synonyms_en": [
+      "intrusive thoughts",
+      "cannot stop thinking"
+    ],
+    "synonyms_fr": [
+      "idées fixes",
+      "pensées qui reviennent sans cesse"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Flashbacks",
+    "term_fr": "Reviviscences",
+    "synonyms_en": [
+      "reliving a trauma",
+      "vivid bad memories"
+    ],
+    "synonyms_fr": [
+      "revivre un traumatisme",
+      "souvenirs envahissants"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Skin redness",
+    "term_fr": "Érythème cutané",
+    "synonyms_en": [
+      "red skin",
+      "reddened area"
+    ],
+    "synonyms_fr": [
+      "rougeur de la peau",
+      "peau rouge"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Cold sores",
+    "term_fr": "Herpès labial",
+    "synonyms_en": [
+      "fever blisters on lip",
+      "lip blisters"
+    ],
+    "synonyms_fr": [
+      "bouton de fièvre",
+      "herpès sur la lèvre"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Warts",
+    "term_fr": "Verrues",
+    "synonyms_en": [
+      "skin warts",
+      "rough growths on skin"
+    ],
+    "synonyms_fr": [
+      "verrues sur la peau"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Palmar hyperhidrosis",
+    "term_fr": "Hyperhidrose palmaire",
+    "synonyms_en": [
+      "sweaty palms",
+      "wet hands"
+    ],
+    "synonyms_fr": [
+      "mains moites",
+      "paumes qui transpirent"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Cracked lips",
+    "term_fr": "Lèvres gercées",
+    "synonyms_en": [
+      "chapped lips",
+      "dry split lips"
+    ],
+    "synonyms_fr": [
+      "lèvres sèches et fendues",
+      "gerçures des lèvres"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Brittle hair",
+    "term_fr": "Cheveux cassants",
+    "synonyms_en": [
+      "hair breaking easily",
+      "weak hair"
+    ],
+    "synonyms_fr": [
+      "cheveux fragiles",
+      "cheveux qui cassent"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Foul vaginal odor",
+    "term_fr": "Odeur vaginale nauséabonde",
+    "synonyms_en": [
+      "bad smell from vagina",
+      "fishy odor"
+    ],
+    "synonyms_fr": [
+      "mauvaise odeur vaginale",
+      "odeur de poisson"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Vaginal dryness",
+    "term_fr": "Sécheresse vaginale",
+    "synonyms_en": [
+      "dry vagina",
+      "lack of lubrication"
+    ],
+    "synonyms_fr": [
+      "sécheresse intime",
+      "manque de lubrification"
+    ],
+    "system": "Obstetric/Gynae"
   }
 ]

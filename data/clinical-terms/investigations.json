@@ -1386,5 +1386,3603 @@
       "radio du thorax"
     ],
     "order_type": "imaging"
+  },
+  {
+    "term_en": "Mean corpuscular volume",
+    "term_fr": "Volume globulaire moyen",
+    "synonyms_en": [
+      "MCV"
+    ],
+    "synonyms_fr": [
+      "VGM"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Mean corpuscular hemoglobin",
+    "term_fr": "Teneur corpusculaire moyenne en hémoglobine",
+    "synonyms_en": [
+      "MCH"
+    ],
+    "synonyms_fr": [
+      "TCMH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Mean corpuscular hemoglobin concentration",
+    "term_fr": "Concentration corpusculaire moyenne en hémoglobine",
+    "synonyms_en": [
+      "MCHC"
+    ],
+    "synonyms_fr": [
+      "CCMH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Red cell distribution width",
+    "term_fr": "Indice de distribution des globules rouges",
+    "synonyms_en": [
+      "RDW"
+    ],
+    "synonyms_fr": [
+      "IDR"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hematocrit",
+    "term_fr": "Hématocrite",
+    "synonyms_en": [
+      "HCT",
+      "PCV",
+      "packed cell volume"
+    ],
+    "synonyms_fr": [
+      "Ht"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Red blood cell count",
+    "term_fr": "Numération des globules rouges",
+    "synonyms_en": [
+      "RBC count"
+    ],
+    "synonyms_fr": [
+      "NGR"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Differential white cell count",
+    "term_fr": "Formule leucocytaire",
+    "synonyms_en": [
+      "WBC differential",
+      "diff count"
+    ],
+    "synonyms_fr": [
+      "formule sanguine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Absolute neutrophil count",
+    "term_fr": "Polynucléaires neutrophiles absolus",
+    "synonyms_en": [
+      "ANC"
+    ],
+    "synonyms_fr": [
+      "PNN"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Absolute lymphocyte count",
+    "term_fr": "Lymphocytes absolus",
+    "synonyms_en": [
+      "ALC"
+    ],
+    "synonyms_fr": [
+      "lymphocytes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Eosinophil count",
+    "term_fr": "Numération des éosinophiles",
+    "synonyms_en": [
+      "eosinophils"
+    ],
+    "synonyms_fr": [
+      "éosinophiles"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Peripheral blood film",
+    "term_fr": "Frottis sanguin",
+    "synonyms_en": [
+      "blood smear",
+      "peripheral smear"
+    ],
+    "synonyms_fr": [
+      "frottis périphérique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Direct Coombs test",
+    "term_fr": "Test de Coombs direct",
+    "synonyms_en": [
+      "direct antiglobulin test",
+      "DAT"
+    ],
+    "synonyms_fr": [
+      "test direct à l'antiglobuline"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Indirect Coombs test",
+    "term_fr": "Test de Coombs indirect",
+    "synonyms_en": [
+      "indirect antiglobulin test"
+    ],
+    "synonyms_fr": [
+      "RAI"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Haptoglobin",
+    "term_fr": "Haptoglobine",
+    "synonyms_en": [
+      "serum haptoglobin"
+    ],
+    "synonyms_fr": [
+      "haptoglobine sérique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Lactate dehydrogenase",
+    "term_fr": "Lactate déshydrogénase",
+    "synonyms_en": [
+      "LDH"
+    ],
+    "synonyms_fr": [
+      "LDH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Glucose-6-phosphate dehydrogenase assay",
+    "term_fr": "Dosage de la G6PD",
+    "synonyms_en": [
+      "G6PD level",
+      "G6PD enzyme assay"
+    ],
+    "synonyms_fr": [
+      "dosage G6PD"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum ferritin",
+    "term_fr": "Ferritine sérique",
+    "synonyms_en": [
+      "ferritin"
+    ],
+    "synonyms_fr": [
+      "ferritine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum iron",
+    "term_fr": "Fer sérique",
+    "synonyms_en": [
+      "iron level"
+    ],
+    "synonyms_fr": [
+      "sidérémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total iron binding capacity",
+    "term_fr": "Capacité totale de fixation du fer",
+    "synonyms_en": [
+      "TIBC"
+    ],
+    "synonyms_fr": [
+      "CTFF"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Transferrin saturation",
+    "term_fr": "Coefficient de saturation de la transferrine",
+    "synonyms_en": [
+      "TSAT"
+    ],
+    "synonyms_fr": [
+      "CST"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum vitamin B12",
+    "term_fr": "Vitamine B12 sérique",
+    "synonyms_en": [
+      "cobalamin level"
+    ],
+    "synonyms_fr": [
+      "dosage B12"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum folate",
+    "term_fr": "Folates sériques",
+    "synonyms_en": [
+      "folic acid level"
+    ],
+    "synonyms_fr": [
+      "dosage des folates"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Bone marrow aspiration cytology",
+    "term_fr": "Cytologie du myélogramme",
+    "synonyms_en": [
+      "bone marrow aspirate"
+    ],
+    "synonyms_fr": [
+      "myélogramme"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Bone marrow trephine biopsy",
+    "term_fr": "Biopsie ostéomédullaire",
+    "synonyms_en": [
+      "trephine biopsy"
+    ],
+    "synonyms_fr": [
+      "BOM"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Flow cytometry immunophenotyping",
+    "term_fr": "Immunophénotypage par cytométrie en flux",
+    "synonyms_en": [
+      "flow cytometry"
+    ],
+    "synonyms_fr": [
+      "cytométrie en flux"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "International normalized ratio",
+    "term_fr": "Rapport international normalisé",
+    "synonyms_en": [
+      "INR"
+    ],
+    "synonyms_fr": [
+      "INR"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum fibrinogen",
+    "term_fr": "Fibrinogène",
+    "synonyms_en": [
+      "fibrinogen level"
+    ],
+    "synonyms_fr": [
+      "dosage du fibrinogène"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "D-dimer assay",
+    "term_fr": "Dosage des D-dimères",
+    "synonyms_en": [
+      "D-dimer"
+    ],
+    "synonyms_fr": [
+      "D-dimères"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Thrombin time",
+    "term_fr": "Temps de thrombine",
+    "synonyms_en": [
+      "TT"
+    ],
+    "synonyms_fr": [
+      "TT"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Factor VIII assay",
+    "term_fr": "Dosage du facteur VIII",
+    "synonyms_en": [
+      "factor 8 level"
+    ],
+    "synonyms_fr": [
+      "facteur VIII"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Protein C activity",
+    "term_fr": "Activité de la protéine C",
+    "synonyms_en": [
+      "protein C level"
+    ],
+    "synonyms_fr": [
+      "protéine C"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Protein S activity",
+    "term_fr": "Activité de la protéine S",
+    "synonyms_en": [
+      "protein S level"
+    ],
+    "synonyms_fr": [
+      "protéine S"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antithrombin III activity",
+    "term_fr": "Activité de l'antithrombine III",
+    "synonyms_en": [
+      "AT III"
+    ],
+    "synonyms_fr": [
+      "antithrombine III"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum sodium",
+    "term_fr": "Natrémie",
+    "synonyms_en": [
+      "sodium level",
+      "Na"
+    ],
+    "synonyms_fr": [
+      "sodium sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum potassium",
+    "term_fr": "Kaliémie",
+    "synonyms_en": [
+      "potassium level",
+      "K"
+    ],
+    "synonyms_fr": [
+      "potassium sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum chloride",
+    "term_fr": "Chlorémie",
+    "synonyms_en": [
+      "chloride level"
+    ],
+    "synonyms_fr": [
+      "chlore sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum bicarbonate",
+    "term_fr": "Bicarbonates sériques",
+    "synonyms_en": [
+      "HCO3",
+      "CO2 total"
+    ],
+    "synonyms_fr": [
+      "réserve alcaline"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum magnesium",
+    "term_fr": "Magnésémie",
+    "synonyms_en": [
+      "magnesium level",
+      "Mg"
+    ],
+    "synonyms_fr": [
+      "magnésium sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum phosphate",
+    "term_fr": "Phosphatémie",
+    "synonyms_en": [
+      "phosphate level"
+    ],
+    "synonyms_fr": [
+      "phosphore sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anion gap",
+    "term_fr": "Trou anionique",
+    "synonyms_en": [
+      "serum anion gap"
+    ],
+    "synonyms_fr": [
+      "trou anionique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum osmolality",
+    "term_fr": "Osmolalité plasmatique",
+    "synonyms_en": [
+      "plasma osmolality"
+    ],
+    "synonyms_fr": [
+      "osmolalité"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Estimated glomerular filtration rate",
+    "term_fr": "Débit de filtration glomérulaire estimé",
+    "synonyms_en": [
+      "eGFR"
+    ],
+    "synonyms_fr": [
+      "DFG estimé"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Creatinine clearance",
+    "term_fr": "Clairance de la créatinine",
+    "synonyms_en": [
+      "CrCl"
+    ],
+    "synonyms_fr": [
+      "clairance créatinine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cystatin C",
+    "term_fr": "Cystatine C",
+    "synonyms_en": [
+      "serum cystatin C"
+    ],
+    "synonyms_fr": [
+      "cystatine C"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine albumin-to-creatinine ratio",
+    "term_fr": "Rapport albumine/créatinine urinaire",
+    "synonyms_en": [
+      "ACR",
+      "microalbumin ratio"
+    ],
+    "synonyms_fr": [
+      "RAC"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine protein-to-creatinine ratio",
+    "term_fr": "Rapport protéines/créatinine urinaire",
+    "synonyms_en": [
+      "PCR"
+    ],
+    "synonyms_fr": [
+      "RPC"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Oral glucose tolerance test",
+    "term_fr": "Hyperglycémie provoquée par voie orale",
+    "synonyms_en": [
+      "OGTT",
+      "GTT"
+    ],
+    "synonyms_fr": [
+      "HGPO"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "C-peptide level",
+    "term_fr": "Peptide C",
+    "synonyms_en": [
+      "serum C-peptide"
+    ],
+    "synonyms_fr": [
+      "peptide C"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Fasting serum insulin",
+    "term_fr": "Insulinémie à jeun",
+    "synonyms_en": [
+      "fasting insulin"
+    ],
+    "synonyms_fr": [
+      "insuline à jeun"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum fructosamine",
+    "term_fr": "Fructosamine",
+    "synonyms_en": [
+      "fructosamine level"
+    ],
+    "synonyms_fr": [
+      "fructosamine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Capillary blood glucose",
+    "term_fr": "Glycémie capillaire",
+    "synonyms_en": [
+      "fingerstick glucose",
+      "point-of-care glucose"
+    ],
+    "synonyms_fr": [
+      "dextro",
+      "glycémie au doigt"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood ketone level",
+    "term_fr": "Cétonémie",
+    "synonyms_en": [
+      "beta-hydroxybutyrate",
+      "blood ketones"
+    ],
+    "synonyms_fr": [
+      "corps cétoniques sanguins"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Arterial blood gas analysis",
+    "term_fr": "Gaz du sang artériel",
+    "synonyms_en": [
+      "ABG"
+    ],
+    "synonyms_fr": [
+      "gazométrie artérielle"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Venous blood gas analysis",
+    "term_fr": "Gaz du sang veineux",
+    "synonyms_en": [
+      "VBG"
+    ],
+    "synonyms_fr": [
+      "gazométrie veineuse"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum lactate",
+    "term_fr": "Lactatémie",
+    "synonyms_en": [
+      "lactate level",
+      "blood lactate"
+    ],
+    "synonyms_fr": [
+      "lactates sanguins"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Indirect bilirubin",
+    "term_fr": "Bilirubine indirecte",
+    "synonyms_en": [
+      "unconjugated bilirubin"
+    ],
+    "synonyms_fr": [
+      "bilirubine libre"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum ammonia",
+    "term_fr": "Ammoniémie",
+    "synonyms_en": [
+      "ammonia level"
+    ],
+    "synonyms_fr": [
+      "ammoniac sanguin"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Non-HDL cholesterol",
+    "term_fr": "Cholestérol non-HDL",
+    "synonyms_en": [
+      "non-HDL-C"
+    ],
+    "synonyms_fr": [
+      "cholestérol non-HDL"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Apolipoprotein B",
+    "term_fr": "Apolipoprotéine B",
+    "synonyms_en": [
+      "ApoB"
+    ],
+    "synonyms_fr": [
+      "ApoB"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Lipoprotein(a)",
+    "term_fr": "Lipoprotéine(a)",
+    "synonyms_en": [
+      "Lp(a)"
+    ],
+    "synonyms_fr": [
+      "Lp(a)"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "B-type natriuretic peptide",
+    "term_fr": "Peptide natriurétique de type B",
+    "synonyms_en": [
+      "BNP"
+    ],
+    "synonyms_fr": [
+      "BNP"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "NT-proBNP",
+    "term_fr": "NT-proBNP",
+    "synonyms_en": [
+      "N-terminal pro-BNP"
+    ],
+    "synonyms_fr": [
+      "NT-proBNP"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "High-sensitivity troponin I",
+    "term_fr": "Troponine I ultrasensible",
+    "synonyms_en": [
+      "hs-troponin",
+      "hs-TnI"
+    ],
+    "synonyms_fr": [
+      "troponine ultrasensible"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Myoglobin",
+    "term_fr": "Myoglobine",
+    "synonyms_en": [
+      "serum myoglobin"
+    ],
+    "synonyms_fr": [
+      "myoglobine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total creatine kinase",
+    "term_fr": "Créatine kinase totale",
+    "synonyms_en": [
+      "CK total",
+      "CPK"
+    ],
+    "synonyms_fr": [
+      "CPK totale"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Homocysteine",
+    "term_fr": "Homocystéine",
+    "synonyms_en": [
+      "serum homocysteine"
+    ],
+    "synonyms_fr": [
+      "homocystéinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Procalcitonin",
+    "term_fr": "Procalcitonine",
+    "synonyms_en": [
+      "PCT"
+    ],
+    "synonyms_fr": [
+      "PCT"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antinuclear antibody",
+    "term_fr": "Anticorps antinucléaires",
+    "synonyms_en": [
+      "ANA"
+    ],
+    "synonyms_fr": [
+      "AAN"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-double-stranded DNA antibody",
+    "term_fr": "Anticorps anti-ADN natif",
+    "synonyms_en": [
+      "anti-dsDNA"
+    ],
+    "synonyms_fr": [
+      "anti-ADN"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-cyclic citrullinated peptide antibody",
+    "term_fr": "Anticorps anti-CCP",
+    "synonyms_en": [
+      "anti-CCP",
+      "ACPA"
+    ],
+    "synonyms_fr": [
+      "anti-CCP"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Complement C3",
+    "term_fr": "Fraction C3 du complément",
+    "synonyms_en": [
+      "C3 level"
+    ],
+    "synonyms_fr": [
+      "C3"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Complement C4",
+    "term_fr": "Fraction C4 du complément",
+    "synonyms_en": [
+      "C4 level"
+    ],
+    "synonyms_fr": [
+      "C4"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum protein electrophoresis",
+    "term_fr": "Électrophorèse des protéines sériques",
+    "synonyms_en": [
+      "SPEP"
+    ],
+    "synonyms_fr": [
+      "EPP"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum immunoglobulins",
+    "term_fr": "Immunoglobulines sériques",
+    "synonyms_en": [
+      "IgG IgA IgM levels"
+    ],
+    "synonyms_fr": [
+      "dosage des immunoglobulines"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antineutrophil cytoplasmic antibody",
+    "term_fr": "Anticorps anti-cytoplasme des polynucléaires",
+    "synonyms_en": [
+      "ANCA"
+    ],
+    "synonyms_fr": [
+      "ANCA"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-tissue transglutaminase antibody",
+    "term_fr": "Anticorps anti-transglutaminase tissulaire",
+    "synonyms_en": [
+      "anti-tTG",
+      "celiac antibody"
+    ],
+    "synonyms_fr": [
+      "anti-transglutaminase"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HLA-B27 typing",
+    "term_fr": "Typage HLA-B27",
+    "synonyms_en": [
+      "HLA-B27"
+    ],
+    "synonyms_fr": [
+      "HLA-B27"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Morning serum cortisol",
+    "term_fr": "Cortisol sérique du matin",
+    "synonyms_en": [
+      "8am cortisol"
+    ],
+    "synonyms_fr": [
+      "cortisolémie de 8h"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Adrenocorticotropic hormone",
+    "term_fr": "Hormone adrénocorticotrope",
+    "synonyms_en": [
+      "ACTH"
+    ],
+    "synonyms_fr": [
+      "ACTH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Plasma aldosterone",
+    "term_fr": "Aldostérone plasmatique",
+    "synonyms_en": [
+      "aldosterone level"
+    ],
+    "synonyms_fr": [
+      "aldostérone"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Plasma renin activity",
+    "term_fr": "Activité rénine plasmatique",
+    "synonyms_en": [
+      "PRA",
+      "renin"
+    ],
+    "synonyms_fr": [
+      "rénine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum prolactin",
+    "term_fr": "Prolactine",
+    "synonyms_en": [
+      "prolactin level"
+    ],
+    "synonyms_fr": [
+      "prolactinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Luteinizing hormone",
+    "term_fr": "Hormone lutéinisante",
+    "synonyms_en": [
+      "LH"
+    ],
+    "synonyms_fr": [
+      "LH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Follicle-stimulating hormone",
+    "term_fr": "Hormone folliculo-stimulante",
+    "synonyms_en": [
+      "FSH"
+    ],
+    "synonyms_fr": [
+      "FSH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum testosterone",
+    "term_fr": "Testostérone sérique",
+    "synonyms_en": [
+      "testosterone level"
+    ],
+    "synonyms_fr": [
+      "testostéronémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum estradiol",
+    "term_fr": "Œstradiol sérique",
+    "synonyms_en": [
+      "estradiol level",
+      "E2"
+    ],
+    "synonyms_fr": [
+      "œstradiolémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum progesterone",
+    "term_fr": "Progestérone sérique",
+    "synonyms_en": [
+      "progesterone level"
+    ],
+    "synonyms_fr": [
+      "progestéronémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Parathyroid hormone",
+    "term_fr": "Parathormone",
+    "synonyms_en": [
+      "PTH"
+    ],
+    "synonyms_fr": [
+      "PTH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-thyroid peroxidase antibody",
+    "term_fr": "Anticorps anti-thyroperoxydase",
+    "synonyms_en": [
+      "anti-TPO"
+    ],
+    "synonyms_fr": [
+      "anti-TPO"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "25-hydroxyvitamin D",
+    "term_fr": "25-hydroxyvitamine D",
+    "synonyms_en": [
+      "vitamin D level",
+      "25-OH vitamin D"
+    ],
+    "synonyms_fr": [
+      "vitamine D"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Insulin-like growth factor 1",
+    "term_fr": "Facteur de croissance IGF-1",
+    "synonyms_en": [
+      "IGF-1"
+    ],
+    "synonyms_fr": [
+      "IGF-1"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Overnight dexamethasone suppression test",
+    "term_fr": "Test de freinage à la dexaméthasone",
+    "synonyms_en": [
+      "dexamethasone suppression test"
+    ],
+    "synonyms_fr": [
+      "test de freinage minute"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Dengue NS1 antigen",
+    "term_fr": "Antigène NS1 de la dengue",
+    "synonyms_en": [
+      "dengue NS1"
+    ],
+    "synonyms_fr": [
+      "NS1 dengue"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Dengue IgM and IgG antibody",
+    "term_fr": "Anticorps IgM et IgG anti-dengue",
+    "synonyms_en": [
+      "dengue serology"
+    ],
+    "synonyms_fr": [
+      "sérologie dengue"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis B e antigen",
+    "term_fr": "Antigène HBe",
+    "synonyms_en": [
+      "HBeAg"
+    ],
+    "synonyms_fr": [
+      "AgHBe"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis B core antibody",
+    "term_fr": "Anticorps anti-HBc",
+    "synonyms_en": [
+      "anti-HBc"
+    ],
+    "synonyms_fr": [
+      "anti-HBc"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis B viral load",
+    "term_fr": "Charge virale de l'hépatite B",
+    "synonyms_en": [
+      "HBV DNA"
+    ],
+    "synonyms_fr": [
+      "ADN VHB"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Hepatitis C viral load",
+    "term_fr": "Charge virale de l'hépatite C",
+    "synonyms_en": [
+      "HCV RNA"
+    ],
+    "synonyms_fr": [
+      "ARN VHC"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "HIV antigen-antibody combination assay",
+    "term_fr": "Test combiné antigène-anticorps VIH",
+    "synonyms_en": [
+      "HIV 4th generation test",
+      "HIV combo"
+    ],
+    "synonyms_fr": [
+      "test VIH de 4e génération"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Helicobacter pylori stool antigen",
+    "term_fr": "Antigène de H. pylori dans les selles",
+    "synonyms_en": [
+      "H pylori stool antigen"
+    ],
+    "synonyms_fr": [
+      "antigène H. pylori selles"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Helicobacter pylori urea breath test",
+    "term_fr": "Test respiratoire à l'urée pour H. pylori",
+    "synonyms_en": [
+      "urea breath test"
+    ],
+    "synonyms_fr": [
+      "test respiratoire H. pylori"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cryptococcal antigen test",
+    "term_fr": "Recherche d'antigène cryptococcique",
+    "synonyms_en": [
+      "CrAg"
+    ],
+    "synonyms_fr": [
+      "antigène cryptococcique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "SARS-CoV-2 PCR",
+    "term_fr": "PCR SARS-CoV-2",
+    "synonyms_en": [
+      "COVID-19 PCR",
+      "RT-PCR COVID"
+    ],
+    "synonyms_fr": [
+      "PCR COVID-19"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "SARS-CoV-2 rapid antigen test",
+    "term_fr": "Test antigénique rapide SARS-CoV-2",
+    "synonyms_en": [
+      "COVID-19 antigen test"
+    ],
+    "synonyms_fr": [
+      "test antigénique COVID"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Influenza rapid antigen test",
+    "term_fr": "Test antigénique rapide de la grippe",
+    "synonyms_en": [
+      "flu rapid test"
+    ],
+    "synonyms_fr": [
+      "test rapide grippe"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Mantoux tuberculin skin test",
+    "term_fr": "Intradermoréaction à la tuberculine",
+    "synonyms_en": [
+      "TST",
+      "PPD test"
+    ],
+    "synonyms_fr": [
+      "IDR à la tuberculine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Interferon-gamma release assay",
+    "term_fr": "Test de libération d'interféron gamma",
+    "synonyms_en": [
+      "IGRA",
+      "Quantiferon"
+    ],
+    "synonyms_fr": [
+      "test IGRA"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Gram stain microscopy",
+    "term_fr": "Coloration de Gram",
+    "synonyms_en": [
+      "gram stain"
+    ],
+    "synonyms_fr": [
+      "coloration de Gram"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Ziehl-Neelsen stain",
+    "term_fr": "Coloration de Ziehl-Neelsen",
+    "synonyms_en": [
+      "ZN stain",
+      "AFB stain"
+    ],
+    "synonyms_fr": [
+      "coloration de Ziehl"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Potassium hydroxide preparation",
+    "term_fr": "Examen à la potasse",
+    "synonyms_en": [
+      "KOH prep"
+    ],
+    "synonyms_fr": [
+      "examen direct KOH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "India ink preparation",
+    "term_fr": "Coloration à l'encre de Chine",
+    "synonyms_en": [
+      "India ink stain"
+    ],
+    "synonyms_fr": [
+      "encre de Chine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Throat swab culture",
+    "term_fr": "Culture de prélèvement de gorge",
+    "synonyms_en": [
+      "throat culture"
+    ],
+    "synonyms_fr": [
+      "prélèvement de gorge"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Pus swab culture and sensitivity",
+    "term_fr": "Culture de pus et antibiogramme",
+    "synonyms_en": [
+      "pus culture"
+    ],
+    "synonyms_fr": [
+      "culture de pus"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Synovial fluid analysis",
+    "term_fr": "Analyse du liquide articulaire",
+    "synonyms_en": [
+      "joint fluid analysis"
+    ],
+    "synonyms_fr": [
+      "analyse du liquide synovial"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Pleural fluid analysis",
+    "term_fr": "Analyse du liquide pleural",
+    "synonyms_en": [
+      "pleural fluid cytology"
+    ],
+    "synonyms_fr": [
+      "analyse du liquide pleural"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Ascitic fluid analysis",
+    "term_fr": "Analyse du liquide d'ascite",
+    "synonyms_en": [
+      "ascitic tap analysis"
+    ],
+    "synonyms_fr": [
+      "analyse du liquide d'ascite"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine microalbumin",
+    "term_fr": "Microalbuminurie",
+    "synonyms_en": [
+      "microalbuminuria"
+    ],
+    "synonyms_fr": [
+      "microalbuminurie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine ketones",
+    "term_fr": "Cétonurie",
+    "synonyms_en": [
+      "urine ketone dipstick"
+    ],
+    "synonyms_fr": [
+      "corps cétoniques urinaires"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine electrolytes",
+    "term_fr": "Ionogramme urinaire",
+    "synonyms_en": [
+      "urinary sodium and potassium"
+    ],
+    "synonyms_fr": [
+      "ionogramme urinaire"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine drug screen",
+    "term_fr": "Recherche de toxiques urinaires",
+    "synonyms_en": [
+      "urine toxicology"
+    ],
+    "synonyms_fr": [
+      "dépistage urinaire de drogues"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine cytology",
+    "term_fr": "Cytologie urinaire",
+    "synonyms_en": [
+      "urinary cytology"
+    ],
+    "synonyms_fr": [
+      "cytologie urinaire"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urine for acid-fast bacilli",
+    "term_fr": "Recherche de BAAR dans les urines",
+    "synonyms_en": [
+      "urine AFB"
+    ],
+    "synonyms_fr": [
+      "BAAR urinaires"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool calprotectin",
+    "term_fr": "Calprotectine fécale",
+    "synonyms_en": [
+      "fecal calprotectin"
+    ],
+    "synonyms_fr": [
+      "calprotectine fécale"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool antigen for Giardia",
+    "term_fr": "Antigène de Giardia dans les selles",
+    "synonyms_en": [
+      "Giardia stool antigen"
+    ],
+    "synonyms_fr": [
+      "antigène Giardia"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool rotavirus antigen",
+    "term_fr": "Antigène rotavirus dans les selles",
+    "synonyms_en": [
+      "rotavirus stool antigen"
+    ],
+    "synonyms_fr": [
+      "antigène rotavirus"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cancer antigen 125",
+    "term_fr": "Antigène tumoral CA 125",
+    "synonyms_en": [
+      "CA-125"
+    ],
+    "synonyms_fr": [
+      "CA 125"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cancer antigen 19-9",
+    "term_fr": "Antigène tumoral CA 19-9",
+    "synonyms_en": [
+      "CA 19-9"
+    ],
+    "synonyms_fr": [
+      "CA 19-9"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cancer antigen 15-3",
+    "term_fr": "Antigène tumoral CA 15-3",
+    "synonyms_en": [
+      "CA 15-3"
+    ],
+    "synonyms_fr": [
+      "CA 15-3"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Beta-2 microglobulin",
+    "term_fr": "Bêta-2 microglobuline",
+    "synonyms_en": [
+      "B2M"
+    ],
+    "synonyms_fr": [
+      "bêta-2 microglobuline"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum calcitonin",
+    "term_fr": "Calcitonine",
+    "synonyms_en": [
+      "calcitonin level"
+    ],
+    "synonyms_fr": [
+      "calcitonine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cervical cytology smear",
+    "term_fr": "Frottis cervico-utérin",
+    "synonyms_en": [
+      "Pap smear",
+      "cervical smear"
+    ],
+    "synonyms_fr": [
+      "frottis cervical",
+      "test de Papanicolaou"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Fine needle aspiration cytology",
+    "term_fr": "Cytoponction à l'aiguille fine",
+    "synonyms_en": [
+      "FNAC"
+    ],
+    "synonyms_fr": [
+      "cytoponction"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Histopathology of biopsy specimen",
+    "term_fr": "Examen anatomopathologique",
+    "synonyms_en": [
+      "histology",
+      "biopsy histopathology"
+    ],
+    "synonyms_fr": [
+      "anatomopathologie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Frozen section histology",
+    "term_fr": "Examen extemporané",
+    "synonyms_en": [
+      "frozen section"
+    ],
+    "synonyms_fr": [
+      "examen extemporané"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Karyotype analysis",
+    "term_fr": "Caryotype",
+    "synonyms_en": [
+      "chromosome analysis"
+    ],
+    "synonyms_fr": [
+      "caryotype"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Newborn heel-prick screening",
+    "term_fr": "Dépistage néonatal au talon",
+    "synonyms_en": [
+      "Guthrie test",
+      "newborn screen"
+    ],
+    "synonyms_fr": [
+      "test de Guthrie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum lithium level",
+    "term_fr": "Lithémie",
+    "synonyms_en": [
+      "lithium level"
+    ],
+    "synonyms_fr": [
+      "lithémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum digoxin level",
+    "term_fr": "Digoxinémie",
+    "synonyms_en": [
+      "digoxin level"
+    ],
+    "synonyms_fr": [
+      "digoxinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum phenytoin level",
+    "term_fr": "Dosage de la phénytoïne",
+    "synonyms_en": [
+      "phenytoin level"
+    ],
+    "synonyms_fr": [
+      "phénytoïnémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum valproate level",
+    "term_fr": "Dosage de l'acide valproïque",
+    "synonyms_en": [
+      "valproate level"
+    ],
+    "synonyms_fr": [
+      "valproatémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum vancomycin trough",
+    "term_fr": "Taux résiduel de vancomycine",
+    "synonyms_en": [
+      "vancomycin level"
+    ],
+    "synonyms_fr": [
+      "vancomycinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum gentamicin level",
+    "term_fr": "Dosage de la gentamicine",
+    "synonyms_en": [
+      "gentamicin level"
+    ],
+    "synonyms_fr": [
+      "gentamicinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood alcohol level",
+    "term_fr": "Alcoolémie",
+    "synonyms_en": [
+      "ethanol level"
+    ],
+    "synonyms_fr": [
+      "alcoolémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum paracetamol level",
+    "term_fr": "Paracétamolémie",
+    "synonyms_en": [
+      "acetaminophen level"
+    ],
+    "synonyms_fr": [
+      "paracétamolémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum salicylate level",
+    "term_fr": "Salicylémie",
+    "synonyms_en": [
+      "salicylate level",
+      "aspirin level"
+    ],
+    "synonyms_fr": [
+      "salicylémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood lead level",
+    "term_fr": "Plombémie",
+    "synonyms_en": [
+      "lead level"
+    ],
+    "synonyms_fr": [
+      "plombémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Carboxyhemoglobin level",
+    "term_fr": "Carboxyhémoglobine",
+    "synonyms_en": [
+      "COHb",
+      "carbon monoxide level"
+    ],
+    "synonyms_fr": [
+      "HbCO"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Semen analysis",
+    "term_fr": "Spermogramme",
+    "synonyms_en": [
+      "seminal fluid analysis",
+      "sperm count"
+    ],
+    "synonyms_fr": [
+      "spermogramme"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Sweat chloride test",
+    "term_fr": "Test de la sueur",
+    "synonyms_en": [
+      "sweat test"
+    ],
+    "synonyms_fr": [
+      "test à la sueur"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Chest X-ray lateral view",
+    "term_fr": "Radiographie thoracique de profil",
+    "synonyms_en": [
+      "lateral CXR"
+    ],
+    "synonyms_fr": [
+      "radio thorax profil"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Skull X-ray",
+    "term_fr": "Radiographie du crâne",
+    "synonyms_en": [
+      "skull radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du crâne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Cervical spine X-ray",
+    "term_fr": "Radiographie du rachis cervical",
+    "synonyms_en": [
+      "C-spine X-ray"
+    ],
+    "synonyms_fr": [
+      "radio rachis cervical"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Lumbosacral spine X-ray",
+    "term_fr": "Radiographie du rachis lombo-sacré",
+    "synonyms_en": [
+      "LS spine X-ray"
+    ],
+    "synonyms_fr": [
+      "radio rachis lombaire"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Pelvic X-ray",
+    "term_fr": "Radiographie du bassin",
+    "synonyms_en": [
+      "pelvis radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du bassin"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the hand",
+    "term_fr": "Radiographie de la main",
+    "synonyms_en": [
+      "hand radiograph"
+    ],
+    "synonyms_fr": [
+      "radio de la main"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the foot",
+    "term_fr": "Radiographie du pied",
+    "synonyms_en": [
+      "foot radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du pied"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the knee",
+    "term_fr": "Radiographie du genou",
+    "synonyms_en": [
+      "knee radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du genou"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the shoulder",
+    "term_fr": "Radiographie de l'épaule",
+    "synonyms_en": [
+      "shoulder radiograph"
+    ],
+    "synonyms_fr": [
+      "radio de l'épaule"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Paranasal sinus X-ray",
+    "term_fr": "Radiographie des sinus",
+    "synonyms_en": [
+      "sinus X-ray"
+    ],
+    "synonyms_fr": [
+      "radio des sinus"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Dental panoramic radiograph",
+    "term_fr": "Radiographie panoramique dentaire",
+    "synonyms_en": [
+      "OPG",
+      "orthopantomogram"
+    ],
+    "synonyms_fr": [
+      "panoramique dentaire"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Mammography",
+    "term_fr": "Mammographie",
+    "synonyms_en": [
+      "mammogram"
+    ],
+    "synonyms_fr": [
+      "mammographie"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Computed tomography of the chest",
+    "term_fr": "Scanner thoracique",
+    "synonyms_en": [
+      "CT chest",
+      "chest CT"
+    ],
+    "synonyms_fr": [
+      "TDM thoracique"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Computed tomography of the abdomen and pelvis",
+    "term_fr": "Scanner abdomino-pelvien",
+    "synonyms_en": [
+      "CT abdomen pelvis"
+    ],
+    "synonyms_fr": [
+      "TDM abdomino-pelvienne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "CT pulmonary angiogram",
+    "term_fr": "Angioscanner pulmonaire",
+    "synonyms_en": [
+      "CTPA"
+    ],
+    "synonyms_fr": [
+      "angio-TDM pulmonaire"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Non-contrast CT kidneys ureters bladder",
+    "term_fr": "Uroscanner sans injection",
+    "synonyms_en": [
+      "CT KUB",
+      "CT urolithiasis"
+    ],
+    "synonyms_fr": [
+      "uroscanner"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance imaging of the brain",
+    "term_fr": "IRM cérébrale",
+    "synonyms_en": [
+      "MRI brain",
+      "brain MRI"
+    ],
+    "synonyms_fr": [
+      "IRM du cerveau"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance imaging of the spine",
+    "term_fr": "IRM du rachis",
+    "synonyms_en": [
+      "MRI spine",
+      "spinal MRI"
+    ],
+    "synonyms_fr": [
+      "IRM rachidienne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance imaging of the knee",
+    "term_fr": "IRM du genou",
+    "synonyms_en": [
+      "MRI knee"
+    ],
+    "synonyms_fr": [
+      "IRM du genou"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Computed tomography angiography",
+    "term_fr": "Angioscanner",
+    "synonyms_en": [
+      "CT angiography",
+      "CTA"
+    ],
+    "synonyms_fr": [
+      "angio-TDM"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance angiography",
+    "term_fr": "Angiographie par résonance magnétique",
+    "synonyms_en": [
+      "MRA"
+    ],
+    "synonyms_fr": [
+      "ARM"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Renal ultrasound",
+    "term_fr": "Échographie rénale",
+    "synonyms_en": [
+      "kidney ultrasound",
+      "renal US"
+    ],
+    "synonyms_fr": [
+      "écho rénale"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Scrotal ultrasound",
+    "term_fr": "Échographie scrotale",
+    "synonyms_en": [
+      "testicular ultrasound"
+    ],
+    "synonyms_fr": [
+      "écho scrotale"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Thyroid ultrasound",
+    "term_fr": "Échographie thyroïdienne",
+    "synonyms_en": [
+      "thyroid US"
+    ],
+    "synonyms_fr": [
+      "écho thyroïdienne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Breast ultrasound",
+    "term_fr": "Échographie mammaire",
+    "synonyms_en": [
+      "breast US"
+    ],
+    "synonyms_fr": [
+      "écho mammaire"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Transvaginal ultrasound",
+    "term_fr": "Échographie endovaginale",
+    "synonyms_en": [
+      "TVUS"
+    ],
+    "synonyms_fr": [
+      "écho endovaginale"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Doppler ultrasound of lower limb veins",
+    "term_fr": "Écho-Doppler veineux des membres inférieurs",
+    "synonyms_en": [
+      "venous Doppler",
+      "leg vein Doppler"
+    ],
+    "synonyms_fr": [
+      "Doppler veineux"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Carotid Doppler ultrasound",
+    "term_fr": "Écho-Doppler des carotides",
+    "synonyms_en": [
+      "carotid US"
+    ],
+    "synonyms_fr": [
+      "Doppler carotidien"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Focused assessment with sonography in trauma",
+    "term_fr": "Échographie FAST",
+    "synonyms_en": [
+      "FAST scan"
+    ],
+    "synonyms_fr": [
+      "échographie FAST"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Barium swallow study",
+    "term_fr": "Transit œsophagien baryté",
+    "synonyms_en": [
+      "barium oesophagram"
+    ],
+    "synonyms_fr": [
+      "transit baryté œsophagien"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Barium meal study",
+    "term_fr": "Transit gastroduodénal baryté",
+    "synonyms_en": [
+      "upper GI series"
+    ],
+    "synonyms_fr": [
+      "TOGD"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Barium enema",
+    "term_fr": "Lavement baryté",
+    "synonyms_en": [
+      "lower GI series"
+    ],
+    "synonyms_fr": [
+      "lavement baryté"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Intravenous urogram",
+    "term_fr": "Urographie intraveineuse",
+    "synonyms_en": [
+      "IVU",
+      "IVP"
+    ],
+    "synonyms_fr": [
+      "UIV"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Hysterosalpingography",
+    "term_fr": "Hystérosalpingographie",
+    "synonyms_en": [
+      "HSG"
+    ],
+    "synonyms_fr": [
+      "HSG"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Micturating cystourethrogram",
+    "term_fr": "Cystographie mictionnelle",
+    "synonyms_en": [
+      "MCUG",
+      "VCUG"
+    ],
+    "synonyms_fr": [
+      "cysto-urétrographie mictionnelle"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Holter ambulatory ECG monitoring",
+    "term_fr": "Holter ECG",
+    "synonyms_en": [
+      "Holter monitor",
+      "24-hour ECG"
+    ],
+    "synonyms_fr": [
+      "Holter rythmique"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Exercise treadmill ECG test",
+    "term_fr": "Épreuve d'effort",
+    "synonyms_en": [
+      "stress test",
+      "exercise ECG"
+    ],
+    "synonyms_fr": [
+      "test d'effort"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Ambulatory blood pressure monitoring",
+    "term_fr": "Mesure ambulatoire de la pression artérielle",
+    "synonyms_en": [
+      "ABPM",
+      "24-hour BP monitor"
+    ],
+    "synonyms_fr": [
+      "MAPA"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Electroencephalogram",
+    "term_fr": "Électroencéphalogramme",
+    "synonyms_en": [
+      "EEG"
+    ],
+    "synonyms_fr": [
+      "EEG"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Nerve conduction study",
+    "term_fr": "Étude de la conduction nerveuse",
+    "synonyms_en": [
+      "NCS"
+    ],
+    "synonyms_fr": [
+      "électroneurographie"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Electromyography",
+    "term_fr": "Électromyogramme",
+    "synonyms_en": [
+      "EMG"
+    ],
+    "synonyms_fr": [
+      "EMG"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Spirometry",
+    "term_fr": "Spirométrie",
+    "synonyms_en": [
+      "pulmonary function test",
+      "PFT"
+    ],
+    "synonyms_fr": [
+      "spirométrie",
+      "EFR"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Peak expiratory flow measurement",
+    "term_fr": "Mesure du débit expiratoire de pointe",
+    "synonyms_en": [
+      "peak flow",
+      "PEFR"
+    ],
+    "synonyms_fr": [
+      "débit de pointe"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Pure tone audiometry",
+    "term_fr": "Audiométrie tonale",
+    "synonyms_en": [
+      "audiometry",
+      "hearing test"
+    ],
+    "synonyms_fr": [
+      "audiométrie"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Tympanometry",
+    "term_fr": "Tympanométrie",
+    "synonyms_en": [
+      "impedance audiometry"
+    ],
+    "synonyms_fr": [
+      "tympanométrie"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Transthoracic echocardiogram with Doppler",
+    "term_fr": "Échocardiographie transthoracique avec Doppler",
+    "synonyms_en": [
+      "TTE"
+    ],
+    "synonyms_fr": [
+      "ETT"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Transesophageal echocardiogram",
+    "term_fr": "Échocardiographie transœsophagienne",
+    "synonyms_en": [
+      "TEE",
+      "TOE"
+    ],
+    "synonyms_fr": [
+      "ETO"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Dual-energy X-ray absorptiometry",
+    "term_fr": "Ostéodensitométrie",
+    "synonyms_en": [
+      "DEXA scan",
+      "bone densitometry"
+    ],
+    "synonyms_fr": [
+      "DMO",
+      "densitométrie osseuse"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Ventilation-perfusion lung scan",
+    "term_fr": "Scintigraphie pulmonaire de ventilation-perfusion",
+    "synonyms_en": [
+      "V/Q scan"
+    ],
+    "synonyms_fr": [
+      "scintigraphie V/Q"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Thyroid radioisotope scan",
+    "term_fr": "Scintigraphie thyroïdienne",
+    "synonyms_en": [
+      "thyroid scintigraphy"
+    ],
+    "synonyms_fr": [
+      "scintigraphie thyroïdienne"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Bone scintigraphy",
+    "term_fr": "Scintigraphie osseuse",
+    "synonyms_en": [
+      "bone scan"
+    ],
+    "synonyms_fr": [
+      "scintigraphie osseuse"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Optical coherence tomography of the retina",
+    "term_fr": "Tomographie par cohérence optique",
+    "synonyms_en": [
+      "OCT"
+    ],
+    "synonyms_fr": [
+      "OCT rétinien"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Fundus photography",
+    "term_fr": "Rétinophotographie",
+    "synonyms_en": [
+      "retinal photography"
+    ],
+    "synonyms_fr": [
+      "photographie du fond d'œil"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Upper gastrointestinal endoscopy",
+    "term_fr": "Endoscopie digestive haute",
+    "synonyms_en": [
+      "OGD",
+      "gastroscopy",
+      "EGD"
+    ],
+    "synonyms_fr": [
+      "fibroscopie gastrique",
+      "FOGD"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Colonoscopy",
+    "term_fr": "Coloscopie",
+    "synonyms_en": [
+      "lower GI endoscopy"
+    ],
+    "synonyms_fr": [
+      "coloscopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Flexible sigmoidoscopy",
+    "term_fr": "Recto-sigmoïdoscopie souple",
+    "synonyms_en": [
+      "sigmoidoscopy"
+    ],
+    "synonyms_fr": [
+      "sigmoïdoscopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Proctoscopy",
+    "term_fr": "Anuscopie",
+    "synonyms_en": [
+      "anoscopy"
+    ],
+    "synonyms_fr": [
+      "anuscopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Bronchoscopy",
+    "term_fr": "Bronchoscopie",
+    "synonyms_en": [
+      "flexible bronchoscopy"
+    ],
+    "synonyms_fr": [
+      "fibroscopie bronchique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cystoscopy",
+    "term_fr": "Cystoscopie",
+    "synonyms_en": [
+      "bladder endoscopy"
+    ],
+    "synonyms_fr": [
+      "cystoscopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Endoscopic retrograde cholangiopancreatography",
+    "term_fr": "Cholangiopancréatographie rétrograde endoscopique",
+    "synonyms_en": [
+      "ERCP"
+    ],
+    "synonyms_fr": [
+      "CPRE"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Colposcopy",
+    "term_fr": "Colposcopie",
+    "synonyms_en": [
+      "cervical colposcopy"
+    ],
+    "synonyms_fr": [
+      "colposcopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Nasendoscopy",
+    "term_fr": "Naso-fibroscopie",
+    "synonyms_en": [
+      "flexible nasendoscopy"
+    ],
+    "synonyms_fr": [
+      "nasofibroscopie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Liver biopsy",
+    "term_fr": "Biopsie hépatique",
+    "synonyms_en": [
+      "percutaneous liver biopsy"
+    ],
+    "synonyms_fr": [
+      "ponction-biopsie hépatique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Renal biopsy",
+    "term_fr": "Biopsie rénale",
+    "synonyms_en": [
+      "kidney biopsy"
+    ],
+    "synonyms_fr": [
+      "ponction-biopsie rénale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Punch skin biopsy",
+    "term_fr": "Biopsie cutanée au punch",
+    "synonyms_en": [
+      "skin biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie cutanée"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Endometrial biopsy",
+    "term_fr": "Biopsie de l'endomètre",
+    "synonyms_en": [
+      "pipelle biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie endométriale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cervical biopsy",
+    "term_fr": "Biopsie du col utérin",
+    "synonyms_en": [
+      "cervical punch biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie cervicale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Pleural biopsy",
+    "term_fr": "Biopsie pleurale",
+    "synonyms_en": [
+      "closed pleural biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie pleurale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Excisional lymph node biopsy",
+    "term_fr": "Biopsie ganglionnaire excisionnelle",
+    "synonyms_en": [
+      "lymph node biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie de ganglion"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Pericardiocentesis",
+    "term_fr": "Péricardiocentèse",
+    "synonyms_en": [
+      "pericardial drainage"
+    ],
+    "synonyms_fr": [
+      "ponction péricardique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Arthrocentesis",
+    "term_fr": "Arthrocentèse",
+    "synonyms_en": [
+      "joint aspiration"
+    ],
+    "synonyms_fr": [
+      "ponction articulaire"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Intercostal chest drain insertion",
+    "term_fr": "Pose de drain thoracique",
+    "synonyms_en": [
+      "chest tube insertion",
+      "intercostal drain"
+    ],
+    "synonyms_fr": [
+      "drainage thoracique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Central venous catheter insertion",
+    "term_fr": "Pose de cathéter veineux central",
+    "synonyms_en": [
+      "central line insertion",
+      "CVC"
+    ],
+    "synonyms_fr": [
+      "voie veineuse centrale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Arterial line insertion",
+    "term_fr": "Pose de cathéter artériel",
+    "synonyms_en": [
+      "arterial cannulation"
+    ],
+    "synonyms_fr": [
+      "cathéter artériel"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Intraosseous access",
+    "term_fr": "Voie intra-osseuse",
+    "synonyms_en": [
+      "IO access"
+    ],
+    "synonyms_fr": [
+      "abord intra-osseux"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Suprapubic catheter insertion",
+    "term_fr": "Pose de cathéter sus-pubien",
+    "synonyms_en": [
+      "suprapubic catheterization"
+    ],
+    "synonyms_fr": [
+      "cathéter sus-pubien"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Aspiration of breast cyst",
+    "term_fr": "Ponction de kyste mammaire",
+    "synonyms_en": [
+      "breast cyst aspiration"
+    ],
+    "synonyms_fr": [
+      "ponction de kyste du sein"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Tracheostomy",
+    "term_fr": "Trachéotomie",
+    "synonyms_en": [
+      "surgical airway"
+    ],
+    "synonyms_fr": [
+      "trachéotomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cricothyroidotomy",
+    "term_fr": "Cricothyroïdotomie",
+    "synonyms_en": [
+      "emergency surgical airway"
+    ],
+    "synonyms_fr": [
+      "cricothyroïdotomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Direct current cardioversion",
+    "term_fr": "Cardioversion électrique",
+    "synonyms_en": [
+      "synchronized cardioversion",
+      "DC cardioversion"
+    ],
+    "synonyms_fr": [
+      "choc électrique externe"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Defibrillation",
+    "term_fr": "Défibrillation",
+    "synonyms_en": [
+      "electrical defibrillation"
+    ],
+    "synonyms_fr": [
+      "défibrillation"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cardiopulmonary resuscitation",
+    "term_fr": "Réanimation cardio-pulmonaire",
+    "synonyms_en": [
+      "CPR"
+    ],
+    "synonyms_fr": [
+      "RCP"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Temporary transvenous cardiac pacing",
+    "term_fr": "Stimulation cardiaque temporaire",
+    "synonyms_en": [
+      "temporary pacing"
+    ],
+    "synonyms_fr": [
+      "entraînement électrosystolique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Coronary angiography",
+    "term_fr": "Coronarographie",
+    "synonyms_en": [
+      "cardiac catheterization"
+    ],
+    "synonyms_fr": [
+      "coronarographie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Normal vaginal delivery",
+    "term_fr": "Accouchement par voie basse",
+    "synonyms_en": [
+      "spontaneous vaginal delivery",
+      "SVD"
+    ],
+    "synonyms_fr": [
+      "accouchement normal"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cesarean section",
+    "term_fr": "Césarienne",
+    "synonyms_en": [
+      "C-section",
+      "caesarean delivery"
+    ],
+    "synonyms_fr": [
+      "césarienne"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Vacuum-assisted vaginal delivery",
+    "term_fr": "Accouchement par ventouse",
+    "synonyms_en": [
+      "ventouse delivery",
+      "vacuum extraction"
+    ],
+    "synonyms_fr": [
+      "extraction par ventouse"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Dilation and curettage",
+    "term_fr": "Dilatation et curetage",
+    "synonyms_en": [
+      "D&C"
+    ],
+    "synonyms_fr": [
+      "curetage utérin"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Manual vacuum aspiration",
+    "term_fr": "Aspiration manuelle intra-utérine",
+    "synonyms_en": [
+      "MVA"
+    ],
+    "synonyms_fr": [
+      "AMIU"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Manual removal of placenta",
+    "term_fr": "Délivrance artificielle",
+    "synonyms_en": [
+      "manual placenta removal"
+    ],
+    "synonyms_fr": [
+      "délivrance artificielle"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Episiotomy",
+    "term_fr": "Épisiotomie",
+    "synonyms_en": [
+      "perineal incision"
+    ],
+    "synonyms_fr": [
+      "épisiotomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Intrauterine device insertion",
+    "term_fr": "Pose de dispositif intra-utérin",
+    "synonyms_en": [
+      "IUD insertion",
+      "coil fitting"
+    ],
+    "synonyms_fr": [
+      "pose de stérilet"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Ear syringing",
+    "term_fr": "Lavage d'oreille",
+    "synonyms_en": [
+      "ear irrigation",
+      "wax removal"
+    ],
+    "synonyms_fr": [
+      "lavage de cérumen"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Anterior nasal packing",
+    "term_fr": "Tamponnement nasal antérieur",
+    "synonyms_en": [
+      "nasal packing for epistaxis"
+    ],
+    "synonyms_fr": [
+      "méchage nasal"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Myringotomy",
+    "term_fr": "Paracentèse du tympan",
+    "synonyms_en": [
+      "tympanic drainage"
+    ],
+    "synonyms_fr": [
+      "paracentèse tympanique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Removal of foreign body from ear",
+    "term_fr": "Extraction de corps étranger de l'oreille",
+    "synonyms_en": [
+      "aural foreign body removal"
+    ],
+    "synonyms_fr": [
+      "extraction de corps étranger auriculaire"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Removal of corneal foreign body",
+    "term_fr": "Ablation de corps étranger cornéen",
+    "synonyms_en": [
+      "corneal FB removal"
+    ],
+    "synonyms_fr": [
+      "extraction de corps étranger cornéen"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Applanation tonometry",
+    "term_fr": "Tonométrie à aplanation",
+    "synonyms_en": [
+      "tonometry",
+      "eye pressure measurement"
+    ],
+    "synonyms_fr": [
+      "tonométrie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Slit-lamp examination",
+    "term_fr": "Examen à la lampe à fente",
+    "synonyms_en": [
+      "biomicroscopy"
+    ],
+    "synonyms_fr": [
+      "examen à la lampe à fente"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Closed reduction of fracture",
+    "term_fr": "Réduction orthopédique de fracture",
+    "synonyms_en": [
+      "fracture reduction"
+    ],
+    "synonyms_fr": [
+      "réduction de fracture"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Reduction of joint dislocation",
+    "term_fr": "Réduction de luxation",
+    "synonyms_en": [
+      "dislocation reduction"
+    ],
+    "synonyms_fr": [
+      "réduction de luxation"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Skin grafting",
+    "term_fr": "Greffe de peau",
+    "synonyms_en": [
+      "skin graft"
+    ],
+    "synonyms_fr": [
+      "greffe cutanée"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Negative pressure wound therapy",
+    "term_fr": "Thérapie par pression négative",
+    "synonyms_en": [
+      "VAC dressing",
+      "NPWT"
+    ],
+    "synonyms_fr": [
+      "pansement à pression négative"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Therapeutic phlebotomy",
+    "term_fr": "Saignée thérapeutique",
+    "synonyms_en": [
+      "venesection"
+    ],
+    "synonyms_fr": [
+      "saignée"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Exchange blood transfusion",
+    "term_fr": "Exsanguino-transfusion",
+    "synonyms_en": [
+      "exchange transfusion"
+    ],
+    "synonyms_fr": [
+      "exsanguino-transfusion"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Hemodialysis session",
+    "term_fr": "Séance d'hémodialyse",
+    "synonyms_en": [
+      "dialysis"
+    ],
+    "synonyms_fr": [
+      "hémodialyse"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Peritoneal dialysis",
+    "term_fr": "Dialyse péritonéale",
+    "synonyms_en": [
+      "PD"
+    ],
+    "synonyms_fr": [
+      "dialyse péritonéale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Banding of esophageal varices",
+    "term_fr": "Ligature de varices œsophagiennes",
+    "synonyms_en": [
+      "variceal band ligation"
+    ],
+    "synonyms_fr": [
+      "ligature de varices œsophagiennes"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Endoscopic polypectomy",
+    "term_fr": "Polypectomie endoscopique",
+    "synonyms_en": [
+      "polyp removal"
+    ],
+    "synonyms_fr": [
+      "polypectomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Local anaesthetic wound infiltration",
+    "term_fr": "Infiltration anesthésique locale",
+    "synonyms_en": [
+      "local infiltration"
+    ],
+    "synonyms_fr": [
+      "infiltration locale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Spinal anaesthesia",
+    "term_fr": "Rachianesthésie",
+    "synonyms_en": [
+      "spinal block"
+    ],
+    "synonyms_fr": [
+      "rachianesthésie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Epidural anaesthesia",
+    "term_fr": "Anesthésie péridurale",
+    "synonyms_en": [
+      "epidural block"
+    ],
+    "synonyms_fr": [
+      "péridurale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Circumcision",
+    "term_fr": "Circoncision",
+    "synonyms_en": [
+      "male circumcision"
+    ],
+    "synonyms_fr": [
+      "circoncision"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Enema administration",
+    "term_fr": "Administration de lavement",
+    "synonyms_en": [
+      "bowel enema"
+    ],
+    "synonyms_fr": [
+      "lavement évacuateur"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Basophil count",
+    "term_fr": "Numération des basophiles",
+    "synonyms_en": [
+      "basophils"
+    ],
+    "synonyms_fr": [
+      "basophiles"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Monocyte count",
+    "term_fr": "Numération des monocytes",
+    "synonyms_en": [
+      "monocytes"
+    ],
+    "synonyms_fr": [
+      "monocytes"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antibody screen for blood transfusion",
+    "term_fr": "Recherche d'agglutinines irrégulières",
+    "synonyms_en": [
+      "RAI",
+      "indirect antibody screen"
+    ],
+    "synonyms_fr": [
+      "recherche d'anticorps irréguliers"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Kleihauer-Betke test",
+    "term_fr": "Test de Kleihauer",
+    "synonyms_en": [
+      "fetomaternal hemorrhage test"
+    ],
+    "synonyms_fr": [
+      "test de Kleihauer-Betke"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Methemoglobin level",
+    "term_fr": "Méthémoglobinémie",
+    "synonyms_en": [
+      "MetHb"
+    ],
+    "synonyms_fr": [
+      "méthémoglobine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum ceruloplasmin",
+    "term_fr": "Céruloplasmine",
+    "synonyms_en": [
+      "ceruloplasmin level"
+    ],
+    "synonyms_fr": [
+      "céruloplasmine"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum copper",
+    "term_fr": "Cuprémie",
+    "synonyms_en": [
+      "copper level"
+    ],
+    "synonyms_fr": [
+      "cuivre sérique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum zinc",
+    "term_fr": "Zincémie",
+    "synonyms_en": [
+      "zinc level"
+    ],
+    "synonyms_fr": [
+      "zinc sérique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Total serum IgE",
+    "term_fr": "IgE totales",
+    "synonyms_en": [
+      "total IgE"
+    ],
+    "synonyms_fr": [
+      "IgE totales"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Allergen-specific IgE test",
+    "term_fr": "IgE spécifiques d'allergène",
+    "synonyms_en": [
+      "specific IgE",
+      "RAST test"
+    ],
+    "synonyms_fr": [
+      "IgE spécifiques"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum angiotensin-converting enzyme",
+    "term_fr": "Enzyme de conversion de l'angiotensine",
+    "synonyms_en": [
+      "serum ACE"
+    ],
+    "synonyms_fr": [
+      "dosage de l'ECA"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Lupus anticoagulant",
+    "term_fr": "Anticoagulant lupique",
+    "synonyms_en": [
+      "LA"
+    ],
+    "synonyms_fr": [
+      "anticoagulant circulant lupique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Antiphospholipid antibody",
+    "term_fr": "Anticorps antiphospholipides",
+    "synonyms_en": [
+      "aPL",
+      "anticardiolipin"
+    ],
+    "synonyms_fr": [
+      "anticorps antiphospholipides"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-mitochondrial antibody",
+    "term_fr": "Anticorps anti-mitochondries",
+    "synonyms_en": [
+      "AMA"
+    ],
+    "synonyms_fr": [
+      "anticorps anti-mitochondries"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-smooth muscle antibody",
+    "term_fr": "Anticorps anti-muscle lisse",
+    "synonyms_en": [
+      "ASMA"
+    ],
+    "synonyms_fr": [
+      "anticorps anti-muscle lisse"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Cold agglutinins",
+    "term_fr": "Agglutinines froides",
+    "synonyms_en": [
+      "cold agglutinin titre"
+    ],
+    "synonyms_fr": [
+      "agglutinines froides"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "17-hydroxyprogesterone",
+    "term_fr": "17-hydroxyprogestérone",
+    "synonyms_en": [
+      "17-OHP"
+    ],
+    "synonyms_fr": [
+      "17-OHP"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Anti-Mullerian hormone",
+    "term_fr": "Hormone anti-müllérienne",
+    "synonyms_en": [
+      "AMH"
+    ],
+    "synonyms_fr": [
+      "AMH"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Plasma metanephrines",
+    "term_fr": "Métanéphrines plasmatiques",
+    "synonyms_en": [
+      "metanephrines"
+    ],
+    "synonyms_fr": [
+      "métanéphrines"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Urinary catecholamines",
+    "term_fr": "Catécholamines urinaires",
+    "synonyms_en": [
+      "urine catecholamines"
+    ],
+    "synonyms_fr": [
+      "catécholamines urinaires"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Short Synacthen test",
+    "term_fr": "Test au Synacthène",
+    "synonyms_en": [
+      "ACTH stimulation test",
+      "short tetracosactide test"
+    ],
+    "synonyms_fr": [
+      "test au Synacthène"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Faecal elastase",
+    "term_fr": "Élastase fécale",
+    "synonyms_en": [
+      "pancreatic elastase"
+    ],
+    "synonyms_fr": [
+      "élastase pancréatique"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Stool reducing substances",
+    "term_fr": "Substances réductrices dans les selles",
+    "synonyms_en": [
+      "reducing sugars stool"
+    ],
+    "synonyms_fr": [
+      "sucres réducteurs fécaux"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Skin snip for onchocerciasis",
+    "term_fr": "Biopsie cutanée exsangue pour onchocercose",
+    "synonyms_en": [
+      "skin snip"
+    ],
+    "synonyms_fr": [
+      "snip cutané"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Blood film for microfilariae",
+    "term_fr": "Recherche de microfilaires",
+    "synonyms_en": [
+      "microfilaria smear"
+    ],
+    "synonyms_fr": [
+      "frottis pour microfilaires"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum carbamazepine level",
+    "term_fr": "Dosage de la carbamazépine",
+    "synonyms_en": [
+      "carbamazepine level"
+    ],
+    "synonyms_fr": [
+      "carbamazépinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Serum theophylline level",
+    "term_fr": "Dosage de la théophylline",
+    "synonyms_en": [
+      "theophylline level"
+    ],
+    "synonyms_fr": [
+      "théophyllinémie"
+    ],
+    "order_type": "lab"
+  },
+  {
+    "term_en": "Magnetic resonance imaging of the abdomen",
+    "term_fr": "IRM abdominale",
+    "synonyms_en": [
+      "MRI abdomen"
+    ],
+    "synonyms_fr": [
+      "IRM de l'abdomen"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance imaging of the pelvis",
+    "term_fr": "IRM pelvienne",
+    "synonyms_en": [
+      "MRI pelvis"
+    ],
+    "synonyms_fr": [
+      "IRM du pelvis"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Magnetic resonance cholangiopancreatography",
+    "term_fr": "Cholangio-IRM",
+    "synonyms_en": [
+      "MRCP"
+    ],
+    "synonyms_fr": [
+      "bili-IRM"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the wrist",
+    "term_fr": "Radiographie du poignet",
+    "synonyms_en": [
+      "wrist radiograph"
+    ],
+    "synonyms_fr": [
+      "radio du poignet"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the ankle",
+    "term_fr": "Radiographie de la cheville",
+    "synonyms_en": [
+      "ankle radiograph"
+    ],
+    "synonyms_fr": [
+      "radio de la cheville"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "X-ray of the hip",
+    "term_fr": "Radiographie de la hanche",
+    "synonyms_en": [
+      "hip radiograph"
+    ],
+    "synonyms_fr": [
+      "radio de la hanche"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "DMSA renal cortical scan",
+    "term_fr": "Scintigraphie rénale au DMSA",
+    "synonyms_en": [
+      "DMSA scan"
+    ],
+    "synonyms_fr": [
+      "scintigraphie DMSA"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "MAG3 diuretic renogram",
+    "term_fr": "Scintigraphie rénale au MAG3",
+    "synonyms_en": [
+      "MAG3 renogram"
+    ],
+    "synonyms_fr": [
+      "scintigraphie MAG3"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Hepatobiliary iminodiacetic acid scan",
+    "term_fr": "Scintigraphie hépatobiliaire HIDA",
+    "synonyms_en": [
+      "HIDA scan"
+    ],
+    "synonyms_fr": [
+      "scintigraphie HIDA"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Positron emission tomography CT scan",
+    "term_fr": "TEP-scanner",
+    "synonyms_en": [
+      "PET-CT",
+      "PET scan"
+    ],
+    "synonyms_fr": [
+      "TEP-TDM"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Coronary CT angiogram",
+    "term_fr": "Coroscanner",
+    "synonyms_en": [
+      "coronary CTA"
+    ],
+    "synonyms_fr": [
+      "coroscanner"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Visual evoked potentials",
+    "term_fr": "Potentiels évoqués visuels",
+    "synonyms_en": [
+      "VEP"
+    ],
+    "synonyms_fr": [
+      "PEV"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Brainstem auditory evoked response",
+    "term_fr": "Potentiels évoqués auditifs du tronc cérébral",
+    "synonyms_en": [
+      "BAER",
+      "BERA"
+    ],
+    "synonyms_fr": [
+      "PEA"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Fetal anomaly ultrasound scan",
+    "term_fr": "Échographie morphologique fœtale",
+    "synonyms_en": [
+      "anomaly scan",
+      "morphology scan"
+    ],
+    "synonyms_fr": [
+      "écho morphologique"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Nuchal translucency scan",
+    "term_fr": "Mesure de la clarté nucale",
+    "synonyms_en": [
+      "NT scan"
+    ],
+    "synonyms_fr": [
+      "clarté nucale"
+    ],
+    "order_type": "imaging"
+  },
+  {
+    "term_en": "Esophageal manometry",
+    "term_fr": "Manométrie œsophagienne",
+    "synonyms_en": [
+      "oesophageal manometry"
+    ],
+    "synonyms_fr": [
+      "manométrie œsophagienne"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Ambulatory esophageal pH monitoring",
+    "term_fr": "pH-métrie œsophagienne",
+    "synonyms_en": [
+      "24-hour pH monitoring"
+    ],
+    "synonyms_fr": [
+      "pH-métrie des 24 heures"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Urodynamic study",
+    "term_fr": "Bilan urodynamique",
+    "synonyms_en": [
+      "urodynamics",
+      "cystometrogram"
+    ],
+    "synonyms_fr": [
+      "bilan urodynamique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Capsule endoscopy",
+    "term_fr": "Vidéocapsule endoscopique",
+    "synonyms_en": [
+      "video capsule endoscopy"
+    ],
+    "synonyms_fr": [
+      "capsule vidéo-endoscopique"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Tonsillectomy",
+    "term_fr": "Amygdalectomie",
+    "synonyms_en": [
+      "tonsil removal"
+    ],
+    "synonyms_fr": [
+      "amygdalectomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Adenoidectomy",
+    "term_fr": "Adénoïdectomie",
+    "synonyms_en": [
+      "adenoid removal"
+    ],
+    "synonyms_fr": [
+      "adénoïdectomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Vasectomy",
+    "term_fr": "Vasectomie",
+    "synonyms_en": [
+      "male sterilization"
+    ],
+    "synonyms_fr": [
+      "vasectomie"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Bilateral tubal ligation",
+    "term_fr": "Ligature des trompes",
+    "synonyms_en": [
+      "tubal ligation",
+      "female sterilization"
+    ],
+    "synonyms_fr": [
+      "ligature tubaire"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Sclerotherapy of varicose veins",
+    "term_fr": "Sclérothérapie des varices",
+    "synonyms_en": [
+      "vein sclerotherapy"
+    ],
+    "synonyms_fr": [
+      "sclérothérapie variqueuse"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Cervical cryotherapy",
+    "term_fr": "Cryothérapie du col utérin",
+    "synonyms_en": [
+      "cervical cryosurgery"
+    ],
+    "synonyms_fr": [
+      "cryothérapie cervicale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Loop electrosurgical excision of cervix",
+    "term_fr": "Conisation à l'anse diathermique",
+    "synonyms_en": [
+      "LEEP",
+      "LLETZ"
+    ],
+    "synonyms_fr": [
+      "conisation à l'anse"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Urethral dilatation",
+    "term_fr": "Dilatation urétrale",
+    "synonyms_en": [
+      "urethral dilation"
+    ],
+    "synonyms_fr": [
+      "dilatation de l'urètre"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Manual evacuation of faeces",
+    "term_fr": "Évacuation manuelle des selles",
+    "synonyms_en": [
+      "disimpaction"
+    ],
+    "synonyms_fr": [
+      "évacuation manuelle fécale"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Burn wound dressing",
+    "term_fr": "Pansement de brûlure",
+    "synonyms_en": [
+      "burn dressing"
+    ],
+    "synonyms_fr": [
+      "pansement de brûlure"
+    ],
+    "order_type": "procedure"
+  },
+  {
+    "term_en": "Skin traction application",
+    "term_fr": "Mise en place d'une traction cutanée",
+    "synonyms_en": [
+      "skin traction"
+    ],
+    "synonyms_fr": [
+      "traction cutanée"
+    ],
+    "order_type": "procedure"
   }
 ]

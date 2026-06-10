@@ -765,7 +765,7 @@ the paste format is obvious before the real lists are dropped in.
       **pasting more entries into a JSON file + rebuilding surfaces them with no code change**; FR + EN
       clean in both light + dark.
 
-## PHASE 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding 🔜
+## PHASE 17 — Multi-Tenant Foundation, Hospital Accounts & Onboarding ✅ COMPLETE
 
 **Goal:** turn CareFlow into a SaaS where **each hospital is an isolated tenant/account.** A hospital
 admin signs up from a public landing page, provisions their hospital (departments, wards, beds), and
@@ -802,8 +802,9 @@ future premium option for any tenant demanding hard physical isolation.
       line that guarantees Hospital A never sees Hospital B's data.
 * [x] **Per-tenant storage:** prefix every object path with `hospital_id` and scope storage RLS by
       hospital, so files can't leak across tenants.
-* [ ] **Automated cross-tenant isolation tests:** a query/run as Hospital A's user returns **zero** of
-      Hospital B's rows, across every table *and* storage bucket. Part of the verify gate.
+* [x] **Automated cross-tenant isolation tests:** a query/run as Hospital A's user returns **zero** of
+      Hospital B's rows, across every table *and* storage bucket. *(Shipped: `tenancy.test.ts`,
+      `rls.integration.test.ts`, `storage.integration.test.ts`, `onboarding.integration.test.ts`.)*
 
 ### Accounts, roles & onboarding
 
@@ -812,13 +813,12 @@ future premium option for any tenant demanding hard physical isolation.
       provisioned at the Phase 18 cutover).
 * [x] **Admin provisioning:** the admin creates departments / wards / beds / staff, all scoped to their
       hospital (the admin UIs already exist — every create-mutator now stamps `hospital_id`).
-* [ ] **Admin-creates-staff logins (needs a server-side function):** Supabase Auth defaults to email
-      self-signup; creating accounts *on behalf of* staff requires a privileged **Supabase Edge
-      Function** (service-role key) — cannot run in the browser. Build it. Sub-decisions: prefer
-      **username + password** logins (many clinical staff have no email); force password change on
-      first login; consider a fast login/logout or kiosk pattern for **shared terminals/desks**.
-* [ ] **Subscription gating:** `hospitals.subscription_status` drives access (suspended → restricted);
-      hooks for the monetization tiers (which features each tier unlocks).
+* [x] **Admin-creates-staff logins:** implemented as a **Next server action** using the Supabase
+      **admin (service_role) client** (`app/actions/auth.ts` → `auth.admin.createUser`), with the
+      add-staff UI on `/staff`. Server-side, never exposed to the browser.
+* [~] **Subscription gating:** the model + a `trial` status and trial banner shipped
+      (`subscription_status`, app-shell trial badge); the full **suspended → restricted** enforcement
+      and per-tier feature unlocks are still to finish.
 
 ### Public landing page
 
@@ -834,31 +834,97 @@ future premium option for any tenant demanding hard physical isolation.
       landing → signup → login → sign-out flow works in FR + EN; `tsc` clean, **191 tests green**
       (incl. a tenancy isolation suite covering the board/queue reads). *Browser-verified both ways: a
       fresh tenant shows a 0-active board; the demo tenant shows its full caseload.*
-* [ ] **(live DB, Phase 18):** the automated cross-tenant isolation tests pass on every table **and**
-      storage bucket, run as real authenticated users under RLS.
+* [x] **(live DB, Phase 18):** cross-tenant isolation + RLS + storage integration tests pass as real
+      authenticated users under RLS (`rls.integration.test.ts`, `storage.integration.test.ts`).
 
-## PHASE 18 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance 🔚 FINAL PHASE
+## PHASE 18 — Backend Cutover: Supabase, Auth, RBAC, Audit & Compliance ✅ COMPLETE
 
-**Goal:** swap the mock for the real, secure, multi-user backend — the last phase, after multi-tenancy
-(Phase 17) and the UX are in place.
+**Goal:** swap the mock for the real, secure, multi-user backend. Shipped across commits
+`Phase 18a` (auth), `Phase 18b` (local-first sync), and `safety+sync` (isolation tests, file storage,
+optimistic concurrency).
 
-* [ ] Provision the database — **`supabase/schema.sql`** (all tables incl. `hospitals` + `hospital_id`,
-      enums, indexes, triggers, Cameroon patient-ID handling, occupancy sync, reporting views, storage
-      buckets, and **tenant-scoped, role-based RLS**).
-* [ ] **Role-based access (enforced at this step):** real Supabase Auth login; "locked in as a
-      doctor/nurse/admin" enforced by the RLS policies (doctors author consultations/orders/
-      prescriptions; nurses record vitals + MAR; lab techs enter results; pharmacists update
-      fulfilment; admin manages structure; everyone reads their hospital's operational record). The dev
-      role switcher (Phase 8) is removed here.
-* [ ] **Audit trail (enforced at this step):** every change to a sensitive table records *who* and
-      *when* plus before/after snapshots — **already wired** via the `audit_trigger` + append-only
-      `audit_log` (admin-readable, client-tamper-proof), now also tenant-scoped.
-* [ ] Replace `services/mockStorage.ts` internals with `supabase-js` calls; keep the UI contract
-      identical and flip the `isSyncConfigured()` seam so the offline outbox drains automatically.
-* [ ] File storage: lab results / imaging / scanned documents in the private, per-hospital buckets.
-* [ ] **Compliance hardening (folded in from the former Phase 14):** integration tests for RLS policy
-      behavior; data-privacy review (encryption at rest/in transit, access logging, **retention
-      policy**, backups); concurrency strategy for simultaneous edits (flagged item #7).
+* [x] Provision the database — **`supabase/schema.sql`** (all tables incl. `hospitals` + `hospital_id`,
+      enums, indexes, triggers, Cameroon patient-ID handling, occupancy sync, storage buckets, and
+      **tenant-scoped, role-based RLS**); demo tenant seeded (`scripts/seed-demo.ts` / `seed-auth.ts`).
+* [x] **Real Supabase Auth + RBAC:** `lib/supabase/*` (client, admin, identity, storage),
+      `services/supabaseAuth.ts`, `auth-provider` + `RequireAuth`; RLS enforces role + hospital. The dev
+      role switcher is retired behind real auth.
+* [x] **Audit trail enforced** via the `audit_trigger` + append-only, tenant-scoped `audit_log`.
+* [x] **Real data layer:** `services/supabaseData.ts` replaces the mock behind the same UI contract,
+      with **local-first sync** (the offline outbox drains to Supabase) and **optimistic-concurrency**
+      handling for simultaneous edits (`concurrency.integration.test.ts`).
+* [x] **File storage:** lab results / imaging / documents in private, **per-hospital** buckets
+      (`lib/supabase/storage.ts`, `storage.integration.test.ts`).
+* [~] **Compliance hardening:** RLS-behavior integration tests ✅ and concurrency ✅ are done; Supabase
+      provides encryption at rest/in transit by default. The **formal data-privacy review, retention
+      policy, and backup policy remain operational items** to finalize before a real production launch.
+
+## PHASE 19 — Platform Owner / Super-Admin Console (+ Monorepo) 🔜 NEXT
+
+**Goal:** give *you* (the platform owner) a **cross-tenant** console to monitor how hospitals use the
+app and to manage their accounts — a fundamentally different surface from the per-hospital admin, since
+it reads *across* tenants. Now buildable because Phases 17–18 (multi-tenancy + real backend) are done.
+
+> **Two principles drive the whole design:**
+> 1. **Separate, privileged, isolated.** This is the highest-privilege surface in the system — it can
+>    see every hospital and suspend accounts. It must be a separate app/subdomain with its own auth and
+>    a `platform_admin` role, **never reachable from the hospital app**, reading cross-tenant data only
+>    through a privileged **server-side path** (service_role via server actions/RPC) so tenant RLS is
+>    never weakened.
+> 2. **Telemetry, not PHI.** The owner runs on **aggregate usage metadata, not patient clinical
+>    content** — both for privacy and because "we can't read your patients' records" is a trust
+>    statement worth making to hospitals. Any "view as hospital" support tool is rare, consented, and
+>    heavily audited.
+
+### Monorepo transformation (first step)
+
+* [ ] Convert the repo into a **monorepo** (npm/pnpm workspaces or Turborepo): `apps/web` (the current
+      hospital app, moved as-is) + `apps/owner-console` (new) + `packages/shared`.
+* [ ] Extract the shared contract into `packages/shared` — `types/healthcare.ts`, the Supabase
+      generated types, and the `supabase/schema.sql` — so both apps consume **one source of truth**.
+* [ ] Keep **separate deployments / subdomains**: `app.careflow…` (hospital app) and
+      `admin.careflow…` (owner console), each with its own auth.
+
+### Telemetry groundwork (start emitting now)
+
+* [ ] Add a **usage/events layer** the hospital app writes to (logins, record-created counts, active
+      users, feature usage, sync health) — **metadata only, no clinical content** — so the console has
+      history to show on day one. A `platform_admins` table gates console access.
+
+### What the owner sees (dashboard)
+
+* [ ] **Tenants:** total hospitals, signups over time, status split (trial/active/suspended), region,
+      churn; a searchable hospital list.
+* [ ] **Adoption & engagement:** active hospitals (7/30-day), DAU/WAU/MAU, staff per hospital, depth
+      (records/period as counts), which optional modules each hospital uses, stickiness, and an
+      **at-risk list** (signed up but inactive).
+* [ ] **Subscription & revenue:** MRR/ARR by tier, trial conversion, payments due/overdue, status
+      changes (ties to the monetization plan).
+* [ ] **System health:** error rates, app-version distribution, **offline-sync health** (pending/failed
+      syncs — a great connectivity/bug signal), storage usage.
+* [ ] **Onboarding funnel:** landing → signup → activated (first patient registered) → paying.
+
+### What the owner can do (management)
+
+* [ ] **Account lifecycle:** approve/create a hospital, **suspend/reactivate** (`subscription_status`),
+      change tier, extend/end a trial, offboard with a data export.
+* [ ] **Billing ops:** mark paid, set/comp tier, see payment status (manual mobile-money early on).
+* [ ] **Feature flags:** toggle optional modules (billing, care plans, AI) per hospital or per tier;
+      kill-switch a misbehaving feature. *(This also completes the suspend→restrict gating left open in
+      Phase 17.)*
+* [ ] **Support:** reset a hospital admin's password, resend invites, create the first admin for a
+      hand-onboarded hospital, and a tightly-audited "view as".
+* [ ] **Broadcast:** push maintenance / announcement banners to hospitals.
+* [ ] **Central content:** publish updates to the shared seed libraries (clinical-term library,
+      price-catalog templates) that all hospitals inherit.
+
+### Verify
+
+* [ ] Two hospitals' activity shows in aggregate (no clinical content); the owner can suspend a hospital
+      and that hospital is then restricted; a feature flag toggles a module for one tenant; the console
+      lives on a **separate deploy/subdomain with its own auth** and is unreachable from the hospital
+      app; cross-tenant reads go through the privileged server path (tenant RLS untouched); `tsc` clean,
+      tests green.
 
 ---
 
@@ -925,6 +991,20 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-02: **Marked Phases 17 & 18 complete; added Phase 19.** Reconciled the roadmap with the code:
+  **Phase 17 (multi-tenancy)** and **Phase 18 (Supabase backend)** are implemented and verified (`tsc`
+  clean, 258 tests pass) — hospitals table + `hospital_id` everywhere, `current_hospital_id()` RLS,
+  per-hospital storage, real Supabase Auth + data layer (`services/supabaseData`/`supabaseAuth`,
+  `lib/supabase/*`), local-first sync, optimistic concurrency, and isolation/RLS/storage integration
+  tests; admin-creates-staff via a server action using the service-role admin client; marketing
+  `(marketing)` + authenticated `(app)` route split. Honest carve-outs left open: full
+  suspend→restrict subscription gating (Phase 17, `[~]`) and the formal data-privacy/retention/backup
+  review (Phase 18, `[~]`). Added **Phase 19 — Platform Owner / Super-Admin Console**: a cross-tenant
+  owner dashboard built as a **separate app in a new monorepo** (`apps/web` + `apps/owner-console` +
+  `packages/shared`), reading via a privileged server path on aggregate **telemetry, not PHI**, with
+  the metrics + management actions (incl. completing the suspend gating). No app code changed — status
+  reconciliation + new phase spec only.
 
 * 2026-06-02: **Added Phase 16.10 — Clinical Term Autocomplete & Library.** Type-ahead over curated
   bilingual (FR/EN) medical-term libraries so doctors who type slowly enter notes by selecting from a

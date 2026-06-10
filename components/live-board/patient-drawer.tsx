@@ -72,6 +72,11 @@ import {
   addDiagnosis,
   addOrder,
   addPrescription,
+  updateOrder,
+  updatePrescription,
+  type AddPrescriptionInput,
+  type UpdateOrderInput,
+  type UpdatePrescriptionInput,
   addTreatmentLog,
   recordDisposition,
   recordDeath,
@@ -99,6 +104,7 @@ import {
   TermAutocomplete,
   TermChips,
 } from "@/components/clinical-terms/term-autocomplete";
+import { displayTerm } from "@/lib/clinical-terms/search";
 import {
   ALLERGY_CATEGORY_LABEL,
   ALLERGY_SEVERITY_LABEL,
@@ -130,9 +136,11 @@ import type {
   Consultation,
   Diagnosis,
   Order,
+  OrderId,
   OrderType,
   Patient,
   Prescription,
+  PrescriptionId,
   Result,
   StaffRole,
   Transfer,
@@ -263,20 +271,15 @@ export function PatientDrawer({
   const [dxDescription, setDxDescription] = useState("");
   const [dxPrimary, setDxPrimary] = useState(false);
 
-  // Diagnostic orders + their results
+  // Diagnostic orders + their results. Tests are instant-added from the term
+  // picker below the list, then refined inline on each row.
   const [orders, setOrders] = useState<Order[]>([]);
   const [results, setResults] = useState<Result[]>([]);
-  const [orderType, setOrderType] = useState<OrderType>("lab");
-  const [orderDescription, setOrderDescription] = useState("");
+  const [orderDraft, setOrderDraft] = useState("");
 
-  // Prescriptions
+  // Prescriptions — instant-added from the drug picker, refined inline per row.
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-  const [rxDrug, setRxDrug] = useState("");
-  const [rxDose, setRxDose] = useState("");
-  const [rxRoute, setRxRoute] = useState("");
-  const [rxFrequency, setRxFrequency] = useState("");
-  const [rxDuration, setRxDuration] = useState("");
-  const [rxInstructions, setRxInstructions] = useState("");
+  const [rxDraft, setRxDraft] = useState("");
 
   // Vitals / GCS / notes form
   const [spo2, setSpo2] = useState<NumField>("");
@@ -370,14 +373,8 @@ export function PatientDrawer({
     setDxCode("");
     setDxDescription("");
     setDxPrimary(false);
-    setOrderType("lab");
-    setOrderDescription("");
-    setRxDrug("");
-    setRxDose("");
-    setRxRoute("");
-    setRxFrequency("");
-    setRxDuration("");
-    setRxInstructions("");
+    setOrderDraft("");
+    setRxDraft("");
   }, [open, visitId, tick]);
 
   // The transfer confirmation and the discharge confirm step are tied to the
@@ -513,27 +510,33 @@ export function PatientDrawer({
     refresh();
   }
 
-  function handleAddOrder() {
-    if (!orderDescription.trim()) return;
+  function handleAddOrder(description: string, orderType: OrderType) {
+    const label = description.trim();
+    if (!label) return;
     addOrder(visit!.id, {
       ordered_by_id: recorderId,
       order_type: orderType,
-      description: orderDescription,
+      description: label,
     });
     refresh();
   }
 
-  function handleAddPrescription() {
-    if (!rxDrug.trim()) return;
-    addPrescription(visit!.id, {
-      prescribed_by_id: recorderId,
-      drug_name: rxDrug,
-      dose: rxDose,
-      route: rxRoute,
-      frequency: rxFrequency,
-      duration: rxDuration,
-      instructions: rxInstructions,
-    });
+  function handleUpdateOrder(orderId: OrderId, input: UpdateOrderInput) {
+    updateOrder(orderId, input);
+    refresh();
+  }
+
+  function handleAddPrescription(input: Omit<AddPrescriptionInput, "prescribed_by_id">) {
+    if (!input.drug_name.trim()) return;
+    addPrescription(visit!.id, { prescribed_by_id: recorderId, ...input });
+    refresh();
+  }
+
+  function handleUpdatePrescription(
+    prescriptionId: PrescriptionId,
+    input: UpdatePrescriptionInput,
+  ) {
+    updatePrescription(prescriptionId, input);
     refresh();
   }
 
@@ -1008,13 +1011,39 @@ export function PatientDrawer({
                           className="flex flex-col gap-2 rounded-md border border-border bg-muted/40 p-3"
                         >
                           <div className="flex items-start justify-between gap-2">
-                            <div className="flex min-w-0 flex-col">
+                            <div className="flex min-w-0 flex-col gap-1.5">
                               <span className="text-sm font-medium">
                                 {o.description}
                               </span>
-                              <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                                {t(ORDER_TYPE_LABEL[o.order_type])}
-                              </span>
+                              <Select
+                                items={Object.fromEntries(
+                                  (Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map(
+                                    (ot) => [ot, t(ORDER_TYPE_LABEL[ot])],
+                                  ),
+                                )}
+                                value={o.order_type}
+                                onValueChange={(v) =>
+                                  handleUpdateOrder(o.id, {
+                                    order_type: v as OrderType,
+                                  })
+                                }
+                              >
+                                <SelectTrigger
+                                  aria-label={t("drawer.testType")}
+                                  className="h-7 w-fit gap-1 text-[11px] uppercase tracking-wide"
+                                >
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map(
+                                    (ot) => (
+                                      <SelectItem key={ot} value={ot}>
+                                        {t(ORDER_TYPE_LABEL[ot])}
+                                      </SelectItem>
+                                    ),
+                                  )}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <Badge
                               variant="outline"
@@ -1081,36 +1110,7 @@ export function PatientDrawer({
                   </p>
                 )}
 
-                {/* New order */}
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="order-type" className="text-xs">
-                    {t("drawer.testType")}
-                  </Label>
-                  <Select
-                    items={Object.fromEntries(
-                      (Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((ot) => [
-                        ot,
-                        t(ORDER_TYPE_LABEL[ot]),
-                      ]),
-                    )}
-                    value={orderType}
-                    onValueChange={(v) => {
-                      setOrderType(v as OrderType);
-                      setOrderDescription("");
-                    }}
-                  >
-                    <SelectTrigger id="order-type" className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map((ot) => (
-                        <SelectItem key={ot} value={ot}>
-                          {t(ORDER_TYPE_LABEL[ot])}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Add a test — instant-adds to the list above on pick. */}
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="order-desc" className="text-xs">
                     {t("drawer.test")}
@@ -1118,23 +1118,19 @@ export function PatientDrawer({
                   <TermAutocomplete
                     id="order-desc"
                     category="investigations"
-                    value={orderDescription}
-                    onChange={setOrderDescription}
+                    value={orderDraft}
+                    onChange={setOrderDraft}
+                    clearOnSelect
                     onSelectTerm={(term: ClinicalTerm) => {
-                      if (term.order_type) setOrderType(term.order_type);
+                      handleAddOrder(
+                        displayTerm(term, activeLocale),
+                        term.order_type ?? "lab",
+                      );
                     }}
+                    onCommit={(label) => handleAddOrder(label, "lab")}
                     placeholder={t("drawer.testPlaceholder")}
                   />
                 </div>
-                <Button
-                  variant="outline"
-                  onClick={handleAddOrder}
-                  disabled={!orderDescription.trim()}
-                  className="self-end"
-                >
-                  <Plus className="size-4" />
-                  {t("drawer.orderTest")}
-                </Button>
               </div>
 
               <Separator />
@@ -1176,17 +1172,25 @@ export function PatientDrawer({
                   </p>
                 ) : null}
 
+                <datalist id="route-options">
+                  {ROUTE_OPTIONS.map((r) => (
+                    <option key={r} value={r} />
+                  ))}
+                </datalist>
+                <datalist id="frequency-options">
+                  {FREQUENCY_OPTIONS.map((f) => (
+                    <option key={f} value={f} />
+                  ))}
+                </datalist>
+
                 {prescriptions.length > 0 ? (
                   <ul className="flex flex-col gap-2">
                     {prescriptions.map((p) => {
                       const token = PRESCRIPTION_STATUS_TOKEN[p.status];
-                      const detail = [p.dose, p.route, p.frequency, p.duration]
-                        .filter(Boolean)
-                        .join(" · ");
                       return (
                         <li
                           key={p.id}
-                          className="flex flex-col gap-1 rounded-md border border-border bg-muted/40 p-3"
+                          className="flex flex-col gap-2 rounded-md border border-border bg-muted/40 p-3"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <span className="text-sm font-medium">
@@ -1207,16 +1211,65 @@ export function PatientDrawer({
                               {t(PRESCRIPTION_STATUS_LABEL[p.status])}
                             </Badge>
                           </div>
-                          {detail ? (
-                            <span className="text-xs text-muted-foreground">
-                              {detail}
-                            </span>
-                          ) : null}
-                          {p.instructions ? (
-                            <span className="text-xs text-muted-foreground">
-                              {p.instructions}
-                            </span>
-                          ) : null}
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              key={`dose:${p.dose ?? ""}`}
+                              defaultValue={p.dose ?? ""}
+                              onBlur={(e) =>
+                                handleUpdatePrescription(p.id, {
+                                  dose: e.target.value,
+                                })
+                              }
+                              placeholder={t("drawer.dosePlaceholder")}
+                              className="h-7 font-mono text-xs"
+                            />
+                            <Input
+                              key={`route:${p.route ?? ""}`}
+                              list="route-options"
+                              defaultValue={p.route ?? ""}
+                              onBlur={(e) =>
+                                handleUpdatePrescription(p.id, {
+                                  route: e.target.value,
+                                })
+                              }
+                              placeholder={t("drawer.routePlaceholder")}
+                              className="h-7 text-xs"
+                            />
+                            <Input
+                              key={`freq:${p.frequency ?? ""}`}
+                              list="frequency-options"
+                              defaultValue={p.frequency ?? ""}
+                              onBlur={(e) =>
+                                handleUpdatePrescription(p.id, {
+                                  frequency: e.target.value,
+                                })
+                              }
+                              placeholder={t("drawer.frequencyPlaceholder")}
+                              className="h-7 text-xs"
+                            />
+                            <Input
+                              key={`dur:${p.duration ?? ""}`}
+                              defaultValue={p.duration ?? ""}
+                              onBlur={(e) =>
+                                handleUpdatePrescription(p.id, {
+                                  duration: e.target.value,
+                                })
+                              }
+                              placeholder={t("drawer.durationPlaceholder")}
+                              className="h-7 text-xs"
+                            />
+                          </div>
+                          <Input
+                            key={`instr:${p.instructions ?? ""}`}
+                            defaultValue={p.instructions ?? ""}
+                            onBlur={(e) =>
+                              handleUpdatePrescription(p.id, {
+                                instructions: e.target.value,
+                              })
+                            }
+                            placeholder={t("drawer.instructionsPlaceholder")}
+                            className="h-7 text-xs"
+                          />
                         </li>
                       );
                     })}
@@ -1227,17 +1280,7 @@ export function PatientDrawer({
                   </p>
                 )}
 
-                {/* New prescription */}
-                <datalist id="route-options">
-                  {ROUTE_OPTIONS.map((r) => (
-                    <option key={r} value={r} />
-                  ))}
-                </datalist>
-                <datalist id="frequency-options">
-                  {FREQUENCY_OPTIONS.map((f) => (
-                    <option key={f} value={f} />
-                  ))}
-                </datalist>
+                {/* New prescription — instant add on select */}
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="rx-drug" className="text-xs">
                     {t("drawer.drug")}
@@ -1245,85 +1288,23 @@ export function PatientDrawer({
                   <TermAutocomplete
                     id="rx-drug"
                     category="medication"
-                    value={rxDrug}
-                    onChange={setRxDrug}
-                    onSelectTerm={(term: ClinicalTerm) => {
-                      if (term.dose) setRxDose(term.dose);
-                      if (term.route) setRxRoute(term.route);
-                      if (term.frequency) setRxFrequency(term.frequency);
-                    }}
+                    value={rxDraft}
+                    onChange={setRxDraft}
+                    clearOnSelect
+                    onSelectTerm={(term: ClinicalTerm) =>
+                      handleAddPrescription({
+                        drug_name: displayTerm(term, activeLocale),
+                        dose: term.dose,
+                        route: term.route,
+                        frequency: term.frequency,
+                      })
+                    }
+                    onCommit={(label) =>
+                      handleAddPrescription({ drug_name: label })
+                    }
                     placeholder={t("drawer.drugPlaceholder")}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="rx-dose" className="text-xs">
-                      {t("drawer.dose")}
-                    </Label>
-                    <Input
-                      id="rx-dose"
-                      value={rxDose}
-                      onChange={(e) => setRxDose(e.target.value)}
-                      placeholder={t("drawer.dosePlaceholder")}
-                      className="font-mono"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="rx-route" className="text-xs">
-                      {t("drawer.route")}
-                    </Label>
-                    <Input
-                      id="rx-route"
-                      list="route-options"
-                      value={rxRoute}
-                      onChange={(e) => setRxRoute(e.target.value)}
-                      placeholder={t("drawer.routePlaceholder")}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="rx-freq" className="text-xs">
-                      {t("drawer.frequency")}
-                    </Label>
-                    <Input
-                      id="rx-freq"
-                      list="frequency-options"
-                      value={rxFrequency}
-                      onChange={(e) => setRxFrequency(e.target.value)}
-                      placeholder={t("drawer.frequencyPlaceholder")}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="rx-dur" className="text-xs">
-                      {t("drawer.duration")}
-                    </Label>
-                    <Input
-                      id="rx-dur"
-                      value={rxDuration}
-                      onChange={(e) => setRxDuration(e.target.value)}
-                      placeholder={t("drawer.durationPlaceholder")}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="rx-instr" className="text-xs">
-                    {t("drawer.instructions")}
-                  </Label>
-                  <Input
-                    id="rx-instr"
-                    value={rxInstructions}
-                    onChange={(e) => setRxInstructions(e.target.value)}
-                    placeholder={t("drawer.instructionsPlaceholder")}
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={handleAddPrescription}
-                  disabled={!rxDrug.trim()}
-                  className="self-end"
-                >
-                  <Plus className="size-4" />
-                  {t("drawer.prescribe")}
-                </Button>
               </div>
 
               <Separator />

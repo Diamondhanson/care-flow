@@ -2352,5 +2352,1921 @@
       "vésicules"
     ],
     "system": "Skin"
+  },
+  {
+    "term_en": "Sinus rhythm regular",
+    "term_fr": "Rythme sinusal régulier",
+    "synonyms_en": [
+      "regular pulse",
+      "normal sinus rhythm"
+    ],
+    "synonyms_fr": [
+      "pouls régulier",
+      "rythme normal"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Pulsus paradoxus present",
+    "term_fr": "Pouls paradoxal présent",
+    "synonyms_en": [
+      "paradoxical pulse"
+    ],
+    "synonyms_fr": [
+      "pouls paradoxal"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Bounding pulse",
+    "term_fr": "Pouls bondissant",
+    "synonyms_en": [
+      "water-hammer pulse",
+      "collapsing pulse"
+    ],
+    "synonyms_fr": [
+      "pouls de Corrigan"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Weak thready pulse",
+    "term_fr": "Pouls filant faible",
+    "synonyms_en": [
+      "feeble pulse",
+      "thready pulse"
+    ],
+    "synonyms_fr": [
+      "pouls filiforme"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Fixed split second heart sound",
+    "term_fr": "Dédoublement fixe du deuxième bruit",
+    "synonyms_en": [
+      "fixed split S2"
+    ],
+    "synonyms_fr": [
+      "dédoublement B2"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Third heart sound present",
+    "term_fr": "Troisième bruit cardiaque présent",
+    "synonyms_en": [
+      "S3 gallop"
+    ],
+    "synonyms_fr": [
+      "B3 présent",
+      "galop B3"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Fourth heart sound present",
+    "term_fr": "Quatrième bruit cardiaque présent",
+    "synonyms_en": [
+      "S4 gallop"
+    ],
+    "synonyms_fr": [
+      "B4 présent"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Heaving apex beat",
+    "term_fr": "Choc de pointe en dôme",
+    "synonyms_en": [
+      "sustained apex",
+      "heaving impulse"
+    ],
+    "synonyms_fr": [
+      "choc de pointe soutenu"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Parasternal heave present",
+    "term_fr": "Soulèvement parasternal présent",
+    "synonyms_en": [
+      "right ventricular heave"
+    ],
+    "synonyms_fr": [
+      "soulèvement ventriculaire droit"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Pedal edema present",
+    "term_fr": "Œdème des pieds présent",
+    "synonyms_en": [
+      "ankle swelling",
+      "foot edema"
+    ],
+    "synonyms_fr": [
+      "œdème des chevilles"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Sacral edema present",
+    "term_fr": "Œdème sacré présent",
+    "synonyms_en": [
+      "sacral swelling"
+    ],
+    "synonyms_fr": [
+      "œdème du sacrum"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Pansystolic murmur",
+    "term_fr": "Souffle holosystolique",
+    "synonyms_en": [
+      "holosystolic murmur"
+    ],
+    "synonyms_fr": [
+      "souffle pansystolique"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Ejection systolic murmur",
+    "term_fr": "Souffle systolique d'éjection",
+    "synonyms_en": [
+      "crescendo-decrescendo murmur"
+    ],
+    "synonyms_fr": [
+      "souffle d'éjection"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Femoral bruit present",
+    "term_fr": "Souffle fémoral présent",
+    "synonyms_en": [
+      "femoral artery bruit"
+    ],
+    "synonyms_fr": [
+      "souffle artériel fémoral"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Absent dorsalis pedis pulse",
+    "term_fr": "Pouls pédieux absent",
+    "synonyms_en": [
+      "no foot pulse",
+      "absent pedal pulse"
+    ],
+    "synonyms_fr": [
+      "pouls du pied absent"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Radio-femoral delay present",
+    "term_fr": "Retard radio-fémoral présent",
+    "synonyms_en": [
+      "radiofemoral delay"
+    ],
+    "synonyms_fr": [
+      "asynchronisme radio-fémoral"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Varicose veins present",
+    "term_fr": "Varices présentes",
+    "synonyms_en": [
+      "varicosities"
+    ],
+    "synonyms_fr": [
+      "veines variqueuses"
+    ],
+    "system": "Cardiac"
+  },
+  {
+    "term_en": "Post-nasal drip present",
+    "term_fr": "Écoulement post-nasal présent",
+    "synonyms_en": [
+      "postnasal discharge"
+    ],
+    "synonyms_fr": [
+      "jetage postérieur"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Nasal discharge purulent",
+    "term_fr": "Écoulement nasal purulent",
+    "synonyms_en": [
+      "purulent rhinorrhea"
+    ],
+    "synonyms_fr": [
+      "rhinorrhée purulente"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Epistaxis active",
+    "term_fr": "Épistaxis active",
+    "synonyms_en": [
+      "active nosebleed"
+    ],
+    "synonyms_fr": [
+      "saignement de nez actif"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Sinus tenderness on palpation",
+    "term_fr": "Sensibilité sinusale à la palpation",
+    "synonyms_en": [
+      "frontal sinus tenderness",
+      "maxillary sinus tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur des sinus"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Mastoid tenderness",
+    "term_fr": "Sensibilité mastoïdienne",
+    "synonyms_en": [
+      "tender mastoid"
+    ],
+    "synonyms_fr": [
+      "douleur de la mastoïde"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Otorrhea present",
+    "term_fr": "Otorrhée présente",
+    "synonyms_en": [
+      "ear discharge"
+    ],
+    "synonyms_fr": [
+      "écoulement de l'oreille"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tragal tenderness present",
+    "term_fr": "Sensibilité du tragus présente",
+    "synonyms_en": [
+      "tender tragus"
+    ],
+    "synonyms_fr": [
+      "douleur du tragus"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Tonsils not enlarged",
+    "term_fr": "Amygdales non hypertrophiées",
+    "synonyms_en": [
+      "normal tonsils"
+    ],
+    "synonyms_fr": [
+      "amygdales normales"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Hoarse voice",
+    "term_fr": "Voix rauque",
+    "synonyms_en": [
+      "hoarseness",
+      "dysphonia"
+    ],
+    "synonyms_fr": [
+      "enrouement",
+      "dysphonie"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Hearing reduced on Rinne test",
+    "term_fr": "Audition réduite au test de Rinne",
+    "synonyms_en": [
+      "abnormal Rinne",
+      "conductive hearing loss sign"
+    ],
+    "synonyms_fr": [
+      "Rinne anormal"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Weber test lateralizes",
+    "term_fr": "Test de Weber latéralisé",
+    "synonyms_en": [
+      "Weber lateralization"
+    ],
+    "synonyms_fr": [
+      "latéralisation de Weber"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Gingival bleeding present",
+    "term_fr": "Saignement gingival présent",
+    "synonyms_en": [
+      "bleeding gums on exam"
+    ],
+    "synonyms_fr": [
+      "gencives qui saignent"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Dental caries visible",
+    "term_fr": "Caries dentaires visibles",
+    "synonyms_en": [
+      "tooth decay"
+    ],
+    "synonyms_fr": [
+      "dents cariées"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Angular cheilitis present",
+    "term_fr": "Perlèche présente",
+    "synonyms_en": [
+      "angular stomatitis"
+    ],
+    "synonyms_fr": [
+      "chéilite angulaire"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Geographic tongue",
+    "term_fr": "Langue géographique",
+    "synonyms_en": [
+      "benign migratory glossitis"
+    ],
+    "synonyms_fr": [
+      "glossite migratrice"
+    ],
+    "system": "ENT"
+  },
+  {
+    "term_en": "Periorbital edema",
+    "term_fr": "Œdème périorbitaire",
+    "synonyms_en": [
+      "puffy eyes",
+      "eyelid swelling"
+    ],
+    "synonyms_fr": [
+      "œdème des paupières"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Ptosis present",
+    "term_fr": "Ptosis présent",
+    "synonyms_en": [
+      "drooping eyelid"
+    ],
+    "synonyms_fr": [
+      "chute de la paupière"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Strabismus present",
+    "term_fr": "Strabisme présent",
+    "synonyms_en": [
+      "squint",
+      "crossed eyes"
+    ],
+    "synonyms_fr": [
+      "loucherie"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Arcus senilis present",
+    "term_fr": "Arc sénile présent",
+    "synonyms_en": [
+      "corneal arcus"
+    ],
+    "synonyms_fr": [
+      "gérontoxon"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Cataract visible",
+    "term_fr": "Cataracte visible",
+    "synonyms_en": [
+      "lens opacity"
+    ],
+    "synonyms_fr": [
+      "opacité du cristallin"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Fundoscopy shows papilledema",
+    "term_fr": "Fond d'œil avec œdème papillaire",
+    "synonyms_en": [
+      "disc swelling",
+      "papilloedema"
+    ],
+    "synonyms_fr": [
+      "œdème papillaire"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Retinal hemorrhages on fundoscopy",
+    "term_fr": "Hémorragies rétiniennes au fond d'œil",
+    "synonyms_en": [
+      "retinal bleeding"
+    ],
+    "synonyms_fr": [
+      "hémorragie rétinienne"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Visual acuity reduced",
+    "term_fr": "Acuité visuelle réduite",
+    "synonyms_en": [
+      "decreased vision on test"
+    ],
+    "synonyms_fr": [
+      "baisse d'acuité visuelle"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Pupillary light reflex sluggish",
+    "term_fr": "Réflexe pupillaire lent",
+    "synonyms_en": [
+      "sluggish pupils"
+    ],
+    "synonyms_fr": [
+      "pupilles paresseuses"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Extraocular movements full",
+    "term_fr": "Mouvements oculaires complets",
+    "synonyms_en": [
+      "EOM intact",
+      "full eye movements"
+    ],
+    "synonyms_fr": [
+      "motilité oculaire normale"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Extraocular movement restricted",
+    "term_fr": "Mouvement oculaire limité",
+    "synonyms_en": [
+      "restricted gaze",
+      "ophthalmoplegia"
+    ],
+    "synonyms_fr": [
+      "ophtalmoplégie"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Subconjunctival hemorrhage",
+    "term_fr": "Hémorragie sous-conjonctivale",
+    "synonyms_en": [
+      "red eye patch"
+    ],
+    "synonyms_fr": [
+      "hémorragie conjonctivale"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Lid lag present",
+    "term_fr": "Retard palpébral présent",
+    "synonyms_en": [
+      "von Graefe sign"
+    ],
+    "synonyms_fr": [
+      "signe de von Graefe"
+    ],
+    "system": "Eyes"
+  },
+  {
+    "term_en": "Liver edge non-tender",
+    "term_fr": "Bord hépatique indolore",
+    "synonyms_en": [
+      "non-tender liver"
+    ],
+    "synonyms_fr": [
+      "foie non douloureux"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Liver tenderness present",
+    "term_fr": "Sensibilité hépatique présente",
+    "synonyms_en": [
+      "tender liver",
+      "hepatic tenderness"
+    ],
+    "synonyms_fr": [
+      "foie sensible"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Right iliac fossa tenderness",
+    "term_fr": "Sensibilité de la fosse iliaque droite",
+    "synonyms_en": [
+      "RIF tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur FID"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Left iliac fossa tenderness",
+    "term_fr": "Sensibilité de la fosse iliaque gauche",
+    "synonyms_en": [
+      "LIF tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur FIG"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Suprapubic tenderness",
+    "term_fr": "Sensibilité sus-pubienne",
+    "synonyms_en": [
+      "tender suprapubic area"
+    ],
+    "synonyms_fr": [
+      "douleur sus-pubienne"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Guarding present",
+    "term_fr": "Défense présente",
+    "synonyms_en": [
+      "abdominal guarding",
+      "voluntary guarding"
+    ],
+    "synonyms_fr": [
+      "défense abdominale"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Rovsing's sign positive",
+    "term_fr": "Signe de Rovsing positif",
+    "synonyms_en": [
+      "Rovsing sign"
+    ],
+    "synonyms_fr": [
+      "signe de Rovsing"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Psoas sign positive",
+    "term_fr": "Signe du psoas positif",
+    "synonyms_en": [
+      "psoas test positive"
+    ],
+    "synonyms_fr": [
+      "signe du psoas"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Obturator sign positive",
+    "term_fr": "Signe de l'obturateur positif",
+    "synonyms_en": [
+      "obturator test positive"
+    ],
+    "synonyms_fr": [
+      "signe de l'obturateur"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Caput medusae present",
+    "term_fr": "Tête de méduse présente",
+    "synonyms_en": [
+      "dilated abdominal veins"
+    ],
+    "synonyms_fr": [
+      "circulation veineuse collatérale"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Visible peristalsis",
+    "term_fr": "Péristaltisme visible",
+    "synonyms_en": [
+      "visible bowel movement"
+    ],
+    "synonyms_fr": [
+      "ondes péristaltiques visibles"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Succussion splash present",
+    "term_fr": "Clapotis de succussion présent",
+    "synonyms_en": [
+      "gastric splash"
+    ],
+    "synonyms_fr": [
+      "clapotage gastrique"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Hernial orifices intact",
+    "term_fr": "Orifices herniaires intacts",
+    "synonyms_en": [
+      "no hernia palpable"
+    ],
+    "synonyms_fr": [
+      "pas de hernie"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Inguinal hernia present",
+    "term_fr": "Hernie inguinale présente",
+    "synonyms_en": [
+      "groin hernia"
+    ],
+    "synonyms_fr": [
+      "hernie de l'aine"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Digital rectal exam normal",
+    "term_fr": "Toucher rectal normal",
+    "synonyms_en": [
+      "normal DRE"
+    ],
+    "synonyms_fr": [
+      "TR normal"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Melena on rectal exam",
+    "term_fr": "Méléna au toucher rectal",
+    "synonyms_en": [
+      "black tarry stool on DRE"
+    ],
+    "synonyms_fr": [
+      "selles noires au TR"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Fresh blood on rectal exam",
+    "term_fr": "Sang frais au toucher rectal",
+    "synonyms_en": [
+      "hematochezia on DRE"
+    ],
+    "synonyms_fr": [
+      "rectorragie au TR"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Perianal fistula present",
+    "term_fr": "Fistule périanale présente",
+    "synonyms_en": [
+      "anal fistula"
+    ],
+    "synonyms_fr": [
+      "fistule anale"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "External hemorrhoids visible",
+    "term_fr": "Hémorroïdes externes visibles",
+    "synonyms_en": [
+      "piles visible"
+    ],
+    "synonyms_fr": [
+      "hémorroïdes externes"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Stoma healthy and pink",
+    "term_fr": "Stomie saine et rose",
+    "synonyms_en": [
+      "healthy stoma"
+    ],
+    "synonyms_fr": [
+      "stomie normale"
+    ],
+    "system": "GI"
+  },
+  {
+    "term_en": "Afebrile",
+    "term_fr": "Apyrétique",
+    "synonyms_en": [
+      "no fever",
+      "normothermic"
+    ],
+    "synonyms_fr": [
+      "sans fièvre",
+      "normotherme"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Alert and oriented",
+    "term_fr": "Éveillé et orienté",
+    "synonyms_en": [
+      "awake and alert"
+    ],
+    "synonyms_fr": [
+      "conscient et orienté"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Well hydrated",
+    "term_fr": "Bien hydraté",
+    "synonyms_en": [
+      "euvolemic",
+      "adequate hydration"
+    ],
+    "synonyms_fr": [
+      "hydratation normale"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Body mass index elevated",
+    "term_fr": "Indice de masse corporelle élevé",
+    "synonyms_en": [
+      "high BMI",
+      "overweight"
+    ],
+    "synonyms_fr": [
+      "IMC élevé",
+      "surpoids"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Underweight on examination",
+    "term_fr": "Insuffisance pondérale à l'examen",
+    "synonyms_en": [
+      "low body weight",
+      "low BMI"
+    ],
+    "synonyms_fr": [
+      "maigreur",
+      "IMC bas"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Cervical lymphadenopathy",
+    "term_fr": "Adénopathie cervicale",
+    "synonyms_en": [
+      "neck lymph nodes enlarged",
+      "cervical nodes"
+    ],
+    "synonyms_fr": [
+      "ganglions cervicaux"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Axillary lymphadenopathy",
+    "term_fr": "Adénopathie axillaire",
+    "synonyms_en": [
+      "armpit nodes enlarged"
+    ],
+    "synonyms_fr": [
+      "ganglions axillaires"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "No lymphadenopathy",
+    "term_fr": "Pas d'adénopathie",
+    "synonyms_en": [
+      "lymph nodes not enlarged"
+    ],
+    "synonyms_fr": [
+      "ganglions normaux"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Finger clubbing absent",
+    "term_fr": "Hippocratisme digital absent",
+    "synonyms_en": [
+      "no clubbing"
+    ],
+    "synonyms_fr": [
+      "pas d'hippocratisme"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Diaphoresis present",
+    "term_fr": "Diaphorèse présente",
+    "synonyms_en": [
+      "profuse sweating",
+      "sweaty"
+    ],
+    "synonyms_fr": [
+      "sueurs profuses"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Toxic appearance",
+    "term_fr": "Aspect toxique",
+    "synonyms_en": [
+      "toxic-looking",
+      "ill-looking"
+    ],
+    "synonyms_fr": [
+      "aspect septique"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Restless and agitated",
+    "term_fr": "Agité et nerveux",
+    "synonyms_en": [
+      "restlessness on exam"
+    ],
+    "synonyms_fr": [
+      "agitation"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Conscious and cooperative",
+    "term_fr": "Conscient et coopératif",
+    "synonyms_en": [
+      "cooperative patient"
+    ],
+    "synonyms_fr": [
+      "patient coopératif"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Tachypnea on observation",
+    "term_fr": "Tachypnée à l'observation",
+    "synonyms_en": [
+      "rapid breathing",
+      "fast respiratory rate"
+    ],
+    "synonyms_fr": [
+      "respiration rapide"
+    ],
+    "system": "General"
+  },
+  {
+    "term_en": "Renal angle tenderness",
+    "term_fr": "Sensibilité de l'angle costo-lombaire",
+    "synonyms_en": [
+      "loin tenderness",
+      "flank tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur lombaire"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Suprapubic mass palpable",
+    "term_fr": "Masse sus-pubienne palpable",
+    "synonyms_en": [
+      "palpable bladder"
+    ],
+    "synonyms_fr": [
+      "globe vésical"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Testes descended bilaterally",
+    "term_fr": "Testicules descendus bilatéralement",
+    "synonyms_en": [
+      "both testes in scrotum"
+    ],
+    "synonyms_fr": [
+      "testicules en place"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Undescended testis",
+    "term_fr": "Testicule non descendu",
+    "synonyms_en": [
+      "cryptorchidism"
+    ],
+    "synonyms_fr": [
+      "cryptorchidie"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Varicocele present",
+    "term_fr": "Varicocèle présente",
+    "synonyms_en": [
+      "scrotal varices",
+      "bag of worms"
+    ],
+    "synonyms_fr": [
+      "varices scrotales"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Testicular tenderness",
+    "term_fr": "Sensibilité testiculaire",
+    "synonyms_en": [
+      "tender testis"
+    ],
+    "synonyms_fr": [
+      "testicule douloureux"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Penile discharge absent",
+    "term_fr": "Absence d'écoulement urétral",
+    "synonyms_en": [
+      "no urethral discharge"
+    ],
+    "synonyms_fr": [
+      "pas d'écoulement"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Genital ulcer present",
+    "term_fr": "Ulcère génital présent",
+    "synonyms_en": [
+      "genital sore"
+    ],
+    "synonyms_fr": [
+      "chancre génital"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Foreskin retractable",
+    "term_fr": "Prépuce rétractable",
+    "synonyms_en": [
+      "normal foreskin"
+    ],
+    "synonyms_fr": [
+      "prépuce normal"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Vulval lesion present",
+    "term_fr": "Lésion vulvaire présente",
+    "synonyms_en": [
+      "vulvar lesion"
+    ],
+    "synonyms_fr": [
+      "lésion de la vulve"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Cervix appears healthy on speculum",
+    "term_fr": "Col d'aspect sain au spéculum",
+    "synonyms_en": [
+      "healthy cervix"
+    ],
+    "synonyms_fr": [
+      "col sain"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Cervical erosion visible",
+    "term_fr": "Érosion cervicale visible",
+    "synonyms_en": [
+      "cervical ectropion"
+    ],
+    "synonyms_fr": [
+      "ectropion cervical"
+    ],
+    "system": "GU"
+  },
+  {
+    "term_en": "Joint swelling present",
+    "term_fr": "Gonflement articulaire présent",
+    "synonyms_en": [
+      "swollen joint"
+    ],
+    "synonyms_fr": [
+      "articulation gonflée"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint warmth present",
+    "term_fr": "Chaleur articulaire présente",
+    "synonyms_en": [
+      "warm joint",
+      "hot joint"
+    ],
+    "synonyms_fr": [
+      "articulation chaude"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Reduced range of motion",
+    "term_fr": "Amplitude de mouvement réduite",
+    "synonyms_en": [
+      "limited ROM",
+      "restricted movement"
+    ],
+    "synonyms_fr": [
+      "mobilité réduite"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Muscle strength 4/5",
+    "term_fr": "Force musculaire 4/5",
+    "synonyms_en": [
+      "mild weakness on power test"
+    ],
+    "synonyms_fr": [
+      "force diminuée 4/5"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Straight leg raise positive",
+    "term_fr": "Lasègue positif",
+    "synonyms_en": [
+      "positive SLR",
+      "Lasegue sign"
+    ],
+    "synonyms_fr": [
+      "signe de Lasègue"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Heberden's nodes present",
+    "term_fr": "Nodules d'Heberden présents",
+    "synonyms_en": [
+      "Heberden nodes"
+    ],
+    "synonyms_fr": [
+      "nodosités d'Heberden"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint deformity swan neck",
+    "term_fr": "Déformation en col de cygne",
+    "synonyms_en": [
+      "swan neck deformity"
+    ],
+    "synonyms_fr": [
+      "déformation en col de cygne"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Gibbus deformity present",
+    "term_fr": "Gibbosité présente",
+    "synonyms_en": [
+      "spinal gibbus"
+    ],
+    "synonyms_fr": [
+      "gibbus vertébral"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Genu varum",
+    "term_fr": "Genu varum",
+    "synonyms_en": [
+      "bow legs",
+      "bowed legs"
+    ],
+    "synonyms_fr": [
+      "jambes arquées"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Genu valgum",
+    "term_fr": "Genu valgum",
+    "synonyms_en": [
+      "knock knees"
+    ],
+    "synonyms_fr": [
+      "genoux cagneux"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Antalgic gait",
+    "term_fr": "Démarche antalgique",
+    "synonyms_en": [
+      "limping gait"
+    ],
+    "synonyms_fr": [
+      "boiterie d'esquive"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Joint stable on stress test",
+    "term_fr": "Articulation stable au test de stress",
+    "synonyms_en": [
+      "stable ligaments"
+    ],
+    "synonyms_fr": [
+      "ligaments stables"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Tenderness over anatomical snuffbox",
+    "term_fr": "Sensibilité de la tabatière anatomique",
+    "synonyms_en": [
+      "snuffbox tenderness"
+    ],
+    "synonyms_fr": [
+      "douleur tabatière"
+    ],
+    "system": "Musculoskeletal"
+  },
+  {
+    "term_en": "Glasgow Coma Scale 15",
+    "term_fr": "Score de Glasgow 15",
+    "synonyms_en": [
+      "GCS 15",
+      "fully conscious"
+    ],
+    "synonyms_fr": [
+      "GCS 15"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Reduced Glasgow Coma Scale",
+    "term_fr": "Score de Glasgow réduit",
+    "synonyms_en": [
+      "low GCS",
+      "depressed consciousness"
+    ],
+    "synonyms_fr": [
+      "GCS abaissé"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Brudzinski sign positive",
+    "term_fr": "Signe de Brudzinski positif",
+    "synonyms_en": [
+      "Brudzinski positive"
+    ],
+    "synonyms_fr": [
+      "signe de Brudzinski"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Pronator drift present",
+    "term_fr": "Dérive en pronation présente",
+    "synonyms_en": [
+      "arm drift"
+    ],
+    "synonyms_fr": [
+      "dérive pronatrice"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Romberg test positive",
+    "term_fr": "Test de Romberg positif",
+    "synonyms_en": [
+      "positive Romberg"
+    ],
+    "synonyms_fr": [
+      "signe de Romberg"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Finger-nose test impaired",
+    "term_fr": "Épreuve doigt-nez perturbée",
+    "synonyms_en": [
+      "dysmetria",
+      "past pointing"
+    ],
+    "synonyms_fr": [
+      "dysmétrie"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Dysdiadochokinesia present",
+    "term_fr": "Dysdiadococinésie présente",
+    "synonyms_en": [
+      "impaired rapid alternating movements"
+    ],
+    "synonyms_fr": [
+      "adiadococinésie"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Aphasia present",
+    "term_fr": "Aphasie présente",
+    "synonyms_en": [
+      "language deficit",
+      "dysphasia"
+    ],
+    "synonyms_fr": [
+      "dysphasie"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Ptosis with miosis",
+    "term_fr": "Ptosis avec myosis",
+    "synonyms_en": [
+      "Horner sign"
+    ],
+    "synonyms_fr": [
+      "signe de Horner"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Tongue deviation present",
+    "term_fr": "Déviation de la langue présente",
+    "synonyms_en": [
+      "hypoglossal palsy sign"
+    ],
+    "synonyms_fr": [
+      "déviation linguale"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Intention tremor present",
+    "term_fr": "Tremblement d'intention présent",
+    "synonyms_en": [
+      "cerebellar tremor"
+    ],
+    "synonyms_fr": [
+      "tremblement cérébelleux"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Cogwheel rigidity present",
+    "term_fr": "Rigidité en roue dentée présente",
+    "synonyms_en": [
+      "cogwheeling"
+    ],
+    "synonyms_fr": [
+      "roue dentée"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Fasciculations present",
+    "term_fr": "Fasciculations présentes",
+    "synonyms_en": [
+      "muscle twitching on exam"
+    ],
+    "synonyms_fr": [
+      "secousses musculaires"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Decerebrate posturing",
+    "term_fr": "Posture de décérébration",
+    "synonyms_en": [
+      "extensor posturing"
+    ],
+    "synonyms_fr": [
+      "rigidité de décérébration"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Decorticate posturing",
+    "term_fr": "Posture de décortication",
+    "synonyms_en": [
+      "flexor posturing"
+    ],
+    "synonyms_fr": [
+      "rigidité de décortication"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Plantar reflex flexor",
+    "term_fr": "Réflexe cutané plantaire en flexion",
+    "synonyms_en": [
+      "downgoing plantars",
+      "normal plantar response"
+    ],
+    "synonyms_fr": [
+      "plantaire en flexion"
+    ],
+    "system": "Neuro"
+  },
+  {
+    "term_en": "Fundal height greater than dates",
+    "term_fr": "Hauteur utérine supérieure au terme",
+    "synonyms_en": [
+      "large for dates"
+    ],
+    "synonyms_fr": [
+      "utérus trop grand"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fundal height less than dates",
+    "term_fr": "Hauteur utérine inférieure au terme",
+    "synonyms_en": [
+      "small for dates"
+    ],
+    "synonyms_fr": [
+      "utérus trop petit"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fetal lie longitudinal",
+    "term_fr": "Présentation longitudinale",
+    "synonyms_en": [
+      "longitudinal lie"
+    ],
+    "synonyms_fr": [
+      "axe longitudinal"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fetal presentation cephalic",
+    "term_fr": "Présentation céphalique",
+    "synonyms_en": [
+      "head down",
+      "vertex presentation"
+    ],
+    "synonyms_fr": [
+      "présentation du sommet"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Breech presentation on palpation",
+    "term_fr": "Présentation du siège à la palpation",
+    "synonyms_en": [
+      "breech lie"
+    ],
+    "synonyms_fr": [
+      "présentation du siège"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Fetal heart rate absent",
+    "term_fr": "Bruits du cœur fœtal absents",
+    "synonyms_en": [
+      "no fetal heartbeat"
+    ],
+    "synonyms_fr": [
+      "BCF absents"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Uterine contractions palpable",
+    "term_fr": "Contractions utérines palpables",
+    "synonyms_en": [
+      "palpable contractions"
+    ],
+    "synonyms_fr": [
+      "contractions perçues"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Membranes ruptured on exam",
+    "term_fr": "Membranes rompues à l'examen",
+    "synonyms_en": [
+      "liquor draining",
+      "ruptured membranes"
+    ],
+    "synonyms_fr": [
+      "rupture des membranes"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Cervical effacement present",
+    "term_fr": "Effacement du col présent",
+    "synonyms_en": [
+      "cervix effaced"
+    ],
+    "synonyms_fr": [
+      "col effacé"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Engaged fetal head",
+    "term_fr": "Tête fœtale engagée",
+    "synonyms_en": [
+      "head engaged"
+    ],
+    "synonyms_fr": [
+      "tête engagée"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Bimanual exam uterus normal size",
+    "term_fr": "Utérus de taille normale au toucher bimanuel",
+    "synonyms_en": [
+      "normal sized uterus"
+    ],
+    "synonyms_fr": [
+      "utérus normal"
+    ],
+    "system": "Obstetric/Gynae"
+  },
+  {
+    "term_en": "Affect appropriate",
+    "term_fr": "Affect approprié",
+    "synonyms_en": [
+      "normal affect",
+      "euthymic affect"
+    ],
+    "synonyms_fr": [
+      "affect normal"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Flat affect",
+    "term_fr": "Affect émoussé",
+    "synonyms_en": [
+      "blunted affect"
+    ],
+    "synonyms_fr": [
+      "affect plat"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Pressured speech",
+    "term_fr": "Discours sous pression",
+    "synonyms_en": [
+      "rapid speech"
+    ],
+    "synonyms_fr": [
+      "logorrhée maniaque"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Poor eye contact",
+    "term_fr": "Contact visuel pauvre",
+    "synonyms_en": [
+      "avoids eye contact"
+    ],
+    "synonyms_fr": [
+      "évite le regard"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Auditory hallucinations reported",
+    "term_fr": "Hallucinations auditives rapportées",
+    "synonyms_en": [
+      "hearing voices"
+    ],
+    "synonyms_fr": [
+      "entend des voix"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Disorganized thought process",
+    "term_fr": "Pensée désorganisée",
+    "synonyms_en": [
+      "thought disorder",
+      "loosening of associations"
+    ],
+    "synonyms_fr": [
+      "désorganisation de la pensée"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Insight impaired",
+    "term_fr": "Introspection altérée",
+    "synonyms_en": [
+      "poor insight",
+      "lacks insight"
+    ],
+    "synonyms_fr": [
+      "mauvaise conscience du trouble"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Judgment impaired",
+    "term_fr": "Jugement altéré",
+    "synonyms_en": [
+      "poor judgment"
+    ],
+    "synonyms_fr": [
+      "jugement perturbé"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Homicidal ideation expressed",
+    "term_fr": "Idéation homicide exprimée",
+    "synonyms_en": [
+      "thoughts of harming others"
+    ],
+    "synonyms_fr": [
+      "idées hétéro-agressives"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Cognition intact on MMSE",
+    "term_fr": "Cognition intacte au MMSE",
+    "synonyms_en": [
+      "normal cognition",
+      "MMSE normal"
+    ],
+    "synonyms_fr": [
+      "fonctions cognitives normales"
+    ],
+    "system": "Psych"
+  },
+  {
+    "term_en": "Respiratory distress present",
+    "term_fr": "Détresse respiratoire présente",
+    "synonyms_en": [
+      "labored breathing",
+      "respiratory effort increased"
+    ],
+    "synonyms_fr": [
+      "difficulté respiratoire"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Use of accessory muscles",
+    "term_fr": "Utilisation des muscles accessoires",
+    "synonyms_en": [
+      "accessory muscle use"
+    ],
+    "synonyms_fr": [
+      "tirage respiratoire"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Dull percussion note",
+    "term_fr": "Matité à la percussion",
+    "synonyms_en": [
+      "dullness to percussion"
+    ],
+    "synonyms_fr": [
+      "matité"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Stony dull percussion",
+    "term_fr": "Matité franche à la percussion",
+    "synonyms_en": [
+      "stony dullness"
+    ],
+    "synonyms_fr": [
+      "matité hydrique"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Vesicular breath sounds normal",
+    "term_fr": "Murmure vésiculaire normal",
+    "synonyms_en": [
+      "normal breath sounds"
+    ],
+    "synonyms_fr": [
+      "murmure vésiculaire présent"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Rhonchi present",
+    "term_fr": "Ronchi présents",
+    "synonyms_en": [
+      "low-pitched wheeze"
+    ],
+    "synonyms_fr": [
+      "râles ronflants"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Wheezing, expiratory",
+    "term_fr": "Sifflement expiratoire",
+    "synonyms_en": [
+      "expiratory wheeze"
+    ],
+    "synonyms_fr": [
+      "sibilance expiratoire"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Vocal resonance increased",
+    "term_fr": "Résonance vocale augmentée",
+    "synonyms_en": [
+      "bronchophony"
+    ],
+    "synonyms_fr": [
+      "bronchophonie"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Vocal resonance decreased",
+    "term_fr": "Résonance vocale diminuée",
+    "synonyms_en": [
+      "reduced vocal resonance"
+    ],
+    "synonyms_fr": [
+      "résonance vocale réduite"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Prolonged expiratory phase",
+    "term_fr": "Phase expiratoire prolongée",
+    "synonyms_en": [
+      "prolonged expiration"
+    ],
+    "synonyms_fr": [
+      "expiration prolongée"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Pursed-lip breathing",
+    "term_fr": "Respiration à lèvres pincées",
+    "synonyms_en": [
+      "pursed lips breathing"
+    ],
+    "synonyms_fr": [
+      "respiration lèvres pincées"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Cough productive on exam",
+    "term_fr": "Toux productive à l'examen",
+    "synonyms_en": [
+      "wet cough",
+      "productive cough"
+    ],
+    "synonyms_fr": [
+      "toux grasse"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Oxygen saturation low on air",
+    "term_fr": "Saturation en oxygène basse à l'air",
+    "synonyms_en": [
+      "hypoxia on pulse oximetry",
+      "low SpO2"
+    ],
+    "synonyms_fr": [
+      "désaturation"
+    ],
+    "system": "Respiratory"
+  },
+  {
+    "term_en": "Skin turgor reduced",
+    "term_fr": "Pli cutané persistant",
+    "synonyms_en": [
+      "decreased skin turgor",
+      "poor turgor"
+    ],
+    "synonyms_fr": [
+      "turgescence réduite"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Excoriation marks present",
+    "term_fr": "Marques d'excoriation présentes",
+    "synonyms_en": [
+      "scratch marks"
+    ],
+    "synonyms_fr": [
+      "lésions de grattage"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Lichenification present",
+    "term_fr": "Lichénification présente",
+    "synonyms_en": [
+      "thickened skin"
+    ],
+    "synonyms_fr": [
+      "épaississement cutané"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Target lesions present",
+    "term_fr": "Lésions en cocarde présentes",
+    "synonyms_en": [
+      "erythema multiforme lesions"
+    ],
+    "synonyms_fr": [
+      "lésions en cible"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Wheals present",
+    "term_fr": "Papules urticariennes présentes",
+    "synonyms_en": [
+      "hives",
+      "urticaria"
+    ],
+    "synonyms_fr": [
+      "urticaire"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Bullae present",
+    "term_fr": "Bulles présentes",
+    "synonyms_en": [
+      "large blisters"
+    ],
+    "synonyms_fr": [
+      "grosses cloques"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Scaling plaques present",
+    "term_fr": "Plaques squameuses présentes",
+    "synonyms_en": [
+      "psoriatic plaques",
+      "scaly plaques"
+    ],
+    "synonyms_fr": [
+      "plaques desquamantes"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Ecchymosis present",
+    "term_fr": "Ecchymose présente",
+    "synonyms_en": [
+      "bruising",
+      "bruise"
+    ],
+    "synonyms_fr": [
+      "bleu",
+      "contusion"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Hyperkeratosis present",
+    "term_fr": "Hyperkératose présente",
+    "synonyms_en": [
+      "thickened keratin"
+    ],
+    "synonyms_fr": [
+      "épaississement corné"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Spider naevi present",
+    "term_fr": "Angiomes stellaires présents",
+    "synonyms_en": [
+      "spider angiomas"
+    ],
+    "synonyms_fr": [
+      "angiomes en araignée"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Palmar erythema present",
+    "term_fr": "Érythème palmaire présent",
+    "synonyms_en": [
+      "red palms"
+    ],
+    "synonyms_fr": [
+      "paumes rouges"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Pressure ulcer present",
+    "term_fr": "Escarre présente",
+    "synonyms_en": [
+      "bed sore",
+      "decubitus ulcer"
+    ],
+    "synonyms_fr": [
+      "plaie de pression"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Cellulitis with warmth and erythema",
+    "term_fr": "Cellulite avec chaleur et érythème",
+    "synonyms_en": [
+      "skin infection signs"
+    ],
+    "synonyms_fr": [
+      "signes de cellulite"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Tinea lesions present",
+    "term_fr": "Lésions de teigne présentes",
+    "synonyms_en": [
+      "ringworm",
+      "fungal skin lesion"
+    ],
+    "synonyms_fr": [
+      "dermatophytie"
+    ],
+    "system": "Skin"
+  },
+  {
+    "term_en": "Scabies burrows present",
+    "term_fr": "Sillons scabieux présents",
+    "synonyms_en": [
+      "scabies signs"
+    ],
+    "synonyms_fr": [
+      "signes de gale"
+    ],
+    "system": "Skin"
   }
 ]

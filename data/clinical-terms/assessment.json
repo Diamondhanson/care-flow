@@ -2070,5 +2070,2183 @@
     ],
     "system": "Skin",
     "icd10": "B07"
+  },
+  {
+    "term_en": "Tension-type headache",
+    "term_fr": "Céphalée de tension",
+    "synonyms_en": [
+      "stress headache"
+    ],
+    "synonyms_fr": [
+      "mal de tête de tension"
+    ],
+    "system": "Neuro",
+    "icd10": "G44.2"
+  },
+  {
+    "term_en": "Migraine without aura",
+    "term_fr": "Migraine sans aura",
+    "synonyms_en": [
+      "common migraine"
+    ],
+    "synonyms_fr": [
+      "migraine commune"
+    ],
+    "system": "Neuro",
+    "icd10": "G43.0"
+  },
+  {
+    "term_en": "Migraine with aura",
+    "term_fr": "Migraine avec aura",
+    "synonyms_en": [
+      "classic migraine"
+    ],
+    "synonyms_fr": [
+      "migraine classique"
+    ],
+    "system": "Neuro",
+    "icd10": "G43.1"
+  },
+  {
+    "term_en": "Bell's palsy",
+    "term_fr": "Paralysie de Bell",
+    "synonyms_en": [
+      "facial nerve palsy"
+    ],
+    "synonyms_fr": [
+      "paralysie faciale a frigore"
+    ],
+    "system": "Neuro",
+    "icd10": "G51.0"
+  },
+  {
+    "term_en": "Transient ischemic attack",
+    "term_fr": "Accident ischémique transitoire",
+    "synonyms_en": [
+      "mini stroke",
+      "TIA"
+    ],
+    "synonyms_fr": [
+      "AIT"
+    ],
+    "system": "Neuro",
+    "icd10": "G45.9"
+  },
+  {
+    "term_en": "Intracerebral hemorrhage",
+    "term_fr": "Hémorragie intracérébrale",
+    "synonyms_en": [
+      "brain bleed",
+      "hemorrhagic stroke"
+    ],
+    "synonyms_fr": [
+      "AVC hémorragique"
+    ],
+    "system": "Neuro",
+    "icd10": "I61.9"
+  },
+  {
+    "term_en": "Subarachnoid hemorrhage",
+    "term_fr": "Hémorragie sous-arachnoïdienne",
+    "synonyms_en": [
+      "SAH"
+    ],
+    "synonyms_fr": [
+      "hémorragie méningée"
+    ],
+    "system": "Neuro",
+    "icd10": "I60.9"
+  },
+  {
+    "term_en": "Parkinson's disease",
+    "term_fr": "Maladie de Parkinson",
+    "synonyms_en": [
+      "paralysis agitans"
+    ],
+    "synonyms_fr": [
+      "paralysie agitante"
+    ],
+    "system": "Neuro",
+    "icd10": "G20"
+  },
+  {
+    "term_en": "Guillain-Barré syndrome",
+    "term_fr": "Syndrome de Guillain-Barré",
+    "synonyms_en": [
+      "acute polyneuropathy",
+      "AIDP"
+    ],
+    "synonyms_fr": [
+      "polyradiculonévrite aiguë"
+    ],
+    "system": "Neuro",
+    "icd10": "G61.0"
+  },
+  {
+    "term_en": "Carpal tunnel syndrome",
+    "term_fr": "Syndrome du canal carpien",
+    "synonyms_en": [
+      "median nerve compression"
+    ],
+    "synonyms_fr": [
+      "compression du nerf médian"
+    ],
+    "system": "Neuro",
+    "icd10": "G56.0"
+  },
+  {
+    "term_en": "Trigeminal neuralgia",
+    "term_fr": "Névralgie du trijumeau",
+    "synonyms_en": [
+      "tic douloureux"
+    ],
+    "synonyms_fr": [
+      "tic douloureux de la face"
+    ],
+    "system": "Neuro",
+    "icd10": "G50.0"
+  },
+  {
+    "term_en": "Status epilepticus",
+    "term_fr": "État de mal épileptique",
+    "synonyms_en": [
+      "continuous seizures"
+    ],
+    "synonyms_fr": [
+      "crises continues"
+    ],
+    "system": "Neuro",
+    "icd10": "G41.9"
+  },
+  {
+    "term_en": "Viral encephalitis",
+    "term_fr": "Encéphalite virale",
+    "synonyms_en": [
+      "brain inflammation"
+    ],
+    "synonyms_fr": [
+      "inflammation du cerveau"
+    ],
+    "system": "Neuro",
+    "icd10": "A86"
+  },
+  {
+    "term_en": "Brain abscess",
+    "term_fr": "Abcès cérébral",
+    "synonyms_en": [
+      "cerebral abscess"
+    ],
+    "synonyms_fr": [
+      "abcès du cerveau"
+    ],
+    "system": "Neuro",
+    "icd10": "G06.0"
+  },
+  {
+    "term_en": "Peripheral neuropathy",
+    "term_fr": "Neuropathie périphérique",
+    "synonyms_en": [
+      "nerve damage"
+    ],
+    "synonyms_fr": [
+      "atteinte des nerfs"
+    ],
+    "system": "Neuro",
+    "icd10": "G62.9"
+  },
+  {
+    "term_en": "Dementia, unspecified",
+    "term_fr": "Démence, sans précision",
+    "synonyms_en": [
+      "cognitive decline"
+    ],
+    "synonyms_fr": [
+      "déclin cognitif"
+    ],
+    "system": "Neuro",
+    "icd10": "F03"
+  },
+  {
+    "term_en": "Bronchiolitis, acute",
+    "term_fr": "Bronchiolite aiguë",
+    "synonyms_en": [
+      "RSV bronchiolitis"
+    ],
+    "synonyms_fr": [
+      "bronchiolite du nourrisson"
+    ],
+    "system": "Respiratory",
+    "icd10": "J21.9"
+  },
+  {
+    "term_en": "Bronchopneumonia, unspecified",
+    "term_fr": "Bronchopneumonie, sans précision",
+    "synonyms_en": [
+      "lobular pneumonia"
+    ],
+    "synonyms_fr": [
+      "bronchopneumonie"
+    ],
+    "system": "Respiratory",
+    "icd10": "J18.0"
+  },
+  {
+    "term_en": "Viral pneumonia, unspecified",
+    "term_fr": "Pneumonie virale, sans précision",
+    "synonyms_en": [
+      "viral lung infection"
+    ],
+    "synonyms_fr": [
+      "pneumonie virale"
+    ],
+    "system": "Respiratory",
+    "icd10": "J12.9"
+  },
+  {
+    "term_en": "Pleural effusion",
+    "term_fr": "Épanchement pleural",
+    "synonyms_en": [
+      "fluid on lung"
+    ],
+    "synonyms_fr": [
+      "liquide dans la plèvre"
+    ],
+    "system": "Respiratory",
+    "icd10": "J90"
+  },
+  {
+    "term_en": "Empyema",
+    "term_fr": "Empyème",
+    "synonyms_en": [
+      "pus in pleural space"
+    ],
+    "synonyms_fr": [
+      "pleurésie purulente"
+    ],
+    "system": "Respiratory",
+    "icd10": "J86.9"
+  },
+  {
+    "term_en": "Bronchiectasis",
+    "term_fr": "Bronchectasie",
+    "synonyms_en": [
+      "dilated airways"
+    ],
+    "synonyms_fr": [
+      "dilatation des bronches"
+    ],
+    "system": "Respiratory",
+    "icd10": "J47"
+  },
+  {
+    "term_en": "Influenza with respiratory manifestations",
+    "term_fr": "Grippe avec manifestations respiratoires",
+    "synonyms_en": [
+      "flu",
+      "seasonal influenza"
+    ],
+    "synonyms_fr": [
+      "grippe saisonnière"
+    ],
+    "system": "Respiratory",
+    "icd10": "J11.1"
+  },
+  {
+    "term_en": "Acute laryngitis",
+    "term_fr": "Laryngite aiguë",
+    "synonyms_en": [
+      "voice box inflammation"
+    ],
+    "synonyms_fr": [
+      "inflammation du larynx"
+    ],
+    "system": "Respiratory",
+    "icd10": "J04.0"
+  },
+  {
+    "term_en": "Croup",
+    "term_fr": "Laryngotrachéite (croup)",
+    "synonyms_en": [
+      "laryngotracheitis",
+      "barking cough"
+    ],
+    "synonyms_fr": [
+      "faux croup"
+    ],
+    "system": "Respiratory",
+    "icd10": "J05.0"
+  },
+  {
+    "term_en": "Whooping cough",
+    "term_fr": "Coqueluche",
+    "synonyms_en": [
+      "pertussis"
+    ],
+    "synonyms_fr": [
+      "toux des cent jours"
+    ],
+    "system": "Respiratory",
+    "icd10": "A37.9"
+  },
+  {
+    "term_en": "Respiratory failure, acute",
+    "term_fr": "Insuffisance respiratoire aiguë",
+    "synonyms_en": [
+      "acute respiratory failure"
+    ],
+    "synonyms_fr": [
+      "défaillance respiratoire aiguë"
+    ],
+    "system": "Respiratory",
+    "icd10": "J96.0"
+  },
+  {
+    "term_en": "Tuberculous pleurisy",
+    "term_fr": "Pleurésie tuberculeuse",
+    "synonyms_en": [
+      "TB pleural effusion"
+    ],
+    "synonyms_fr": [
+      "pleurésie TB"
+    ],
+    "system": "Respiratory",
+    "icd10": "A15.6"
+  },
+  {
+    "term_en": "Duodenal ulcer",
+    "term_fr": "Ulcère duodénal",
+    "synonyms_en": [
+      "DU"
+    ],
+    "synonyms_fr": [
+      "ulcère du duodénum"
+    ],
+    "system": "GI",
+    "icd10": "K26.9"
+  },
+  {
+    "term_en": "Gastroesophageal reflux disease",
+    "term_fr": "Reflux gastro-œsophagien",
+    "synonyms_en": [
+      "GERD",
+      "acid reflux"
+    ],
+    "synonyms_fr": [
+      "RGO",
+      "remontées acides"
+    ],
+    "system": "GI",
+    "icd10": "K21.9"
+  },
+  {
+    "term_en": "Acute appendicitis",
+    "term_fr": "Appendicite aiguë",
+    "synonyms_en": [
+      "appendicitis"
+    ],
+    "synonyms_fr": [
+      "crise d'appendicite"
+    ],
+    "system": "GI",
+    "icd10": "K35.80"
+  },
+  {
+    "term_en": "Acute pancreatitis",
+    "term_fr": "Pancréatite aiguë",
+    "synonyms_en": [
+      "inflamed pancreas"
+    ],
+    "synonyms_fr": [
+      "inflammation du pancréas"
+    ],
+    "system": "GI",
+    "icd10": "K85.9"
+  },
+  {
+    "term_en": "Intestinal obstruction",
+    "term_fr": "Occlusion intestinale",
+    "synonyms_en": [
+      "bowel obstruction"
+    ],
+    "synonyms_fr": [
+      "obstruction de l'intestin"
+    ],
+    "system": "GI",
+    "icd10": "K56.6"
+  },
+  {
+    "term_en": "Inguinal hernia, strangulated",
+    "term_fr": "Hernie inguinale étranglée",
+    "synonyms_en": [
+      "strangulated hernia"
+    ],
+    "synonyms_fr": [
+      "hernie étranglée"
+    ],
+    "system": "GI",
+    "icd10": "K40.4"
+  },
+  {
+    "term_en": "Anal fissure",
+    "term_fr": "Fissure anale",
+    "synonyms_en": [
+      "fissure-in-ano"
+    ],
+    "synonyms_fr": [
+      "fissure de l'anus"
+    ],
+    "system": "GI",
+    "icd10": "K60.2"
+  },
+  {
+    "term_en": "Perianal abscess",
+    "term_fr": "Abcès périanal",
+    "synonyms_en": [
+      "anal abscess"
+    ],
+    "synonyms_fr": [
+      "abcès de la marge anale"
+    ],
+    "system": "GI",
+    "icd10": "K61.0"
+  },
+  {
+    "term_en": "Cholelithiasis",
+    "term_fr": "Lithiase biliaire",
+    "synonyms_en": [
+      "gallstones"
+    ],
+    "synonyms_fr": [
+      "calculs biliaires"
+    ],
+    "system": "GI",
+    "icd10": "K80.2"
+  },
+  {
+    "term_en": "Cholangitis",
+    "term_fr": "Cholangite",
+    "synonyms_en": [
+      "bile duct infection"
+    ],
+    "synonyms_fr": [
+      "infection des voies biliaires"
+    ],
+    "system": "GI",
+    "icd10": "K83.0"
+  },
+  {
+    "term_en": "Irritable bowel syndrome",
+    "term_fr": "Syndrome de l'intestin irritable",
+    "synonyms_en": [
+      "IBS",
+      "spastic colon"
+    ],
+    "synonyms_fr": [
+      "côlon irritable",
+      "SII"
+    ],
+    "system": "GI",
+    "icd10": "K58.9"
+  },
+  {
+    "term_en": "Crohn's disease",
+    "term_fr": "Maladie de Crohn",
+    "synonyms_en": [
+      "regional enteritis"
+    ],
+    "synonyms_fr": [
+      "entérite régionale"
+    ],
+    "system": "GI",
+    "icd10": "K50.90"
+  },
+  {
+    "term_en": "Ulcerative colitis",
+    "term_fr": "Rectocolite hémorragique",
+    "synonyms_en": [
+      "UC"
+    ],
+    "synonyms_fr": [
+      "colite ulcéreuse"
+    ],
+    "system": "GI",
+    "icd10": "K51.90"
+  },
+  {
+    "term_en": "Upper gastrointestinal bleeding",
+    "term_fr": "Hémorragie digestive haute",
+    "synonyms_en": [
+      "UGIB",
+      "haematemesis cause"
+    ],
+    "synonyms_fr": [
+      "HDH"
+    ],
+    "system": "GI",
+    "icd10": "K92.2"
+  },
+  {
+    "term_en": "Esophageal varices with bleeding",
+    "term_fr": "Varices œsophagiennes hémorragiques",
+    "synonyms_en": [
+      "bleeding varices"
+    ],
+    "synonyms_fr": [
+      "varices œsophagiennes rompues"
+    ],
+    "system": "GI",
+    "icd10": "I85.01"
+  },
+  {
+    "term_en": "Diverticulitis of colon",
+    "term_fr": "Diverticulite colique",
+    "synonyms_en": [
+      "colonic diverticulitis"
+    ],
+    "synonyms_fr": [
+      "diverticulite du côlon"
+    ],
+    "system": "GI",
+    "icd10": "K57.92"
+  },
+  {
+    "term_en": "Colorectal cancer",
+    "term_fr": "Cancer colorectal",
+    "synonyms_en": [
+      "bowel cancer",
+      "colon cancer"
+    ],
+    "synonyms_fr": [
+      "cancer du côlon"
+    ],
+    "system": "GI",
+    "icd10": "C18.9"
+  },
+  {
+    "term_en": "Gastric cancer",
+    "term_fr": "Cancer de l'estomac",
+    "synonyms_en": [
+      "stomach cancer"
+    ],
+    "synonyms_fr": [
+      "cancer gastrique"
+    ],
+    "system": "GI",
+    "icd10": "C16.9"
+  },
+  {
+    "term_en": "Constipation",
+    "term_fr": "Constipation",
+    "synonyms_en": [
+      "hard stools"
+    ],
+    "synonyms_fr": [
+      "selles dures"
+    ],
+    "system": "GI",
+    "icd10": "K59.0"
+  },
+  {
+    "term_en": "Strongyloidiasis",
+    "term_fr": "Strongyloïdose",
+    "synonyms_en": [
+      "threadworm infection"
+    ],
+    "synonyms_fr": [
+      "anguillulose"
+    ],
+    "system": "GI",
+    "icd10": "B78.9"
+  },
+  {
+    "term_en": "Trichuriasis",
+    "term_fr": "Trichocéphalose",
+    "synonyms_en": [
+      "whipworm infection"
+    ],
+    "synonyms_fr": [
+      "infection à trichocéphale"
+    ],
+    "system": "GI",
+    "icd10": "B79"
+  },
+  {
+    "term_en": "Enterobiasis",
+    "term_fr": "Oxyurose",
+    "synonyms_en": [
+      "pinworm infection"
+    ],
+    "synonyms_fr": [
+      "infection à oxyures"
+    ],
+    "system": "GI",
+    "icd10": "B80"
+  },
+  {
+    "term_en": "Taeniasis",
+    "term_fr": "Téniase",
+    "synonyms_en": [
+      "tapeworm infection"
+    ],
+    "synonyms_fr": [
+      "infection à ténia"
+    ],
+    "system": "GI",
+    "icd10": "B68.9"
+  },
+  {
+    "term_en": "Shigellosis",
+    "term_fr": "Shigellose",
+    "synonyms_en": [
+      "bacillary dysentery"
+    ],
+    "synonyms_fr": [
+      "dysenterie bacillaire"
+    ],
+    "system": "GI",
+    "icd10": "A03.9"
+  },
+  {
+    "term_en": "Urethritis, nonspecific",
+    "term_fr": "Urétrite non spécifique",
+    "synonyms_en": [
+      "NSU"
+    ],
+    "synonyms_fr": [
+      "urétrite non gonococcique"
+    ],
+    "system": "GU",
+    "icd10": "N34.1"
+  },
+  {
+    "term_en": "Prostatitis, acute",
+    "term_fr": "Prostatite aiguë",
+    "synonyms_en": [
+      "inflamed prostate"
+    ],
+    "synonyms_fr": [
+      "inflammation de la prostate"
+    ],
+    "system": "GU",
+    "icd10": "N41.0"
+  },
+  {
+    "term_en": "Renal calculus",
+    "term_fr": "Calcul rénal",
+    "synonyms_en": [
+      "kidney stone",
+      "nephrolithiasis"
+    ],
+    "synonyms_fr": [
+      "lithiase rénale",
+      "pierre au rein"
+    ],
+    "system": "GU",
+    "icd10": "N20.0"
+  },
+  {
+    "term_en": "Ureteric calculus",
+    "term_fr": "Calcul urétéral",
+    "synonyms_en": [
+      "ureteral stone"
+    ],
+    "synonyms_fr": [
+      "calcul de l'uretère"
+    ],
+    "system": "GU",
+    "icd10": "N20.1"
+  },
+  {
+    "term_en": "Chronic kidney disease, stage 3",
+    "term_fr": "Maladie rénale chronique, stade 3",
+    "synonyms_en": [
+      "CKD stage 3"
+    ],
+    "synonyms_fr": [
+      "IRC stade 3"
+    ],
+    "system": "GU",
+    "icd10": "N18.3"
+  },
+  {
+    "term_en": "Acute glomerulonephritis",
+    "term_fr": "Glomérulonéphrite aiguë",
+    "synonyms_en": [
+      "AGN"
+    ],
+    "synonyms_fr": [
+      "GNA"
+    ],
+    "system": "GU",
+    "icd10": "N00.9"
+  },
+  {
+    "term_en": "Testicular torsion",
+    "term_fr": "Torsion du testicule",
+    "synonyms_en": [
+      "twisted testicle"
+    ],
+    "synonyms_fr": [
+      "torsion testiculaire"
+    ],
+    "system": "GU",
+    "icd10": "N44.0"
+  },
+  {
+    "term_en": "Phimosis",
+    "term_fr": "Phimosis",
+    "synonyms_en": [
+      "tight foreskin"
+    ],
+    "synonyms_fr": [
+      "prépuce serré"
+    ],
+    "system": "GU",
+    "icd10": "N47.1"
+  },
+  {
+    "term_en": "Paraphimosis",
+    "term_fr": "Paraphimosis",
+    "synonyms_en": [
+      "trapped foreskin"
+    ],
+    "synonyms_fr": [
+      "prépuce coincé"
+    ],
+    "system": "GU",
+    "icd10": "N47.2"
+  },
+  {
+    "term_en": "Erectile dysfunction",
+    "term_fr": "Dysfonction érectile",
+    "synonyms_en": [
+      "impotence"
+    ],
+    "synonyms_fr": [
+      "impuissance"
+    ],
+    "system": "GU",
+    "icd10": "N52.9"
+  },
+  {
+    "term_en": "Female infertility",
+    "term_fr": "Infertilité féminine",
+    "synonyms_en": [
+      "unable to conceive"
+    ],
+    "synonyms_fr": [
+      "stérilité féminine"
+    ],
+    "system": "GU",
+    "icd10": "N97.9"
+  },
+  {
+    "term_en": "Menorrhagia",
+    "term_fr": "Ménorragie",
+    "synonyms_en": [
+      "heavy periods"
+    ],
+    "synonyms_fr": [
+      "règles abondantes"
+    ],
+    "system": "GU",
+    "icd10": "N92.0"
+  },
+  {
+    "term_en": "Dysmenorrhea",
+    "term_fr": "Dysménorrhée",
+    "synonyms_en": [
+      "painful periods"
+    ],
+    "synonyms_fr": [
+      "règles douloureuses"
+    ],
+    "system": "GU",
+    "icd10": "N94.6"
+  },
+  {
+    "term_en": "Uterine fibroids",
+    "term_fr": "Fibromes utérins",
+    "synonyms_en": [
+      "leiomyoma of uterus",
+      "myoma"
+    ],
+    "synonyms_fr": [
+      "myome utérin"
+    ],
+    "system": "GU",
+    "icd10": "D25.9"
+  },
+  {
+    "term_en": "Ovarian cyst",
+    "term_fr": "Kyste ovarien",
+    "synonyms_en": [
+      "cyst on ovary"
+    ],
+    "synonyms_fr": [
+      "kyste de l'ovaire"
+    ],
+    "system": "GU",
+    "icd10": "N83.20"
+  },
+  {
+    "term_en": "Cervical cancer",
+    "term_fr": "Cancer du col de l'utérus",
+    "synonyms_en": [
+      "cancer of cervix"
+    ],
+    "synonyms_fr": [
+      "cancer cervical"
+    ],
+    "system": "GU",
+    "icd10": "C53.9"
+  },
+  {
+    "term_en": "Breast cancer",
+    "term_fr": "Cancer du sein",
+    "synonyms_en": [
+      "malignant breast tumor"
+    ],
+    "synonyms_fr": [
+      "tumeur maligne du sein"
+    ],
+    "system": "GU",
+    "icd10": "C50.9"
+  },
+  {
+    "term_en": "Atrial fibrillation",
+    "term_fr": "Fibrillation auriculaire",
+    "synonyms_en": [
+      "AF",
+      "irregular heartbeat"
+    ],
+    "synonyms_fr": [
+      "FA",
+      "arythmie complète"
+    ],
+    "system": "Cardiac",
+    "icd10": "I48.91"
+  },
+  {
+    "term_en": "Angina pectoris, stable",
+    "term_fr": "Angine de poitrine stable",
+    "synonyms_en": [
+      "stable angina",
+      "chest pain on exertion"
+    ],
+    "synonyms_fr": [
+      "angor stable"
+    ],
+    "system": "Cardiac",
+    "icd10": "I20.8"
+  },
+  {
+    "term_en": "Unstable angina",
+    "term_fr": "Angine instable",
+    "synonyms_en": [
+      "crescendo angina"
+    ],
+    "synonyms_fr": [
+      "angor instable"
+    ],
+    "system": "Cardiac",
+    "icd10": "I20.0"
+  },
+  {
+    "term_en": "Congestive heart failure",
+    "term_fr": "Insuffisance cardiaque congestive",
+    "synonyms_en": [
+      "CHF"
+    ],
+    "synonyms_fr": [
+      "ICC"
+    ],
+    "system": "Cardiac",
+    "icd10": "I50.0"
+  },
+  {
+    "term_en": "Infective endocarditis",
+    "term_fr": "Endocardite infectieuse",
+    "synonyms_en": [
+      "bacterial endocarditis"
+    ],
+    "synonyms_fr": [
+      "endocardite bactérienne"
+    ],
+    "system": "Cardiac",
+    "icd10": "I33.0"
+  },
+  {
+    "term_en": "Rheumatic mitral regurgitation",
+    "term_fr": "Insuffisance mitrale rhumatismale",
+    "synonyms_en": [
+      "mitral regurgitation"
+    ],
+    "synonyms_fr": [
+      "régurgitation mitrale"
+    ],
+    "system": "Cardiac",
+    "icd10": "I05.1"
+  },
+  {
+    "term_en": "Aortic stenosis",
+    "term_fr": "Rétrécissement aortique",
+    "synonyms_en": [
+      "AS",
+      "narrow aortic valve"
+    ],
+    "synonyms_fr": [
+      "sténose aortique"
+    ],
+    "system": "Cardiac",
+    "icd10": "I35.0"
+  },
+  {
+    "term_en": "Cardiogenic shock",
+    "term_fr": "Choc cardiogénique",
+    "synonyms_en": [
+      "pump failure shock"
+    ],
+    "synonyms_fr": [
+      "choc d'origine cardiaque"
+    ],
+    "system": "Cardiac",
+    "icd10": "R57.0"
+  },
+  {
+    "term_en": "Pericardial effusion",
+    "term_fr": "Épanchement péricardique",
+    "synonyms_en": [
+      "fluid around heart"
+    ],
+    "synonyms_fr": [
+      "liquide péricardique"
+    ],
+    "system": "Cardiac",
+    "icd10": "I31.3"
+  },
+  {
+    "term_en": "Hypertensive crisis",
+    "term_fr": "Crise hypertensive",
+    "synonyms_en": [
+      "hypertensive emergency"
+    ],
+    "synonyms_fr": [
+      "urgence hypertensive"
+    ],
+    "system": "Cardiac",
+    "icd10": "I16.9"
+  },
+  {
+    "term_en": "Peripheral arterial disease",
+    "term_fr": "Artériopathie périphérique",
+    "synonyms_en": [
+      "PAD",
+      "peripheral vascular disease"
+    ],
+    "synonyms_fr": [
+      "AOMI"
+    ],
+    "system": "Cardiac",
+    "icd10": "I73.9"
+  },
+  {
+    "term_en": "Allergic rhinitis",
+    "term_fr": "Rhinite allergique",
+    "synonyms_en": [
+      "hay fever"
+    ],
+    "synonyms_fr": [
+      "rhume des foins"
+    ],
+    "system": "ENT",
+    "icd10": "J30.9"
+  },
+  {
+    "term_en": "Chronic sinusitis",
+    "term_fr": "Sinusite chronique",
+    "synonyms_en": [
+      "chronic rhinosinusitis"
+    ],
+    "synonyms_fr": [
+      "rhinosinusite chronique"
+    ],
+    "system": "ENT",
+    "icd10": "J32.9"
+  },
+  {
+    "term_en": "Epistaxis",
+    "term_fr": "Épistaxis",
+    "synonyms_en": [
+      "nosebleed"
+    ],
+    "synonyms_fr": [
+      "saignement de nez"
+    ],
+    "system": "ENT",
+    "icd10": "R04.0"
+  },
+  {
+    "term_en": "Peritonsillar abscess",
+    "term_fr": "Abcès péri-amygdalien",
+    "synonyms_en": [
+      "quinsy"
+    ],
+    "synonyms_fr": [
+      "phlegmon amygdalien"
+    ],
+    "system": "ENT",
+    "icd10": "J36"
+  },
+  {
+    "term_en": "Chronic suppurative otitis media",
+    "term_fr": "Otite moyenne chronique suppurée",
+    "synonyms_en": [
+      "CSOM",
+      "chronic ear discharge"
+    ],
+    "synonyms_fr": [
+      "OMC suppurée"
+    ],
+    "system": "ENT",
+    "icd10": "H66.3"
+  },
+  {
+    "term_en": "Otitis media with effusion",
+    "term_fr": "Otite séromuqueuse",
+    "synonyms_en": [
+      "glue ear",
+      "serous otitis"
+    ],
+    "synonyms_fr": [
+      "otite à tympan fermé"
+    ],
+    "system": "ENT",
+    "icd10": "H65.9"
+  },
+  {
+    "term_en": "Sensorineural hearing loss",
+    "term_fr": "Surdité de perception",
+    "synonyms_en": [
+      "nerve deafness"
+    ],
+    "synonyms_fr": [
+      "surdité neurosensorielle"
+    ],
+    "system": "ENT",
+    "icd10": "H90.5"
+  },
+  {
+    "term_en": "Laryngeal cancer",
+    "term_fr": "Cancer du larynx",
+    "synonyms_en": [
+      "throat cancer"
+    ],
+    "synonyms_fr": [
+      "cancer laryngé"
+    ],
+    "system": "ENT",
+    "icd10": "C32.9"
+  },
+  {
+    "term_en": "Vertigo, peripheral",
+    "term_fr": "Vertige périphérique",
+    "synonyms_en": [
+      "benign positional vertigo",
+      "BPPV"
+    ],
+    "synonyms_fr": [
+      "VPPB"
+    ],
+    "system": "ENT",
+    "icd10": "H81.1"
+  },
+  {
+    "term_en": "Threatened abortion",
+    "term_fr": "Menace d'avortement",
+    "synonyms_en": [
+      "threatened miscarriage"
+    ],
+    "synonyms_fr": [
+      "menace de fausse couche"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O20.0"
+  },
+  {
+    "term_en": "Missed abortion",
+    "term_fr": "Avortement manqué",
+    "synonyms_en": [
+      "missed miscarriage"
+    ],
+    "synonyms_fr": [
+      "grossesse arrêtée"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O02.1"
+  },
+  {
+    "term_en": "Hyperemesis gravidarum",
+    "term_fr": "Hyperémèse gravidique",
+    "synonyms_en": [
+      "severe pregnancy vomiting"
+    ],
+    "synonyms_fr": [
+      "vomissements gravidiques"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O21.0"
+  },
+  {
+    "term_en": "Gestational diabetes mellitus",
+    "term_fr": "Diabète gestationnel",
+    "synonyms_en": [
+      "GDM",
+      "pregnancy diabetes"
+    ],
+    "synonyms_fr": [
+      "diabète de grossesse"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O24.4"
+  },
+  {
+    "term_en": "Antepartum hemorrhage",
+    "term_fr": "Hémorragie ante-partum",
+    "synonyms_en": [
+      "APH",
+      "bleeding in pregnancy"
+    ],
+    "synonyms_fr": [
+      "hémorragie de la grossesse"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O46.9"
+  },
+  {
+    "term_en": "Placental abruption",
+    "term_fr": "Hématome rétroplacentaire",
+    "synonyms_en": [
+      "abruptio placentae"
+    ],
+    "synonyms_fr": [
+      "décollement placentaire"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O45.9"
+  },
+  {
+    "term_en": "Obstructed labor",
+    "term_fr": "Travail dystocique",
+    "synonyms_en": [
+      "dystocia"
+    ],
+    "synonyms_fr": [
+      "dystocie"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O66.9"
+  },
+  {
+    "term_en": "Premature rupture of membranes",
+    "term_fr": "Rupture prématurée des membranes",
+    "synonyms_en": [
+      "PROM"
+    ],
+    "synonyms_fr": [
+      "RPM"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O42.90"
+  },
+  {
+    "term_en": "Preterm labor",
+    "term_fr": "Travail prématuré",
+    "synonyms_en": [
+      "premature labour"
+    ],
+    "synonyms_fr": [
+      "accouchement prématuré"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O60.10"
+  },
+  {
+    "term_en": "Puerperal sepsis",
+    "term_fr": "Infection puerpérale",
+    "synonyms_en": [
+      "postpartum infection"
+    ],
+    "synonyms_fr": [
+      "fièvre puerpérale"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "O85"
+  },
+  {
+    "term_en": "Endometriosis",
+    "term_fr": "Endométriose",
+    "synonyms_en": [
+      "endometrial implants"
+    ],
+    "synonyms_fr": [
+      "endométriose pelvienne"
+    ],
+    "system": "Obstetric/Gynae",
+    "icd10": "N80.9"
+  },
+  {
+    "term_en": "Sepsis, unspecified",
+    "term_fr": "Septicémie, sans précision",
+    "synonyms_en": [
+      "bloodstream infection"
+    ],
+    "synonyms_fr": [
+      "infection généralisée"
+    ],
+    "system": "General",
+    "icd10": "A41.9"
+  },
+  {
+    "term_en": "Fever of unknown origin",
+    "term_fr": "Fièvre d'origine inconnue",
+    "synonyms_en": [
+      "FUO",
+      "PUO"
+    ],
+    "synonyms_fr": [
+      "fièvre prolongée inexpliquée"
+    ],
+    "system": "General",
+    "icd10": "R50.9"
+  },
+  {
+    "term_en": "Dehydration",
+    "term_fr": "Déshydratation",
+    "synonyms_en": [
+      "volume depletion"
+    ],
+    "synonyms_fr": [
+      "perte hydrique"
+    ],
+    "system": "General",
+    "icd10": "E86.0"
+  },
+  {
+    "term_en": "Hypokalemia",
+    "term_fr": "Hypokaliémie",
+    "synonyms_en": [
+      "low potassium"
+    ],
+    "synonyms_fr": [
+      "potassium bas"
+    ],
+    "system": "General",
+    "icd10": "E87.6"
+  },
+  {
+    "term_en": "Hyperkalemia",
+    "term_fr": "Hyperkaliémie",
+    "synonyms_en": [
+      "high potassium"
+    ],
+    "synonyms_fr": [
+      "potassium élevé"
+    ],
+    "system": "General",
+    "icd10": "E87.5"
+  },
+  {
+    "term_en": "Hyponatremia",
+    "term_fr": "Hyponatrémie",
+    "synonyms_en": [
+      "low sodium"
+    ],
+    "synonyms_fr": [
+      "sodium bas"
+    ],
+    "system": "General",
+    "icd10": "E87.1"
+  },
+  {
+    "term_en": "Hypothyroidism",
+    "term_fr": "Hypothyroïdie",
+    "synonyms_en": [
+      "underactive thyroid"
+    ],
+    "synonyms_fr": [
+      "thyroïde lente"
+    ],
+    "system": "General",
+    "icd10": "E03.9"
+  },
+  {
+    "term_en": "Hyperthyroidism",
+    "term_fr": "Hyperthyroïdie",
+    "synonyms_en": [
+      "overactive thyroid",
+      "thyrotoxicosis"
+    ],
+    "synonyms_fr": [
+      "thyroïde hyperactive"
+    ],
+    "system": "General",
+    "icd10": "E05.90"
+  },
+  {
+    "term_en": "Goiter, nontoxic",
+    "term_fr": "Goitre non toxique",
+    "synonyms_en": [
+      "thyroid enlargement"
+    ],
+    "synonyms_fr": [
+      "gros cou"
+    ],
+    "system": "General",
+    "icd10": "E04.9"
+  },
+  {
+    "term_en": "Vitamin A deficiency",
+    "term_fr": "Carence en vitamine A",
+    "synonyms_en": [
+      "retinol deficiency"
+    ],
+    "synonyms_fr": [
+      "avitaminose A"
+    ],
+    "system": "General",
+    "icd10": "E50.9"
+  },
+  {
+    "term_en": "Rickets, nutritional",
+    "term_fr": "Rachitisme carentiel",
+    "synonyms_en": [
+      "vitamin D deficiency rickets"
+    ],
+    "synonyms_fr": [
+      "rachitisme"
+    ],
+    "system": "General",
+    "icd10": "E55.0"
+  },
+  {
+    "term_en": "Gout",
+    "term_fr": "Goutte",
+    "synonyms_en": [
+      "gouty arthritis"
+    ],
+    "synonyms_fr": [
+      "crise de goutte"
+    ],
+    "system": "General",
+    "icd10": "M10.9"
+  },
+  {
+    "term_en": "Measles",
+    "term_fr": "Rougeole",
+    "synonyms_en": [
+      "rubeola"
+    ],
+    "synonyms_fr": [
+      "morbilli"
+    ],
+    "system": "General",
+    "icd10": "B05.9"
+  },
+  {
+    "term_en": "Rubella",
+    "term_fr": "Rubéole",
+    "synonyms_en": [
+      "German measles"
+    ],
+    "synonyms_fr": [
+      "roséole"
+    ],
+    "system": "General",
+    "icd10": "B06.9"
+  },
+  {
+    "term_en": "Mumps",
+    "term_fr": "Oreillons",
+    "synonyms_en": [
+      "infectious parotitis"
+    ],
+    "synonyms_fr": [
+      "parotidite ourlienne"
+    ],
+    "system": "General",
+    "icd10": "B26.9"
+  },
+  {
+    "term_en": "Yellow fever",
+    "term_fr": "Fièvre jaune",
+    "synonyms_en": [
+      "yellow jack"
+    ],
+    "synonyms_fr": [
+      "vomito negro"
+    ],
+    "system": "General",
+    "icd10": "A95.9"
+  },
+  {
+    "term_en": "Leptospirosis",
+    "term_fr": "Leptospirose",
+    "synonyms_en": [
+      "Weil's disease"
+    ],
+    "synonyms_fr": [
+      "maladie de Weil"
+    ],
+    "system": "General",
+    "icd10": "A27.9"
+  },
+  {
+    "term_en": "Brucellosis",
+    "term_fr": "Brucellose",
+    "synonyms_en": [
+      "Malta fever",
+      "undulant fever"
+    ],
+    "synonyms_fr": [
+      "fièvre de Malte"
+    ],
+    "system": "General",
+    "icd10": "A23.9"
+  },
+  {
+    "term_en": "Lymphatic filariasis",
+    "term_fr": "Filariose lymphatique",
+    "synonyms_en": [
+      "elephantiasis"
+    ],
+    "synonyms_fr": [
+      "éléphantiasis"
+    ],
+    "system": "General",
+    "icd10": "B74.9"
+  },
+  {
+    "term_en": "Trypanosomiasis, African",
+    "term_fr": "Trypanosomiase africaine",
+    "synonyms_en": [
+      "sleeping sickness"
+    ],
+    "synonyms_fr": [
+      "maladie du sommeil"
+    ],
+    "system": "General",
+    "icd10": "B56.9"
+  },
+  {
+    "term_en": "Visceral leishmaniasis",
+    "term_fr": "Leishmaniose viscérale",
+    "synonyms_en": [
+      "kala-azar"
+    ],
+    "synonyms_fr": [
+      "kala-azar"
+    ],
+    "system": "General",
+    "icd10": "B55.0"
+  },
+  {
+    "term_en": "Cutaneous leishmaniasis",
+    "term_fr": "Leishmaniose cutanée",
+    "synonyms_en": [
+      "oriental sore"
+    ],
+    "synonyms_fr": [
+      "bouton d'Orient"
+    ],
+    "system": "General",
+    "icd10": "B55.1"
+  },
+  {
+    "term_en": "Rabies",
+    "term_fr": "Rage",
+    "synonyms_en": [
+      "hydrophobia"
+    ],
+    "synonyms_fr": [
+      "hydrophobie"
+    ],
+    "system": "General",
+    "icd10": "A82.9"
+  },
+  {
+    "term_en": "Anthrax, cutaneous",
+    "term_fr": "Charbon cutané",
+    "synonyms_en": [
+      "cutaneous anthrax"
+    ],
+    "synonyms_fr": [
+      "pustule maligne"
+    ],
+    "system": "General",
+    "icd10": "A22.0"
+  },
+  {
+    "term_en": "Diphtheria",
+    "term_fr": "Diphtérie",
+    "synonyms_en": [
+      "throat membrane disease"
+    ],
+    "synonyms_fr": [
+      "croup diphtérique"
+    ],
+    "system": "General",
+    "icd10": "A36.9"
+  },
+  {
+    "term_en": "Hookworm anemia",
+    "term_fr": "Anémie ankylostomienne",
+    "synonyms_en": [
+      "hookworm-related anaemia"
+    ],
+    "synonyms_fr": [
+      "anémie par ankylostome"
+    ],
+    "system": "General",
+    "icd10": "B76.9"
+  },
+  {
+    "term_en": "Megaloblastic anaemia",
+    "term_fr": "Anémie mégaloblastique",
+    "synonyms_en": [
+      "B12 deficiency anaemia",
+      "folate deficiency anaemia"
+    ],
+    "synonyms_fr": [
+      "anémie par carence en B12"
+    ],
+    "system": "General",
+    "icd10": "D51.9"
+  },
+  {
+    "term_en": "Glucose-6-phosphate dehydrogenase deficiency",
+    "term_fr": "Déficit en G6PD",
+    "synonyms_en": [
+      "G6PD deficiency",
+      "favism"
+    ],
+    "synonyms_fr": [
+      "déficit en G6PD"
+    ],
+    "system": "General",
+    "icd10": "D55.0"
+  },
+  {
+    "term_en": "Thrombocytopenia, unspecified",
+    "term_fr": "Thrombopénie, sans précision",
+    "synonyms_en": [
+      "low platelets"
+    ],
+    "synonyms_fr": [
+      "plaquettes basses"
+    ],
+    "system": "General",
+    "icd10": "D69.6"
+  },
+  {
+    "term_en": "Obesity due to excess calories",
+    "term_fr": "Obésité par excès calorique",
+    "synonyms_en": [
+      "nutritional obesity"
+    ],
+    "synonyms_fr": [
+      "obésité nutritionnelle"
+    ],
+    "system": "General",
+    "icd10": "E66.0"
+  },
+  {
+    "term_en": "Hyperlipidemia, unspecified",
+    "term_fr": "Hyperlipidémie, sans précision",
+    "synonyms_en": [
+      "high cholesterol",
+      "dyslipidemia"
+    ],
+    "synonyms_fr": [
+      "dyslipidémie",
+      "cholestérol élevé"
+    ],
+    "system": "General",
+    "icd10": "E78.5"
+  },
+  {
+    "term_en": "Allergic reaction, unspecified",
+    "term_fr": "Réaction allergique, sans précision",
+    "synonyms_en": [
+      "allergy"
+    ],
+    "synonyms_fr": [
+      "allergie"
+    ],
+    "system": "General",
+    "icd10": "T78.4"
+  },
+  {
+    "term_en": "Burn of skin, unspecified",
+    "term_fr": "Brûlure cutanée, sans précision",
+    "synonyms_en": [
+      "thermal burn"
+    ],
+    "synonyms_fr": [
+      "brûlure thermique"
+    ],
+    "system": "General",
+    "icd10": "T30.0"
+  },
+  {
+    "term_en": "Snake bite, venomous",
+    "term_fr": "Morsure de serpent venimeux",
+    "synonyms_en": [
+      "venomous snakebite"
+    ],
+    "synonyms_fr": [
+      "envenimation par serpent"
+    ],
+    "system": "General",
+    "icd10": "T63.0"
+  },
+  {
+    "term_en": "Heat stroke",
+    "term_fr": "Coup de chaleur",
+    "synonyms_en": [
+      "sunstroke"
+    ],
+    "synonyms_fr": [
+      "insolation"
+    ],
+    "system": "General",
+    "icd10": "T67.0"
+  },
+  {
+    "term_en": "Corneal ulcer",
+    "term_fr": "Ulcère cornéen",
+    "synonyms_en": [
+      "keratitis with ulcer"
+    ],
+    "synonyms_fr": [
+      "ulcère de la cornée"
+    ],
+    "system": "Eyes",
+    "icd10": "H16.0"
+  },
+  {
+    "term_en": "Trachoma",
+    "term_fr": "Trachome",
+    "synonyms_en": [
+      "chlamydial eye infection"
+    ],
+    "synonyms_fr": [
+      "conjonctivite granuleuse"
+    ],
+    "system": "Eyes",
+    "icd10": "A71.9"
+  },
+  {
+    "term_en": "Hordeolum",
+    "term_fr": "Orgelet",
+    "synonyms_en": [
+      "stye"
+    ],
+    "synonyms_fr": [
+      "compère-loriot"
+    ],
+    "system": "Eyes",
+    "icd10": "H00.0"
+  },
+  {
+    "term_en": "Chalazion",
+    "term_fr": "Chalazion",
+    "synonyms_en": [
+      "meibomian cyst"
+    ],
+    "synonyms_fr": [
+      "kyste de la paupière"
+    ],
+    "system": "Eyes",
+    "icd10": "H00.1"
+  },
+  {
+    "term_en": "Diabetic retinopathy",
+    "term_fr": "Rétinopathie diabétique",
+    "synonyms_en": [
+      "diabetic eye disease"
+    ],
+    "synonyms_fr": [
+      "atteinte rétinienne du diabète"
+    ],
+    "system": "Eyes",
+    "icd10": "E11.3"
+  },
+  {
+    "term_en": "Retinal detachment",
+    "term_fr": "Décollement de rétine",
+    "synonyms_en": [
+      "detached retina"
+    ],
+    "synonyms_fr": [
+      "rétine décollée"
+    ],
+    "system": "Eyes",
+    "icd10": "H33.2"
+  },
+  {
+    "term_en": "Pterygium",
+    "term_fr": "Ptérygion",
+    "synonyms_en": [
+      "surfer's eye"
+    ],
+    "synonyms_fr": [
+      "ptérygion conjonctival"
+    ],
+    "system": "Eyes",
+    "icd10": "H11.0"
+  },
+  {
+    "term_en": "Acute angle-closure glaucoma",
+    "term_fr": "Glaucome aigu par fermeture de l'angle",
+    "synonyms_en": [
+      "acute glaucoma"
+    ],
+    "synonyms_fr": [
+      "glaucome aigu"
+    ],
+    "system": "Eyes",
+    "icd10": "H40.2"
+  },
+  {
+    "term_en": "Atopic dermatitis",
+    "term_fr": "Dermatite atopique",
+    "synonyms_en": [
+      "eczema",
+      "atopic eczema"
+    ],
+    "synonyms_fr": [
+      "eczéma atopique"
+    ],
+    "system": "Skin",
+    "icd10": "L20.9"
+  },
+  {
+    "term_en": "Contact dermatitis",
+    "term_fr": "Dermatite de contact",
+    "synonyms_en": [
+      "contact eczema"
+    ],
+    "synonyms_fr": [
+      "eczéma de contact"
+    ],
+    "system": "Skin",
+    "icd10": "L25.9"
+  },
+  {
+    "term_en": "Psoriasis",
+    "term_fr": "Psoriasis",
+    "synonyms_en": [
+      "psoriatic skin disease"
+    ],
+    "synonyms_fr": [
+      "psoriasis vulgaire"
+    ],
+    "system": "Skin",
+    "icd10": "L40.9"
+  },
+  {
+    "term_en": "Urticaria",
+    "term_fr": "Urticaire",
+    "synonyms_en": [
+      "hives",
+      "nettle rash"
+    ],
+    "synonyms_fr": [
+      "plaques d'urticaire"
+    ],
+    "system": "Skin",
+    "icd10": "L50.9"
+  },
+  {
+    "term_en": "Acne vulgaris",
+    "term_fr": "Acné vulgaire",
+    "synonyms_en": [
+      "pimples",
+      "acne"
+    ],
+    "synonyms_fr": [
+      "acné juvénile"
+    ],
+    "system": "Skin",
+    "icd10": "L70.0"
+  },
+  {
+    "term_en": "Cutaneous abscess",
+    "term_fr": "Abcès cutané",
+    "synonyms_en": [
+      "skin abscess",
+      "boil"
+    ],
+    "synonyms_fr": [
+      "furoncle"
+    ],
+    "system": "Skin",
+    "icd10": "L02.91"
+  },
+  {
+    "term_en": "Tinea versicolor",
+    "term_fr": "Pityriasis versicolor",
+    "synonyms_en": [
+      "pityriasis versicolor"
+    ],
+    "synonyms_fr": [
+      "dartre"
+    ],
+    "system": "Skin",
+    "icd10": "B36.0"
+  },
+  {
+    "term_en": "Tinea corporis",
+    "term_fr": "Tinea corporis",
+    "synonyms_en": [
+      "ringworm of body"
+    ],
+    "synonyms_fr": [
+      "dermatophytie du corps"
+    ],
+    "system": "Skin",
+    "icd10": "B35.4"
+  },
+  {
+    "term_en": "Tinea pedis",
+    "term_fr": "Pied d'athlète",
+    "synonyms_en": [
+      "athlete's foot"
+    ],
+    "synonyms_fr": [
+      "mycose des pieds"
+    ],
+    "system": "Skin",
+    "icd10": "B35.3"
+  },
+  {
+    "term_en": "Pediculosis",
+    "term_fr": "Pédiculose",
+    "synonyms_en": [
+      "lice infestation"
+    ],
+    "synonyms_fr": [
+      "poux"
+    ],
+    "system": "Skin",
+    "icd10": "B85.0"
+  },
+  {
+    "term_en": "Leprosy",
+    "term_fr": "Lèpre",
+    "synonyms_en": [
+      "Hansen's disease"
+    ],
+    "synonyms_fr": [
+      "maladie de Hansen"
+    ],
+    "system": "Skin",
+    "icd10": "A30.9"
+  },
+  {
+    "term_en": "Vitiligo",
+    "term_fr": "Vitiligo",
+    "synonyms_en": [
+      "depigmentation"
+    ],
+    "synonyms_fr": [
+      "dépigmentation cutanée"
+    ],
+    "system": "Skin",
+    "icd10": "L80"
+  },
+  {
+    "term_en": "Burn of skin, second degree",
+    "term_fr": "Brûlure cutanée du deuxième degré",
+    "synonyms_en": [
+      "partial thickness burn"
+    ],
+    "synonyms_fr": [
+      "brûlure du 2e degré"
+    ],
+    "system": "Skin",
+    "icd10": "T30.0"
+  },
+  {
+    "term_en": "Osteoarthritis of knee",
+    "term_fr": "Gonarthrose",
+    "synonyms_en": [
+      "knee OA",
+      "degenerative knee"
+    ],
+    "synonyms_fr": [
+      "arthrose du genou"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M17.9"
+  },
+  {
+    "term_en": "Rheumatoid arthritis",
+    "term_fr": "Polyarthrite rhumatoïde",
+    "synonyms_en": [
+      "RA"
+    ],
+    "synonyms_fr": [
+      "PR"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M06.9"
+  },
+  {
+    "term_en": "Low back pain",
+    "term_fr": "Lombalgie",
+    "synonyms_en": [
+      "lumbago"
+    ],
+    "synonyms_fr": [
+      "mal de dos"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M54.5"
+  },
+  {
+    "term_en": "Frozen shoulder",
+    "term_fr": "Épaule gelée",
+    "synonyms_en": [
+      "adhesive capsulitis"
+    ],
+    "synonyms_fr": [
+      "capsulite rétractile"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M75.0"
+  },
+  {
+    "term_en": "Ankle sprain",
+    "term_fr": "Entorse de la cheville",
+    "synonyms_en": [
+      "sprained ankle"
+    ],
+    "synonyms_fr": [
+      "foulure de la cheville"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "S93.4"
+  },
+  {
+    "term_en": "Osteoporosis",
+    "term_fr": "Ostéoporose",
+    "synonyms_en": [
+      "brittle bones"
+    ],
+    "synonyms_fr": [
+      "fragilité osseuse"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M81.0"
+  },
+  {
+    "term_en": "Fracture of clavicle, closed",
+    "term_fr": "Fracture de la clavicule fermée",
+    "synonyms_en": [
+      "broken collarbone"
+    ],
+    "synonyms_fr": [
+      "clavicule cassée"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "S42.00"
+  },
+  {
+    "term_en": "Fracture of neck of femur",
+    "term_fr": "Fracture du col du fémur",
+    "synonyms_en": [
+      "hip fracture"
+    ],
+    "synonyms_fr": [
+      "fracture de hanche"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "S72.00"
+  },
+  {
+    "term_en": "Dislocation of shoulder",
+    "term_fr": "Luxation de l'épaule",
+    "synonyms_en": [
+      "shoulder dislocation"
+    ],
+    "synonyms_fr": [
+      "épaule déboîtée"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "S43.00"
+  },
+  {
+    "term_en": "Bursitis",
+    "term_fr": "Bursite",
+    "synonyms_en": [
+      "inflamed bursa"
+    ],
+    "synonyms_fr": [
+      "inflammation de la bourse"
+    ],
+    "system": "Musculoskeletal",
+    "icd10": "M71.9"
+  },
+  {
+    "term_en": "Major depressive disorder",
+    "term_fr": "Trouble dépressif majeur",
+    "synonyms_en": [
+      "clinical depression",
+      "depression"
+    ],
+    "synonyms_fr": [
+      "dépression"
+    ],
+    "system": "Psych",
+    "icd10": "F32.9"
+  },
+  {
+    "term_en": "Generalized anxiety disorder",
+    "term_fr": "Trouble anxieux généralisé",
+    "synonyms_en": [
+      "GAD",
+      "anxiety disorder"
+    ],
+    "synonyms_fr": [
+      "TAG",
+      "anxiété"
+    ],
+    "system": "Psych",
+    "icd10": "F41.1"
+  },
+  {
+    "term_en": "Panic disorder",
+    "term_fr": "Trouble panique",
+    "synonyms_en": [
+      "panic attacks"
+    ],
+    "synonyms_fr": [
+      "attaques de panique"
+    ],
+    "system": "Psych",
+    "icd10": "F41.0"
+  },
+  {
+    "term_en": "Schizophrenia",
+    "term_fr": "Schizophrénie",
+    "synonyms_en": [
+      "psychotic disorder"
+    ],
+    "synonyms_fr": [
+      "psychose schizophrénique"
+    ],
+    "system": "Psych",
+    "icd10": "F20.9"
+  },
+  {
+    "term_en": "Bipolar affective disorder",
+    "term_fr": "Trouble bipolaire",
+    "synonyms_en": [
+      "manic depression",
+      "bipolar disorder"
+    ],
+    "synonyms_fr": [
+      "psychose maniaco-dépressive"
+    ],
+    "system": "Psych",
+    "icd10": "F31.9"
+  },
+  {
+    "term_en": "Acute psychotic episode",
+    "term_fr": "Épisode psychotique aigu",
+    "synonyms_en": [
+      "acute psychosis"
+    ],
+    "synonyms_fr": [
+      "bouffée délirante aiguë"
+    ],
+    "system": "Psych",
+    "icd10": "F23"
+  },
+  {
+    "term_en": "Alcohol use disorder",
+    "term_fr": "Trouble de l'usage de l'alcool",
+    "synonyms_en": [
+      "alcohol dependence",
+      "alcoholism"
+    ],
+    "synonyms_fr": [
+      "alcoolodépendance"
+    ],
+    "system": "Psych",
+    "icd10": "F10.20"
+  },
+  {
+    "term_en": "Alcohol withdrawal",
+    "term_fr": "Sevrage alcoolique",
+    "synonyms_en": [
+      "delirium tremens risk"
+    ],
+    "synonyms_fr": [
+      "syndrome de sevrage"
+    ],
+    "system": "Psych",
+    "icd10": "F10.239"
+  },
+  {
+    "term_en": "Post-traumatic stress disorder",
+    "term_fr": "Trouble de stress post-traumatique",
+    "synonyms_en": [
+      "PTSD"
+    ],
+    "synonyms_fr": [
+      "TSPT",
+      "ESPT"
+    ],
+    "system": "Psych",
+    "icd10": "F43.10"
+  },
+  {
+    "term_en": "Somatization disorder",
+    "term_fr": "Trouble de somatisation",
+    "synonyms_en": [
+      "somatic symptom disorder"
+    ],
+    "synonyms_fr": [
+      "trouble somatoforme"
+    ],
+    "system": "Psych",
+    "icd10": "F45.0"
+  },
+  {
+    "term_en": "Delirium, unspecified",
+    "term_fr": "État confusionnel aigu",
+    "synonyms_en": [
+      "acute confusional state"
+    ],
+    "synonyms_fr": [
+      "confusion aiguë"
+    ],
+    "system": "Psych",
+    "icd10": "F05"
+  },
+  {
+    "term_en": "Insomnia, nonorganic",
+    "term_fr": "Insomnie non organique",
+    "synonyms_en": [
+      "primary insomnia"
+    ],
+    "synonyms_fr": [
+      "insomnie primaire"
+    ],
+    "system": "Psych",
+    "icd10": "F51.0"
   }
 ]
