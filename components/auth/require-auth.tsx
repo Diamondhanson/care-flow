@@ -28,14 +28,15 @@ function Splash() {
 }
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { mounted, isAuthenticated } = useAuth();
+  const { mounted, isAuthenticated, needsOnboarding } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (mounted && !isAuthenticated) {
-      router.replace("/login");
-    }
-  }, [mounted, isAuthenticated, router]);
+    if (!mounted || isAuthenticated) return;
+    // A verified user without a hospital yet belongs in the onboarding step,
+    // not back at the login screen (Phase 18.5).
+    router.replace(needsOnboarding ? "/onboarding" : "/login");
+  }, [mounted, isAuthenticated, needsOnboarding, router]);
 
   if (!mounted || !isAuthenticated) {
     return <Splash />;

@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { OwnerAuth } from "@/components/auth/owner-auth";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
 
@@ -102,6 +103,20 @@ export default function LoginPage() {
               {submitting ? t("auth.login.signingIn") : t("auth.login.submit")}
             </Button>
           </form>
+
+          <div className="mt-8">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="h-px flex-1 bg-border" />
+              <span className="text-xs uppercase tracking-[0.1em] text-muted-foreground">
+                {t("auth.login.ownerDivider")}
+              </span>
+              <span className="h-px flex-1 bg-border" />
+            </div>
+            <p className="mb-4 text-xs text-muted-foreground">
+              {t("auth.login.ownerHint")}
+            </p>
+            <OwnerAuth redirectAfter="/onboarding" />
+          </div>
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             {t("auth.login.noAccount")}{" "}

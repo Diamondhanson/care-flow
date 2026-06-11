@@ -1195,5 +1195,91 @@ create policy "admin read audit" on audit_log
 --  Rows are written only by the SECURITY DEFINER audit_trigger function.)
 
 -- =============================================================================
+-- 10. VERIFIED TENANT ONBOARDING (Phase 18.5)
+-- =============================================================================
+-- New model: the founding admin verifies their identity FIRST (Google sign-in or
+-- email OTP via Supabase Auth), then creates their hospital. Because the
+-- `hospitals` table has no client INSERT policy and the founder needs a `staff`
+-- row before `current_hospital_id()` resolves to anything, the create step runs
+-- through this SECURITY DEFINER function: it executes as the function owner (RLS
+-- bypassed), but only ever acts on `auth.uid()` — the already-verified caller.
+--
+-- It atomically creates, for the *currently authenticated* user:
+--   1. the `hospitals` row (trial subscription), and
+--   2. the founder `staff` row (role `admin`), linked via `user_id = auth.uid()`.
+-- A single transaction, so a failure on either leaves no orphan.
+--
+-- ONE HOSPITAL PER OWNER: if the caller already owns a staff row, it refuses —
+-- a returning owner is routed into their existing hospital by the app instead.
+--
+-- Staff (doctors/nurses/…) are still created by an admin with a username +
+-- password (see app/actions/auth.ts → provisionStaffLogin); this function is for
+-- the founding admin / tenant-creation path only.
+create or replace function create_hospital_and_admin(
+  p_name          text,
+  p_region        text default null,
+  p_contact_email text default null,
+  p_contact_phone text default null,
+  p_admin_full_name text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid         uuid := auth.uid();
+  v_email       text := auth.email();
+  v_hospital_id uuid;
+  v_existing    uuid;
+  v_full_name   text;
+begin
+  if v_uid is null then
+    raise exception 'Not authenticated' using errcode = '28000';
+  end if;
+
+  -- One hospital per owner: refuse if this verified user already has a staff row.
+  select hospital_id into v_existing from staff where user_id = v_uid limit 1;
+  if v_existing is not null then
+    raise exception 'This account already belongs to a hospital'
+      using errcode = 'unique_violation';
+  end if;
+
+  if coalesce(btrim(p_name), '') = '' then
+    raise exception 'Hospital name is required' using errcode = '22023';
+  end if;
+
+  -- Fall back to the email's local part if no display name was supplied.
+  v_full_name := coalesce(
+    nullif(btrim(coalesce(p_admin_full_name, '')), ''),
+    nullif(split_part(coalesce(v_email, ''), '@', 1), ''),
+    'Administrator'
+  );
+
+  insert into hospitals (name, region, contact_email, contact_phone, subscription_status)
+  values (
+    btrim(p_name),
+    nullif(btrim(coalesce(p_region, '')), ''),
+    nullif(btrim(coalesce(p_contact_email, '')), ''),
+    nullif(btrim(coalesce(p_contact_phone, '')), ''),
+    'trial'
+  )
+  returning id into v_hospital_id;
+
+  insert into staff (hospital_id, user_id, full_name, role, email, is_active)
+  values (v_hospital_id, v_uid, v_full_name, 'admin', v_email, true);
+
+  return v_hospital_id;
+end;
+$$;
+
+-- Only signed-in users may call it (it reads auth.uid()); never anon/public.
+revoke all on function create_hospital_and_admin(text, text, text, text, text)
+  from public, anon;
+grant execute on function create_hospital_and_admin(text, text, text, text, text)
+  to authenticated;
+
+
+-- =============================================================================
 -- END OF SCHEMA
 -- =============================================================================

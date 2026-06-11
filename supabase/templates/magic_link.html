@@ -1,0 +1,11 @@
+<!--
+  Email-OTP login template (Phase 18.5). Supabase sends this for signInWithOtp.
+  It MUST surface {{ .Token }} so the user receives a 6-digit CODE to type into
+  the app, rather than a magic link (the app verifies a code, not a link click).
+-->
+<h2>Your CareFlow sign-in code</h2>
+<p>Enter this 6-digit code to continue:</p>
+<p style="font-size: 28px; font-weight: bold; letter-spacing: 6px; font-family: monospace;">
+  {{ .Token }}
+</p>
+<p>This code expires in 1 hour. If you didn't request it, you can ignore this email.</p>

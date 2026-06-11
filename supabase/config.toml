@@ -159,7 +159,14 @@ site_url = "http://127.0.0.1:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+# The /auth/callback entries are required for Google OAuth return (Phase 18.5).
+additional_redirect_urls = [
+  "https://127.0.0.1:3000",
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:3000/auth/callback",
+  "http://localhost:3000",
+  "http://localhost:3000/auth/callback",
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -195,7 +202,8 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# Raised from the default of 2 to make local OTP testing comfortable (Phase 18.5).
+email_sent = 60
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.
@@ -241,6 +249,13 @@ otp_expiry = 3600
 # pass = "env(SENDGRID_API_KEY)"
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
+
+# Email-OTP login (Phase 18.5): the magic-link template is overridden to deliver
+# a 6-digit CODE ({{ .Token }}) instead of a link, because the app's owner
+# sign-in verifies a typed code (signInWithOtp → verifyOtp).
+[auth.email.template.magic_link]
+subject = "Your CareFlow sign-in code"
+content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize email template
 # [auth.email.template.invite]
@@ -332,6 +347,24 @@ url = ""
 skip_nonce_check = false
 # If enabled, it will allow the user to successfully authenticate when the provider does not return an email address.
 email_optional = false
+
+# ---- Google OAuth for verified owner onboarding (Phase 18.5) ----------------
+# Flip `enabled` to true AFTER you've set the two env vars below (so the local
+# stack still boots before you've added credentials). Get the client ID/secret
+# from Google Cloud → Credentials → OAuth 2.0 Client ID (Web), with the
+# authorized redirect URI set to: http://127.0.0.1:54321/auth/v1/callback
+# Then export (e.g. in your shell or .env.local — NEVER commit the secret):
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=...
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=...
+[auth.external.google]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+# DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+redirect_uri = ""
+url = ""
+# Required for local sign-in with Google (Google omits the nonce on the local stack).
+skip_nonce_check = true
 
 # Allow Solana wallet holders to sign in to your project via the Sign in with Solana (SIWS, EIP-4361) standard.
 # You can configure "web3" rate limit in the [auth.rate_limit] section and set up [auth.captcha] if self-hosting.

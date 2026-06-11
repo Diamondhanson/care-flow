@@ -859,6 +859,118 @@ optimistic concurrency).
       provides encryption at rest/in transit by default. The **formal data-privacy review, retention
       policy, and backup policy remain operational items** to finalize before a real production launch.
 
+## PHASE 18.5 — Verified Tenant Onboarding (Email OTP + Google) 🔜
+
+**Goal:** before a hospital is created, **verify the founding admin's identity.** They authenticate
+first — via **Google sign-in** or **email OTP** (passwordless code) — and only *after* verification do
+they enter the hospital details and create the tenant. Separates "the user" from "the hospital," the
+standard SaaS pattern.
+
+**Why:** today's signup mints the auth user + hospital together via the service-role admin API, so the
+email isn't truly verified. Verifying first stops junk/bot/typo'd tenants, ties each account to a
+recoverable real identity, and removes password friction (Google) with a passwordless fallback (OTP).
+
+> **Scope boundary:** this is **only** for the founding admin / tenant creation. Regular staff
+> (doctors/nurses) remain **admin-created username+password** logins from Phase 17 — unchanged.
+
+### Flow
+1. Public signup → "Continue with Google" **or** "Continue with email (get a code)".
+2. Supabase Auth: `signInWithOAuth({ provider: 'google' })` or `signInWithOtp(email)` → user verifies →
+   authenticated session with a confirmed email.
+3. If the authenticated user **has no hospital yet** → route to the **"Create your hospital"** form
+   (name, region, contact…).
+4. On submit → a **`SECURITY DEFINER` RPC `create_hospital_and_admin(details)`** atomically creates the
+   `hospitals` row + the founder `staff` row (role `admin`) linked to `auth.uid()` (the already-verified
+   user) — no broad insert policy on `hospitals`/`staff` needed for unaffiliated users.
+5. If the user **already owns a hospital** → route straight into the app.
+
+### Implementation
+* [ ] Configure the **Google OAuth provider** in Supabase (Google Cloud OAuth client ID/secret +
+      redirect URLs) — **manual** (see "Manual steps" below). *Code side is done.*
+* [x] Replace the public `/signup` (auth-user-created-at-signup) with: client-side **OTP/OAuth**
+      verification → then the **`create_hospital_and_admin` RPC** via
+      `createHospitalForCurrentUser` (`services/supabaseAuth.ts`). The legacy service-role
+      `provisionHospital` action is retained (integration-test helper), but is no longer the public path.
+* [x] **Onboarding gate:** verified-but-no-hospital users resolve to `needsOnboarding` in the
+      `AuthProvider` and land on `/onboarding`; `RequireAuth` routes them there (not to `/login`), so an
+      abandoned signup resumes on next login.
+* [x] UI: new `/signup` (Google + email-OTP via the shared `OwnerAuth` widget) + inline OTP-entry +
+      `/onboarding` create-hospital form + `/auth/callback` OAuth return; `/login` also offers owner
+      Google/OTP alongside staff username+password. Fully FR/EN.
+* [x] Decided: **one hospital per owner** — enforced in the RPC (refuses if the caller already has a
+      `staff` row) and in the app (an owner with a hospital is routed into the app).
+
+### Manual steps remaining (owner)
+* [ ] **Apply the RPC** to the database: `supabase/schema.sql` section 10 (full reload) **or** the
+      standalone `supabase/snippets/phase-18_5-verified-onboarding.sql` (top-up an existing DB):
+      `supabase db execute --file supabase/snippets/phase-18_5-verified-onboarding.sql`.
+* [ ] **Google Cloud:** create an OAuth 2.0 Client ID (Web), set authorized redirect URI to the Supabase
+      auth callback `https://<project-ref>.supabase.co/auth/v1/callback` (and the local stack's
+      `http://127.0.0.1:54321/auth/v1/callback`).
+* [ ] **Supabase → Auth → Providers → Google:** paste the client ID + secret, enable it.
+* [ ] **Supabase → Auth → URL config:** add this app's origin (e.g. `http://localhost:3000`) +
+      `…/auth/callback` to the redirect allow-list.
+* [ ] **Supabase → Auth → Email templates → Magic Link / OTP:** ensure the template uses `{{ .Token }}`
+      so a **6-digit code** is sent (not a magic link), and confirm email delivery (built-in SMTP for
+      local, a real SMTP provider for production).
+
+### Notes / edge cases
+* **Orphan users** (verified, no hospital) resume onboarding on next login — handle gracefully.
+* The **Google login email** and the **hospital's contact email** can differ (Google = owner login;
+  hospital keeps its own contact info).
+* Email-OTP needs reliable email delivery (Supabase's built-in email or a configured provider).
+  **Verification is limited to email OTP and Google only** — SMS/phone OTP is **out of scope** (an SMS
+  provider adds cost and integration complexity); it can be revisited later if needed.
+
+### Verify
+* [ ] A new owner can complete signup via **Google** *and* via **email OTP**; only after verification can
+      they create a hospital; the hospital + admin `staff` row link to the verified auth user; an
+      abandoned signup resumes at the create-hospital step; an existing owner is routed into the app;
+      staff logins still work via admin creation; FR + EN; `tsc` clean, tests green.
+
+### Local dev status (done)
+* [x] RPC `create_hospital_and_admin` applied to the **local** DB and verified (SECURITY DEFINER,
+      `EXECUTE` granted to `authenticated` only).
+* [x] **Email OTP** working end-to-end locally (codes land in Mailpit at `http://127.0.0.1:54324`;
+      `magic_link` template surfaces `{{ .Token }}`). Local `email_sent` rate limit raised to 60/hr.
+* [x] **Google** enabled locally: creds in `.env.local`, `config.toml [auth.external.google] enabled = true`
+      + `skip_nonce_check = true` (local-only), auth settings report `google: true`.
+* [x] App pointed at the **local** stack via the `.env.local` LOCAL block (`#HOSTED#` lines preserved to
+      flip back).
+
+### Production cutover checklist (Google + Supabase + host) — DO BEFORE LAUNCH
+> `config.toml` only configures the **local** stack. Production is configured in the Supabase **dashboard**
+> + **Google Console** + the **host env (Vercel)** — none of the local settings carry over.
+
+**Database**
+* [ ] Apply `create_hospital_and_admin` (+ full schema/RLS) to the **hosted** DB — it currently exists
+      only locally, so onboarding will fail in prod until applied.
+
+**Google Cloud Console**
+* [ ] Credentials → OAuth client → **Authorized redirect URIs**: add the *hosted Supabase* callback
+      `https://ftudvptmhblydmrsmazw.supabase.co/auth/v1/callback` (NOT the app domain). Keep the local URI.
+* [ ] **Authorized JavaScript origins**: add `https://<yourdomain>`.
+* [ ] **OAuth consent screen → Publish App** (Testing → Production) so any Google user can sign in and the
+      "unverified app" warning clears. Requires privacy policy URL, terms URL, authorized domain, logo.
+
+**Supabase dashboard (hosted project)**
+* [ ] Authentication → Providers → **Google**: enable + paste Client ID/Secret (do NOT set
+      `skip_nonce_check` in prod — local-only workaround).
+* [ ] Authentication → URL Configuration: **Site URL** = `https://<yourdomain>`; add
+      `https://<yourdomain>/auth/callback` to the **Redirect URLs** allow-list.
+* [ ] Authentication → Email templates → **Magic Link**: paste the `{{ .Token }}` 6-digit template.
+* [ ] Configure a real **SMTP provider** (Resend — deferred) + verified sending domain (SPF/DKIM/DMARC),
+      then raise the hosted auth email rate limit.
+
+**Host env (Vercel)**
+* [ ] Set prod env vars: `NEXT_PUBLIC_SUPABASE_URL=https://ftudvptmhblydmrsmazw.supabase.co` and
+      `NEXT_PUBLIC_SUPABASE_ANON_KEY=<hosted anon key>`. (No code change for the callback — the widget uses
+      `${window.location.origin}/auth/callback`, which auto-resolves to the prod domain.)
+
+**Optional but recommended**
+* [ ] Supabase **custom auth domain** (e.g. `auth.<yourdomain>`): then the Google redirect URI becomes
+      `https://auth.<yourdomain>/auth/v1/callback` and the consent screen shows your domain, not `supabase.co`.
+
 ## PHASE 19 — Platform Owner / Super-Admin Console (+ Monorepo) 🔜 NEXT
 
 **Goal:** give *you* (the platform owner) a **cross-tenant** console to monitor how hospitals use the
@@ -991,6 +1103,15 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-06-02: **Added Phase 18.5 — Verified Tenant Onboarding.** Before a hospital is created, the
+  founding admin must verify identity via **Google sign-in or email OTP**; only then do they fill the
+  hospital-creation form. Separates user identity from tenant creation (replacing the current
+  create-user-at-signup), preventing junk/unverified tenants and tying each account to a recoverable
+  identity. Built on Supabase `signInWithOAuth` / `signInWithOtp` + a `SECURITY DEFINER`
+  `create_hospital_and_admin` RPC. Scoped to the founding admin only — staff logins stay
+  admin-created (Phase 17). Verification is limited to **email OTP + Google only** (SMS OTP is out of
+  scope — avoids SMS-provider cost/complexity). No code changed — phase spec only.
 
 * 2026-06-02: **Marked Phases 17 & 18 complete; added Phase 19.** Reconciled the roadmap with the code:
   **Phase 17 (multi-tenancy)** and **Phase 18 (Supabase backend)** are implemented and verified (`tsc`

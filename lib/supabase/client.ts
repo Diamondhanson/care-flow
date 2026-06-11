@@ -29,7 +29,14 @@ export function getSupabaseClient(): SupabaseClient {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: false,
+      // Verified-onboarding (Phase 18.5) adds Google OAuth, which returns to
+      // `/auth/callback?code=…`. The PKCE flow stores a code verifier in this
+      // client's storage at redirect time and exchanges the code for a session
+      // on return; `detectSessionInUrl` lets the client complete that exchange
+      // automatically. Email-OTP and the legacy username/password path don't use
+      // the URL, so this is inert for them.
+      detectSessionInUrl: true,
+      flowType: "pkce",
     },
   });
   return client;
