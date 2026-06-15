@@ -688,6 +688,7 @@ export interface UpdateDepartmentInput {
 export interface CreateWardInput {
   name: string;
   department_id?: DepartmentId | null;
+  block?: string | null;
   floor_label?: string | null;
   /** Optionally seed the ward with N sequentially-labelled beds on creation. */
   bed_count?: number;
@@ -696,6 +697,7 @@ export interface CreateWardInput {
 export interface UpdateWardInput {
   name?: string;
   department_id?: DepartmentId | null;
+  block?: string | null;
   floor_label?: string | null;
   is_active?: boolean;
 }
@@ -1508,6 +1510,7 @@ export function createWard(input: CreateWardInput): Ward {
     hospital_id: tenantId(db),
     department_id: input.department_id ?? null,
     name: input.name.trim(),
+    block: input.block?.trim() || null,
     floor_label: input.floor_label?.trim() || null,
     is_active: true,
     created_at: timestamp,
@@ -1531,6 +1534,9 @@ export function updateWard(id: WardId, patch: UpdateWardInput): Ward {
   if (patch.name !== undefined) ward.name = patch.name.trim();
   if (patch.department_id !== undefined) {
     ward.department_id = patch.department_id ?? null;
+  }
+  if (patch.block !== undefined) {
+    ward.block = patch.block?.trim() || null;
   }
   if (patch.floor_label !== undefined) {
     ward.floor_label = patch.floor_label?.trim() || null;
@@ -3199,9 +3205,9 @@ function seedDatabaseObject(): Database {
   ];
 
   const wards: Seed<Ward>[] = [
-    { id: "ward_icu", department_id: "dept_icu", name: "ICU", floor_label: "3rd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
-    { id: "ward_medb", department_id: "dept_medicine", name: "Medical Ward B", floor_label: "2nd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
-    { id: "ward_er", department_id: "dept_emergency", name: "Emergency Bays", floor_label: "Ground Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
+    { id: "ward_icu", department_id: "dept_icu", name: "ICU", block: "Block A", floor_label: "3rd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
+    { id: "ward_medb", department_id: "dept_medicine", name: "Medical Ward B", block: "Block A", floor_label: "2nd Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
+    { id: "ward_er", department_id: "dept_emergency", name: "Emergency Bays", block: "Block B", floor_label: "Ground Floor", is_active: true, created_at: day(8760), updated_at: day(8760) },
   ];
 
   const beds: Seed<Bed>[] = [

@@ -360,6 +360,7 @@ function WardFormSheet({
   const wardView = ward ? wards.find((w) => w.ward.id === ward.id) : null;
 
   const [name, setName] = useState("");
+  const [block, setBlock] = useState("");
   const [floor, setFloor] = useState("");
   const [departmentId, setDepartmentId] = useState<string>(NO_DEPARTMENT);
   const [bedCount, setBedCount] = useState("0");
@@ -374,6 +375,7 @@ function WardFormSheet({
   useEffect(() => {
     setError(null);
     setName(ward?.name ?? "");
+    setBlock(ward?.block ?? "");
     setFloor(ward?.floor_label ?? "");
     setDepartmentId(ward?.department_id ?? NO_DEPARTMENT);
     setBedCount("0");
@@ -387,6 +389,7 @@ function WardFormSheet({
       createWard({
         name,
         department_id,
+        block: block || null,
         floor_label: floor || null,
         bed_count: count,
       });
@@ -394,6 +397,7 @@ function WardFormSheet({
       updateWard(ward.id, {
         name,
         department_id,
+        block: block || null,
         floor_label: floor || null,
       });
     }
@@ -468,6 +472,16 @@ function WardFormSheet({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t("floorMap.namePlaceholder")}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="ward_block">{t("floorMap.block")}</Label>
+            <Input
+              id="ward_block"
+              value={block}
+              onChange={(e) => setBlock(e.target.value)}
+              placeholder={t("floorMap.blockPlaceholder")}
             />
           </div>
 

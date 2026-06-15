@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldAlert, CheckCircle2, ArrowRight } from "lucide-react";
 
+import { isValidPhoneNumber } from "react-phone-number-input";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -88,6 +91,10 @@ export default function IntakePage() {
   const deptName = (id: string | null) =>
     id ? (departments.find((d) => d.id === id)?.name ?? "—") : "—";
 
+  // Phone is optional, but anything typed must be a valid number for the
+  // country picked in the rich input. (Only shown for non-emergency intake.)
+  const phoneInvalid = phone !== "" && !isValidPhoneNumber(phone);
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -102,6 +109,10 @@ export default function IntakePage() {
     }
     if (!isEmergency && !fullName.trim()) {
       setError(t("intake.nameRequired"));
+      return;
+    }
+    if (!isEmergency && phoneInvalid) {
+      setError(t("intake.invalidPhone"));
       return;
     }
 
@@ -310,12 +321,21 @@ export default function IntakePage() {
                   </button>
                 </Field>
                 <Field label={t("intake.phone")} htmlFor="phone">
-                  <Input
+                  <PhoneInput
                     id="phone"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder={t("intake.phonePlaceholder")}
+                    onChange={(value) => setPhone(value ?? "")}
+                    invalid={phoneInvalid}
                   />
+                  {phoneInvalid ? (
+                    <p
+                      id="phone-error"
+                      role="alert"
+                      className="text-xs text-destructive"
+                    >
+                      {t("intake.invalidPhone")}
+                    </p>
+                  ) : null}
                 </Field>
                 <Field label={t("intake.nationalId")} htmlFor="national_id">
                   <Input
@@ -483,7 +503,7 @@ export default function IntakePage() {
           >
             {t("common.cancel")}
           </Button>
-          <Button type="submit">
+          <Button type="submit" disabled={!isEmergency && phoneInvalid}>
             {isEmergency ? t("intake.registerEmergency") : t("intake.register")}
           </Button>
         </div>

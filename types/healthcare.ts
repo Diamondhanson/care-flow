@@ -318,6 +318,8 @@ export interface Ward {
   hospital_id: HospitalId;
   department_id: DepartmentId | null;
   name: string;
+  /** Physical block/building, e.g. "Block A", "Maternity Wing". */
+  block: string | null;
   /** e.g. "2nd Floor", "Block C". */
   floor_label: string | null;
   is_active: boolean;

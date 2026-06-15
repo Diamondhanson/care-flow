@@ -19,10 +19,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Activity } from "lucide-react";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Card,
   CardContent,
@@ -75,7 +77,16 @@ export default function OnboardingPage() {
     return <Splash />;
   }
 
-  const canSubmit = hospitalName.trim() !== "";
+  // Contact email/phone are optional, but if the user types something it must
+  // be well-formed. Email: standard address shape. Phone: valid for the
+  // country selected in the rich phone input (E.164 from libphonenumber).
+  const emailInvalid =
+    contactEmail.trim() !== "" &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim());
+  const phoneInvalid = contactPhone !== "" && !isValidPhoneNumber(contactPhone);
+
+  const canSubmit =
+    hospitalName.trim() !== "" && !emailInvalid && !phoneInvalid;
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -98,7 +109,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-lg flex-col px-4 py-12 md:py-16">
+    <div className="mx-auto flex w-full max-w-lg flex-col px-4 py-12 md:py-16 lg:max-w-2xl">
       <Card>
         <CardHeader>
           <CardTitle>{t("auth.onboarding.title")}</CardTitle>
@@ -156,20 +167,44 @@ export default function OnboardingPage() {
                   <Input
                     id="contactEmail"
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
                     value={contactEmail}
                     onChange={(e) => setContactEmail(e.target.value)}
+                    aria-invalid={emailInvalid || undefined}
+                    aria-describedby={
+                      emailInvalid ? "contactEmail-error" : undefined
+                    }
                   />
+                  {emailInvalid ? (
+                    <p
+                      id="contactEmail-error"
+                      role="alert"
+                      className="text-xs text-destructive"
+                    >
+                      {t("auth.onboarding.invalidEmail")}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="contactPhone">
                     {t("auth.onboarding.contactPhone")}
                   </Label>
-                  <Input
+                  <PhoneInput
                     id="contactPhone"
-                    type="tel"
                     value={contactPhone}
-                    onChange={(e) => setContactPhone(e.target.value)}
+                    onChange={(value) => setContactPhone(value ?? "")}
+                    invalid={phoneInvalid}
                   />
+                  {phoneInvalid ? (
+                    <p
+                      id="contactPhone-error"
+                      role="alert"
+                      className="text-xs text-destructive"
+                    >
+                      {t("auth.onboarding.invalidPhone")}
+                    </p>
+                  ) : null}
                 </div>
               </div>
             </fieldset>

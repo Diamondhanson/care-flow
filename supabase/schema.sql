@@ -352,6 +352,7 @@ create table if not exists wards (
   hospital_id   uuid not null references hospitals(id) on delete cascade,
   department_id uuid references departments(id) on delete set null,
   name          text not null,           -- e.g. "Maternity Ward A"
+  block         text,                    -- physical block/building, e.g. "Block A"
   floor_label   text,                    -- e.g. "2nd Floor", "Block C"
   is_active     boolean not null default true,
   created_at    timestamptz not null default now(),

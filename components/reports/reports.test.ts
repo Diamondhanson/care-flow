@@ -127,6 +127,7 @@ function makeWard(id: string, name = id): Ward {
     hospital_id: "hosp_demo",
     department_id: null,
     name,
+    block: null,
     floor_label: null,
     is_active: true,
     created_at: daysAgoIso(60),

@@ -12,12 +12,14 @@ import {
   ConciergeBell,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Select,
   SelectContent,
@@ -306,6 +308,12 @@ function StaffFormSheet({
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
+  // Email/phone are optional, but anything typed must be well-formed. Phone is
+  // validated for the country picked in the rich input (E.164 from libphonenumber).
+  const emailInvalid =
+    email.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const phoneInvalid = phone !== "" && !isValidPhoneNumber(phone);
+
   // Reset the form each time the sheet opens.
   useEffect(() => {
     if (open) {
@@ -337,6 +345,14 @@ function StaffFormSheet({
     }
     if (password.length < 6) {
       setError(t("staff.passwordTooShort"));
+      return;
+    }
+    if (emailInvalid) {
+      setError(t("staff.invalidEmail"));
+      return;
+    }
+    if (phoneInvalid) {
+      setError(t("staff.invalidPhone"));
       return;
     }
     if (!currentHospital) {
@@ -487,21 +503,42 @@ function StaffFormSheet({
             <Input
               id="staff_email"
               type="email"
+              inputMode="email"
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("staff.emailPlaceholder")}
+              aria-invalid={emailInvalid || undefined}
+              aria-describedby={emailInvalid ? "staff_email-error" : undefined}
             />
+            {emailInvalid ? (
+              <p
+                id="staff_email-error"
+                role="alert"
+                className="text-xs text-destructive"
+              >
+                {t("staff.invalidEmail")}
+              </p>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="staff_phone">{t("staff.phone")}</Label>
-            <Input
+            <PhoneInput
               id="staff_phone"
-              type="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder={t("staff.phonePlaceholder")}
+              onChange={(value) => setPhone(value ?? "")}
+              invalid={phoneInvalid}
             />
+            {phoneInvalid ? (
+              <p
+                id="staff_phone-error"
+                role="alert"
+                className="text-xs text-destructive"
+              >
+                {t("staff.invalidPhone")}
+              </p>
+            ) : null}
           </div>
 
           {error ? <p className="text-sm text-destructive">{error}</p> : null}
@@ -511,7 +548,10 @@ function StaffFormSheet({
           <Button variant="ghost" onClick={onClose} disabled={saving}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
+          <Button
+            onClick={handleSave}
+            disabled={saving || emailInvalid || phoneInvalid}
+          >
             {saving ? t("staff.creating") : t("staff.create")}
           </Button>
         </SheetFooter>
