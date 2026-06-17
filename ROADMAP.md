@@ -194,15 +194,19 @@ foundation everything else depends on.
 
 **Goal:** admin defines the hospital's physical layout; occupancy stays live.
 
-* [x] Admin CRUD for **Wards** (name, floor, department) and the **Beds** inside each ward — the
-      `/floor-map` page lets an admin create wards, pre-fill or append beds (auto-numbered
+* [x] Admin CRUD for **Wards** (name, **block**, floor, department) and the **Beds** inside each ward
+      — the `/floor-map` page lets an admin create wards, pre-fill or append beds (auto-numbered
       "Bed N"), rename beds, set manual status (free / reserved / cleaning / maintenance), and
-      remove empty beds.
+      remove empty beds. *(A ward's optional **block** field — `block` on `Ward`, threaded through
+      `createWard`/`updateWard`, the `wards` schema, and FR/EN — lets a hospital group wards across
+      multiple physical blocks/buildings.)*
 * [x] Assigning an admitted patient to a bed marks it occupied; transfer/discharge frees the old
       bed and occupies the new one — `transferAdmission`/`assignBedToAdmission` in the service layer
       mirror the Supabase `sync_bed_occupancy` trigger.
 * [x] Live floor-map view: wards grouped by floor, per-ward total / free / occupied tallies, and
-      who occupies each bed; occupied beds can't be re-statused or removed.
+      who occupies each bed; occupied beds can't be re-statused or removed. *(Sidebar tab renamed
+      **"Beds" → "Floor Map"** / **"Plan des étages"** to reflect that it manages the hospital's
+      physical structure, not just beds.)*
 * [x] **Transfers** (flagged item #1) folded in: ward/bed/doctor moves are first-class append-only
       events. The inpatient patient drawer gains a "Placement & transfers" section — assign a bed to
       a bedless admission, move ward/bed/doctor with a reason, and read the transfer history.
@@ -218,6 +222,15 @@ foundation everything else depends on.
 * **Transfers coupled into Phase 11**: because bed occupancy and ward/doctor transfers are the same
   underlying state change, transfers ship inside Phase 11 rather than as a separate phase — modeled
   as append-only `transfers` events with the admission row holding the current placement.
+* **Ward blocks + "Floor Map" rename** (post-18.5 polish): wards gained an optional `block` field so a
+  hospital can group them across multiple physical blocks/buildings (type → `createWard`/`updateWard`
+  → `wards` schema → form → FR/EN, plus the live `block text` column on the hosted DB). The "Beds"
+  sidebar tab was renamed **"Floor Map" / "Plan des étages"** to better describe the physical-structure
+  management it does.
+* **Shared rich `PhoneInput`** (post-18.5 polish): one reusable `components/ui/phone-input.tsx`
+  (country select + dialing code + live libphonenumber formatting + country flags via
+  `react-phone-number-input` + `country-flag-icons`) now backs the **onboarding, staff, and intake**
+  forms, each with strict email + phone validation and inline errors.
 
 ## PHASE 12 — Reporting, Analytics & Export ✅ COMPLETE
 
@@ -255,7 +268,7 @@ UI is a wall in front of every other feature, and a French demo lands completely
   * [x] "Patient Intake" → **Enregistrer un patient** / "Register a patient"
   * [x] "Diagnostics" → **Tests & résultats** / "Tests & results"
   * [x] "Reconciliation" → **Associer un patient d'urgence** / "Match emergency patient"
-  * [x] "Floor Map" → **Lits** / "Beds"
+  * [x] "Floor Map" → **Plan des étages** / "Floor Map" *(was "Lits / Beds"; renamed post-18.5 — see Phase 11)*
   * [x] "MRN" → **Numéro d'hôpital** / "Hospital number" (MRN kept small/secondary)
   * [x] "Chief complaint" → **Motif de consultation**; "Disposition" → **Suite à donner**
   * [x] keep GCS / SpO₂ but add a plain hint on first use.
@@ -859,7 +872,7 @@ optimistic concurrency).
       provides encryption at rest/in transit by default. The **formal data-privacy review, retention
       policy, and backup policy remain operational items** to finalize before a real production launch.
 
-## PHASE 18.5 — Verified Tenant Onboarding (Email OTP + Google) 🔜
+## PHASE 18.5 — Verified Tenant Onboarding (Email OTP + Google) ✅ COMPLETE (live online)
 
 **Goal:** before a hospital is created, **verify the founding admin's identity.** They authenticate
 first — via **Google sign-in** or **email OTP** (passwordless code) — and only *after* verification do
@@ -885,8 +898,9 @@ recoverable real identity, and removes password friction (Google) with a passwor
 5. If the user **already owns a hospital** → route straight into the app.
 
 ### Implementation
-* [ ] Configure the **Google OAuth provider** in Supabase (Google Cloud OAuth client ID/secret +
-      redirect URLs) — **manual** (see "Manual steps" below). *Code side is done.*
+* [x] Configure the **Google OAuth provider** in Supabase (Google Cloud OAuth client ID/secret +
+      redirect URLs) — done for both local and the **hosted** project; Google sign-in confirmed live
+      online (auth probe returns `302 → accounts.google.com`).
 * [x] Replace the public `/signup` (auth-user-created-at-signup) with: client-side **OTP/OAuth**
       verification → then the **`create_hospital_and_admin` RPC** via
       `createHospitalForCurrentUser` (`services/supabaseAuth.ts`). The legacy service-role
@@ -900,19 +914,20 @@ recoverable real identity, and removes password friction (Google) with a passwor
 * [x] Decided: **one hospital per owner** — enforced in the RPC (refuses if the caller already has a
       `staff` row) and in the app (an owner with a hospital is routed into the app).
 
-### Manual steps remaining (owner)
-* [ ] **Apply the RPC** to the database: `supabase/schema.sql` section 10 (full reload) **or** the
-      standalone `supabase/snippets/phase-18_5-verified-onboarding.sql` (top-up an existing DB):
-      `supabase db execute --file supabase/snippets/phase-18_5-verified-onboarding.sql`.
-* [ ] **Google Cloud:** create an OAuth 2.0 Client ID (Web), set authorized redirect URI to the Supabase
-      auth callback `https://<project-ref>.supabase.co/auth/v1/callback` (and the local stack's
-      `http://127.0.0.1:54321/auth/v1/callback`).
-* [ ] **Supabase → Auth → Providers → Google:** paste the client ID + secret, enable it.
-* [ ] **Supabase → Auth → URL config:** add this app's origin (e.g. `http://localhost:3000`) +
-      `…/auth/callback` to the redirect allow-list.
-* [ ] **Supabase → Auth → Email templates → Magic Link / OTP:** ensure the template uses `{{ .Token }}`
-      so a **6-digit code** is sent (not a magic link), and confirm email delivery (built-in SMTP for
-      local, a real SMTP provider for production).
+### Manual steps remaining (owner) — DONE
+* [x] **Apply the RPC** to the database: applied the standalone
+      `supabase/snippets/phase-18_5-verified-onboarding.sql` to the **hosted** DB and verified live
+      (`security_definer = t`; `EXECUTE` granted to postgres/authenticated/service_role only). Also
+      applied to local earlier.
+* [x] **Google Cloud:** OAuth 2.0 Client ID (Web) created; authorized redirect URI set to the hosted
+      Supabase callback `https://ftudvptmhblydmrsmazw.supabase.co/auth/v1/callback` (local
+      `http://127.0.0.1:54321/auth/v1/callback` kept).
+* [x] **Supabase → Auth → Providers → Google:** client ID + secret pasted, enabled (hosted).
+* [x] **Supabase → Auth → URL config:** app origin + `…/auth/callback` added to the redirect
+      allow-list (hosted).
+* [~] **Supabase → Auth → Email templates → Magic Link / OTP:** `{{ .Token }}` 6-digit template
+      confirmed locally (Mailpit). Hosted relies on Supabase's built-in SMTP until a real provider
+      (Resend) is configured — see the production checklist below.
 
 ### Notes / edge cases
 * **Orphan users** (verified, no hospital) resume onboarding on next login — handle gracefully.
@@ -923,10 +938,12 @@ recoverable real identity, and removes password friction (Google) with a passwor
   provider adds cost and integration complexity); it can be revisited later if needed.
 
 ### Verify
-* [ ] A new owner can complete signup via **Google** *and* via **email OTP**; only after verification can
+* [x] A new owner can complete signup via **Google** *and* via **email OTP**; only after verification can
       they create a hospital; the hospital + admin `staff` row link to the verified auth user; an
       abandoned signup resumes at the create-hospital step; an existing owner is routed into the app;
-      staff logins still work via admin creation; FR + EN; `tsc` clean, tests green.
+      staff logins still work via admin creation; FR + EN; `tsc` clean, tests green. *(Verified online
+      against the hosted project: Google sign-in live; the `create_hospital_and_admin` RPC creates the
+      tenant + founder admin against the hosted DB.)*
 
 ### Local dev status (done)
 * [x] RPC `create_hospital_and_admin` applied to the **local** DB and verified (SECURITY DEFINER,
@@ -935,30 +952,34 @@ recoverable real identity, and removes password friction (Google) with a passwor
       `magic_link` template surfaces `{{ .Token }}`). Local `email_sent` rate limit raised to 60/hr.
 * [x] **Google** enabled locally: creds in `.env.local`, `config.toml [auth.external.google] enabled = true`
       + `skip_nonce_check = true` (local-only), auth settings report `google: true`.
-* [x] App pointed at the **local** stack via the `.env.local` LOCAL block (`#HOSTED#` lines preserved to
-      flip back).
+* [x] ~~App pointed at the **local** stack via the `.env.local` LOCAL block~~ → **now points at the
+      hosted project** (`.env.local` HOSTED block active; the LOCAL block is commented `#LOCAL#` to flip
+      back). This makes the app usable online with just `npm run dev` — no local Docker/Supabase needed.
 
 ### Production cutover checklist (Google + Supabase + host) — DO BEFORE LAUNCH
 > `config.toml` only configures the **local** stack. Production is configured in the Supabase **dashboard**
 > + **Google Console** + the **host env (Vercel)** — none of the local settings carry over.
 
 **Database**
-* [ ] Apply `create_hospital_and_admin` (+ full schema/RLS) to the **hosted** DB — it currently exists
-      only locally, so onboarding will fail in prod until applied.
+* [x] Apply `create_hospital_and_admin` (+ schema/RLS) to the **hosted** DB — applied & verified live;
+      onboarding now works against the hosted project. *(Also applied the `wards.block` column to the
+      hosted DB for the post-18.5 ward-block feature.)*
 
 **Google Cloud Console**
-* [ ] Credentials → OAuth client → **Authorized redirect URIs**: add the *hosted Supabase* callback
-      `https://ftudvptmhblydmrsmazw.supabase.co/auth/v1/callback` (NOT the app domain). Keep the local URI.
-* [ ] **Authorized JavaScript origins**: add `https://<yourdomain>`.
+* [x] Credentials → OAuth client → **Authorized redirect URIs**: hosted Supabase callback
+      `https://ftudvptmhblydmrsmazw.supabase.co/auth/v1/callback` added (local URI kept).
+* [x] **Authorized JavaScript origins**: app origin added.
 * [ ] **OAuth consent screen → Publish App** (Testing → Production) so any Google user can sign in and the
       "unverified app" warning clears. Requires privacy policy URL, terms URL, authorized domain, logo.
+      *(Still pending — works for test users today.)*
 
 **Supabase dashboard (hosted project)**
-* [ ] Authentication → Providers → **Google**: enable + paste Client ID/Secret (do NOT set
-      `skip_nonce_check` in prod — local-only workaround).
-* [ ] Authentication → URL Configuration: **Site URL** = `https://<yourdomain>`; add
-      `https://<yourdomain>/auth/callback` to the **Redirect URLs** allow-list.
+* [x] Authentication → Providers → **Google**: enabled + Client ID/Secret pasted (no `skip_nonce_check`
+      in prod). Confirmed live (`302 → accounts.google.com`).
+* [x] Authentication → URL Configuration: **Site URL** + `…/auth/callback` added to the **Redirect
+      URLs** allow-list.
 * [ ] Authentication → Email templates → **Magic Link**: paste the `{{ .Token }}` 6-digit template.
+      *(Pending on hosted — local confirmed.)*
 * [ ] Configure a real **SMTP provider** (Resend — deferred) + verified sending domain (SPF/DKIM/DMARC),
       then raise the hosted auth email rate limit.
 
