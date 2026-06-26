@@ -46,7 +46,7 @@ import {
   uploadClinicalFile,
   LAB_RESULTS_BUCKET,
 } from "@/lib/supabase/storage";
-import type { Order, OrderType } from "@/types/healthcare";
+import type { Order, OrderType } from "@careflow/shared";
 
 const TYPE_ICON: Record<OrderType, LucideIcon> = {
   lab: FlaskConical,

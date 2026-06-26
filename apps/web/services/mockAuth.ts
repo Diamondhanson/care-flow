@@ -20,7 +20,7 @@ import {
   setActiveHospitalId,
   type CreateHospitalInput,
 } from "@/services/mockStorage";
-import type { Hospital, Staff, StaffId } from "@/types/healthcare";
+import type { Hospital, Staff, StaffId } from "@careflow/shared";
 
 const SESSION_KEY = "careflow_session";
 

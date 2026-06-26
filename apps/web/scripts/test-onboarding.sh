@@ -30,7 +30,7 @@ if ! curl -sf -o /dev/null "${API_URL}/auth/v1/health"; then
 fi
 
 echo "==> Applying schema.sql (idempotent)..."
-psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f supabase/schema.sql >/dev/null
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f ../../packages/db/schema.sql >/dev/null
 
 echo "==> Reloading PostgREST schema cache..."
 psql "$DB_URL" -q -c "NOTIFY pgrst, 'reload schema';" >/dev/null

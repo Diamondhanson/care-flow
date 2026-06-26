@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ALL_DEPARTMENTS, getDepartments } from "@/services/mockStorage";
 import { StageCounts } from "@/components/live-board/stage-counts";
 import { JourneyBoard } from "@/components/live-board/journey-board";
-import type { Department } from "@/types/healthcare";
+import type { Department } from "@careflow/shared";
 
 export function LiveBoard() {
   const [departments, setDepartments] = useState<Department[]>([]);

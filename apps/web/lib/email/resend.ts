@@ -14,7 +14,7 @@
 
 import { Resend } from "resend";
 
-import { assertNoHeaderInjection, isValidEmail } from "@/lib/validation/email";
+import { assertNoHeaderInjection, isValidEmail } from "@careflow/shared/validation/email";
 
 let client: Resend | null = null;
 

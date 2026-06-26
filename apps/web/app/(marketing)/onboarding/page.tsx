@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
-import { isValidEmail } from "@/lib/validation/email";
+import { isValidEmail } from "@careflow/shared/validation/email";
 
 function Splash() {
   return (

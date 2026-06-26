@@ -38,7 +38,7 @@ import type {
   BillableItem,
   BillingCategory,
   BillingUnit,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 const UNITS: BillingUnit[] = ["per_item", "per_night", "per_day"];
 

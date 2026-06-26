@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // The shared workspace package ships raw TypeScript (no build step), so Next
+  // must transpile it like first-party source.
+  transpilePackages: ["@careflow/shared"],
   async headers() {
     return [
       {

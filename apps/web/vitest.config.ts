@@ -13,6 +13,24 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "."),
+      // Resolve the shared workspace package's TS source directly (vitest won't
+      // transpile a node_modules `.ts` exports map on its own).
+      "@careflow/shared/validation/email": resolve(
+        __dirname,
+        "../../packages/shared/validation/email.ts",
+      ),
+      "@careflow/shared/validation/primitives": resolve(
+        __dirname,
+        "../../packages/shared/validation/primitives.ts",
+      ),
+      "@careflow/shared/validation/schemas": resolve(
+        __dirname,
+        "../../packages/shared/validation/schemas.ts",
+      ),
+      "@careflow/shared": resolve(
+        __dirname,
+        "../../packages/shared/types/healthcare.ts",
+      ),
     },
   },
 });

@@ -27,7 +27,7 @@ import type {
   CareNeedCategory,
   CarePlanEntry,
   CarePlanItem,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 /**
  * Display order for the 14 care-need categories (Henderson's components, named

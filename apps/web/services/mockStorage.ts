@@ -69,7 +69,7 @@ import type {
   VisitType,
   Ward,
   WardId,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 import {
   clearOutbox,
   enqueueChanges,
@@ -86,7 +86,7 @@ import {
   MedAdminSchema,
   ResultEntrySchema,
   VitalsSchema,
-} from "@/lib/validation/schemas";
+} from "@careflow/shared/validation/schemas";
 
 // Bumped v7 → v8: every domain row now carries a `hospital_id` (Phase 17
 // multi-tenancy). Older persisted shapes lack it, so a fresh key forces a clean

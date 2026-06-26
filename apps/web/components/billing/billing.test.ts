@@ -22,7 +22,7 @@ import type {
   Transfer,
   Visit,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 const DAY_MS = 86_400_000;
 const NOW = Date.UTC(2026, 5, 1, 12, 0, 0);

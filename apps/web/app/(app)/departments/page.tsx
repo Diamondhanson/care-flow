@@ -28,7 +28,7 @@ import {
   updateDepartment,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
-import type { Department } from "@/types/healthcare";
+import type { Department } from "@careflow/shared";
 
 interface DirectoryRow {
   department: Department;

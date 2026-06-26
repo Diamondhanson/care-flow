@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/locale-provider";
 import type { BoardColumn } from "@/components/live-board/stages";
-import type { TriageLevel } from "@/types/healthcare";
+import type { TriageLevel } from "@careflow/shared";
 
 export interface PatientCardData {
   visitId: string;

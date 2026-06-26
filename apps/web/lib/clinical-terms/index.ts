@@ -19,7 +19,7 @@ import type {
   ClinicalTerm,
   ClinicalTermCategory,
   ClinicalTermSeed,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n";
 
 import subjectiveSeed from "@/data/clinical-terms/subjective.json";

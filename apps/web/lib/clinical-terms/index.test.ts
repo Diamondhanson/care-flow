@@ -6,7 +6,7 @@ import {
   SEED_TERMS,
   searchTerms,
 } from "./index";
-import type { ClinicalTermCategory } from "@/types/healthcare";
+import type { ClinicalTermCategory } from "@careflow/shared";
 
 const CATEGORIES: ClinicalTermCategory[] = [
   "subjective",

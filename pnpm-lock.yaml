@@ -12,11 +12,45 @@ importers:
         specifier: ^2.10.0
         version: 2.10.0
 
+  apps/owner-console:
+    dependencies:
+      '@careflow/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@supabase/supabase-js':
+        specifier: ^2.107.0
+        version: 2.108.2
+      next:
+        specifier: 16.2.6
+        version: 16.2.6(@babel/core@7.29.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: 19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: 19.2.4
+        version: 19.2.4(react@19.2.4)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.17)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
   apps/web:
     dependencies:
       '@base-ui/react':
         specifier: ^1.5.0
         version: 1.6.0(@types/react@19.2.17)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@careflow/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       '@supabase/supabase-js':
         specifier: ^2.107.0
         version: 2.108.2
@@ -71,9 +105,6 @@ importers:
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -108,6 +139,14 @@ importers:
       vitest:
         specifier: ^3.2.4
         version: 3.2.6(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)
+
+  packages/db: {}
+
+  packages/shared:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
 packages:
 

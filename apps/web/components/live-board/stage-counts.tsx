@@ -19,7 +19,7 @@ import {
 } from "@/services/mockStorage";
 import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
 import { useT } from "@/components/locale-provider";
-import type { Department } from "@/types/healthcare";
+import type { Department } from "@careflow/shared";
 
 interface StageCountsProps {
   departmentId: string;

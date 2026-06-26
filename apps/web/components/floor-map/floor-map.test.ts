@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { BedStatus } from "@/types/healthcare";
+import type { BedStatus } from "@careflow/shared";
 import {
   BED_STATUS_LABEL,
   BED_STATUS_TOKEN,

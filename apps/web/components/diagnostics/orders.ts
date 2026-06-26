@@ -1,4 +1,4 @@
-import type { OrderStatus, OrderType, Result } from "@/types/healthcare";
+import type { OrderStatus, OrderType, Result } from "@careflow/shared";
 
 /** i18n key for a diagnostic order type — resolve with `t(ORDER_TYPE_LABEL[type])`. */
 export const ORDER_TYPE_LABEL: Record<OrderType, string> = {

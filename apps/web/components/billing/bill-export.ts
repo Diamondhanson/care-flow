@@ -18,7 +18,7 @@ import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import { formatDate, formatDateTime, formatXaf } from "@/i18n/format";
 import { getCurrentHospital } from "@/services/mockStorage";
 import type { Locale } from "@/i18n";
-import type { BillableItem, Charge, Patient, Visit } from "@/types/healthcare";
+import type { BillableItem, Charge, Patient, Visit } from "@careflow/shared";
 import { summarizeBill } from "./billing";
 
 type DocWithAutoTable = jsPDF & { lastAutoTable?: { finalY: number } };

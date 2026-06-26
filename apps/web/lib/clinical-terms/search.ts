@@ -11,7 +11,7 @@
  * the right entry.
  */
 
-import type { ClinicalTerm, ClinicalTermCategory } from "@/types/healthcare";
+import type { ClinicalTerm, ClinicalTermCategory } from "@careflow/shared";
 import type { Locale } from "@/i18n";
 
 /** Lowercase + strip diacritics, for accent-insensitive matching. */

@@ -22,6 +22,22 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "."),
+      "@careflow/shared/validation/email": resolve(
+        __dirname,
+        "../../packages/shared/validation/email.ts",
+      ),
+      "@careflow/shared/validation/primitives": resolve(
+        __dirname,
+        "../../packages/shared/validation/primitives.ts",
+      ),
+      "@careflow/shared/validation/schemas": resolve(
+        __dirname,
+        "../../packages/shared/validation/schemas.ts",
+      ),
+      "@careflow/shared": resolve(
+        __dirname,
+        "../../packages/shared/types/healthcare.ts",
+      ),
     },
   },
 });

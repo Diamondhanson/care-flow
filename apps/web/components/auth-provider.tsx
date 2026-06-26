@@ -52,7 +52,7 @@ import {
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
 import { drainOutbox } from "@/services/syncQueue";
-import type { Hospital, Staff, StaffRole } from "@/types/healthcare";
+import type { Hospital, Staff, StaffRole } from "@careflow/shared";
 
 interface AuthContextValue {
   /** False until the client has hydrated + resolved the session. */

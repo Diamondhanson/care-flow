@@ -27,7 +27,7 @@ if ! psql "$DB_URL" -Atc "select 1" >/dev/null 2>&1; then
 fi
 
 echo "==> Applying schema.sql (idempotent)..."
-psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f supabase/schema.sql >/dev/null
+psql "$DB_URL" -v ON_ERROR_STOP=1 -q -f ../../packages/db/schema.sql >/dev/null
 
 echo "==> Running RLS integration suite..."
 SUPABASE_TEST_DB_URL="$DB_URL" npx vitest run --config vitest.integration.config.ts

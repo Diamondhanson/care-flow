@@ -8,7 +8,7 @@ import {
   isOrderOpen,
 } from "@/components/diagnostics/orders";
 import { translate } from "@/i18n";
-import type { Result } from "@/types/healthcare";
+import type { Result } from "@careflow/shared";
 
 function result(partial: Partial<Result>): Result {
   return {

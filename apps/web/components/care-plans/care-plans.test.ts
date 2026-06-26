@@ -4,7 +4,7 @@ import type {
   CareNeedCategory,
   CarePlanEntry,
   CarePlanItem,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 import {
   CARE_NEED_CATEGORIES,
   CARE_NEED_CATEGORY_ICON,

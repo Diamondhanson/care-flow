@@ -19,7 +19,7 @@ import {
   uniquePatientId,
   updateVisitStage,
 } from "@/services/mockStorage";
-import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
+import type { Admission, Bed, Patient, Ward } from "@careflow/shared";
 
 // ---------------------------------------------------------------------------
 // Fixtures

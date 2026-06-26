@@ -57,7 +57,7 @@ import type {
   Department,
   Patient,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 const NO_DEPARTMENT = "__none__";
 

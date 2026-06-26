@@ -29,7 +29,7 @@ import {
 import { formatDate, formatDateTime } from "@/i18n/format";
 import { getCurrentHospital } from "@/services/mockStorage";
 import type { Locale } from "@/i18n";
-import type { Allergy, MarStatus, Patient } from "@/types/healthcare";
+import type { Allergy, MarStatus, Patient } from "@careflow/shared";
 import type { PatientHistoryData, VisitSummaryData } from "./visit-summary";
 
 type DocWithAutoTable = jsPDF & { lastAutoTable?: { finalY: number } };

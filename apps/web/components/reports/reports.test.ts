@@ -29,7 +29,7 @@ import type {
   Result,
   Visit,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 // ---------------------------------------------------------------------------
 // Fixtures

@@ -42,7 +42,7 @@ import type {
   TreatmentRecord,
   Transfer,
   Visit,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 export interface OrderWithResults {
   order: Order;

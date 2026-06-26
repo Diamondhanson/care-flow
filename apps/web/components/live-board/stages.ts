@@ -1,4 +1,4 @@
-import type { CareStage, VisitType } from "@/types/healthcare";
+import type { CareStage, VisitType } from "@careflow/shared";
 
 /**
  * The live board groups the active `care_stage` values into four scannable

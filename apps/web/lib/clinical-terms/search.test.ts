@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { ClinicalTerm } from "@/types/healthcare";
+import type { ClinicalTerm } from "@careflow/shared";
 import {
   applyCustomTerm,
   applyTermUse,

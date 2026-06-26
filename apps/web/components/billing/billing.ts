@@ -23,7 +23,7 @@ import type {
   Transfer,
   Visit,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 // ---------------------------------------------------------------------------
 // Price catalog seed — the per-tenant starting price list (whole XAF).

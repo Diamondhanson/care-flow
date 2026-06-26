@@ -16,12 +16,12 @@ import {
   synthEmail,
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
-import { normalizeEmail } from "@/lib/validation/email";
+import { normalizeEmail } from "@careflow/shared/validation/email";
 import {
   CreateHospitalRpcSchema,
   EmailOtpSchema,
   VerifyOtpSchema,
-} from "@/lib/validation/schemas";
+} from "@careflow/shared/validation/schemas";
 import type { User } from "@supabase/supabase-js";
 
 /** The resolved, signed-in identity (auth uid + the staff metadata). */

@@ -23,7 +23,7 @@ import {
 
 import { useAuth } from "@/components/auth-provider";
 import { getStaffForHospital } from "@/services/mockStorage";
-import type { Staff, StaffRole } from "@/types/healthcare";
+import type { Staff, StaffRole } from "@careflow/shared";
 
 interface RoleContextValue {
   /** False until the client has hydrated; guard role-specific UI with it. */

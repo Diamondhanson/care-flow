@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROLE_LABEL, useRole } from "@/components/role-provider";
 import { useT } from "@/components/locale-provider";
-import type { Staff, StaffRole } from "@/types/healthcare";
+import type { Staff, StaffRole } from "@careflow/shared";
 
 const ROLE_ORDER: StaffRole[] = [
   "doctor",

@@ -26,7 +26,7 @@ import {
   reconcileAnonymousProfile,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
-import type { Patient, Sex } from "@/types/healthcare";
+import type { Patient, Sex } from "@careflow/shared";
 
 const SEX_OPTIONS: { value: Sex; labelKey: string }[] = [
   { value: "male", labelKey: "sex.male" },

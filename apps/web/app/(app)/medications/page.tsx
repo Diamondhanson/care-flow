@@ -40,7 +40,7 @@ import type {
   MarStatus,
   MedicationAdministration,
   Prescription,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 const DOSE_STATE_TOKEN: Record<
   DoseState,

@@ -29,7 +29,7 @@ import {
   type ReconcileTarget,
 } from "@/components/reconciliation/reconcile-dialog";
 import { useT, type TFunction } from "@/components/locale-provider";
-import type { Patient, Visit } from "@/types/healthcare";
+import type { Patient, Visit } from "@careflow/shared";
 
 interface PendingRecord {
   visit: Visit;

@@ -31,7 +31,7 @@ import type {
   Transfer,
   Visit,
   Ward,
-} from "../types/healthcare";
+} from "@careflow/shared";
 
 const DB_URL = process.env.SUPABASE_DB_URL;
 if (!DB_URL) {

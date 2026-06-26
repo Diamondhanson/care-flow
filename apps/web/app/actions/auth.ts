@@ -19,12 +19,12 @@ import {
   synthEmail,
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
-import { assertNoHeaderInjection } from "@/lib/validation/email";
-import { parseOrError } from "@/lib/validation/primitives";
+import { assertNoHeaderInjection } from "@careflow/shared/validation/email";
+import { parseOrError } from "@careflow/shared/validation/primitives";
 import {
   ProvisionHospitalSchema,
   ProvisionStaffLoginSchema,
-} from "@/lib/validation/schemas";
+} from "@careflow/shared/validation/schemas";
 
 export interface ProvisionStaffLoginInput {
   username: string;

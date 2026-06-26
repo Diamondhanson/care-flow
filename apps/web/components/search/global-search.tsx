@@ -14,7 +14,7 @@ import {
 } from "@/services/mockStorage";
 import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
-import type { Patient, Visit } from "@/types/healthcare";
+import type { Patient, Visit } from "@careflow/shared";
 
 interface ResultRow {
   patient: Patient;

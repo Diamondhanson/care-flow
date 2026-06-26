@@ -30,7 +30,7 @@ import type {
   Visit,
   VisitStatus,
   VisitType,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 import { formatDate } from "@/i18n/format";
 import type { Locale } from "@/i18n";
 import {

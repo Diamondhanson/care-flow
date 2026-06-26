@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { createNewVisit, getDepartments, getStaff } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
-import type { Department, Sex, Staff, TriageLevel } from "@/types/healthcare";
+import type { Department, Sex, Staff, TriageLevel } from "@careflow/shared";
 
 interface SubmitResult {
   displayName: string;

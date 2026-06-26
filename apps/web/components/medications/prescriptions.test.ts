@@ -16,7 +16,7 @@ import { translate } from "@/i18n";
 import type {
   MedicationAdministration,
   Prescription,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 function rx(partial: Partial<Prescription>): Prescription {
   return {

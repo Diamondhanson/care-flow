@@ -20,7 +20,7 @@ import type {
   Visit,
   VisitType,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 import { translate } from "@/i18n";
 
 /** Minimal translator shape (matches `useT().t`) used by the render/export layer. */

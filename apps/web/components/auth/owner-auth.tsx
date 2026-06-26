@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import { OtpInput } from "@/components/auth/otp-input";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
-import { isValidEmail } from "@/lib/validation/email";
+import { isValidEmail } from "@careflow/shared/validation/email";
 import { cn } from "@/lib/utils";
 
 /** Cells in the OTP input — must match the Supabase project's Email OTP Length. */

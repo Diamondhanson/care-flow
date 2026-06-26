@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Allergy, AllergySeverity } from "@/types/healthcare";
+import type { Allergy, AllergySeverity } from "@careflow/shared";
 import {
   ALLERGY_CATEGORY_LABEL,
   ALLERGY_SEVERITY_LABEL,

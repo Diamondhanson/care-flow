@@ -5,7 +5,7 @@
  * stay unit-testable in a plain node environment.
  */
 
-import type { Bed, BedStatus } from "@/types/healthcare";
+import type { Bed, BedStatus } from "@careflow/shared";
 
 /** i18n keys — resolve with `t(BED_STATUS_LABEL[status])`. */
 export const BED_STATUS_LABEL: Record<BedStatus, string> = {

@@ -63,7 +63,7 @@ import type {
   ChargeStatus,
   Patient,
   Visit,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 /** A visit joined with its patient, for the picker + bill header. */
 interface VisitRow {

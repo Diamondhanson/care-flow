@@ -18,7 +18,7 @@
  * during SSR never throws.
  */
 
-import type { ClinicalTerm, ClinicalTermCategory } from "@/types/healthcare";
+import type { ClinicalTerm, ClinicalTermCategory } from "@careflow/shared";
 import { getActiveHospitalId } from "@/services/mockStorage";
 import {
   applyCustomTerm,

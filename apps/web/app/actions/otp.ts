@@ -15,9 +15,9 @@
 
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { sendOtpEmail } from "@/lib/email/resend";
-import { normalizeEmail } from "@/lib/validation/email";
-import { parseOrError } from "@/lib/validation/primitives";
-import { EmailOtpSchema } from "@/lib/validation/schemas";
+import { normalizeEmail } from "@careflow/shared/validation/email";
+import { parseOrError } from "@careflow/shared/validation/primitives";
+import { EmailOtpSchema } from "@careflow/shared/validation/schemas";
 
 export type RequestOtpResult = { ok: true } | { ok: false; error: string };
 

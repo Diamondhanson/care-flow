@@ -45,7 +45,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/i18n/format";
-import type { StaffRole } from "@/types/healthcare";
+import type { StaffRole } from "@careflow/shared";
 import {
   Sheet,
   SheetContent,

@@ -5,7 +5,7 @@
  * testable in a plain node environment.
  */
 
-import type { Allergy, AllergyCategory, AllergySeverity } from "@/types/healthcare";
+import type { Allergy, AllergyCategory, AllergySeverity } from "@careflow/shared";
 
 /** i18n keys — resolve with `t(ALLERGY_CATEGORY_LABEL[category])`. */
 export const ALLERGY_CATEGORY_LABEL: Record<AllergyCategory, string> = {

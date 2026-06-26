@@ -47,7 +47,7 @@ import type {
   CareNeedCategory,
   CarePlanEntry,
   CarePlanItem,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 /** The patient's display name, honoring the anonymous-emergency tag. */
 function patientName(p: CarePlanPatient, t: TFunction): string {

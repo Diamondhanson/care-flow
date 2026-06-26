@@ -48,10 +48,10 @@ import {
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
 import { useAuth } from "@/components/auth-provider";
-import { isValidEmail } from "@/lib/validation/email";
+import { isValidEmail } from "@careflow/shared/validation/email";
 import { provisionStaffLogin } from "@/app/actions/auth";
 import { ResetDemo } from "@/components/demo/reset-demo";
-import type { Department, Staff, StaffRole } from "@/types/healthcare";
+import type { Department, Staff, StaffRole } from "@careflow/shared";
 
 interface RoleGroup {
   role: StaffRole;

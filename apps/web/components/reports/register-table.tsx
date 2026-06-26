@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/locale-provider";
-import type { Department, Sex, VisitType } from "@/types/healthcare";
+import type { Department, Sex, VisitType } from "@careflow/shared";
 import type { DateRange, Translate } from "@/components/reports/reports";
 import { SEX_LABEL, VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import {

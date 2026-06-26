@@ -42,7 +42,7 @@ import {
   searchTerms,
 } from "@/lib/clinical-terms";
 import { displayTerm } from "@/lib/clinical-terms/search";
-import type { ClinicalTerm, ClinicalTermCategory } from "@/types/healthcare";
+import type { ClinicalTerm, ClinicalTermCategory } from "@careflow/shared";
 import type { Locale } from "@/i18n";
 
 /** A short secondary line for a suggestion (ICD-10, dose·route, order type, system). */

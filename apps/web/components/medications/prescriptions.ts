@@ -16,7 +16,7 @@ import type {
   MedicationAdministration,
   Prescription,
   PrescriptionStatus,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 // ---------------------------------------------------------------------------
 // Label + theme-token maps (mirror the orders.ts convention)

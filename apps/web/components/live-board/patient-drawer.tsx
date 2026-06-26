@@ -151,7 +151,7 @@ import type {
   TreatmentRecord,
   Visit,
   Ward,
-} from "@/types/healthcare";
+} from "@careflow/shared";
 
 const DISPOSITIONS: {
   value: Disposition;
