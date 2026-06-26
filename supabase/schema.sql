@@ -1282,5 +1282,69 @@ grant execute on function create_hospital_and_admin(text, text, text, text, text
 
 
 -- =============================================================================
+-- 11. Defense-in-depth: length / format CHECK constraints
+-- -----------------------------------------------------------------------------
+-- The application validates all input with Zod (lib/validation/*), but these
+-- DB-level constraints ensure the database itself rejects oversized or garbage
+-- input even if the app layer is ever bypassed (a second wall behind RLS). Caps
+-- are deliberately generous so legitimate data and the seed/integration
+-- fixtures always pass. Idempotent: each constraint is dropped then re-added, so
+-- re-applying this schema is safe.
+-- =============================================================================
+
+-- hospitals
+alter table hospitals drop constraint if exists chk_hospitals_name_len;
+alter table hospitals add constraint chk_hospitals_name_len
+  check (char_length(name) <= 200);
+
+-- staff
+alter table staff drop constraint if exists chk_staff_full_name_len;
+alter table staff add constraint chk_staff_full_name_len
+  check (char_length(full_name) <= 120);
+alter table staff drop constraint if exists chk_staff_username_fmt;
+alter table staff add constraint chk_staff_username_fmt
+  check (username is null or username ~ '^[a-z0-9._-]{3,40}$');
+
+-- patients
+alter table patients drop constraint if exists chk_patients_full_name_len;
+alter table patients add constraint chk_patients_full_name_len
+  check (char_length(full_name) <= 120);
+alter table patients drop constraint if exists chk_patients_national_id_len;
+alter table patients add constraint chk_patients_national_id_len
+  check (national_id is null or char_length(national_id) <= 64);
+
+-- visits
+alter table visits drop constraint if exists chk_visits_chief_complaint_len;
+alter table visits add constraint chk_visits_chief_complaint_len
+  check (chief_complaint is null or char_length(chief_complaint) <= 2000);
+
+-- results
+alter table results drop constraint if exists chk_results_value_len;
+alter table results add constraint chk_results_value_len
+  check (value is null or char_length(value) <= 2000);
+alter table results drop constraint if exists chk_results_reference_range_len;
+alter table results add constraint chk_results_reference_range_len
+  check (reference_range is null or char_length(reference_range) <= 200);
+
+-- prescriptions
+alter table prescriptions drop constraint if exists chk_prescriptions_drug_name_len;
+alter table prescriptions add constraint chk_prescriptions_drug_name_len
+  check (char_length(drug_name) <= 200);
+
+-- treatment_records: bounded clinical ranges (mirror VitalsSchema)
+alter table treatment_records drop constraint if exists chk_treatment_records_ranges;
+alter table treatment_records add constraint chk_treatment_records_ranges
+  check (
+    (spo2 is null or spo2 between 0 and 100)
+    and (pulse is null or pulse between 0 and 500)
+    and (bp_systolic is null or bp_systolic between 0 and 500)
+    and (bp_diastolic is null or bp_diastolic between 0 and 500)
+    and (temperature_c is null or temperature_c between 10 and 46)
+    and (weight_kg is null or weight_kg between 0 and 700)
+    and (gcs_score is null or gcs_score between 3 and 15)
+  );
+
+
+-- =============================================================================
 -- END OF SCHEMA
 -- =============================================================================

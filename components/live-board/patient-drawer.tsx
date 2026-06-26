@@ -24,6 +24,8 @@ import {
   FileDown,
   HeartHandshake,
   HeartOff,
+  Trash2,
+  X,
 } from "lucide-react";
 
 import {
@@ -74,6 +76,8 @@ import {
   addPrescription,
   updateOrder,
   updatePrescription,
+  deleteOrder,
+  deletePrescription,
   type AddPrescriptionInput,
   type UpdateOrderInput,
   type UpdatePrescriptionInput,
@@ -170,6 +174,18 @@ const CLEARANCE_FIELDS = [
 ] as const;
 
 type NumField = "" | string;
+
+/** Maps a VitalsSchema field name to its i18n label key, so a validation error
+ *  can name the exact field that's out of range (e.g. GCS must be 3–15). */
+const VITALS_FIELD_LABEL_KEY: Record<string, string> = {
+  spo2: "drawer.vitalsSpo2",
+  pulse: "drawer.vitalsPulse",
+  bp_systolic: "drawer.vitalsSys",
+  bp_diastolic: "drawer.vitalsDia",
+  temperature_c: "drawer.vitalsTemp",
+  weight_kg: "drawer.vitalsWeight",
+  gcs_score: "drawer.vitalsGcs",
+};
 
 /**
  * Phase 14 — role-led drawer. Each collapsible section has a stable key. The
@@ -290,6 +306,11 @@ export function PatientDrawer({
   const [weight, setWeight] = useState<NumField>("");
   const [gcs, setGcs] = useState<NumField>("");
   const [notes, setNotes] = useState("");
+  const [logError, setLogError] = useState<string | null>(null);
+  // A two-step confirm for deleting a mistaken order / prescription.
+  const [pendingDelete, setPendingDelete] = useState<
+    { kind: "order" | "rx"; id: string } | null
+  >(null);
   const [reconcileTarget, setReconcileTarget] = useState("");
   const [showMore, setShowMore] = useState(false);
 
@@ -363,6 +384,8 @@ export function PatientDrawer({
     setTemp("");
     setGcs("");
     setNotes("");
+    setLogError(null);
+    setPendingDelete(null);
     setReconcileTarget("");
     setShowMore(false);
     // Reset the doctor consultation forms too.
@@ -472,12 +495,36 @@ export function PatientDrawer({
     if (!hasVitals && !notes.trim()) {
       return;
     }
-    addTreatmentLog(visit!.id, {
-      recorded_by_id: recorderId,
-      ...fields,
-      notes: notes.trim() || null,
-    });
-    refresh();
+    // Surface a validation failure instead of silently dropping the entry: a
+    // thrown error here (e.g. an out-of-range value) must never lose the nurse's
+    // observation without telling them.
+    try {
+      addTreatmentLog(visit!.id, {
+        recorded_by_id: recorderId,
+        ...fields,
+        notes: notes.trim() || null,
+      });
+      setLogError(null);
+      refresh();
+    } catch (err) {
+      // Name the offending field(s) (e.g. GCS out of its 3–15 range) so the
+      // nurse knows exactly what to fix, rather than a generic "check values".
+      const issues = (err as { issues?: { path: (string | number)[] }[] }).issues;
+      const labels = issues
+        ? Array.from(
+            new Set(
+              issues
+                .map((i) => VITALS_FIELD_LABEL_KEY[String(i.path[0])])
+                .filter(Boolean),
+            ),
+          ).map((k) => t(k))
+        : [];
+      setLogError(
+        labels.length
+          ? t("drawer.vitalsInvalidFields", { fields: labels.join(", ") })
+          : t("drawer.vitalsInvalid"),
+      );
+    }
   }
 
   function handleSaveConsultation() {
@@ -526,6 +573,12 @@ export function PatientDrawer({
     refresh();
   }
 
+  function handleDeleteOrder(orderId: OrderId) {
+    deleteOrder(orderId);
+    setPendingDelete(null);
+    refresh();
+  }
+
   function handleAddPrescription(input: Omit<AddPrescriptionInput, "prescribed_by_id">) {
     if (!input.drug_name.trim()) return;
     addPrescription(visit!.id, { prescribed_by_id: recorderId, ...input });
@@ -537,6 +590,12 @@ export function PatientDrawer({
     input: UpdatePrescriptionInput,
   ) {
     updatePrescription(prescriptionId, input);
+    refresh();
+  }
+
+  function handleDeletePrescription(prescriptionId: PrescriptionId) {
+    deletePrescription(prescriptionId);
+    setPendingDelete(null);
     refresh();
   }
 
@@ -1045,20 +1104,36 @@ export function PatientDrawer({
                                 </SelectContent>
                               </Select>
                             </div>
-                            <Badge
-                              variant="outline"
-                              className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
-                              style={
-                                token === "muted"
-                                  ? undefined
-                                  : {
-                                      backgroundColor: `var(--status-${token})`,
-                                      color: `var(--status-${token}-foreground)`,
-                                    }
-                              }
-                            >
-                              {t(ORDER_STATUS_LABEL[o.status])}
-                            </Badge>
+                            <div className="flex shrink-0 items-center gap-1.5">
+                              <Badge
+                                variant="outline"
+                                className="gap-1 border-transparent text-[10px] uppercase"
+                                style={
+                                  token === "muted"
+                                    ? undefined
+                                    : {
+                                        backgroundColor: `var(--status-${token})`,
+                                        color: `var(--status-${token}-foreground)`,
+                                      }
+                                }
+                              >
+                                {t(ORDER_STATUS_LABEL[o.status])}
+                              </Badge>
+                              <DeleteControl
+                                armed={
+                                  pendingDelete?.kind === "order" &&
+                                  pendingDelete.id === o.id
+                                }
+                                onArm={() =>
+                                  setPendingDelete({ kind: "order", id: o.id })
+                                }
+                                onCancel={() => setPendingDelete(null)}
+                                onConfirm={() => handleDeleteOrder(o.id)}
+                                label={t("drawer.deleteOrder")}
+                                confirmLabel={t("drawer.confirmDelete")}
+                                cancelLabel={t("drawer.cancelDelete")}
+                              />
+                            </div>
                           </div>
 
                           {orderResults.map((r) => (
@@ -1196,20 +1271,36 @@ export function PatientDrawer({
                             <span className="text-sm font-medium">
                               {p.drug_name}
                             </span>
-                            <Badge
-                              variant="outline"
-                              className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
-                              style={
-                                token === "muted"
-                                  ? undefined
-                                  : {
-                                      backgroundColor: `var(--status-${token})`,
-                                      color: `var(--status-${token}-foreground)`,
-                                    }
-                              }
-                            >
-                              {t(PRESCRIPTION_STATUS_LABEL[p.status])}
-                            </Badge>
+                            <div className="flex shrink-0 items-center gap-1.5">
+                              <Badge
+                                variant="outline"
+                                className="gap-1 border-transparent text-[10px] uppercase"
+                                style={
+                                  token === "muted"
+                                    ? undefined
+                                    : {
+                                        backgroundColor: `var(--status-${token})`,
+                                        color: `var(--status-${token}-foreground)`,
+                                      }
+                                }
+                              >
+                                {t(PRESCRIPTION_STATUS_LABEL[p.status])}
+                              </Badge>
+                              <DeleteControl
+                                armed={
+                                  pendingDelete?.kind === "rx" &&
+                                  pendingDelete.id === p.id
+                                }
+                                onArm={() =>
+                                  setPendingDelete({ kind: "rx", id: p.id })
+                                }
+                                onCancel={() => setPendingDelete(null)}
+                                onConfirm={() => handleDeletePrescription(p.id)}
+                                label={t("drawer.deletePrescription")}
+                                confirmLabel={t("drawer.confirmDelete")}
+                                cancelLabel={t("drawer.cancelDelete")}
+                              />
+                            </div>
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <Input
@@ -1767,6 +1858,11 @@ export function PatientDrawer({
                 placeholder={t("drawer.notesPlaceholder")}
               />
             </div>
+            {logError ? (
+              <p role="alert" className="text-sm text-destructive">
+                {logError}
+              </p>
+            ) : null}
             <Button onClick={handleLog} className="self-end">
               {t("drawer.saveLog")}
             </Button>
@@ -1915,6 +2011,61 @@ export function PatientDrawer({
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+/** A trash button that arms a two-step confirm in place (no modal), so a single
+ *  mis-click can't delete a mistaken order / prescription. */
+function DeleteControl({
+  armed,
+  onArm,
+  onCancel,
+  onConfirm,
+  label,
+  confirmLabel,
+  cancelLabel,
+}: {
+  armed: boolean;
+  onArm: () => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  label: string;
+  confirmLabel: string;
+  cancelLabel: string;
+}) {
+  if (armed) {
+    return (
+      <span className="flex shrink-0 items-center gap-1">
+        <Button
+          variant="destructive"
+          size="sm"
+          className="h-7 px-2 text-xs"
+          onClick={onConfirm}
+        >
+          {confirmLabel}
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-7"
+          onClick={onCancel}
+          aria-label={cancelLabel}
+        >
+          <X className="size-3.5" />
+        </Button>
+      </span>
+    );
+  }
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+      onClick={onArm}
+      aria-label={label}
+    >
+      <Trash2 className="size-3.5" />
+    </Button>
   );
 }
 

@@ -5,6 +5,7 @@ import {
   Activity,
   BarChart3,
   BedDouble,
+  ClipboardList,
   Download,
   FileSpreadsheet,
   FileText,
@@ -44,8 +45,11 @@ import {
   VerticalBars,
 } from "@/components/reports/charts";
 import { exportReportPdf, exportReportXlsx } from "@/components/reports/export";
+import { PatientRegister } from "@/components/reports/register-table";
 import { useT } from "@/components/locale-provider";
 import { formatDate } from "@/i18n/format";
+
+type ReportView = "charts" | "register";
 
 function loadReportData(): ReportData {
   return {
@@ -74,6 +78,7 @@ export default function ReportsPage() {
   const [preset, setPreset] = useState<RangePreset>("90d");
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
+  const [view, setView] = useState<ReportView>("charts");
 
   useEffect(() => {
     const now = Date.now();
@@ -130,23 +135,43 @@ export default function ReportsPage() {
             {t("reports.subtitle")}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => exportReportPdf(report, t as Translate, activeLocale)}
-          >
-            <FileText className="size-4" /> {t("reports.pdf")}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => exportReportXlsx(report, t as Translate, activeLocale)}
-          >
-            <FileSpreadsheet className="size-4" /> {t("reports.excel")}
-          </Button>
-        </div>
+        {view === "charts" ? (
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportReportPdf(report, t as Translate, activeLocale)}
+            >
+              <FileText className="size-4" /> {t("reports.pdf")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => exportReportXlsx(report, t as Translate, activeLocale)}
+            >
+              <FileSpreadsheet className="size-4" /> {t("reports.excel")}
+            </Button>
+          </div>
+        ) : null}
       </header>
+
+      {/* View switcher: analytics charts ↔ patient register */}
+      <div className="inline-flex w-fit items-center gap-1 rounded-md border border-border bg-card p-1">
+        <Button
+          variant={view === "charts" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setView("charts")}
+        >
+          <BarChart3 className="size-4" /> {t("reports.view.charts")}
+        </Button>
+        <Button
+          variant={view === "register" ? "default" : "ghost"}
+          size="sm"
+          onClick={() => setView("register")}
+        >
+          <ClipboardList className="size-4" /> {t("reports.view.register")}
+        </Button>
+      </div>
 
       {/* Range selector */}
       <div className="flex flex-col gap-3 rounded-md border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
@@ -190,6 +215,14 @@ export default function ReportsPage() {
         )}
       </div>
 
+      {view === "register" ? (
+        <PatientRegister
+          range={range}
+          departments={data?.departments ?? []}
+          generatedAtMs={nowMs}
+        />
+      ) : (
+        <>
       {/* KPI cards */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <Kpi icon={Activity} label={t("reports.kpi.totalVisits")} value={report.kpis.totalVisits} />
@@ -288,6 +321,8 @@ export default function ReportsPage() {
           pct={report.abnormal.pct}
         />
       </ChartCard>
+        </>
+      )}
     </div>
   );
 }

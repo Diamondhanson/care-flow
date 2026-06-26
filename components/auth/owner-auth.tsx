@@ -15,14 +15,28 @@
  * password on the main login form.
  */
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { OtpInput } from "@/components/auth/otp-input";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
+import { isValidEmail } from "@/lib/validation/email";
+import { cn } from "@/lib/utils";
+
+/** Cells in the OTP input — must match the Supabase project's Email OTP Length. */
+const OTP_LENGTH = 6;
+/** OTP lifetime; mirrors the Supabase "Email OTP Expiration" setting (5 minutes). */
+const OTP_TTL_SECONDS = 300;
+
+function formatCountdown(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
 
 /** Google's multicolor "G" mark. */
 function GoogleIcon({ className }: { className?: string }) {
@@ -63,6 +77,16 @@ export function OwnerAuth({
   const [googleBusy, setGoogleBusy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+
+  const expired = step === "verify" && secondsLeft <= 0;
+
+  // Count the OTP down once we're on the verify step; stop at zero.
+  useEffect(() => {
+    if (step !== "verify" || secondsLeft <= 0) return;
+    const id = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(id);
+  }, [step, secondsLeft]);
 
   async function handleGoogle() {
     if (googleBusy) return;
@@ -80,11 +104,17 @@ export function OwnerAuth({
 
   async function sendCode() {
     if (busy || email.trim() === "") return;
+    if (!isValidEmail(email)) {
+      setError(t("auth.owner.sendError"));
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
       await requestEmailOtp(email.trim());
       setStep("verify");
+      setCode("");
+      setSecondsLeft(OTP_TTL_SECONDS); // (re)start the countdown
     } catch {
       setError(t("auth.owner.sendError"));
     } finally {
@@ -97,18 +127,25 @@ export function OwnerAuth({
     void sendCode();
   }
 
-  async function handleVerify(event: React.FormEvent) {
+  const verify = useCallback(
+    async (value: string) => {
+      if (busy || value.length < OTP_LENGTH || secondsLeft <= 0) return;
+      setBusy(true);
+      setError(null);
+      try {
+        await confirmEmailOtp(email.trim(), value);
+        router.push(redirectAfter);
+      } catch {
+        setError(t("auth.owner.verifyError"));
+        setBusy(false);
+      }
+    },
+    [busy, secondsLeft, confirmEmailOtp, email, router, redirectAfter, t],
+  );
+
+  function handleVerify(event: React.FormEvent) {
     event.preventDefault();
-    if (busy || code.trim().length < 6) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await confirmEmailOtp(email.trim(), code.trim());
-      router.push(redirectAfter);
-    } catch {
-      setError(t("auth.owner.verifyError"));
-      setBusy(false);
-    }
+    void verify(code.trim());
   }
 
   return (
@@ -170,19 +207,30 @@ export function OwnerAuth({
             {t("auth.owner.codeSentTo", { email: email.trim() })}
           </p>
           <div className="space-y-2">
-            <Label htmlFor="owner-code">{t("auth.owner.codeLabel")}</Label>
-            <Input
-              id="owner-code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              className="font-mono tracking-[0.3em]"
+            <div className="flex items-center justify-between">
+              <Label htmlFor="owner-code">{t("auth.owner.codeLabel")}</Label>
+              <span
+                className={cn(
+                  "font-mono text-xs tabular-nums",
+                  expired ? "text-destructive" : "text-muted-foreground",
+                )}
+              >
+                {expired
+                  ? t("auth.owner.expired")
+                  : t("auth.owner.expiresIn", {
+                      time: formatCountdown(secondsLeft),
+                    })}
+              </span>
+            </div>
+            <OtpInput
               value={code}
-              onChange={(e) =>
-                setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
-              }
-              placeholder={t("auth.owner.codePlaceholder")}
-              required
+              onChange={setCode}
+              length={OTP_LENGTH}
+              disabled={busy || expired}
+              invalid={!!error}
+              autoFocus
+              onComplete={(value) => void verify(value)}
+              ariaLabel={t("auth.owner.codeLabel")}
             />
           </div>
           {error ? (
@@ -193,7 +241,7 @@ export function OwnerAuth({
           <Button
             type="submit"
             className="w-full"
-            disabled={busy || code.trim().length < 6}
+            disabled={busy || code.trim().length < OTP_LENGTH || expired}
           >
             {busy ? t("auth.owner.verifying") : t("auth.owner.verify")}
           </Button>

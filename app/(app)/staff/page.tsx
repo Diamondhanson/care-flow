@@ -48,6 +48,7 @@ import {
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
 import { useAuth } from "@/components/auth-provider";
+import { isValidEmail } from "@/lib/validation/email";
 import { provisionStaffLogin } from "@/app/actions/auth";
 import { ResetDemo } from "@/components/demo/reset-demo";
 import type { Department, Staff, StaffRole } from "@/types/healthcare";
@@ -310,8 +311,7 @@ function StaffFormSheet({
 
   // Email/phone are optional, but anything typed must be well-formed. Phone is
   // validated for the country picked in the rich input (E.164 from libphonenumber).
-  const emailInvalid =
-    email.trim() !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const emailInvalid = email.trim() !== "" && !isValidEmail(email);
   const phoneInvalid = phone !== "" && !isValidPhoneNumber(phone);
 
   // Reset the form each time the sheet opens.

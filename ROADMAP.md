@@ -978,10 +978,12 @@ recoverable real identity, and removes password friction (Google) with a passwor
       in prod). Confirmed live (`302 → accounts.google.com`).
 * [x] Authentication → URL Configuration: **Site URL** + `…/auth/callback` added to the **Redirect
       URLs** allow-list.
-* [ ] Authentication → Email templates → **Magic Link**: paste the `{{ .Token }}` 6-digit template.
-      *(Pending on hosted — local confirmed.)*
-* [ ] Configure a real **SMTP provider** (Resend — deferred) + verified sending domain (SPF/DKIM/DMARC),
-      then raise the hosted auth email rate limit.
+* [~] Authentication → Email templates → **Magic Link**: ~~paste the `{{ .Token }}` template~~ — moot
+      for OTP now: delivery is handled app-side via Resend (Phase 18.6), not Supabase's built-in email.
+* [x] **Email provider wired — Resend** (Phase 18.6, no longer deferred): OTP is generated app-side
+      (`admin.generateLink`) and delivered via Resend. For real multi-recipient delivery, still
+      **verify a sending domain** in Resend + set `RESEND_FROM` (today's `onboarding@resend.dev` test
+      sender only reaches the Resend account email). Hosted **OTP expiry set to 5 min**.
 
 **Host env (Vercel)**
 * [ ] Set prod env vars: `NEXT_PUBLIC_SUPABASE_URL=https://ftudvptmhblydmrsmazw.supabase.co` and
@@ -991,6 +993,47 @@ recoverable real identity, and removes password friction (Google) with a passwor
 **Optional but recommended**
 * [ ] Supabase **custom auth domain** (e.g. `auth.<yourdomain>`): then the Google redirect URI becomes
       `https://auth.<yourdomain>/auth/v1/callback` and the consent screen shows your domain, not `supabase.co`.
+
+## PHASE 18.6 — Security, Email & Reliability Hardening ✅ COMPLETE
+
+**Goal:** a post-launch hardening pass — close input-validation gaps, deliver auth email through a real
+provider, fix a local-first sync data-loss bug, and add the missing clinical edit affordances surfaced
+in use. All shipped together after Phase 18.5.
+
+* [x] **Resend email + verified-OTP delivery.** OTP login is now delivered by **Resend**, not Supabase's
+      built-in email: client → server action (`app/actions/otp.ts`) → `admin.generateLink` mints the code
+      without sending → `lib/email/resend.ts` delivers it (themed, header-injection-guarded) → client
+      verifies (`verifyOtp`). Server-only keys in `.env.local`. The OTP screen gained a **5-minute
+      countdown timer** and a **segmented one-cell-per-digit input** (`components/auth/otp-input.tsx`).
+      *(OTP length is project-configurable; the input is length-flexible.)*
+* [x] **Centralized runtime input validation (Zod).** New `lib/validation/` (`primitives`, `schemas`,
+      `email`) — strict parsing at the **service-role server actions** + **auth/OTP** boundary (length
+      caps, email/phone format, role enum, UUID, 6–8 digit OTP) and at the **core clinical mutators**
+      (intake / results / MAR / vitals). Validation-only (never rewrites a value); a strict email
+      validator + `assertNoHeaderInjection` (CR/LF/NUL guard) replace 3 weak inline regexes. Audit
+      verdict: **no live SQLi**, **RLS complete on all 22 tables** — verify-and-documented, no rewrites.
+* [x] **DB defense-in-depth.** Idempotent length/format + vitals-range `CHECK` constraints added to
+      `supabase/schema.sql` (section 11). **Captured in schema only — NOT applied to the hosted DB**
+      (apply via `test:rls` locally / a deliberate prod migration later).
+* [x] **Local-first sync data-loss fix (vitals disappearing).** `hydrateFromSupabase` atomically
+      replaced the cache and was re-triggered on *every* auth event (token refresh / tab refocus),
+      clobbering un-synced local writes. Fixed three ways: **drain the outbox before hydrating**,
+      **overlay still-pending outbox rows** on top of the server snapshot (`replaceDatabaseFromTables`),
+      and **hydrate only on a genuine identity change** (not passive events; explicit logins/onboarding
+      force it). Regression-tested.
+* [x] **Vitals entry no longer silently lost.** Over-tight ranges + an uncaught throw discarded the whole
+      entry; ranges loosened to plausible physiological extremes and the form now surfaces a
+      field-specific error ("check GCS…") instead of dropping the observation.
+* [x] **Delete for mistaken orders & medications.** `deleteOrder` / `deletePrescription` (cascade to
+      results / MAR), exposed as a two-step in-place confirm (trash → "Delete?") on each card in the
+      doctor console. RLS already permitted it.
+* [x] **Patient register in Reports (Phase 12 extension).** A line-by-line hospital register
+      (`components/reports/register*`) inside the Reports tab — toggle between **Analytics** and
+      **Patient register**, modeled on the Cameroon MINSANTE register; filterable (period, status incl.
+      "currently in hospital", type, department, sex, search) and exportable to **PDF / Excel / CSV**.
+* [x] **Verify:** `tsc` clean; full unit suite green (incl. new validation, sync-overlay, delete and
+      register tests); i18n parity green. Interactive flows confirmed via unit tests (the hosted auth
+      wall blocks automated click-through).
 
 ## PHASE 19 — Platform Owner / Super-Admin Console (+ Monorepo) 🔜 NEXT
 
@@ -1008,6 +1051,38 @@ it reads *across* tenants. Now buildable because Phases 17–18 (multi-tenancy +
 >    content** — both for privacy and because "we can't read your patients' records" is a trust
 >    statement worth making to hospitals. Any "view as hospital" support tool is rare, consented, and
 >    heavily audited.
+
+### 🔒 Locked decisions (2026-06-20)
+
+* **Package manager / build:** **pnpm workspaces + Turborepo** (strict, fast monorepo ergonomics;
+  sidesteps the npm-lockfile EBADPLATFORM friction we've hit on macOS).
+* **Telemetry transport:** a **dedicated lightweight emitter** in the hospital app (buffered,
+  fire-and-forget), **separate from the clinical sync outbox**, so telemetry never bloats clinical sync.
+* **Cross-tenant data path:** **service-role behind server-only code** (RSC / server actions) with a
+  `requirePlatformAdmin()` guard on every call, returning **aggregates only** — tenant RLS is **never**
+  weakened with `platform_admin` SELECT policies.
+
+### 📦 Delivery sequence (each sub-phase independently shippable + verifiable)
+
+* **19.0 — Monorepo migration** (pure refactor, no features): Turborepo + pnpm workspaces; move the
+  current app to `apps/web` (keep its `@/*` alias internally); extract `packages/shared`
+  (`types/healthcare.ts`, the `lib/validation/*` layer, Supabase generated types) and `packages/db`
+  (`schema.sql` as the single source of truth); scaffold an empty `apps/owner-console`. Two Vercel
+  projects / subdomains (`app.` + `admin.`). Done when both apps `build` and the full test suite is green.
+* **19.1 — Telemetry groundwork:** `platform_admins` + append-only `usage_events` (metadata only) +
+  `hospitals.{subscription_tier, trial_ends_at, feature_flags}`; **write-only RLS** from tenants (staff
+  may INSERT their own hospital's events, **no SELECT** — only service_role reads). `services/telemetry.ts`
+  emitter in `apps/web` (login, patient registered, visit opened, record counts, sync failures, feature use).
+* **19.2 — Owner console MVP:** console auth (reuse `OwnerAuth`/Resend) **gated on `platform_admins`**;
+  cross-tenant reads via the service-role server path; tenants list + basic activity + suspend/reactivate.
+* **19.3 — Dashboard depth:** adoption (DAU/WAU/MAU, at-risk list), onboarding funnel, system/sync health,
+  charts (reuse `recharts` + the export patterns). Add nightly rollup tables if raw aggregation gets slow.
+* **19.4 — Management & monetization:** tier/trial/billing ops; **feature flags end-to-end** (console
+  writes `hospitals.feature_flags`; the hospital app reads + gates modules — this also closes the Phase-17
+  suspend→restrict gap by blocking suspended tenants in `RequireAuth`); support tools; broadcast banners;
+  central seed-library publishing.
+* **19.5 — Hardening:** audit-log every owner action; a consented, audited "view as"; rate limits;
+  cross-tenant **isolation integration tests** (console can't leak PHI; hospital app can't reach console data).
 
 ### Monorepo transformation (first step)
 

@@ -92,7 +92,7 @@ export const CARE_STAGE_LABEL: Record<CareStage, string> = {
   deceased: "stage.deceased",
 };
 
-const SEX_LABEL: Record<Sex, string> = {
+export const SEX_LABEL: Record<Sex, string> = {
   male: "sex.male",
   female: "sex.female",
   other: "sex.other",

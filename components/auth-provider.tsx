@@ -23,6 +23,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -33,7 +34,6 @@ import {
   getCurrentUser,
   metaToIdentity,
   onAuthUserChange,
-  sendEmailOtp,
   signInWithGoogle as signInWithGoogleService,
   signInWithUsername,
   signOutSupabase,
@@ -41,6 +41,7 @@ import {
   type AuthIdentity,
   type CreateHospitalInput,
 } from "@/services/supabaseAuth";
+import { requestEmailOtp as requestEmailOtpAction } from "@/app/actions/otp";
 import {
   clearLocalCache,
   getHospitalById,
@@ -50,6 +51,7 @@ import {
   setActiveHospitalId,
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
+import { drainOutbox } from "@/services/syncQueue";
 import type { Hospital, Staff, StaffRole } from "@/types/healthcare";
 
 interface AuthContextValue {
@@ -117,6 +119,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [currentStaff, setCurrentStaff] = useState<Staff | null>(null);
   const [currentHospital, setCurrentHospital] = useState<Hospital | null>(null);
+  // The last auth id we pulled data for. We re-pull only on a genuine identity
+  // change (or an explicit `force`), NOT on every token-refresh / tab-refocus
+  // event — those re-fire SIGNED_IN and a needless full re-pull can clobber
+  // un-synced local writes.
+  const lastHydratedUserId = useRef<string | null>(null);
 
   /**
    * Resolve a raw Supabase user into local state. Hydrates the cache from
@@ -127,9 +134,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
    * Legacy username/password logins additionally fall back to their metadata
    * bridge (synthetic staff/hospital) so offline sign-in still resolves.
    */
-  const resolveUser = useCallback(async (user: User | null) => {
+  const resolveUser = useCallback(
+    async (user: User | null, opts?: { force?: boolean }) => {
     if (!user) {
       clearLocalCache();
+      lastHydratedUserId.current = null;
       setActiveHospitalId(null);
       setAuthUser(null);
       setCurrentStaff(null);
@@ -137,13 +146,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Pull this user's hospital data into the cache (RLS-scoped). A verified
-    // user with no hospital yet simply gets nothing back. On failure (offline)
-    // keep whatever the cache already holds.
-    try {
-      await hydrateFromSupabase();
-    } catch {
-      /* fall through to resolve from the existing cache */
+    // Pull this user's hospital data into the cache (RLS-scoped) — but only on a
+    // genuine identity change or an explicit force (sign-in / onboarding), never
+    // on every passive auth event. Drain the outbox FIRST so any pending local
+    // writes are confirmed in Supabase before we pull (and so the overlay in
+    // replaceDatabaseFromTables has the smallest possible gap to cover). On
+    // failure (offline) keep whatever the cache already holds and retry later.
+    if (opts?.force || lastHydratedUserId.current !== user.id) {
+      try {
+        await drainOutbox();
+        await hydrateFromSupabase();
+        lastHydratedUserId.current = user.id;
+      } catch {
+        /* fall through to resolve from the existing cache */
+      }
     }
 
     const legacy = metaToIdentity(user); // non-null only for staff logins
@@ -197,7 +213,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // signInWithUsername returns the metadata identity; resolve via the raw
       // user so the same DB-first path runs. Re-read the current user.
       const user = await getCurrentUser();
-      await resolveUser(user ?? null);
+      await resolveUser(user ?? null, { force: true });
       // Defensive: if the session race left no user, fall back to the identity.
       if (!user) {
         const staff =
@@ -218,13 +234,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const requestEmailOtp = useCallback(async (email: string) => {
-    await sendEmailOtp(email);
+    // Delivery now goes through our Resend-backed server action (not Supabase's
+    // built-in email). Throw on failure so the OTP form surfaces an error.
+    const result = await requestEmailOtpAction(email);
+    if (!result.ok) throw new Error(result.error);
   }, []);
 
   const confirmEmailOtp = useCallback(
     async (email: string, token: string) => {
       const user = await verifyEmailOtp(email, token);
-      await resolveUser(user);
+      await resolveUser(user, { force: true });
     },
     [resolveUser],
   );
@@ -235,7 +254,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // The hospital + admin staff rows now exist; re-resolve so the cache loads
       // the fresh tenant (RLS-scoped) and the user becomes fully authenticated.
       const user = await getCurrentUser();
-      await resolveUser(user);
+      await resolveUser(user, { force: true }); // same uid, new tenant → must re-pull
     },
     [resolveUser],
   );

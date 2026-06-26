@@ -16,6 +16,12 @@ import {
   synthEmail,
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
+import { normalizeEmail } from "@/lib/validation/email";
+import {
+  CreateHospitalRpcSchema,
+  EmailOtpSchema,
+  VerifyOtpSchema,
+} from "@/lib/validation/schemas";
 import type { User } from "@supabase/supabase-js";
 
 /** The resolved, signed-in identity (auth uid + the staff metadata). */
@@ -121,8 +127,11 @@ export async function signInWithGoogle(redirectTo: string): Promise<void> {
  * delivers a CODE, not a magic link (configured in Supabase — a manual step).
  */
 export async function sendEmailOtp(email: string): Promise<void> {
+  // Validate + canonicalize before the auth call (rejects malformed addresses
+  // and any header-injection bytes that could reach the OTP email).
+  EmailOtpSchema.parse({ email });
   const { error } = await getSupabaseClient().auth.signInWithOtp({
-    email: email.trim(),
+    email: normalizeEmail(email),
     options: { shouldCreateUser: true },
   });
   if (error) throw error;
@@ -133,8 +142,10 @@ export async function verifyEmailOtp(
   email: string,
   token: string,
 ): Promise<User> {
+  // Enforce the 6-digit token shape + a valid address before the verify call.
+  VerifyOtpSchema.parse({ email, token });
   const { data, error } = await getSupabaseClient().auth.verifyOtp({
-    email: email.trim(),
+    email: normalizeEmail(email),
     token: token.trim(),
     type: "email",
   });
@@ -162,6 +173,8 @@ export interface CreateHospitalInput {
 export async function createHospitalForCurrentUser(
   input: CreateHospitalInput,
 ): Promise<string> {
+  // Validate before the SECURITY DEFINER RPC (length caps, email/phone format).
+  CreateHospitalRpcSchema.parse(input);
   const { data, error } = await getSupabaseClient().rpc(
     "create_hospital_and_admin",
     {

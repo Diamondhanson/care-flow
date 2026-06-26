@@ -19,6 +19,12 @@ import {
   synthEmail,
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
+import { assertNoHeaderInjection } from "@/lib/validation/email";
+import { parseOrError } from "@/lib/validation/primitives";
+import {
+  ProvisionHospitalSchema,
+  ProvisionStaffLoginSchema,
+} from "@/lib/validation/schemas";
 
 export interface ProvisionStaffLoginInput {
   username: string;
@@ -41,11 +47,11 @@ export type ProvisionResult =
 export async function provisionStaffLogin(
   input: ProvisionStaffLoginInput,
 ): Promise<ProvisionResult> {
+  // Runtime validation at the privilege boundary (service-role, RLS bypassed):
+  // reject malformed/oversized input before any admin Supabase call.
   const username = normalizeUsername(input.username);
-  if (!username) return { ok: false, error: "Username is required." };
-  if (!input.password || input.password.length < 6) {
-    return { ok: false, error: "Password must be at least 6 characters." };
-  }
+  const parsed = parseOrError(ProvisionStaffLoginSchema, { ...input, username });
+  if (!parsed.ok) return { ok: false, error: parsed.error };
 
   const metadata: StaffAuthMetadata = {
     username,
@@ -112,19 +118,22 @@ export type ProvisionHospitalResult =
 export async function provisionHospital(
   input: ProvisionHospitalInput,
 ): Promise<ProvisionHospitalResult> {
-  const name = input.name?.trim();
-  const fullName = input.admin_full_name?.trim();
+  // Runtime validation at the privilege boundary (service-role, RLS bypassed).
   const username = normalizeUsername(input.admin_username);
+  const parsed = parseOrError(ProvisionHospitalSchema, {
+    ...input,
+    admin_username: username,
+  });
+  if (!parsed.ok) return { ok: false, error: parsed.error };
 
-  if (!name) return { ok: false, error: "Hospital name is required." };
-  if (!fullName) return { ok: false, error: "Admin name is required." };
-  if (!username) return { ok: false, error: "Username is required." };
-  if (!input.admin_password || input.admin_password.length < 6) {
-    return { ok: false, error: "Password must be at least 6 characters." };
-  }
+  const name = input.name.trim();
+  const fullName = input.admin_full_name.trim();
 
   const admin = getSupabaseAdmin();
   const email = input.admin_email?.trim() || input.contact_email?.trim() || null;
+  // Defence-in-depth: the address is stored on the staff row and will flow into
+  // transactional email once a provider is wired — reject header-injection bytes.
+  if (email) assertNoHeaderInjection(email, "email");
 
   // 1. Hospital (tenant) row.
   const { data: hospital, error: hospitalError } = await admin

@@ -70,11 +70,23 @@ import type {
   Ward,
   WardId,
 } from "@/types/healthcare";
-import { clearOutbox, enqueueChanges, type NewChange } from "@/services/syncQueue";
+import {
+  clearOutbox,
+  enqueueChanges,
+  readOutbox,
+  type NewChange,
+} from "@/services/syncQueue";
 import {
   BILLING_CATALOG_SEED,
   computeAutoChargeLines,
 } from "@/components/billing/billing";
+import {
+  CreatePatientInputSchema,
+  CreateVisitInputSchema,
+  MedAdminSchema,
+  ResultEntrySchema,
+  VitalsSchema,
+} from "@/lib/validation/schemas";
 
 // Bumped v7 → v8: every domain row now carries a `hospital_id` (Phase 17
 // multi-tenancy). Older persisted shapes lack it, so a fresh key forces a clean
@@ -404,7 +416,31 @@ export function replaceDatabaseFromTables(
       (db[collection] as unknown[]) = rows;
     }
   }
+  // Overlay still-pending local writes on top of the server snapshot. A
+  // hydrate replaces the whole cache, but a write that hasn't been confirmed in
+  // Supabase yet (e.g. vitals a nurse just entered, still in the outbox) would
+  // otherwise be wiped. Re-applying the outbox keeps un-synced edits visible
+  // until the drain confirms them — then they're identical to the server's copy.
+  overlayPendingOutbox(db);
   persist(db, { track: false });
+}
+
+/** Re-apply each queued outbox change onto `db` (insert/update → upsert by id,
+ *  delete → remove), so a cache replace never drops an un-synced local write. */
+function overlayPendingOutbox(db: Database): void {
+  for (const change of readOutbox()) {
+    const collection = TABLE_TO_COLLECTION[change.table];
+    if (!collection) continue;
+    const rows = db[collection] as unknown as Identified[];
+    const idx = rows.findIndex((r) => r.id === change.row_id);
+    if (change.op === "delete") {
+      if (idx >= 0) rows.splice(idx, 1);
+    } else {
+      const row = change.payload as unknown as Identified;
+      if (idx >= 0) rows[idx] = row;
+      else rows.push(row);
+    }
+  }
 }
 
 /**
@@ -2098,6 +2134,12 @@ export function createNewVisit(
   patientData: CreatePatientInput,
   visitData: CreateVisitInput
 ): { patient: Patient; visit: Visit } {
+  // Validate inputs (length caps, formats, enums) before anything enters the
+  // local cache + sync outbox. Parsed result is discarded so no field is
+  // stripped/altered — this only rejects malicious/oversized/malformed input.
+  CreatePatientInputSchema.parse(patientData);
+  CreateVisitInputSchema.parse(visitData);
+
   const db = loadDatabase();
   const timestamp = nowISO();
 
@@ -2173,6 +2215,7 @@ export function addTreatmentLog(
   visitId: VisitId,
   logData: AddTreatmentLogInput
 ): TreatmentRecord {
+  VitalsSchema.parse(logData); // bounded clinical ranges + caps
   const db = loadDatabase();
   const visit = db.visits.find((v) => v.id === visitId);
   if (!visit) {
@@ -2501,11 +2544,25 @@ export function updateOrder(orderId: OrderId, input: UpdateOrderInput): Order {
 }
 
 /**
+ * Delete an order — the doctor correcting a mistaken request. Cascades to any
+ * results recorded against it so none are left orphaned. No-op if the order is
+ * already gone. (RLS lets doctors/admins delete orders + results.)
+ */
+export function deleteOrder(orderId: OrderId): void {
+  const db = loadDatabase();
+  if (!db.orders.some((o) => o.id === orderId)) return;
+  db.orders = db.orders.filter((o) => o.id !== orderId);
+  db.results = db.results.filter((r) => r.order_id !== orderId);
+  persist(db);
+}
+
+/**
  * Record a result against an order — the lab tech closing the loop. The parent
  * order is marked "completed" (with `completed_at`) so it leaves the queue and
  * the result surfaces back on the visit for doctor review. Returns the result.
  */
 export function addResult(orderId: OrderId, input: AddResultInput): Result {
+  ResultEntrySchema.parse(input); // caps on value/summary/reference range
   const db = loadDatabase();
   const order = db.orders.find((o) => o.id === orderId);
   if (!order) {
@@ -2656,6 +2713,23 @@ export function updatePrescription(
 }
 
 /**
+ * Delete a prescription — the doctor removing a mistaken medication. Cascades to
+ * its Medication Administration (MAR) records so no dose is left referencing a
+ * gone prescription. No-op if it's already gone. (RLS lets doctors/admins delete
+ * prescriptions + MAR rows.) Note: this is a hard delete; doses already marked
+ * "given" are erased too, so the UI should confirm before calling it.
+ */
+export function deletePrescription(prescriptionId: PrescriptionId): void {
+  const db = loadDatabase();
+  if (!db.prescriptions.some((p) => p.id === prescriptionId)) return;
+  db.prescriptions = db.prescriptions.filter((p) => p.id !== prescriptionId);
+  db.medicationAdministrations = db.medicationAdministrations.filter(
+    (m) => m.prescription_id !== prescriptionId,
+  );
+  persist(db);
+}
+
+/**
  * Record a Medication Administration Record (MAR) entry — what actually
  * happened at the bedside for a scheduled dose: given / held / refused / missed,
  * by whom and when. This is how the next nurse knows what to give without going
@@ -2667,6 +2741,7 @@ export function recordMedicationAdministration(
   prescriptionId: PrescriptionId,
   input: RecordAdministrationInput
 ): MedicationAdministration {
+  MedAdminSchema.parse(input); // status enum + notes cap
   const db = loadDatabase();
   const prescription = db.prescriptions.find((p) => p.id === prescriptionId);
   if (!prescription) {

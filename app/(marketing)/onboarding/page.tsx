@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
+import { isValidEmail } from "@/lib/validation/email";
 
 function Splash() {
   return (
@@ -81,8 +82,7 @@ export default function OnboardingPage() {
   // be well-formed. Email: standard address shape. Phone: valid for the
   // country selected in the rich phone input (E.164 from libphonenumber).
   const emailInvalid =
-    contactEmail.trim() !== "" &&
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail.trim());
+    contactEmail.trim() !== "" && !isValidEmail(contactEmail);
   const phoneInvalid = contactPhone !== "" && !isValidPhoneNumber(contactPhone);
 
   const canSubmit =
