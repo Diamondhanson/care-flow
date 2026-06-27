@@ -52,6 +52,11 @@ import {
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
 import { drainOutbox } from "@/services/syncQueue";
+import {
+  setTelemetryContext,
+  clearTelemetryContext,
+  emitUsage,
+} from "@/services/telemetry";
 import type { Hospital, Staff, StaffRole } from "@careflow/shared";
 
 interface AuthContextValue {
@@ -138,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (user: User | null, opts?: { force?: boolean }) => {
     if (!user) {
       clearLocalCache();
+      clearTelemetryContext();
       lastHydratedUserId.current = null;
       setActiveHospitalId(null);
       setAuthUser(null);
@@ -152,7 +158,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // writes are confirmed in Supabase before we pull (and so the overlay in
     // replaceDatabaseFromTables has the smallest possible gap to cover). On
     // failure (offline) keep whatever the cache already holds and retry later.
-    if (opts?.force || lastHydratedUserId.current !== user.id) {
+    const isFreshLogin = opts?.force || lastHydratedUserId.current !== user.id;
+    if (isFreshLogin) {
       try {
         await drainOutbox();
         await hydrateFromSupabase();
@@ -185,6 +192,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthUser(user);
     setCurrentStaff(staff);
     setCurrentHospital(hospital);
+
+    // Telemetry: bind the tenant/actor so usage events carry hospital + staff,
+    // and record a login only on a genuine sign-in (not passive token refreshes).
+    if (hospital) {
+      setTelemetryContext(hospital.id, staff.id);
+      if (isFreshLogin) emitUsage("login");
+    }
   }, []);
 
   useEffect(() => {

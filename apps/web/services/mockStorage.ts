@@ -76,6 +76,7 @@ import {
   readOutbox,
   type NewChange,
 } from "@/services/syncQueue";
+import { emitUsage } from "@/services/telemetry";
 import {
   BILLING_CATALOG_SEED,
   computeAutoChargeLines,
@@ -2203,6 +2204,10 @@ export function createNewVisit(
   db.visits.push(visit);
   persist(db);
 
+  emitUsage("patient_registered", {
+    emergency: patient.is_emergency_anonymous,
+  });
+  emitUsage("visit_opened", { visit_type: visit.visit_type });
   return { patient, visit };
 }
 
@@ -2245,6 +2250,7 @@ export function addTreatmentLog(
   visit.updated_at = timestamp;
   persist(db);
 
+  emitUsage("record_created", { kind: "vitals" });
   return record;
 }
 
@@ -2291,6 +2297,7 @@ export function addConsultation(
   visit.updated_at = timestamp;
 
   persist(db);
+  emitUsage("record_created", { kind: "consultation" });
   return consultation;
 }
 
@@ -2485,6 +2492,7 @@ export function addOrder(visitId: VisitId, input: AddOrderInput): Order {
   visit.updated_at = timestamp;
 
   persist(db);
+  emitUsage("record_created", { kind: "order", order_type: order.order_type });
   return order;
 }
 
@@ -2591,6 +2599,7 @@ export function addResult(orderId: OrderId, input: AddResultInput): Result {
   order.updated_at = timestamp;
 
   persist(db);
+  emitUsage("record_created", { kind: "result" });
   return result;
 }
 
@@ -2638,6 +2647,7 @@ export function addPrescription(
   db.prescriptions.push(prescription);
   visit.updated_at = timestamp;
   persist(db);
+  emitUsage("record_created", { kind: "prescription" });
   return prescription;
 }
 
@@ -2775,6 +2785,7 @@ export function recordMedicationAdministration(
   // Touch the parent prescription so consumers see fresh activity.
   prescription.updated_at = timestamp;
   persist(db);
+  emitUsage("record_created", { kind: "mar" });
   return record;
 }
 

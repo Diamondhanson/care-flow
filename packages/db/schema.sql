@@ -1346,5 +1346,77 @@ alter table treatment_records add constraint chk_treatment_records_ranges
 
 
 -- =============================================================================
+-- 12. PLATFORM OWNER / TELEMETRY (Phase 19.1)
+-- -----------------------------------------------------------------------------
+-- Cross-tenant groundwork for the owner console (apps/owner-console). The
+-- hospital app WRITES aggregate usage metadata here (never PHI); only the
+-- platform owner — through a privileged service-role server path — reads across
+-- tenants. Tenant RLS is never weakened: `usage_events` is write-only for staff,
+-- and `platform_admins` + all cross-tenant reads are invisible to the
+-- authenticated/anon roles entirely (only the service role, which bypasses RLS,
+-- can see them).
+-- =============================================================================
+
+-- The kinds of usage event the hospital app emits. Metadata-only: the jsonb
+-- payload carries counts / flags / a feature name, NEVER patient content.
+do $$ begin
+  create type usage_event_type as enum (
+    'login',
+    'patient_registered',
+    'visit_opened',
+    'record_created',
+    'sync_failed',
+    'feature_used'
+  );
+exception when duplicate_object then null; end $$;
+
+-- Owner-console additions to the tenant row (`subscription_tier` already exists).
+-- NOTE: `feature_flags` is owner-controlled; a hospital admin must not flip its
+-- own flags. The existing "admin update own hospital" policy is row-level (can't
+-- restrict a single column), so column-level protection is a Phase 19.4 item —
+-- today the hospital app simply never exposes flag editing.
+alter table hospitals add column if not exists trial_ends_at timestamptz;
+alter table hospitals add column if not exists feature_flags jsonb not null default '{}'::jsonb;
+
+-- Who may sign in to the owner console — the highest-privilege surface, NOT a
+-- tenant table. RLS is enabled with NO policies, so authenticated/anon can never
+-- see or change it; only the service role (used server-side by the console,
+-- after its own auth check) can read it.
+create table if not exists platform_admins (
+  user_id    uuid primary key references auth.users(id) on delete cascade,
+  full_name  text,
+  email      text,
+  created_at timestamptz not null default now()
+);
+alter table platform_admins enable row level security;
+-- (Intentionally no policies: invisible to every client role.)
+
+-- Append-only usage telemetry — metadata only, no clinical content. The hospital
+-- app inserts rows for ITS OWN tenant; nobody but the platform owner (service
+-- role) reads them back. `metadata` is capped to keep payloads lean.
+create table if not exists usage_events (
+  id             uuid primary key default gen_random_uuid(),
+  hospital_id    uuid not null references hospitals(id) on delete cascade,
+  event_type     usage_event_type not null,
+  actor_staff_id uuid references staff(id) on delete set null,
+  metadata       jsonb not null default '{}'::jsonb,
+  created_at     timestamptz not null default now(),
+  constraint chk_usage_events_metadata_len check (length(metadata::text) <= 2000)
+);
+create index if not exists idx_usage_events_hospital_time on usage_events(hospital_id, created_at desc);
+create index if not exists idx_usage_events_type_time     on usage_events(event_type, created_at desc);
+
+alter table usage_events enable row level security;
+
+-- Tenants are WRITE-ONLY: a signed-in staff member may record events for their
+-- OWN hospital, and may never read/update/delete them (no select/update/delete
+-- policy exists). The owner console reads cross-tenant via the service role.
+drop policy if exists "staff append own usage" on usage_events;
+create policy "staff append own usage" on usage_events
+  for insert to authenticated
+  with check (is_staff() and hospital_id = current_hospital_id());
+
+
+-- =============================================================================
 -- END OF SCHEMA
 -- =============================================================================

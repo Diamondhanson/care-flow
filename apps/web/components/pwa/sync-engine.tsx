@@ -8,6 +8,7 @@ import {
   upsertRowFromServer,
 } from "@/services/mockStorage";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { emitUsage } from "@/services/telemetry";
 
 /**
  * Headless engine that drains the outbox whenever there's a reason to: on mount,
@@ -53,6 +54,16 @@ export function SyncEngine() {
       if (draining) return;
       draining = true;
       void drainOutbox()
+        .then((result) => {
+          // Telemetry: a failed push is a strong connectivity/bug signal for the
+          // owner console's "sync health" view. (Counts only — no row content.)
+          if (result.failed > 0) {
+            emitUsage("sync_failed", {
+              failed: result.failed,
+              remaining: result.remaining,
+            });
+          }
+        })
         .catch(() => {
           // Drain failures are recorded per-change in the outbox for retry;
           // there is nothing actionable to surface from the engine itself.
