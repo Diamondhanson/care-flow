@@ -16,10 +16,12 @@
 import { z } from "zod";
 
 import {
+  zBodySystem,
   zCareStage,
   zEmail,
   zId,
   zMarStatus,
+  zMaritalStatus,
   MAR_REASON_REQUIRED,
   zOptEmail,
   zOptId,
@@ -30,7 +32,10 @@ import {
   zOptText,
   zOtpToken,
   zPassword,
+  zPatientHistoryType,
   zReqLine,
+  zRosAnswerType,
+  zRosQuestionKind,
   zSex,
   zStaffRole,
   zTriageLevel,
@@ -102,6 +107,12 @@ export const CreatePatientInputSchema = z.object({
   mother_first_name: zOptLine(80),
   is_emergency_anonymous: z.boolean().optional(),
   anonymous_identifier: zOptLine(64).optional(),
+  // Phase 21 demographics — all optional at intake.
+  occupation: zOptLine(120),
+  marital_status: zMaritalStatus.optional(),
+  emergency_contact_name: zOptLine(120),
+  // Same bounded-text-not-strict-E.164 reasoning as `phone` above.
+  emergency_contact_phone: zOptLine(32),
 });
 
 /** Visit/encounter opened at intake (CreateVisitInput). */
@@ -164,3 +175,114 @@ export const VitalsSchema = z.object({
   notes: zOptText(2000),
   recorded_at: z.string().nullish(),
 });
+
+// ---------------------------------------------------------------------------
+// Phase 21 — patient background (patient_history) & Review of Systems
+// ---------------------------------------------------------------------------
+
+/**
+ * The documented `detail` jsonb shape per history type. Types not listed carry
+ * no structured detail (detail must be null/absent). Strict objects: unknown
+ * keys are rejected, so a tampered client can't smuggle arbitrary jsonb.
+ */
+export const HISTORY_DETAIL_SHAPES = {
+  social: z
+    .object({
+      tobacco_pack_years: zOptNumber(0, 200),
+      alcohol: zOptLine(120),
+      drugs: zOptLine(120),
+    })
+    .strict(),
+  obstetric_gynae: z
+    .object({
+      gravida: zOptNumber(0, 30),
+      para: zOptNumber(0, 30),
+      lmp: zOptIsoDate,
+    })
+    .strict(),
+  family: z
+    .object({
+      relation: zOptLine(80),
+      condition: zOptLine(200),
+    })
+    .strict(),
+} as const;
+
+/** Patient-level clinical background record (AddPatientHistoryInput). */
+export const AddPatientHistoryInputSchema = z
+  .object({
+    type: zPatientHistoryType,
+    description: zReqLine(300),
+    detail: z.record(z.string(), z.unknown()).nullish(),
+    onset: zOptLine(80),
+    is_active: z.boolean().nullish(),
+    noted_by_id: zOptId,
+  })
+  .superRefine((v, ctx) => {
+    if (v.detail == null) return;
+    const shape =
+      HISTORY_DETAIL_SHAPES[v.type as keyof typeof HISTORY_DETAIL_SHAPES];
+    if (!shape) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["detail"],
+        message: `History type "${v.type}" does not carry structured detail.`,
+      });
+      return;
+    }
+    const result = shape.safeParse(v.detail);
+    if (!result.success) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["detail"],
+        message: result.error.issues[0]?.message ?? "Invalid detail shape.",
+      });
+    }
+  });
+
+/** `answer_value` shape per `answer_type` (second wall behind RLS — a tampered
+ *  client can't store malformed jsonb). Option-membership and known-key checks
+ *  live in apps/web `lib/ros`, beside the question bank. */
+const ROS_ANSWER_VALUE_BY_TYPE = {
+  boolean: z.boolean(),
+  single_select: zReqLine(80),
+  multi_select: z.array(zReqLine(80)).max(24),
+  scale: zReqLine(80),
+  duration: z
+    .object({ value: z.number().gte(0).lte(100000), unit: zReqLine(24).optional() })
+    .strict(),
+  numeric: z
+    .object({ value: z.number().gte(-1e9).lte(1e9), unit: zReqLine(24).optional() })
+    .strict(),
+  date: z.string().refine((v) => /^\d{4}-\d{2}-\d{2}$/.test(v), "Enter a valid date."),
+  // Required bounded free text (newlines allowed, NUL rejected).
+  text: z
+    .string()
+    .max(2000)
+    .refine((v) => v.trim().length > 0 && !v.includes("\x00")),
+} as const;
+
+/** One answered ROS question, upserted per (visit, question_key) (UpsertRosInput). */
+export const UpsertRosInputSchema = z
+  .object({
+    system: zBodySystem,
+    question_key: zReqLine(160),
+    kind: zRosQuestionKind,
+    question_text: zReqLine(300),
+    answer_type: zRosAnswerType,
+    answer_value: z.unknown(),
+    answer_label: zReqLine(300),
+    note: zOptText(1000),
+    recorded_by_id: zOptId,
+  })
+  .superRefine((v, ctx) => {
+    const shape = ROS_ANSWER_VALUE_BY_TYPE[v.answer_type];
+    const result = shape.safeParse(v.answer_value);
+    if (!result.success) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["answer_value"],
+        message: `Answer value does not match answer type "${v.answer_type}".`,
+      });
+    }
+  });

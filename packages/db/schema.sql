@@ -117,6 +117,48 @@ do $$ begin
   create type allergy_severity as enum ('mild', 'moderate', 'severe', 'life_threatening');
 exception when duplicate_object then null; end $$;
 
+-- Body system — the Review of Systems axis (Phase 21). Mirrors the `system`
+-- values in the clinical-term library (data/clinical-terms/subjective.json) so
+-- a subjective term routes to its ROS module.
+do $$ begin
+  create type body_system as enum (
+    'general', 'cardiac', 'respiratory', 'gi', 'gu', 'neuro',
+    'ent', 'eyes', 'skin', 'musculoskeletal', 'psych', 'obstetric_gynae'
+  );
+exception when duplicate_object then null; end $$;
+
+-- How a ROS bank question is answered → which selectable control renders and
+-- how the value is stored: boolean | single_select | multi_select | scale |
+-- duration | numeric | date | text.
+do $$ begin
+  create type ros_answer_type as enum (
+    'boolean', 'single_select', 'multi_select', 'scale',
+    'duration', 'numeric', 'date', 'text'
+  );
+exception when duplicate_object then null; end $$;
+
+-- ROS question kind — lets one system module carry symptoms AND its pertinent
+-- history/genetics questions.
+do $$ begin
+  create type ros_question_kind as enum ('symptom', 'history', 'genetic');
+exception when duplicate_object then null; end $$;
+
+-- Patient background/history record type (one shared patient-level list,
+-- distinguished by kind — same approach as care_plan_items.kind).
+do $$ begin
+  create type patient_history_type as enum (
+    'past_medical', 'past_surgical', 'family', 'social',
+    'obstetric_gynae', 'medication', 'immunization'
+  );
+exception when duplicate_object then null; end $$;
+
+-- Marital status — demographic context.
+do $$ begin
+  create type marital_status as enum (
+    'single', 'married', 'partnered', 'divorced', 'widowed', 'unknown'
+  );
+exception when duplicate_object then null; end $$;
+
 -- Nursing care-need category — Henderson's 14 components of basic care, named
 -- practically. Drives the care-plan quick-pick and grouping.
 do $$ begin
@@ -448,6 +490,12 @@ create table if not exists patients (
   unique (hospital_id, national_id)
 );
 
+-- Phase 21 demographics — additive, idempotent (safe to re-apply schema.sql).
+alter table patients add column if not exists occupation              text;
+alter table patients add column if not exists marital_status          marital_status not null default 'unknown';
+alter table patients add column if not exists emergency_contact_name  text;
+alter table patients add column if not exists emergency_contact_phone text;
+
 -- A patient-level safety record. Keyed to the patient (not a visit) because an
 -- allergy persists across every encounter. Surfaced wherever a doctor prescribes.
 create table if not exists allergies (
@@ -458,6 +506,27 @@ create table if not exists allergies (
   category     allergy_category not null default 'drug',
   severity     allergy_severity not null default 'moderate',
   reaction     text,                          -- e.g. "Anaphylaxis", "Rash"
+  noted_by_id  uuid references staff(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+-- Patient-level clinical background (Phase 21). Keyed to the patient (not a
+-- visit) because history persists across encounters — pre-filled on every
+-- return visit (review-and-update, not re-enter).
+-- `detail` (jsonb) carries type-specific structured fields without a table per
+-- type:  social → {tobacco_pack_years, alcohol, drugs}
+--        obstetric_gynae → {gravida, para, lmp}
+--        family → {relation, condition}
+create table if not exists patient_history (
+  id           uuid primary key default gen_random_uuid(),
+  hospital_id  uuid not null references hospitals(id) on delete cascade,
+  patient_id   uuid not null references patients(id) on delete cascade,
+  type         patient_history_type not null,
+  description  text not null,   -- "Type 2 diabetes", "Appendectomy 2015", "Mother — breast cancer"
+  detail       jsonb,
+  onset        text,            -- coarse: "2015", "childhood", "since 2020"
+  is_active    boolean,         -- past_medical: still active? null = n/a
   noted_by_id  uuid references staff(id) on delete set null,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
@@ -502,6 +571,10 @@ create table if not exists consultations (
   updated_at  timestamptz not null default now()
 );
 
+-- Phase 21: the compiled Review-of-Systems narrative, derived on save from the
+-- structured ros_responses rows (which remain the source of truth).
+alter table consultations add column if not exists ros_summary text;
+
 -- Structured diagnoses (ICD-10 where possible -> powers "top conditions" reports).
 create table if not exists diagnoses (
   id              uuid primary key default gen_random_uuid(),
@@ -513,6 +586,34 @@ create table if not exists diagnoses (
   description     text not null,
   is_primary      boolean not null default false,
   created_at      timestamptz not null default now()
+);
+
+-- A single answered Review-of-Systems question for one encounter (Phase 21).
+-- Rows exist only for questions the doctor answered — absence = "not asked".
+-- `answer_value` (jsonb) holds any answer shape; `answer_label` is the
+-- denormalized, localized, printable answer; `question_text` snapshots the
+-- prompt so bank edits never rewrite history (same denormalization principle
+-- as diagnoses.description beside icd10_code).
+create table if not exists ros_responses (
+  id              uuid primary key default gen_random_uuid(),
+  hospital_id     uuid not null references hospitals(id) on delete cascade,
+  visit_id        uuid not null references visits(id) on delete cascade,
+  consultation_id uuid references consultations(id) on delete set null,
+  system          body_system not null,
+  question_key    text not null,      -- stable bank id, e.g. "cardiac.chest_pain.character"
+  kind            ros_question_kind not null default 'symptom',
+  question_text   text not null,      -- snapshot of the prompt at answer time
+  answer_type     ros_answer_type not null,
+  -- answer_value by type: boolean→true|false · single_select→"crushing" ·
+  --   multi_select→["nausea"] · scale→"moderate" · duration→{value,unit} ·
+  --   numeric→{value,unit} · date→"2026-06-14" · text→"…"
+  answer_value    jsonb not null,
+  answer_label    text not null,      -- localized human-readable answer for the report
+  note            text,               -- optional free qualifier
+  recorded_by_id  uuid references staff(id) on delete set null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  unique (visit_id, question_key)     -- re-answering updates in place
 );
 
 -- A test the doctor recommends (lab / imaging / procedure).
@@ -794,6 +895,10 @@ create index if not exists idx_charges_visit          on charges(visit_id);
 create index if not exists idx_charges_item           on charges(billable_item_id);
 create index if not exists idx_charges_source         on charges(source, source_ref_id);
 create index if not exists idx_allergies_patient      on allergies(patient_id);
+create index if not exists idx_patient_history_patient on patient_history(patient_id);
+create index if not exists idx_patient_history_type    on patient_history(type);
+create index if not exists idx_ros_responses_visit     on ros_responses(visit_id);
+create index if not exists idx_ros_responses_system    on ros_responses(system);
 create index if not exists idx_beds_ward              on beds(ward_id);
 create index if not exists idx_beds_status            on beds(status);
 create index if not exists idx_wards_department       on wards(department_id);
@@ -809,6 +914,8 @@ create index if not exists idx_beds_hospital           on beds(hospital_id);
 create index if not exists idx_staff_hospital          on staff(hospital_id);
 create index if not exists idx_patients_hospital       on patients(hospital_id);
 create index if not exists idx_allergies_hospital      on allergies(hospital_id);
+create index if not exists idx_patient_history_hospital on patient_history(hospital_id);
+create index if not exists idx_ros_responses_hospital   on ros_responses(hospital_id);
 create index if not exists idx_visits_hospital         on visits(hospital_id);
 create index if not exists idx_consultations_hospital  on consultations(hospital_id);
 create index if not exists idx_diagnoses_hospital      on diagnoses(hospital_id);
@@ -837,7 +944,8 @@ begin
   foreach t in array array[
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
-    'care_plan_items','billable_items','charges'
+    'care_plan_items','billable_items','charges',
+    'patient_history','ros_responses'
   ]
   loop
     execute format('drop trigger if exists trg_%I_updated_at on %I;', t, t);
@@ -858,7 +966,8 @@ begin
   foreach t in array array[
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
-    'care_plan_items','billable_items','charges'
+    'care_plan_items','billable_items','charges',
+    'patient_history','ros_responses'
   ]
   loop
     execute format(
@@ -878,7 +987,8 @@ begin
     'patients','visits','consultations','diagnoses','orders','results',
     'prescriptions','medication_administrations','treatment_records',
     'admissions','transfers','beds','wards','departments','staff','allergies',
-    'care_plan_items','care_plan_entries','billable_items','charges'
+    'care_plan_items','care_plan_entries','billable_items','charges',
+    'patient_history','ros_responses'
   ]
   loop
     execute format('drop trigger if exists trg_%I_audit on %I;', t, t);
@@ -1063,7 +1173,8 @@ begin
     'consultations','diagnoses','orders','results','prescriptions',
     'medication_administrations','treatment_records','admissions','transfers',
     'allergies','care_plan_items','care_plan_entries',
-    'billable_items','charges','audit_log'
+    'billable_items','charges','audit_log',
+    'patient_history','ros_responses'
   ]
   loop
     execute format('alter table %I enable row level security;', t);
@@ -1094,7 +1205,8 @@ begin
     'departments','wards','beds','staff','patients','visits',
     'consultations','diagnoses','orders','results','prescriptions',
     'medication_administrations','treatment_records','admissions','transfers',
-    'allergies','care_plan_items','care_plan_entries','billable_items','charges'
+    'allergies','care_plan_items','care_plan_entries','billable_items','charges',
+    'patient_history','ros_responses'
   ]
   loop
     execute format('drop policy if exists "read for staff" on %I;', t);
@@ -1201,6 +1313,21 @@ create policy "clinical write allergies" on allergies
   for all to authenticated
   using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
   with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+
+-- Clinical background: recorded/updated by clinicians (nurse at intake, doctor
+-- in consult) — Phase 21.
+drop policy if exists "clinical write patient history" on patient_history;
+create policy "clinical write patient history" on patient_history
+  for all to authenticated
+  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+
+-- Review of Systems: authored by the doctor during the consultation — Phase 21.
+drop policy if exists "doctor write ros" on ros_responses;
+create policy "doctor write ros" on ros_responses
+  for all to authenticated
+  using (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id());
 
 -- Nurses may update admission stage/clearances (advance the board).
 drop policy if exists "nurse update admissions" on admissions;

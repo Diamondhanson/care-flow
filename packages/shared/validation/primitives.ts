@@ -156,6 +156,55 @@ export const zCareStage = z.enum([
 /** Triage acuity 1–5 (or null/undefined when untriaged). */
 export const zTriageLevel = z.number().int().gte(1).lte(5).nullish();
 
+// ---- Phase 21: demographics, patient history & Review of Systems -----------
+
+export const zMaritalStatus = z.enum([
+  "single",
+  "married",
+  "partnered",
+  "divorced",
+  "widowed",
+  "unknown",
+]);
+
+export const zPatientHistoryType = z.enum([
+  "past_medical",
+  "past_surgical",
+  "family",
+  "social",
+  "obstetric_gynae",
+  "medication",
+  "immunization",
+]);
+
+export const zBodySystem = z.enum([
+  "general",
+  "cardiac",
+  "respiratory",
+  "gi",
+  "gu",
+  "neuro",
+  "ent",
+  "eyes",
+  "skin",
+  "musculoskeletal",
+  "psych",
+  "obstetric_gynae",
+]);
+
+export const zRosAnswerType = z.enum([
+  "boolean",
+  "single_select",
+  "multi_select",
+  "scale",
+  "duration",
+  "numeric",
+  "date",
+  "text",
+]);
+
+export const zRosQuestionKind = z.enum(["symptom", "history", "genetic"]);
+
 /** Optional ISO date `YYYY-MM-DD` (or null/undefined). */
 export const zOptIsoDate = z
   .string()

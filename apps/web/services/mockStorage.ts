@@ -45,6 +45,7 @@ import type {
   Diagnosis,
   Hospital,
   HospitalId,
+  MaritalStatus,
   MarStatus,
   MedicationAdministration,
   MedicationAdministrationId,
@@ -672,6 +673,11 @@ export interface CreatePatientInput {
   is_emergency_anonymous?: boolean;
   /** If omitted for an emergency intake, one is generated automatically. */
   anonymous_identifier?: string;
+  /** Demographic context (Phase 21) — all optional at intake. */
+  occupation?: string | null;
+  marital_status?: MaritalStatus;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
 }
 
 export interface CreateVisitInput {
@@ -2294,6 +2300,10 @@ export function createNewVisit(
     is_emergency_anonymous: isAnonymous,
     anonymous_identifier: anonymousIdentifier,
     no_known_allergies: false,
+    occupation: patientData.occupation?.trim() || null,
+    marital_status: patientData.marital_status ?? "unknown",
+    emergency_contact_name: patientData.emergency_contact_name?.trim() || null,
+    emergency_contact_phone: patientData.emergency_contact_phone?.trim() || null,
     created_at: timestamp,
     updated_at: timestamp,
   };
@@ -2400,6 +2410,7 @@ export function addConsultation(
     examination: input.examination?.trim() || null,
     assessment: input.assessment?.trim() || null,
     plan: input.plan?.trim() || null,
+    ros_summary: null,
     created_at: timestamp,
     updated_at: timestamp,
   };
@@ -3443,11 +3454,11 @@ function seedDatabaseObject(): Database {
   ];
 
   const patients: Seed<Patient>[] = [
-    { id: "pat_mensah", mrn: "890314GM - A", full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", mother_first_name: "Akosua", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(3), updated_at: day(3) },
-    { id: "pat_idris", mrn: "721102SI - F", full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", mother_first_name: "Fatima", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(28), updated_at: day(6) },
-    { id: "pat_anon_gamma", mrn: "", full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, mother_first_name: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, created_at: day(5), updated_at: day(1) },
-    { id: "pat_bello", mrn: "950721AB - H", full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", mother_first_name: "Hauwa", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: true, created_at: day(96), updated_at: day(12) },
-    { id: "pat_owusu", mrn: "600109DO - A", full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", mother_first_name: "Abena", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, created_at: day(720), updated_at: day(2) },
+    { id: "pat_mensah", mrn: "890314GM - A", full_name: "Grace Mensah", date_of_birth: "1989-03-14", sex: "female", phone: "+233 20 555 0142", address: "12 Ring Rd, Accra", national_id: "GHA-8841203", mother_first_name: "Akosua", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, occupation: "Market trader", marital_status: "married", emergency_contact_name: "Kwame Mensah", emergency_contact_phone: "+233 20 555 0143", created_at: day(3), updated_at: day(3) },
+    { id: "pat_idris", mrn: "721102SI - F", full_name: "Samuel Idris", date_of_birth: "1972-11-02", sex: "male", phone: "+234 80 555 0199", address: "5 Awolowo St, Lagos", national_id: "NGA-5520117", mother_first_name: "Fatima", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, occupation: "Civil servant", marital_status: "married", emergency_contact_name: "Fatima Idris", emergency_contact_phone: "+234 80 555 0200", created_at: day(28), updated_at: day(6) },
+    { id: "pat_anon_gamma", mrn: "", full_name: "Unidentified Patient", date_of_birth: null, sex: "unknown", phone: null, address: null, national_id: null, mother_first_name: null, is_emergency_anonymous: true, anonymous_identifier: "John Doe - Gamma - 20260531", no_known_allergies: false, occupation: null, marital_status: "unknown", emergency_contact_name: null, emergency_contact_phone: null, created_at: day(5), updated_at: day(1) },
+    { id: "pat_bello", mrn: "950721AB - H", full_name: "Aisha Bello", date_of_birth: "1995-07-21", sex: "female", phone: "+234 70 555 0173", address: "8 Marina Rd, Lagos", national_id: "NGA-7790455", mother_first_name: "Hauwa", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: true, occupation: "University student", marital_status: "single", emergency_contact_name: "Hauwa Bello", emergency_contact_phone: null, created_at: day(96), updated_at: day(12) },
+    { id: "pat_owusu", mrn: "600109DO - A", full_name: "Daniel Owusu", date_of_birth: "1960-01-09", sex: "male", phone: "+233 24 555 0166", address: "30 Cantonments, Accra", national_id: "GHA-3310928", mother_first_name: "Abena", is_emergency_anonymous: false, anonymous_identifier: null, no_known_allergies: false, occupation: "Retired teacher", marital_status: "widowed", emergency_contact_name: "Ama Owusu", emergency_contact_phone: "+233 24 555 0167", created_at: day(720), updated_at: day(2) },
   ];
 
   // Mensah & Idris carry documented allergies; Bello is confirmed no-known
@@ -3472,10 +3483,10 @@ function seedDatabaseObject(): Database {
   ];
 
   const consultations: Seed<Consultation>[] = [
-    { id: "con_owusu", visit_id: "vis_owusu", doctor_id: "staff_okafor", subjective: "Reports good adherence to metformin. Occasional polyuria. No hypoglycaemic episodes.", examination: "Well, afebrile. Feet examined — no ulcers. BMI 28.", assessment: "Type 2 diabetes mellitus, fair control.", plan: "Check HbA1c. Continue metformin. Dietary reinforcement. Review in 3 months.", created_at: day(2), updated_at: day(2) },
-    { id: "con_idris", visit_id: "vis_idris", doctor_id: "staff_chen", subjective: "Mild incisional pain, controlled. Passing flatus.", examination: "Wound clean and dry. Abdomen soft. Bowel sounds present.", assessment: "Day-2 post laparotomy, recovering well.", plan: "Continue analgesia & DVT prophylaxis. Mobilize. Monitor wound.", created_at: day(26), updated_at: day(26) },
-    { id: "con_bello", visit_id: "vis_bello", doctor_id: "staff_okafor", subjective: "Cough improving. No fever for 48h. Appetite returning.", examination: "Chest clear on auscultation. SpO₂ 98% on air.", assessment: "Community-acquired pneumonia, resolving.", plan: "Complete oral antibiotics. Plan discharge once finance cleared.", created_at: day(24), updated_at: day(24) },
-    { id: "con_anon", visit_id: "vis_anon", doctor_id: "staff_okafor", subjective: "Unable to obtain — patient unresponsive.", examination: "GCS 7 on arrival. Pupils equal & reactive. Localizes to pain.", assessment: "Traumatic brain injury, RTA. Awaiting CT head.", plan: "Neuro protocol, mannitol, close monitoring. CT head urgent.", created_at: day(5), updated_at: day(5) },
+    { id: "con_owusu", visit_id: "vis_owusu", doctor_id: "staff_okafor", subjective: "Reports good adherence to metformin. Occasional polyuria. No hypoglycaemic episodes.", examination: "Well, afebrile. Feet examined — no ulcers. BMI 28.", assessment: "Type 2 diabetes mellitus, fair control.", plan: "Check HbA1c. Continue metformin. Dietary reinforcement. Review in 3 months.", ros_summary: null, created_at: day(2), updated_at: day(2) },
+    { id: "con_idris", visit_id: "vis_idris", doctor_id: "staff_chen", subjective: "Mild incisional pain, controlled. Passing flatus.", examination: "Wound clean and dry. Abdomen soft. Bowel sounds present.", assessment: "Day-2 post laparotomy, recovering well.", plan: "Continue analgesia & DVT prophylaxis. Mobilize. Monitor wound.", ros_summary: null, created_at: day(26), updated_at: day(26) },
+    { id: "con_bello", visit_id: "vis_bello", doctor_id: "staff_okafor", subjective: "Cough improving. No fever for 48h. Appetite returning.", examination: "Chest clear on auscultation. SpO₂ 98% on air.", assessment: "Community-acquired pneumonia, resolving.", plan: "Complete oral antibiotics. Plan discharge once finance cleared.", ros_summary: null, created_at: day(24), updated_at: day(24) },
+    { id: "con_anon", visit_id: "vis_anon", doctor_id: "staff_okafor", subjective: "Unable to obtain — patient unresponsive.", examination: "GCS 7 on arrival. Pupils equal & reactive. Localizes to pain.", assessment: "Traumatic brain injury, RTA. Awaiting CT head.", plan: "Neuro protocol, mannitol, close monitoring. CT head urgent.", ros_summary: null, created_at: day(5), updated_at: day(5) },
   ];
 
   const diagnoses: Seed<Diagnosis>[] = [
@@ -3945,6 +3956,10 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
       is_emergency_anonymous: false,
       anonymous_identifier: null,
       no_known_allergies: noKnown,
+      occupation: null,
+      marital_status: "unknown",
+      emergency_contact_name: null,
+      emergency_contact_phone: null,
       created_at: day(arrivedH),
       updated_at: day(closedH),
     });
@@ -3997,6 +4012,7 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
         examination: "Examined; vitals and systems reviewed.",
         assessment: `${desc}.`,
         plan: "Commenced treatment; advised review.",
+        ros_summary: null,
         created_at: day(Math.max(1, arrivedH - 1)),
         updated_at: day(Math.max(1, arrivedH - 1)),
       });

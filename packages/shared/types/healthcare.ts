@@ -38,6 +38,8 @@ export type TreatmentRecordId = string;
 export type AdmissionId = string;
 export type TransferId = string;
 export type AllergyId = string;
+export type PatientHistoryId = string;
+export type RosResponseId = string;
 export type CarePlanItemId = string;
 export type CarePlanEntryId = string;
 export type BillableItemId = string;
@@ -247,6 +249,63 @@ export type AllergySeverity =
   | "life_threatening";
 
 /**
+ * `body_system` — the Review-of-Systems axis (Phase 21). Mirrors the `system`
+ * tags in the clinical-term library so a subjective term routes to its module.
+ */
+export type BodySystem =
+  | "general"
+  | "cardiac"
+  | "respiratory"
+  | "gi"
+  | "gu"
+  | "neuro"
+  | "ent"
+  | "eyes"
+  | "skin"
+  | "musculoskeletal"
+  | "psych"
+  | "obstetric_gynae";
+
+/**
+ * `ros_answer_type` — how a bank question is answered; drives which selectable
+ * control the UI renders and how `answer_value` is stored.
+ */
+export type RosAnswerType =
+  | "boolean"
+  | "single_select"
+  | "multi_select"
+  | "scale"
+  | "duration"
+  | "numeric"
+  | "date"
+  | "text";
+
+/**
+ * `ros_question_kind` — lets one system module carry symptom questions AND the
+ * pertinent history/genetics questions for that system.
+ */
+export type RosQuestionKind = "symptom" | "history" | "genetic";
+
+/** `patient_history_type` — the kind of clinical-background record. */
+export type PatientHistoryType =
+  | "past_medical"
+  | "past_surgical"
+  | "family"
+  | "social"
+  | "obstetric_gynae"
+  | "medication"
+  | "immunization";
+
+/** `marital_status` — demographic context. */
+export type MaritalStatus =
+  | "single"
+  | "married"
+  | "partnered"
+  | "divorced"
+  | "widowed"
+  | "unknown";
+
+/**
  * `care_need_category` — the kind of basic nursing care an admitted patient
  * needs, based on Virginia Henderson's 14 components of basic nursing care
  * (named practically for everyday use). Drives the quick-pick on the care-plan
@@ -427,6 +486,12 @@ export interface Patient {
    */
   no_known_allergies: boolean;
 
+  /** Demographic context (Phase 21). All optional at intake. */
+  occupation: string | null;
+  marital_status: MaritalStatus;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+
   created_at: ISODateString;
   updated_at: ISODateString;
   /** Optimistic-concurrency version (server-managed; absent until first sync). */
@@ -450,6 +515,119 @@ export interface Allergy {
   reaction: string | null;
   /** Who documented it. */
   noted_by_id: StaffId | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
+}
+
+/**
+ * `patient_history` — patient-level clinical background (Phase 21). Keyed to
+ * the patient (not a visit) because history persists across encounters —
+ * pre-filled on every return visit (review-and-update, not re-enter). One
+ * table carries all seven history types, distinguished by `type` (the same
+ * "single shared list by kind" approach as `care_plan_items.kind`).
+ */
+export interface PatientHistory {
+  id: PatientHistoryId;
+  hospital_id: HospitalId;
+  patient_id: PatientId;
+  type: PatientHistoryType;
+  /** e.g. "Type 2 diabetes", "Appendectomy 2015", "Mother — breast cancer". */
+  description: string;
+  /**
+   * Type-specific structured fields without a table per type:
+   *   social → {tobacco_pack_years, alcohol, drugs}
+   *   obstetric_gynae → {gravida, para, lmp}
+   *   family → {relation, condition}
+   */
+  detail: Record<string, unknown> | null;
+  /** Coarse timing: "2015", "childhood", "since 2020". */
+  onset: string | null;
+  /** past_medical: still active? null = not applicable. */
+  is_active: boolean | null;
+  noted_by_id: StaffId | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Review of Systems (Phase 21) — question bank shapes (reference data from
+// data/ros/<system>.json) and the persisted per-encounter answer rows.
+// ---------------------------------------------------------------------------
+
+/** A selectable option on a `single_select` / `multi_select` / `scale` question. */
+export interface RosOption {
+  value: string;
+  label_en: string;
+  label_fr: string;
+}
+
+/**
+ * One self-describing question node in the ROS bank. Follow-ups are one level
+ * deep in v1 and are revealed only when the parent answer matches `show_if`.
+ */
+export interface RosQuestion {
+  /** Stable id, e.g. "cardiac.chest_pain" — snapshotted onto answers. */
+  key: string;
+  system: BodySystem;
+  kind: RosQuestionKind;
+  prompt_en: string;
+  prompt_fr: string;
+  type: RosAnswerType;
+  /** High-yield → shown first / included in quick review. */
+  key_question?: boolean;
+  /** 'female' gates obstetric questions by default (always addable), else null. */
+  sex?: Sex | null;
+  /** Used to compile the narrative report. */
+  report_phrase_en?: string;
+  report_phrase_fr?: string;
+  options?: RosOption[];
+  /** Optional complaint keys that promote this question. */
+  triggers?: string[];
+  followups?: RosQuestion[];
+  /** On a follow-up: parent answer that reveals it (e.g. "yes"). */
+  show_if?: string;
+}
+
+/**
+ * The raw answer shape by `answer_type`:
+ * boolean→true|false · single_select/scale→"crushing" · multi_select→["nausea"]
+ * · duration/numeric→{value,unit} · date→"2026-06-14" · text→"…".
+ */
+export type RosAnswerValue =
+  | boolean
+  | string
+  | string[]
+  | { value: number; unit?: string };
+
+/**
+ * `ros_responses` — a single answered ROS question for one encounter (Phase
+ * 21). Rows exist only for questions the doctor answered — absence = "not
+ * asked". `question_text` and `answer_label` are denormalized snapshots (same
+ * principle as `diagnoses.description` beside `icd10_code`) so bank edits
+ * never rewrite past encounters. Unique on (visit_id, question_key):
+ * re-answering updates in place.
+ */
+export interface RosResponse {
+  id: RosResponseId;
+  hospital_id: HospitalId;
+  visit_id: VisitId;
+  consultation_id: ConsultationId | null;
+  system: BodySystem;
+  question_key: string;
+  kind: RosQuestionKind;
+  /** Snapshot of the prompt at answer time. */
+  question_text: string;
+  answer_type: RosAnswerType;
+  answer_value: RosAnswerValue;
+  /** Localized human-readable answer for the report, e.g. "Crushing", "3 days". */
+  answer_label: string;
+  /** Optional free qualifier. */
+  note: string | null;
+  recorded_by_id: StaffId | null;
   created_at: ISODateString;
   updated_at: ISODateString;
   /** Optimistic-concurrency version (server-managed; absent until first sync). */
@@ -507,6 +685,11 @@ export interface Consultation {
   assessment: string | null;
   /** The plan: tests, meds, admit/discharge (P). */
   plan: string | null;
+  /**
+   * Compiled Review-of-Systems narrative (Phase 21), derived on save from the
+   * structured `ros_responses` rows — which remain the source of truth.
+   */
+  ros_summary: string | null;
   created_at: ISODateString;
   updated_at: ISODateString;
   /** Optimistic-concurrency version (server-managed; absent until first sync). */
