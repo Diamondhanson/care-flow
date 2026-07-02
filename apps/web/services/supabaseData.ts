@@ -18,6 +18,20 @@ import { replaceDatabaseFromTables, SUPABASE_TABLES } from "@/services/mockStora
 /** Supabase caps a single response at 1000 rows; page through in chunks. */
 const PAGE_SIZE = 1000;
 
+/**
+ * A table the app knows about but the hosted schema doesn't have yet (schema.sql
+ * committed but not applied — e.g. Phase 21's patient_history / ros_responses).
+ * Postgres reports 42P01 ("undefined table"); PostgREST reports PGRST205
+ * ("could not find the table in the schema cache").
+ */
+function isMissingTableError(error: { code?: string; message: string }): boolean {
+  return (
+    error.code === "42P01" ||
+    error.code === "PGRST205" ||
+    /does not exist|schema cache/i.test(error.message)
+  );
+}
+
 /** Fetch every row of one table (RLS-scoped), paging until exhausted. */
 async function fetchAllRows(table: string): Promise<unknown[]> {
   const supabase = getSupabaseClient();
@@ -27,7 +41,18 @@ async function fetchAllRows(table: string): Promise<unknown[]> {
       .from(table)
       .select("*")
       .range(from, from + PAGE_SIZE - 1);
-    if (error) throw new Error(`hydrate ${table}: ${error.message}`);
+    if (error) {
+      // A newer app against an older hosted schema must not lose the whole
+      // hydration (the caller falls back to seed data on ANY failure) — treat
+      // the missing table as empty and keep the rest of the pull intact.
+      if (isMissingTableError(error)) {
+        console.warn(
+          `hydrate: table "${table}" missing on hosted schema — treating as empty`,
+        );
+        return [];
+      }
+      throw new Error(`hydrate ${table}: ${error.message}`);
+    }
     if (!data || data.length === 0) break;
     rows.push(...data);
     if (data.length < PAGE_SIZE) break;

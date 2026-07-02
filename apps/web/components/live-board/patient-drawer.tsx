@@ -120,6 +120,7 @@ import {
 } from "@/components/allergies/allergies";
 import { CareOrders } from "@/components/care-plans/care-orders";
 import { VitalsTrend } from "@/components/care-plans/vitals-trend";
+import { BackgroundPanel } from "@/components/patient/background-panel";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/components/role-provider";
 import { useT, useLocale } from "@/components/locale-provider";
@@ -855,6 +856,20 @@ export function PatientDrawer({
               {t("drawer.allergiesNotAssessed")}
             </section>
           )}
+          </div>
+
+          {/* Background — demographics + patient-level history (Phase 21).
+              Pinned under the allergies banner; collapses to a one-line strip. */}
+          <div style={{ order: -9 }}>
+            <BackgroundPanel
+              patient={patient}
+              recorderId={recorderId}
+              canWrite={
+                actingRole === "nurse" ||
+                actingRole === "doctor" ||
+                actingRole === "admin"
+              }
+            />
           </div>
 
           {/* Reconciliation — anonymous patients only */}

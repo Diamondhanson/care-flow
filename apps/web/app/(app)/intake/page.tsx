@@ -21,9 +21,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createNewVisit, getDepartments, getStaff } from "@/services/mockStorage";
+import {
+  addPatientHistory,
+  createNewVisit,
+  getDepartments,
+  getStaff,
+} from "@/services/mockStorage";
+import {
+  HISTORY_TYPE_LABEL,
+  MARITAL_STATUS_LABEL,
+} from "@/components/patient/background-panel";
 import { useT } from "@/components/locale-provider";
-import type { Department, Sex, Staff, TriageLevel } from "@careflow/shared";
+import type {
+  Department,
+  MaritalStatus,
+  PatientHistoryType,
+  Sex,
+  Staff,
+  TriageLevel,
+} from "@careflow/shared";
 
 interface SubmitResult {
   displayName: string;
@@ -69,6 +85,19 @@ export default function IntakePage() {
   const [phone, setPhone] = useState("");
   const [nationalId, setNationalId] = useState("");
   const [motherFirstName, setMotherFirstName] = useState("");
+  // Demographics (Phase 21) — all optional, intake stays fast.
+  const [occupation, setOccupation] = useState("");
+  const [maritalStatus, setMaritalStatus] = useState<MaritalStatus>("unknown");
+  const [ecName, setEcName] = useState("");
+  const [ecPhone, setEcPhone] = useState("");
+  // Optional background quick-add (Phase 21): entries are buffered locally and
+  // written as patient_history rows once the patient exists on submit.
+  const [showBackground, setShowBackground] = useState(false);
+  const [bgType, setBgType] = useState<PatientHistoryType>("past_medical");
+  const [bgDescription, setBgDescription] = useState("");
+  const [bgEntries, setBgEntries] = useState<
+    { type: PatientHistoryType; description: string }[]
+  >([]);
   const [reason, setReason] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [registeredById, setRegisteredById] = useState("");
@@ -94,6 +123,7 @@ export default function IntakePage() {
   // Phone is optional, but anything typed must be a valid number for the
   // country picked in the rich input. (Only shown for non-emergency intake.)
   const phoneInvalid = phone !== "" && !isValidPhoneNumber(phone);
+  const ecPhoneInvalid = ecPhone !== "" && !isValidPhoneNumber(ecPhone);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -111,7 +141,7 @@ export default function IntakePage() {
       setError(t("intake.nameRequired"));
       return;
     }
-    if (!isEmergency && phoneInvalid) {
+    if (!isEmergency && (phoneInvalid || ecPhoneInvalid)) {
       setError(t("intake.invalidPhone"));
       return;
     }
@@ -128,6 +158,10 @@ export default function IntakePage() {
             phone: phone.trim() || null,
             national_id: nationalId.trim() || null,
             mother_first_name: motherFirstName.trim() || null,
+            occupation: occupation.trim() || null,
+            marital_status: maritalStatus,
+            emergency_contact_name: ecName.trim() || null,
+            emergency_contact_phone: ecPhone.trim() || null,
           },
       {
         visit_type: isEmergency ? "emergency" : "outpatient",
@@ -139,6 +173,17 @@ export default function IntakePage() {
         triage_level: triageLevel ? (Number(triageLevel) as TriageLevel) : null,
       },
     );
+
+    // Write the buffered background entries now that the patient exists.
+    if (!isEmergency) {
+      for (const entry of bgEntries) {
+        addPatientHistory(patient.id, {
+          type: entry.type,
+          description: entry.description,
+          noted_by_id: registeredById || null,
+        });
+      }
+    }
 
     setResult({
       displayName:
@@ -161,6 +206,14 @@ export default function IntakePage() {
     setPhone("");
     setNationalId("");
     setMotherFirstName("");
+    setOccupation("");
+    setMaritalStatus("unknown");
+    setEcName("");
+    setEcPhone("");
+    setShowBackground(false);
+    setBgType("past_medical");
+    setBgDescription("");
+    setBgEntries([]);
     setReason("");
     setDepartmentId("");
     setAttendingId("");
@@ -360,10 +413,185 @@ export default function IntakePage() {
                     {t("intake.motherFirstNameHint")}
                   </p>
                 </Field>
+                <Field label={t("intake.occupation")} htmlFor="occupation">
+                  <Input
+                    id="occupation"
+                    value={occupation}
+                    onChange={(e) => setOccupation(e.target.value)}
+                    placeholder={t("intake.occupationPlaceholder")}
+                  />
+                </Field>
+                <Field label={t("intake.maritalStatus")} htmlFor="marital_status">
+                  <Select
+                    items={Object.fromEntries(
+                      (Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                        (m) => [m, t(MARITAL_STATUS_LABEL[m])],
+                      ),
+                    )}
+                    value={maritalStatus}
+                    onValueChange={(v) => setMaritalStatus(v as MaritalStatus)}
+                  >
+                    <SelectTrigger id="marital_status" className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                        (m) => (
+                          <SelectItem key={m} value={m}>
+                            {t(MARITAL_STATUS_LABEL[m])}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field
+                  label={t("intake.emergencyContactName")}
+                  htmlFor="ec_name"
+                >
+                  <Input
+                    id="ec_name"
+                    value={ecName}
+                    onChange={(e) => setEcName(e.target.value)}
+                    placeholder={t("intake.emergencyContactNamePlaceholder")}
+                  />
+                </Field>
+                <Field
+                  label={t("intake.emergencyContactPhone")}
+                  htmlFor="ec_phone"
+                >
+                  <PhoneInput
+                    id="ec_phone"
+                    value={ecPhone}
+                    onChange={(value) => setEcPhone(value ?? "")}
+                    invalid={ecPhoneInvalid}
+                  />
+                  {ecPhoneInvalid ? (
+                    <p role="alert" className="text-xs text-destructive">
+                      {t("intake.invalidPhone")}
+                    </p>
+                  ) : null}
+                </Field>
               </div>
             )}
           </CardContent>
         </Card>
+
+        {/* Optional background quick-add (Phase 21) — collapsed by default so
+            intake stays fast; the doctor can complete it in consult. */}
+        {!isEmergency ? (
+          <Card>
+            <CardHeader className="pb-0">
+              <button
+                type="button"
+                onClick={() => setShowBackground((v) => !v)}
+                aria-expanded={showBackground}
+                className="flex items-center gap-2 text-left"
+              >
+                <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+                  {t("intake.background")}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {showBackground
+                    ? t("intake.backgroundHide")
+                    : t("intake.backgroundShow")}
+                </span>
+                {bgEntries.length > 0 ? (
+                  <span className="font-mono text-xs text-muted-foreground">
+                    ({bgEntries.length})
+                  </span>
+                ) : null}
+              </button>
+            </CardHeader>
+            {showBackground ? (
+              <CardContent className="flex flex-col gap-4">
+                <p className="text-xs text-muted-foreground">
+                  {t("intake.backgroundHint")}
+                </p>
+                {bgEntries.length > 0 ? (
+                  <ul className="flex flex-col gap-1">
+                    {bgEntries.map((entry, i) => (
+                      <li
+                        key={`${entry.type}-${i}`}
+                        className="flex items-center gap-2 text-sm"
+                      >
+                        <span className="text-xs text-muted-foreground">
+                          {t(HISTORY_TYPE_LABEL[entry.type])}
+                        </span>
+                        <span className="flex-1">{entry.description}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setBgEntries(bgEntries.filter((_, j) => j !== i))
+                          }
+                          className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                        >
+                          {t("common.remove")}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Select
+                    items={Object.fromEntries(
+                      (
+                        Object.keys(HISTORY_TYPE_LABEL) as PatientHistoryType[]
+                      ).map((k) => [k, t(HISTORY_TYPE_LABEL[k])]),
+                    )}
+                    value={bgType}
+                    onValueChange={(v) => setBgType(v as PatientHistoryType)}
+                  >
+                    <SelectTrigger className="w-full sm:w-56">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(
+                        Object.keys(HISTORY_TYPE_LABEL) as PatientHistoryType[]
+                      ).map((k) => (
+                        <SelectItem key={k} value={k}>
+                          {t(HISTORY_TYPE_LABEL[k])}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    value={bgDescription}
+                    onChange={(e) => setBgDescription(e.target.value)}
+                    placeholder={t("intake.backgroundPlaceholder")}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (bgDescription.trim()) {
+                          setBgEntries([
+                            ...bgEntries,
+                            { type: bgType, description: bgDescription.trim() },
+                          ]);
+                          setBgDescription("");
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0"
+                    disabled={!bgDescription.trim()}
+                    onClick={() => {
+                      setBgEntries([
+                        ...bgEntries,
+                        { type: bgType, description: bgDescription.trim() },
+                      ]);
+                      setBgDescription("");
+                    }}
+                  >
+                    {t("common.add")}
+                  </Button>
+                </div>
+              </CardContent>
+            ) : null}
+          </Card>
+        ) : null}
 
         <Card>
           <CardHeader className="pb-0">
