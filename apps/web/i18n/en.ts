@@ -27,6 +27,7 @@ export const en = {
 
   nav: {
     liveBoard: "Live Board",
+    worklist: "Worklist",
     intake: "Register a patient",
     diagnostics: "Tests & results",
     medications: "Medications",
@@ -120,6 +121,7 @@ export const en = {
     held: "Held",
     refused: "Refused",
     missed: "Missed",
+    suspended: "Suspended",
   },
 
   doseState: {
@@ -272,6 +274,7 @@ export const en = {
     reviewBeforePrescribing: "Review before prescribing.",
     allergiesNotAssessedRx: "Allergies not assessed — confirm before prescribing.",
     noPrescriptions: "Nothing prescribed on this visit yet.",
+    marLog: "Administration log",
     drug: "Drug",
     drugPlaceholder: "e.g. Amoxicillin-clavulanate",
     dose: "Dose",
@@ -714,6 +717,12 @@ export const en = {
     lastWithTime: "Last: {status} · {time}",
     agoSpan: "{span} ago",
     inSpan: "in {span}",
+    reasonTitle: "Reason — {status}",
+    reasonDesc: "Document why this dose was not given. The doctor will see it.",
+    reasonLabel: "Reason",
+    reasonPlaceholder: "e.g. patient NPO for surgery; BP too low; refused",
+    reasonConfirm: "Save",
+    reasonCancel: "Cancel",
     unassigned: "Unassigned",
     unknownPatient: "Unknown patient",
   },
@@ -1016,6 +1025,40 @@ export const en = {
     handoverTag: "Handover",
     forNeed: "Re: {need}",
     generalNote: "General",
+    // Phase 20 — shared doctor↔nurse care orders
+    ordersBlock: "Care & orders",
+    kindInstruction: "Doctor instruction",
+    kindMonitoring: "Monitoring",
+    kindNursing: "Nursing care",
+    addInstruction: "Add instruction",
+    addInstructionPlaceholder: "e.g. Encourage oral fluids, aim 2 L/day",
+    addMonitoring: "Add monitoring",
+    addMonitoringPlaceholder: "e.g. Vitals + GCS",
+    markDone: "Done",
+    flagForDoctor: "Flag for doctor",
+    flagPlaceholder: "Something the doctor should see…",
+    flagged: "Flag for doctor",
+    acknowledge: "Acknowledge",
+    awaitingDoctor: "Awaiting doctor",
+    raisedBy: "Raised by {name}",
+    vitalsTrend: "Vitals trend",
+    vTime: "Time",
+    vPulse: "Pulse",
+    vTemp: "Temp",
+    dueBadge: "{n} due",
+    needsYouBadge: "{n} needs you",
+  },
+
+  worklist: {
+    title: "Worklist",
+    subtitle:
+      "Everything due, and everyone who needs a doctor — across every ward.",
+    dueHeading: "Due now",
+    needsYouHeading: "Needs a doctor",
+    nothingDue: "Nothing due right now.",
+    noneNeedYou: "No one needs a doctor right now.",
+    loading: "Loading…",
+    vitalsConcern: "Vitals need a look",
   },
 
   billing: {

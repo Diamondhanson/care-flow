@@ -45,17 +45,19 @@ export const MAR_STATUS_LABEL: Record<MarStatus, string> = {
   held: "marStatus.held",
   refused: "marStatus.refused",
   missed: "marStatus.missed",
+  suspended: "marStatus.suspended",
 };
 
 /** Theme token per MAR outcome. "muted" renders as a plain (un-tinted) chip. */
 export const MAR_STATUS_TOKEN: Record<
   MarStatus,
-  "clearance" | "diagnostics" | "treatment" | "muted"
+  "clearance" | "diagnostics" | "treatment" | "muted" | "discharge"
 > = {
   given: "clearance",
   held: "diagnostics",
   refused: "treatment",
   missed: "muted",
+  suspended: "discharge",
 };
 
 // ---------------------------------------------------------------------------

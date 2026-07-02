@@ -35,10 +35,22 @@ export function SyncEngine() {
       onVersionApplied: (table, rowId, version) => {
         applyServerVersionToCache(table, rowId, version);
       },
+      resolveServerVersion: async (table, rowId) => {
+        // Read the server row's current version so a conflicting local edit can
+        // be re-based onto it and retried (the local edit is preserved).
+        const { data } = await getSupabaseClient()
+          .from(table)
+          .select("version")
+          .eq("id", rowId)
+          .maybeSingle();
+        const v = (data as { version?: unknown } | null)?.version;
+        return typeof v === "number" ? v : null;
+      },
       onConflict: async (table, rowId) => {
-        // Refetch the winning row (RLS-scoped) and overwrite the local copy so
-        // the losing device converges. A null result means the row was deleted
-        // elsewhere; leave the cache as-is rather than resurrecting a tombstone.
+        // Last resort (retry cap reached): refetch the winning row (RLS-scoped)
+        // and overwrite the local copy so the losing device converges. A null
+        // result means the row was deleted elsewhere; leave the cache as-is
+        // rather than resurrecting a tombstone.
         const { data } = await getSupabaseClient()
           .from(table)
           .select("*")

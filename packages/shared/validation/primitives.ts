@@ -125,7 +125,21 @@ export const zSex = z.enum(["male", "female", "other", "unknown"]);
 
 export const zVisitType = z.enum(["outpatient", "inpatient", "emergency"]);
 
-export const zMarStatus = z.enum(["given", "held", "refused", "missed"]);
+export const zMarStatus = z.enum([
+  "given",
+  "held",
+  "refused",
+  "missed",
+  "suspended",
+]);
+
+/** MAR statuses that require a documented reason (stored in the note). */
+export const MAR_REASON_REQUIRED: readonly MarStatusValue[] = [
+  "held",
+  "refused",
+  "suspended",
+];
+type MarStatusValue = (typeof zMarStatus)["options"][number];
 
 export const zCareStage = z.enum([
   "registration",

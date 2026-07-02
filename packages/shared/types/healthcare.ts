@@ -226,7 +226,12 @@ export type PrescriptionStatus = "active" | "completed" | "discontinued";
  * `mar_status` — Medication Administration Record: what actually happened at the
  * bedside for a single scheduled dose.
  */
-export type MarStatus = "given" | "held" | "refused" | "missed";
+export type MarStatus =
+  | "given"
+  | "held"
+  | "refused"
+  | "missed"
+  | "suspended";
 
 /** `allergy_category` — what kind of substance the patient reacts to. */
 export type AllergyCategory = "drug" | "food" | "environmental" | "other";
@@ -265,6 +270,16 @@ export type CareNeedCategory =
 
 /** `care_plan_item_status` — an active need vs one that has been resolved. */
 export type CarePlanItemStatus = "active" | "resolved";
+
+/**
+ * `care_item_kind` (Phase 20 — doctor↔nurse shared care list). One shared list on
+ * the patient carries three kinds of item:
+ *  - `nursing_need`  — a nurse-authored ADL/Henderson care need (the original use).
+ *  - `instruction`   — a one-off doctor instruction to nursing ("encourage fluids").
+ *  - `monitoring`    — a recurring doctor order ("vitals every 1h"); its `frequency`
+ *                      drives a due/overdue cue via the same parser the MAR uses.
+ */
+export type CareItemKind = "nursing_need" | "instruction" | "monitoring";
 
 // ---------------------------------------------------------------------------
 // 4·0 Tenant / account (multi-tenancy — Phase 17)
@@ -689,11 +704,31 @@ export interface CarePlanItem {
   hospital_id: HospitalId;
   admission_id: AdmissionId;
   patient_id: PatientId;
-  category: CareNeedCategory;
+  /**
+   * Nurse ADL need vs. doctor instruction vs. recurring monitoring order — lets
+   * one shared list carry all three (Phase 20). Defaults to `nursing_need`.
+   */
+  kind: CareItemKind;
+  /**
+   * Who raised it, for color-coding "who asked" in the shared list (usually the
+   * creator's role). Null on legacy rows created before Phase 20.
+   */
+  authored_role: StaffRole | null;
+  /**
+   * Henderson care-need tag — only meaningful for `nursing_need` items, so now
+   * nullable (doctor instructions / monitoring orders leave it null).
+   */
+  category: CareNeedCategory | null;
   /** What the patient needs, e.g. "Assist with bed bath, keep skin dry". */
   description: string;
   /** Free text, e.g. "Every 2h", "Each meal", "As needed". */
   frequency: string | null;
+  /**
+   * `monitoring` only: what is being monitored. `"vitals"` anchors due/overdue on
+   * the latest `treatment_record`; null/other anchors on the latest care-log
+   * entry for the item. Null for non-monitoring kinds.
+   */
+  monitors: string | null;
   /** Optional target/outcome, e.g. "Skin remains intact". */
   goal: string | null;
   status: CarePlanItemStatus;
@@ -719,6 +754,14 @@ export interface CarePlanEntry {
   note: string;
   /** True when this is an explicit shift-handover note for the next nurse. */
   is_handover: boolean;
+  /**
+   * Nurse→doctor flag (Phase 20): when true, this note surfaces on the doctor's
+   * "needs you" queue until a doctor acknowledges it. The acknowledged_* pair
+   * records who cleared it and when; both null while still waiting.
+   */
+  needs_doctor: boolean;
+  acknowledged_by_id: StaffId | null;
+  acknowledged_at: ISODateString | null;
   recorded_by_id: StaffId | null;
   recorded_at: ISODateString;
 }

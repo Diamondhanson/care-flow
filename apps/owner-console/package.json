@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@careflow/shared": "workspace:*",
+    "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.107.0",
     "next": "16.2.6",
     "react": "19.2.4",

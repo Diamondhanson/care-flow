@@ -15,6 +15,17 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { MAR_REASON_REQUIRED } from "@careflow/shared/validation/primitives";
 import {
   getActivePrescriptions,
   getAdmissionForVisit,
@@ -53,8 +64,9 @@ const DOSE_STATE_TOKEN: Record<
   inactive: "muted",
 };
 
-/** One-tap bedside actions, in the order a nurse reaches for them. */
-const MAR_ACTIONS: MarStatus[] = ["given", "held", "refused"];
+/** One-tap bedside actions, in the order a nurse reaches for them. `held` /
+ *  `refused` / `suspended` prompt for a reason before recording. */
+const MAR_ACTIONS: MarStatus[] = ["given", "held", "refused", "suspended"];
 
 /** Where the dose is administered: a ward bed vs. an outpatient/ED encounter. */
 type CareSetting = "inpatient" | "ambulatory";
@@ -300,17 +312,39 @@ export default function MedicationsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [t]);
 
-  function handleRecord(
+  // A pending held/refused/suspended action awaiting its required reason.
+  const [reasonTarget, setReasonTarget] = useState<{
+    prescriptionId: string;
+    status: MarStatus;
+    due: string | null;
+  } | null>(null);
+
+  function record(
     prescriptionId: string,
     status: MarStatus,
     due: string | null,
+    notes: string | null,
   ) {
     recordMedicationAdministration(prescriptionId, {
       administered_by_id: actingStaff?.id ?? null,
       status,
       scheduled_for: due,
+      notes,
     });
     refresh();
+  }
+
+  function handleRecord(
+    prescriptionId: string,
+    status: MarStatus,
+    due: string | null,
+  ) {
+    // Held / refused / suspended must capture a reason first.
+    if (MAR_REASON_REQUIRED.includes(status)) {
+      setReasonTarget({ prescriptionId, status, due });
+      return;
+    }
+    record(prescriptionId, status, due, null);
   }
 
   const inpatient = rows?.filter((r) => r.setting === "inpatient") ?? [];
@@ -453,6 +487,75 @@ export default function MedicationsPage() {
           ) : null}
         </div>
       )}
+
+      <ReasonDialog
+        target={reasonTarget}
+        onClose={() => setReasonTarget(null)}
+        onConfirm={(reason) => {
+          if (!reasonTarget) return;
+          record(
+            reasonTarget.prescriptionId,
+            reasonTarget.status,
+            reasonTarget.due,
+            reason,
+          );
+          setReasonTarget(null);
+        }}
+      />
     </div>
+  );
+}
+
+/** Captures the mandatory reason for a held / refused / suspended dose. */
+function ReasonDialog({
+  target,
+  onClose,
+  onConfirm,
+}: {
+  target: { status: MarStatus } | null;
+  onClose: () => void;
+  onConfirm: (reason: string) => void;
+}) {
+  const { t } = useT();
+  const [reason, setReason] = useState("");
+
+  useEffect(() => {
+    setReason("");
+  }, [target]);
+
+  return (
+    <Dialog open={target !== null} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {target
+              ? t("meds.reasonTitle", { status: t(`marStatus.${target.status}`) })
+              : ""}
+          </DialogTitle>
+          <DialogDescription>{t("meds.reasonDesc")}</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="mar-reason">{t("meds.reasonLabel")}</Label>
+          <Textarea
+            id="mar-reason"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder={t("meds.reasonPlaceholder")}
+            autoFocus
+          />
+        </div>
+        <DialogFooter className="mt-2 flex-row justify-end gap-2">
+          <Button variant="ghost" onClick={onClose}>
+            {t("meds.reasonCancel")}
+          </Button>
+          <Button
+            disabled={reason.trim() === ""}
+            onClick={() => onConfirm(reason.trim())}
+          >
+            {t("meds.reasonConfirm")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

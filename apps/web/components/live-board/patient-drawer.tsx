@@ -64,6 +64,7 @@ import {
   getPatientById,
   getPatients,
   getPrescriptionsForVisit,
+  getMedicationAdministrationsForPrescription,
   getStaff,
   getStaffById,
   getTransfersForAdmission,
@@ -117,10 +118,8 @@ import {
   highestSeverity,
   sortAllergiesBySeverity,
 } from "@/components/allergies/allergies";
-import {
-  CARE_NEED_CATEGORY_ICON,
-  CARE_NEED_CATEGORY_LABEL,
-} from "@/components/care-plans/care-plans";
+import { CareOrders } from "@/components/care-plans/care-orders";
+import { VitalsTrend } from "@/components/care-plans/vitals-trend";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/components/role-provider";
 import { useT, useLocale } from "@/components/locale-provider";
@@ -141,6 +140,8 @@ import type {
   Diagnosis,
   Order,
   OrderId,
+  MarStatus,
+  MedicationAdministration,
   OrderType,
   Patient,
   Prescription,
@@ -185,6 +186,15 @@ const VITALS_FIELD_LABEL_KEY: Record<string, string> = {
   temperature_c: "drawer.vitalsTemp",
   weight_kg: "drawer.vitalsWeight",
   gcs_score: "drawer.vitalsGcs",
+};
+
+/** Dot colour for a MAR status in the doctor's read-only administration log. */
+const MAR_STATUS_COLOR: Record<MarStatus, string> = {
+  given: "var(--status-clearance)",
+  held: "var(--status-boarding)",
+  refused: "var(--status-treatment)",
+  suspended: "var(--status-discharge)",
+  missed: "var(--muted-foreground)",
 };
 
 /**
@@ -295,6 +305,11 @@ export function PatientDrawer({
 
   // Prescriptions — instant-added from the drug picker, refined inline per row.
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  // Medication-administration (MAR) log per prescription, so the doctor sees what
+  // the nurse did with each dose (given / held / refused / suspended + reason).
+  const [medAdmins, setMedAdmins] = useState<
+    Record<string, MedicationAdministration[]>
+  >({});
   const [rxDraft, setRxDraft] = useState("");
 
   // Vitals / GCS / notes form
@@ -353,7 +368,16 @@ export function PatientDrawer({
     setDiagnoses(getDiagnosesForVisit(visitId));
     setOrders(getOrdersForVisit(visitId));
     setResults(getResultsForVisit(visitId));
-    setPrescriptions(getPrescriptionsForVisit(visitId));
+    const visitRx = getPrescriptionsForVisit(visitId);
+    setPrescriptions(visitRx);
+    setMedAdmins(
+      Object.fromEntries(
+        visitRx.map((p) => [
+          p.id,
+          getMedicationAdministrationsForPrescription(p.id),
+        ]),
+      ),
+    );
     setAllergies(getAllergiesForPatient(v.patient_id));
     setWards(getWards());
     setBeds(getBeds());
@@ -934,29 +958,9 @@ export function PatientDrawer({
                 </p>
               )}
 
-              {/* Latest vitals — read-only, so the doctor sees the patient's
-                  most recent observations (typically taken by a nurse at intake)
-                  without leaving the consultation. */}
-              {records.length > 0 ? (
-                <div className="flex flex-col gap-1.5 rounded-md border border-border bg-muted/40 p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                      {t("drawer.latestVitals")}
-                    </span>
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {formatDateTime(records[0].recorded_at, activeLocale)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <VitalsLine record={records[0]} />
-                    {records[0].gcs_score !== null ? (
-                      <span className="shrink-0 font-mono text-xs">
-                        GCS {records[0].gcs_score}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
+              {/* Vitals trend — the doctor sees how the nurse's observations are
+                  changing over time, with out-of-range values highlighted. */}
+              <VitalsTrend records={records} />
 
               {/* SOAP note entry */}
               <div className="flex flex-col gap-3">
@@ -1361,6 +1365,65 @@ export function PatientDrawer({
                             placeholder={t("drawer.instructionsPlaceholder")}
                             className="h-7 text-xs"
                           />
+
+                          {/* MAR log — read-only; what the nurse did with each
+                              dose (given / held / refused / suspended + reason). */}
+                          {(medAdmins[p.id]?.length ?? 0) > 0 ? (
+                            <div className="flex flex-col gap-1 rounded-md border border-border bg-background p-2">
+                              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                {t("drawer.marLog")}
+                              </span>
+                              {[...(medAdmins[p.id] ?? [])]
+                                .sort((a, b) =>
+                                  (
+                                    b.administered_at ??
+                                    b.scheduled_for ??
+                                    b.created_at
+                                  ).localeCompare(
+                                    a.administered_at ??
+                                      a.scheduled_for ??
+                                      a.created_at,
+                                  ),
+                                )
+                                .slice(0, 5)
+                                .map((m) => (
+                                  <div
+                                    key={m.id}
+                                    className="flex items-start justify-between gap-2 text-[11px]"
+                                  >
+                                    <span className="flex min-w-0 items-start gap-1.5">
+                                      <span
+                                        aria-hidden
+                                        className="mt-1 size-1.5 shrink-0 rounded-full"
+                                        style={{
+                                          backgroundColor: MAR_STATUS_COLOR[m.status],
+                                        }}
+                                      />
+                                      <span className="min-w-0">
+                                        <span className="font-medium">
+                                          {t(`marStatus.${m.status}`)}
+                                        </span>
+                                        {m.notes ? (
+                                          <span className="text-muted-foreground">
+                                            {" — "}
+                                            {m.notes}
+                                          </span>
+                                        ) : null}
+                                      </span>
+                                    </span>
+                                    <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
+                                      {formatDateTime(
+                                        m.administered_at ??
+                                          m.scheduled_for ??
+                                          m.created_at,
+                                        activeLocale,
+                                        { dateStyle: "short", timeStyle: "short" },
+                                      )}
+                                    </span>
+                                  </div>
+                                ))}
+                            </div>
+                          ) : null}
                         </li>
                       );
                     })}
@@ -1874,76 +1937,18 @@ export function PatientDrawer({
               className={secCls("carePlan", "flex flex-col gap-3")}
               style={secStyle("carePlan")}
             >
-              <div className="flex items-center gap-2">
-                <HeartHandshake className="size-4 text-muted-foreground" />
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  {t("carePlan.needsBlock")}
-                </h3>
-                <span className="ml-auto font-mono text-xs text-muted-foreground">
-                  {carePlanItems.filter((i) => i.status === "active").length}
-                </span>
-              </div>
-              {(() => {
-                const active = carePlanItems.filter(
-                  (i) => i.status === "active",
-                );
-                const handover =
-                  carePlanEntries.find((e) => e.is_handover) ?? null;
-                if (active.length === 0 && !handover) {
-                  return (
-                    <p className="py-2 text-center text-xs text-muted-foreground">
-                      {t("carePlan.noNeeds")}
-                    </p>
-                  );
-                }
-                return (
-                  <div className="flex flex-col gap-2">
-                    {handover ? (
-                      <div
-                        className="flex flex-col gap-1 rounded-md border p-3 text-xs"
-                        style={{
-                          borderColor:
-                            "color-mix(in oklab, var(--status-boarding) 40%, transparent)",
-                        }}
-                      >
-                        <span
-                          className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.08em]"
-                          style={{ color: "var(--status-boarding)" }}
-                        >
-                          <HeartHandshake className="size-3" />
-                          {t("carePlan.latestHandover")}
-                        </span>
-                        <span>{handover.note}</span>
-                        <span className="font-mono text-muted-foreground">
-                          {formatDateTime(handover.recorded_at, activeLocale)}
-                        </span>
-                      </div>
-                    ) : null}
-                    {active.map((item) => {
-                      const Icon = CARE_NEED_CATEGORY_ICON[item.category];
-                      return (
-                        <div
-                          key={item.id}
-                          className="flex items-start gap-2.5 rounded-md border border-border p-3 text-xs"
-                        >
-                          <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                          <div className="flex min-w-0 flex-col gap-0.5">
-                            <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                              {t(CARE_NEED_CATEGORY_LABEL[item.category])}
-                            </span>
-                            <span>{item.description}</span>
-                            {item.frequency ? (
-                              <span className="text-muted-foreground">
-                                {item.frequency}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
+              <CareOrders
+                admissionId={admission.id}
+                items={carePlanItems}
+                entries={carePlanEntries}
+                latestVitalsAt={records[0]?.recorded_at ?? null}
+                actingRole={actingRole}
+                recorderId={recorderId}
+                onChange={() => {
+                  setTick((x) => x + 1);
+                  onMutate();
+                }}
+              />
             </section>
           ) : null}
 

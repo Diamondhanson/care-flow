@@ -99,9 +99,13 @@ do $$ begin
 exception when duplicate_object then null; end $$;
 
 -- Medication Administration Record status — what actually happened at the bedside.
+-- 'held' / 'refused' / 'suspended' carry a documented reason (in the note).
 do $$ begin
-  create type mar_status as enum ('given', 'held', 'refused', 'missed');
+  create type mar_status as enum ('given', 'held', 'refused', 'missed', 'suspended');
 exception when duplicate_object then null; end $$;
+-- Existing databases (enum already created without it) get the new value here.
+-- Idempotent; runs outside a transaction so it is safe under `psql -f`.
+alter type mar_status add value if not exists 'suspended';
 
 -- Allergy category — the kind of substance the patient reacts to.
 do $$ begin
@@ -128,6 +132,14 @@ exception when duplicate_object then null; end $$;
 -- never deleted, so the plan's history stays intact).
 do $$ begin
   create type care_plan_item_status as enum ('active', 'resolved');
+exception when duplicate_object then null; end $$;
+
+-- Care item kind (Phase 20 — doctor<->nurse shared care list). Distinguishes a
+-- nurse-authored ADL need from a doctor's one-off instruction and from a
+-- recurring monitoring order, so one shared list on the patient can carry all
+-- three without a parallel table.
+do $$ begin
+  create type care_item_kind as enum ('nursing_need', 'instruction', 'monitoring');
 exception when duplicate_object then null; end $$;
 
 -- A hospital's account/billing state (multi-tenant SaaS). A non-active account is
@@ -641,9 +653,21 @@ create table if not exists care_plan_items (
   hospital_id   uuid not null references hospitals(id) on delete cascade,
   admission_id  uuid not null references admissions(id) on delete cascade,
   patient_id    uuid not null references patients(id) on delete restrict,
-  category      care_need_category not null,
+  -- nurse ADL need vs. doctor instruction vs. recurring monitoring order (Phase 20).
+  kind          care_item_kind not null default 'nursing_need',
+  -- Who raised it, for color-coding "who asked" in the shared list. Usually the
+  -- creator's role; stored so display never needs a staff-role lookup.
+  authored_role staff_role,
+  -- Henderson care-need tag — only meaningful for nursing_need items, so nullable
+  -- now that doctor instructions / monitoring orders share this table.
+  category      care_need_category,
   description   text not null,
+  -- Free-text cadence (e.g. "every 1 hour", "each shift"). For monitoring orders
+  -- it is parsed by the same parseFrequencyHours the MAR uses to compute due/overdue.
   frequency     text,
+  -- kind='monitoring' only: 'vitals' anchors due/overdue on the latest
+  -- treatment_record; null/other anchors on the latest care-log entry for the item.
+  monitors      text,
   goal          text,
   status        care_plan_item_status not null default 'active',
   created_by_id uuid references staff(id) on delete set null,
@@ -662,9 +686,25 @@ create table if not exists care_plan_entries (
   care_plan_item_id  uuid references care_plan_items(id) on delete set null,
   note               text not null,
   is_handover        boolean not null default false,
+  -- Nurse->doctor flag (Phase 20): when true, this note surfaces on the doctor's
+  -- "needs you" queue until a doctor acknowledges it (one tap). The acknowledged_*
+  -- pair records who cleared it and when; null while still waiting.
+  needs_doctor       boolean not null default false,
+  acknowledged_by_id uuid references staff(id) on delete set null,
+  acknowledged_at    timestamptz,
   recorded_by_id     uuid references staff(id) on delete set null,
   recorded_at        timestamptz not null default now()
 );
+
+-- Idempotent top-ups so re-applying this schema upgrades an existing database to
+-- the Phase 20 shared-care-orders columns (doctor<->nurse loop).
+alter table care_plan_items  add column if not exists kind care_item_kind not null default 'nursing_need';
+alter table care_plan_items  add column if not exists authored_role staff_role;
+alter table care_plan_items  add column if not exists monitors text;
+alter table care_plan_items  alter column category drop not null;
+alter table care_plan_entries add column if not exists needs_doctor boolean not null default false;
+alter table care_plan_entries add column if not exists acknowledged_by_id uuid references staff(id) on delete set null;
+alter table care_plan_entries add column if not exists acknowledged_at timestamptz;
 
 -- ---- 4h-bis. Billing & invoicing (Phase 16.9) -------------------------------
 -- `billable_items` is the per-tenant price catalog: the current unit price (in
@@ -745,6 +785,10 @@ create index if not exists idx_care_plan_items_admission   on care_plan_items(ad
 create index if not exists idx_care_plan_items_status       on care_plan_items(status);
 create index if not exists idx_care_plan_entries_admission  on care_plan_entries(admission_id);
 create index if not exists idx_care_plan_entries_item       on care_plan_entries(care_plan_item_id);
+create index if not exists idx_care_plan_items_kind         on care_plan_items(kind);
+-- Doctor "needs you" queue: open nurse->doctor flags awaiting acknowledgement.
+create index if not exists idx_care_plan_entries_needs_doctor
+  on care_plan_entries(admission_id) where needs_doctor and acknowledged_at is null;
 create index if not exists idx_billable_items_category on billable_items(category);
 create index if not exists idx_charges_visit          on charges(visit_id);
 create index if not exists idx_charges_item           on charges(billable_item_id);

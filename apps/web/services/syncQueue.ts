@@ -338,16 +338,32 @@ export async function pushChangeToServer(
 // mockStorage), so instead the SyncEngine registers these callbacks at runtime.
 // ---------------------------------------------------------------------------
 
+/** Max times a conflicting change is re-based + retried before we give up and
+ *  converge on the server. A re-based change usually lands on the next push, so
+ *  this only bites a row a genuine second device keeps moving. */
+const MAX_CONFLICT_RETRIES = 3;
+
 export interface SyncHooks {
   /**
    * Called after a successful versioned write with the server's new version, so
    * the local cache row can be stamped (its next edit then guards on this base).
+   * Also used to re-base the cache row after a conflict — it patches ONLY the
+   * version, keeping the local field values, so a re-based retry re-sends the
+   * user's edit rather than losing it.
    */
   onVersionApplied?: (table: string, rowId: string, version: number) => void;
   /**
-   * Called when a write was rejected as stale. Should refetch the live row from
-   * the server and re-sync the cache to it. The stale change is dropped either
-   * way; this is how the losing edit's device converges on the winning state.
+   * Fetch the server row's current `version` (for re-basing a conflicting edit).
+   * Returns null if the row is gone / has no version.
+   */
+  resolveServerVersion?: (
+    table: string,
+    rowId: string,
+  ) => Promise<number | null>;
+  /**
+   * Called when a stale write is GIVEN UP ON (after the retry cap). Should
+   * refetch the live row from the server and re-sync the cache to it — the last
+   * resort where the server wins and the local edit is dropped.
    */
   onConflict?: (table: string, rowId: string) => void | Promise<void>;
 }
@@ -392,19 +408,59 @@ export async function drainOutbox(): Promise<DrainResult> {
   let working = queue;
   const uploadedIds: string[] = [];
   const conflictedIds: string[] = [];
+  let rebasedAny = false;
   let failed = 0;
 
   for (const change of queue) {
     try {
       const outcome = await pushChangeToServer(change);
       if (outcome.status === "conflict") {
-        // The row moved under us. Refetch the winning state into the cache, then
-        // drop the stale change — retrying it would just conflict again.
-        conflictedIds.push(change.id);
-        try {
-          await syncHooks.onConflict?.(change.table, change.row_id);
-        } catch {
-          // Best-effort convergence; the stale change is dropped regardless.
+        // The row's version moved under us. Rather than silently discarding the
+        // user's edit (which reverts their change in the UI — e.g. an emergency
+        // reconciliation snapping back to the anonymous record), re-base it onto
+        // the server's CURRENT version and retry: the local actor wins. Capped so
+        // a row a second device keeps moving eventually converges on the server.
+        const current = working.find((c) => c.id === change.id);
+        let rebased = false;
+        if ((current?.attempts ?? 0) < MAX_CONFLICT_RETRIES) {
+          let serverVersion: number | null = null;
+          try {
+            serverVersion =
+              (await syncHooks.resolveServerVersion?.(
+                change.table,
+                change.row_id,
+              )) ?? null;
+          } catch {
+            /* fall through to give-up path */
+          }
+          if (typeof serverVersion === "number") {
+            // Re-base the queued change + stamp the cache row's version (keeping
+            // the local field values), then keep the change for another push.
+            working = applyServerVersion(
+              working,
+              change.table,
+              change.row_id,
+              serverVersion,
+            );
+            working = markFailed(
+              working,
+              change.id,
+              "version conflict — rebased, retrying",
+            );
+            syncHooks.onVersionApplied?.(change.table, change.row_id, serverVersion);
+            rebasedAny = true;
+            rebased = true;
+          }
+        }
+        if (!rebased) {
+          // Give up after the retry cap: refetch the winning row and drop the
+          // stale change (the historical server-wins behaviour, last resort).
+          conflictedIds.push(change.id);
+          try {
+            await syncHooks.onConflict?.(change.table, change.row_id);
+          } catch {
+            // Best-effort convergence; the stale change is dropped regardless.
+          }
         }
       } else {
         uploadedIds.push(change.id);
@@ -432,11 +488,11 @@ export async function drainOutbox(): Promise<DrainResult> {
 
   const resolvedIds = [...uploadedIds, ...conflictedIds];
   working = removeFromQueue(working, resolvedIds);
-  // Only fire the change event when the pending set actually shrank. A pass that
-  // only failed (e.g. offline) changes nothing the UI tracks and must not wake
-  // the engine again, or it would re-drain in a tight loop. Real retries come
-  // from the next `online` event, mount, or a fresh enqueue.
-  writeOutbox(working, { emit: resolvedIds.length > 0 });
+  // Fire the change event when the pending set shrank OR a change was re-based
+  // (so the engine re-drains and the re-based retry actually pushes). A pass that
+  // only failed (e.g. offline) changes nothing and must NOT wake the engine, or
+  // it would re-drain in a tight loop while offline.
+  writeOutbox(working, { emit: resolvedIds.length > 0 || rebasedAny });
   if (conflictedIds.length > 0) emitConflict();
 
   return {

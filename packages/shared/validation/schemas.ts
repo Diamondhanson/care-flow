@@ -20,6 +20,7 @@ import {
   zEmail,
   zId,
   zMarStatus,
+  MAR_REASON_REQUIRED,
   zOptEmail,
   zOptId,
   zOptIsoDate,
@@ -125,14 +126,23 @@ export const ResultEntrySchema = z.object({
   attachment_path: zOptLine(512),
 });
 
-/** Medication administration (RecordAdministrationInput). */
-export const MedAdminSchema = z.object({
-  administered_by_id: zOptId,
-  status: zMarStatus,
-  scheduled_for: z.string().nullish(),
-  administered_at: z.string().nullish(),
-  notes: zOptText(1000),
-});
+/** Medication administration (RecordAdministrationInput). `held` / `refused` /
+ *  `suspended` must carry a documented reason (in `notes`); `given` / `missed`
+ *  do not. */
+export const MedAdminSchema = z
+  .object({
+    administered_by_id: zOptId,
+    status: zMarStatus,
+    scheduled_for: z.string().nullish(),
+    administered_at: z.string().nullish(),
+    notes: zOptText(1000),
+  })
+  .refine(
+    (v) =>
+      !MAR_REASON_REQUIRED.includes(v.status) ||
+      (typeof v.notes === "string" && v.notes.trim().length > 0),
+    { message: "A reason is required for this status.", path: ["notes"] },
+  );
 
 /**
  * Bedside vitals (AddTreatmentLogInput). Ranges are deliberately wide — wide

@@ -24,6 +24,7 @@ export const fr = {
 
   nav: {
     liveBoard: "Tableau de bord",
+    worklist: "À faire",
     intake: "Enregistrer un patient",
     diagnostics: "Tests & résultats",
     medications: "Médicaments",
@@ -114,9 +115,10 @@ export const fr = {
 
   marStatus: {
     given: "Administré",
-    held: "Suspendu",
+    held: "Reporté",
     refused: "Refusé",
     missed: "Manqué",
+    suspended: "Suspendu",
   },
 
   doseState: {
@@ -269,6 +271,7 @@ export const fr = {
     reviewBeforePrescribing: "À vérifier avant de prescrire.",
     allergiesNotAssessedRx: "Allergies non évaluées — à confirmer avant de prescrire.",
     noPrescriptions: "Rien de prescrit sur cette visite pour le moment.",
+    marLog: "Journal d'administration",
     drug: "Médicament",
     drugPlaceholder: "ex. Amoxicillin-clavulanate",
     dose: "Dose",
@@ -711,6 +714,12 @@ export const fr = {
     lastWithTime: "Dernier : {status} · {time}",
     agoSpan: "il y a {span}",
     inSpan: "dans {span}",
+    reasonTitle: "Motif — {status}",
+    reasonDesc: "Indiquez pourquoi la dose n'a pas été administrée. Le médecin le verra.",
+    reasonLabel: "Motif",
+    reasonPlaceholder: "ex. patient à jeun pour chirurgie ; TA trop basse ; refus",
+    reasonConfirm: "Enregistrer",
+    reasonCancel: "Annuler",
     unassigned: "Non attribué",
     unknownPatient: "Patient inconnu",
   },
@@ -1020,6 +1029,40 @@ export const fr = {
     handoverTag: "Transmission",
     forNeed: "Réf. : {need}",
     generalNote: "Général",
+    // Phase 20 — liste de soins partagée médecin↔infirmier
+    ordersBlock: "Soins & consignes",
+    kindInstruction: "Consigne du médecin",
+    kindMonitoring: "Surveillance",
+    kindNursing: "Soins infirmiers",
+    addInstruction: "Ajouter une consigne",
+    addInstructionPlaceholder: "ex. Encourager les boissons, viser 2 L/jour",
+    addMonitoring: "Ajouter une surveillance",
+    addMonitoringPlaceholder: "ex. Constantes + GCS",
+    markDone: "Fait",
+    flagForDoctor: "Signaler au médecin",
+    flagPlaceholder: "Quelque chose que le médecin doit voir…",
+    flagged: "Signalé au médecin",
+    acknowledge: "Accuser réception",
+    awaitingDoctor: "En attente du médecin",
+    raisedBy: "Signalé par {name}",
+    vitalsTrend: "Évolution des constantes",
+    vTime: "Heure",
+    vPulse: "Pouls",
+    vTemp: "Temp",
+    dueBadge: "{n} à faire",
+    needsYouBadge: "{n} à voir",
+  },
+
+  worklist: {
+    title: "À faire",
+    subtitle:
+      "Tout ce qui est dû, et tous ceux qui ont besoin d'un médecin — dans tous les services.",
+    dueHeading: "À faire maintenant",
+    needsYouHeading: "Besoin d'un médecin",
+    nothingDue: "Rien à faire pour le moment.",
+    noneNeedYou: "Personne n'a besoin d'un médecin pour le moment.",
+    loading: "Chargement…",
+    vitalsConcern: "Constantes à vérifier",
   },
 
   billing: {
