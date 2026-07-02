@@ -6,10 +6,52 @@
     "prompt_en": "Cough?",
     "prompt_fr": "Toux ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "cough",
-    "report_phrase_fr": "toux"
+    "report_phrase_fr": "toux",
+    "followups": [
+      {
+        "key": "respiratory.cough.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "respiratory.cough.timing",
+        "prompt_en": "Timing",
+        "prompt_fr": "Horaire",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "timing",
+        "report_phrase_fr": "horaire",
+        "options": [
+          {
+            "value": "worse_at_night",
+            "label_en": "Worse at night",
+            "label_fr": "À prédominance nocturne"
+          },
+          {
+            "value": "worse_morning",
+            "label_en": "Worse in the morning",
+            "label_fr": "À prédominance matinale"
+          },
+          {
+            "value": "constant",
+            "label_en": "Constant",
+            "label_fr": "Permanente"
+          },
+          {
+            "value": "intermittent",
+            "label_en": "Intermittent",
+            "label_fr": "Intermittente"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "respiratory.productive_cough",
@@ -42,10 +84,78 @@
     "prompt_en": "Hemoptysis?",
     "prompt_fr": "Hémoptysie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "hemoptysis",
-    "report_phrase_fr": "hémoptysie"
+    "report_phrase_fr": "hémoptysie",
+    "followups": [
+      {
+        "key": "respiratory.hemoptysis.amount",
+        "prompt_en": "Amount",
+        "prompt_fr": "Abondance",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "amount",
+        "report_phrase_fr": "abondance",
+        "options": [
+          {
+            "value": "blood_streaks",
+            "label_en": "Blood-streaked sputum",
+            "label_fr": "Crachats striés de sang"
+          },
+          {
+            "value": "small_amount",
+            "label_en": "Small amount (teaspoons)",
+            "label_fr": "Faible abondance (quelques cuillères)"
+          },
+          {
+            "value": "frank_blood",
+            "label_en": "Frank blood",
+            "label_fr": "Sang rouge franc abondant"
+          }
+        ]
+      },
+      {
+        "key": "respiratory.hemoptysis.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "respiratory.hemoptysis.associated",
+        "prompt_en": "Associated symptoms",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated symptoms",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          },
+          {
+            "value": "night_sweats",
+            "label_en": "Night sweats",
+            "label_fr": "Sueurs nocturnes"
+          },
+          {
+            "value": "weight_loss",
+            "label_en": "Weight loss",
+            "label_fr": "Amaigrissement"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucun"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "respiratory.dyspnea",
@@ -54,10 +164,73 @@
     "prompt_en": "Dyspnea?",
     "prompt_fr": "Dyspnée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "dyspnea",
-    "report_phrase_fr": "dyspnée"
+    "report_phrase_fr": "dyspnée",
+    "followups": [
+      {
+        "key": "respiratory.dyspnea.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      },
+      {
+        "key": "respiratory.dyspnea.exertion_level",
+        "prompt_en": "Exertion level",
+        "prompt_fr": "Niveau d'effort",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "exertion level",
+        "report_phrase_fr": "niveau d'effort",
+        "options": [
+          {
+            "value": "heavy_exertion",
+            "label_en": "Heavy exertion",
+            "label_fr": "Effort important"
+          },
+          {
+            "value": "moderate_exertion",
+            "label_en": "Moderate exertion (walking uphill)",
+            "label_fr": "Effort modéré (marche en côte)"
+          },
+          {
+            "value": "light_exertion",
+            "label_en": "Light exertion (walking on flat ground)",
+            "label_fr": "Effort léger (marche en terrain plat)"
+          },
+          {
+            "value": "at_rest",
+            "label_en": "At rest",
+            "label_fr": "Au repos"
+          }
+        ]
+      },
+      {
+        "key": "respiratory.dyspnea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "respiratory.wheezing",
@@ -66,10 +239,79 @@
     "prompt_en": "Wheezing?",
     "prompt_fr": "Sibilances ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "wheezing",
-    "report_phrase_fr": "sibilances"
+    "report_phrase_fr": "sibilances",
+    "followups": [
+      {
+        "key": "respiratory.wheezing.triggers",
+        "prompt_en": "Triggers",
+        "prompt_fr": "Facteurs déclenchants",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "triggers",
+        "report_phrase_fr": "facteurs déclenchants",
+        "options": [
+          {
+            "value": "dust",
+            "label_en": "Dust",
+            "label_fr": "Poussière"
+          },
+          {
+            "value": "cold_air",
+            "label_en": "Cold air",
+            "label_fr": "Air froid"
+          },
+          {
+            "value": "exercise",
+            "label_en": "Exercise",
+            "label_fr": "Effort"
+          },
+          {
+            "value": "smoke",
+            "label_en": "Smoke",
+            "label_fr": "Fumée"
+          },
+          {
+            "value": "none",
+            "label_en": "None identified",
+            "label_fr": "Aucun identifié"
+          }
+        ]
+      },
+      {
+        "key": "respiratory.wheezing.timing",
+        "prompt_en": "Timing",
+        "prompt_fr": "Horaire",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "timing",
+        "report_phrase_fr": "horaire",
+        "options": [
+          {
+            "value": "nocturnal",
+            "label_en": "Mainly at night",
+            "label_fr": "À prédominance nocturne"
+          },
+          {
+            "value": "seasonal",
+            "label_en": "Seasonal",
+            "label_fr": "Saisonnier"
+          },
+          {
+            "value": "with_infections",
+            "label_en": "With respiratory infections",
+            "label_fr": "Lors d'infections respiratoires"
+          },
+          {
+            "value": "constant",
+            "label_en": "Constant",
+            "label_fr": "Permanent"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "respiratory.chest_tightness",
@@ -78,7 +320,7 @@
     "prompt_en": "Chest tightness?",
     "prompt_fr": "Oppression thoracique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "chest tightness",
     "report_phrase_fr": "oppression thoracique"
@@ -90,7 +332,7 @@
     "prompt_en": "Pleuritic chest pain?",
     "prompt_fr": "Douleur thoracique pleurétique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "pleuritic chest pain",
     "report_phrase_fr": "douleur thoracique pleurétique"
@@ -102,10 +344,52 @@
     "prompt_en": "Sputum production?",
     "prompt_fr": "Expectoration ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "sputum production",
-    "report_phrase_fr": "expectoration"
+    "report_phrase_fr": "expectoration",
+    "followups": [
+      {
+        "key": "respiratory.sputum_production.color",
+        "prompt_en": "Color",
+        "prompt_fr": "Aspect",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "sputum color",
+        "report_phrase_fr": "aspect des expectorations",
+        "options": [
+          {
+            "value": "white",
+            "label_en": "White or clear",
+            "label_fr": "Blanche ou claire"
+          },
+          {
+            "value": "yellow_green",
+            "label_en": "Yellow-green",
+            "label_fr": "Jaune verdâtre"
+          },
+          {
+            "value": "rusty",
+            "label_en": "Rusty",
+            "label_fr": "Rouillée"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Blood-stained",
+            "label_fr": "Sanglante"
+          }
+        ]
+      },
+      {
+        "key": "respiratory.sputum_production.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "respiratory.purulent_sputum",
@@ -126,7 +410,7 @@
     "prompt_en": "Nocturnal cough?",
     "prompt_fr": "Toux nocturne ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "nocturnal cough",
     "report_phrase_fr": "toux nocturne"
@@ -138,7 +422,7 @@
     "prompt_en": "Chronic cough?",
     "prompt_fr": "Toux chronique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "chronic cough",
     "report_phrase_fr": "toux chronique"
@@ -238,5 +522,109 @@
     "sex": null,
     "report_phrase_en": "hyperventilation",
     "report_phrase_fr": "hyperventilation"
+  },
+  {
+    "key": "respiratory.hx_tb",
+    "system": "respiratory",
+    "kind": "history",
+    "prompt_en": "History of tuberculosis?",
+    "prompt_fr": "Antécédent de tuberculose ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of tuberculosis",
+    "report_phrase_fr": "antécédent de tuberculose",
+    "followups": [
+      {
+        "key": "respiratory.hx_tb.treatment",
+        "prompt_en": "Treatment status",
+        "prompt_fr": "Statut du traitement",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "treatment status",
+        "report_phrase_fr": "statut du traitement",
+        "options": [
+          {
+            "value": "completed",
+            "label_en": "Treatment completed",
+            "label_fr": "Traitement terminé"
+          },
+          {
+            "value": "interrupted",
+            "label_en": "Treatment interrupted",
+            "label_fr": "Traitement interrompu"
+          },
+          {
+            "value": "ongoing",
+            "label_en": "Treatment ongoing",
+            "label_fr": "Traitement en cours"
+          },
+          {
+            "value": "never_treated",
+            "label_en": "Never treated",
+            "label_fr": "Jamais traité"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "respiratory.tb_contact",
+    "system": "respiratory",
+    "kind": "history",
+    "prompt_en": "Contact with a tuberculosis case?",
+    "prompt_fr": "Contact avec un cas de tuberculose ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "contact with a tuberculosis case",
+    "report_phrase_fr": "contact avec un cas de tuberculose"
+  },
+  {
+    "key": "respiratory.hx_smoking",
+    "system": "respiratory",
+    "kind": "history",
+    "prompt_en": "Smoking history?",
+    "prompt_fr": "Tabagisme ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "smoking history",
+    "report_phrase_fr": "tabagisme",
+    "followups": [
+      {
+        "key": "respiratory.hx_smoking.pack_years",
+        "prompt_en": "Pack-years",
+        "prompt_fr": "Paquets-années",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "pack-years",
+        "report_phrase_fr": "paquets-années"
+      }
+    ]
+  },
+  {
+    "key": "respiratory.fhx_asthma",
+    "system": "respiratory",
+    "kind": "genetic",
+    "prompt_en": "Family history of asthma?",
+    "prompt_fr": "Antécédents familiaux d'asthme ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of asthma",
+    "report_phrase_fr": "antécédents familiaux d'asthme"
+  },
+  {
+    "key": "respiratory.biomass_smoke_exposure",
+    "system": "respiratory",
+    "kind": "history",
+    "prompt_en": "Regular exposure to wood or charcoal cooking smoke?",
+    "prompt_fr": "Exposition régulière à la fumée de cuisson au bois ou au charbon ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "chronic biomass smoke exposure",
+    "report_phrase_fr": "exposition chronique à la fumée de biomasse"
   }
 ]

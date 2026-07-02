@@ -6,10 +6,30 @@
     "prompt_en": "Amenorrhea?",
     "prompt_fr": "Aménorrhée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "amenorrhea",
-    "report_phrase_fr": "aménorrhée"
+    "report_phrase_fr": "aménorrhée",
+    "followups": [
+      {
+        "key": "obstetric_gynae.amenorrhea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "obstetric_gynae.amenorrhea.lmp",
+        "prompt_en": "Last menstrual period",
+        "prompt_fr": "Date des dernières règles",
+        "type": "date",
+        "show_if": "yes",
+        "report_phrase_en": "last menstrual period",
+        "report_phrase_fr": "date des dernières règles"
+      }
+    ]
   },
   {
     "key": "obstetric_gynae.menorrhagia",
@@ -18,10 +38,73 @@
     "prompt_en": "Menorrhagia?",
     "prompt_fr": "Ménorragie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "menorrhagia",
-    "report_phrase_fr": "ménorragie"
+    "report_phrase_fr": "ménorragie",
+    "followups": [
+      {
+        "key": "obstetric_gynae.menorrhagia.amount",
+        "prompt_en": "Amount of bleeding",
+        "prompt_fr": "Abondance du saignement",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "light",
+            "label_en": "Light",
+            "label_fr": "Léger"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modéré"
+          },
+          {
+            "value": "heavy",
+            "label_en": "Heavy",
+            "label_fr": "Abondant"
+          }
+        ],
+        "report_phrase_en": "amount of bleeding",
+        "report_phrase_fr": "abondance du saignement"
+      },
+      {
+        "key": "obstetric_gynae.menorrhagia.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "obstetric_gynae.menorrhagia.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "clots",
+            "label_en": "Clots",
+            "label_fr": "Caillots"
+          },
+          {
+            "value": "dizziness",
+            "label_en": "Dizziness",
+            "label_fr": "Vertiges"
+          },
+          {
+            "value": "fatigue",
+            "label_en": "Fatigue",
+            "label_fr": "Asthénie"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "obstetric_gynae.metrorrhagia",
@@ -30,10 +113,73 @@
     "prompt_en": "Metrorrhagia?",
     "prompt_fr": "Métrorragie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "metrorrhagia",
-    "report_phrase_fr": "métrorragie"
+    "report_phrase_fr": "métrorragie",
+    "followups": [
+      {
+        "key": "obstetric_gynae.metrorrhagia.amount",
+        "prompt_en": "Amount of bleeding",
+        "prompt_fr": "Abondance du saignement",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "light",
+            "label_en": "Light",
+            "label_fr": "Léger"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modéré"
+          },
+          {
+            "value": "heavy",
+            "label_en": "Heavy",
+            "label_fr": "Abondant"
+          }
+        ],
+        "report_phrase_en": "amount of bleeding",
+        "report_phrase_fr": "abondance du saignement"
+      },
+      {
+        "key": "obstetric_gynae.metrorrhagia.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "obstetric_gynae.metrorrhagia.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "pelvic_pain",
+            "label_en": "Pelvic pain",
+            "label_fr": "Douleur pelvienne"
+          },
+          {
+            "value": "dizziness",
+            "label_en": "Dizziness",
+            "label_fr": "Vertiges"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "obstetric_gynae.dysmenorrhea",
@@ -42,7 +188,7 @@
     "prompt_en": "Dysmenorrhea?",
     "prompt_fr": "Dysménorrhée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "dysmenorrhea",
     "report_phrase_fr": "dysménorrhée"
@@ -54,10 +200,78 @@
     "prompt_en": "Leukorrhea?",
     "prompt_fr": "Leucorrhée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "leukorrhea",
-    "report_phrase_fr": "leucorrhée"
+    "report_phrase_fr": "leucorrhée",
+    "followups": [
+      {
+        "key": "obstetric_gynae.leukorrhea.colour",
+        "prompt_en": "Colour",
+        "prompt_fr": "Couleur",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "white",
+            "label_en": "White",
+            "label_fr": "Blanche"
+          },
+          {
+            "value": "yellow_green",
+            "label_en": "Yellow-green",
+            "label_fr": "Jaune-verdâtre"
+          },
+          {
+            "value": "grayish",
+            "label_en": "Grayish",
+            "label_fr": "Grisâtre"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Blood-stained",
+            "label_fr": "Sanglante"
+          }
+        ],
+        "report_phrase_en": "colour",
+        "report_phrase_fr": "couleur"
+      },
+      {
+        "key": "obstetric_gynae.leukorrhea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "obstetric_gynae.leukorrhea.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "itching",
+            "label_en": "Itching",
+            "label_fr": "Prurit"
+          },
+          {
+            "value": "foul_odor",
+            "label_en": "Foul odour",
+            "label_fr": "Odeur nauséabonde"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "obstetric_gynae.pruritus_vulvae",
@@ -102,7 +316,7 @@
     "prompt_en": "Decreased fetal movement?",
     "prompt_fr": "Diminution des mouvements fœtaux ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "decreased fetal movement",
     "report_phrase_fr": "diminution des mouvements fœtaux"
@@ -114,10 +328,73 @@
     "prompt_en": "Antepartum hemorrhage?",
     "prompt_fr": "Hémorragie antepartum ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "antepartum hemorrhage",
-    "report_phrase_fr": "hémorragie antepartum"
+    "report_phrase_fr": "hémorragie antepartum",
+    "followups": [
+      {
+        "key": "obstetric_gynae.antepartum_hemorrhage.amount",
+        "prompt_en": "Amount of bleeding",
+        "prompt_fr": "Abondance du saignement",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "light",
+            "label_en": "Light",
+            "label_fr": "Léger"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modéré"
+          },
+          {
+            "value": "heavy",
+            "label_en": "Heavy",
+            "label_fr": "Abondant"
+          }
+        ],
+        "report_phrase_en": "amount of bleeding",
+        "report_phrase_fr": "abondance du saignement"
+      },
+      {
+        "key": "obstetric_gynae.antepartum_hemorrhage.gestational_age",
+        "prompt_en": "Gestational age (weeks)",
+        "prompt_fr": "Âge gestationnel (semaines)",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "gestational age",
+        "report_phrase_fr": "âge gestationnel"
+      },
+      {
+        "key": "obstetric_gynae.antepartum_hemorrhage.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "abdominal_pain",
+            "label_en": "Abdominal pain",
+            "label_fr": "Douleur abdominale"
+          },
+          {
+            "value": "contractions",
+            "label_en": "Uterine contractions",
+            "label_fr": "Contractions utérines"
+          },
+          {
+            "value": "reduced_fetal_movement",
+            "label_en": "Reduced fetal movement",
+            "label_fr": "Diminution des mouvements fœtaux"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "obstetric_gynae.postmenopausal_bleeding",
@@ -126,7 +403,7 @@
     "prompt_en": "Postmenopausal bleeding?",
     "prompt_fr": "Saignement post-ménopausique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "postmenopausal bleeding",
     "report_phrase_fr": "saignement post-ménopausique"
@@ -150,7 +427,7 @@
     "prompt_en": "Breast lump?",
     "prompt_fr": "Masse mammaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "breast lump",
     "report_phrase_fr": "masse mammaire"
@@ -186,7 +463,7 @@
     "prompt_en": "Rupture of membranes?",
     "prompt_fr": "Rupture des membranes ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": "female",
     "report_phrase_en": "rupture of membranes",
     "report_phrase_fr": "rupture des membranes"
@@ -262,5 +539,121 @@
     "sex": "female",
     "report_phrase_en": "vaginal dryness",
     "report_phrase_fr": "sécheresse vaginale"
+  },
+  {
+    "key": "obstetric_gynae.gravida",
+    "system": "obstetric_gynae",
+    "kind": "history",
+    "prompt_en": "Gravida (total pregnancies)",
+    "prompt_fr": "Geste (grossesses totales)",
+    "type": "numeric",
+    "key_question": true,
+    "sex": "female",
+    "report_phrase_en": "gravida",
+    "report_phrase_fr": "geste"
+  },
+  {
+    "key": "obstetric_gynae.para",
+    "system": "obstetric_gynae",
+    "kind": "history",
+    "prompt_en": "Para (births)",
+    "prompt_fr": "Parité (accouchements)",
+    "type": "numeric",
+    "key_question": true,
+    "sex": "female",
+    "report_phrase_en": "para",
+    "report_phrase_fr": "parité"
+  },
+  {
+    "key": "obstetric_gynae.hx_previous_caesarean",
+    "system": "obstetric_gynae",
+    "kind": "history",
+    "prompt_en": "Previous caesarean section?",
+    "prompt_fr": "Antécédent de césarienne ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": "female",
+    "report_phrase_en": "previous caesarean section",
+    "report_phrase_fr": "antécédent de césarienne"
+  },
+  {
+    "key": "obstetric_gynae.hx_miscarriage",
+    "system": "obstetric_gynae",
+    "kind": "history",
+    "prompt_en": "Previous miscarriage?",
+    "prompt_fr": "Antécédent de fausse couche ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": "female",
+    "report_phrase_en": "previous miscarriage",
+    "report_phrase_fr": "antécédent de fausse couche",
+    "followups": [
+      {
+        "key": "obstetric_gynae.hx_miscarriage.count",
+        "prompt_en": "Number of miscarriages",
+        "prompt_fr": "Nombre de fausses couches",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "number of miscarriages",
+        "report_phrase_fr": "nombre de fausses couches"
+      }
+    ]
+  },
+  {
+    "key": "obstetric_gynae.hx_ectopic_pregnancy",
+    "system": "obstetric_gynae",
+    "kind": "history",
+    "prompt_en": "Previous ectopic pregnancy?",
+    "prompt_fr": "Antécédent de grossesse extra-utérine ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": "female",
+    "report_phrase_en": "previous ectopic pregnancy",
+    "report_phrase_fr": "antécédent de grossesse extra-utérine"
+  },
+  {
+    "key": "obstetric_gynae.fhx_breast_cancer",
+    "system": "obstetric_gynae",
+    "kind": "genetic",
+    "prompt_en": "Family history of breast cancer?",
+    "prompt_fr": "Antécédents familiaux de cancer du sein ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": "female",
+    "report_phrase_en": "family history of breast cancer",
+    "report_phrase_fr": "antécédents familiaux de cancer du sein",
+    "followups": [
+      {
+        "key": "obstetric_gynae.fhx_breast_cancer.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Lien de parenté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sister",
+            "label_fr": "Sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Daughter",
+            "label_fr": "Fille"
+          },
+          {
+            "value": "grandmother",
+            "label_en": "Grandmother",
+            "label_fr": "Grand-mère"
+          }
+        ],
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "lien de parenté"
+      }
+    ]
   }
 ]

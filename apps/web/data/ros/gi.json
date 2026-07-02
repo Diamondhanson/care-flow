@@ -6,10 +6,124 @@
     "prompt_en": "Abdominal pain?",
     "prompt_fr": "Douleur abdominale ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "abdominal pain",
-    "report_phrase_fr": "douleur abdominale"
+    "report_phrase_fr": "douleur abdominale",
+    "followups": [
+      {
+        "key": "gi.abdominal_pain.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Siège",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "siège",
+        "options": [
+          {
+            "value": "epigastric",
+            "label_en": "Epigastric",
+            "label_fr": "Épigastre"
+          },
+          {
+            "value": "right_upper_quadrant",
+            "label_en": "Right upper quadrant",
+            "label_fr": "Hypochondre droit"
+          },
+          {
+            "value": "periumbilical",
+            "label_en": "Periumbilical",
+            "label_fr": "Région péri-ombilicale"
+          },
+          {
+            "value": "right_iliac_fossa",
+            "label_en": "Right iliac fossa",
+            "label_fr": "Fosse iliaque droite"
+          },
+          {
+            "value": "left_iliac_fossa",
+            "label_en": "Left iliac fossa",
+            "label_fr": "Fosse iliaque gauche"
+          },
+          {
+            "value": "diffuse",
+            "label_en": "Diffuse",
+            "label_fr": "Diffus"
+          }
+        ]
+      },
+      {
+        "key": "gi.abdominal_pain.character",
+        "prompt_en": "Character",
+        "prompt_fr": "Type de douleur",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "character",
+        "report_phrase_fr": "type de douleur",
+        "options": [
+          {
+            "value": "cramping",
+            "label_en": "Cramping",
+            "label_fr": "À type de crampe"
+          },
+          {
+            "value": "burning",
+            "label_en": "Burning",
+            "label_fr": "À type de brûlure"
+          },
+          {
+            "value": "stabbing",
+            "label_en": "Stabbing",
+            "label_fr": "En coup de poignard"
+          },
+          {
+            "value": "dull",
+            "label_en": "Dull ache",
+            "label_fr": "Sourde"
+          }
+        ]
+      },
+      {
+        "key": "gi.abdominal_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "gi.abdominal_pain.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "gi.epigastric_pain",
@@ -30,7 +144,7 @@
     "prompt_en": "Nausea?",
     "prompt_fr": "Nausée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "nausea",
     "report_phrase_fr": "nausée"
@@ -42,10 +156,52 @@
     "prompt_en": "Vomiting?",
     "prompt_fr": "Vomissement ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "vomiting",
-    "report_phrase_fr": "vomissement"
+    "report_phrase_fr": "vomissement",
+    "followups": [
+      {
+        "key": "gi.vomiting.content",
+        "prompt_en": "Appearance",
+        "prompt_fr": "Aspect",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "vomitus appearance",
+        "report_phrase_fr": "aspect des vomissements",
+        "options": [
+          {
+            "value": "food",
+            "label_en": "Food",
+            "label_fr": "Alimentaire"
+          },
+          {
+            "value": "bilious",
+            "label_en": "Bilious",
+            "label_fr": "Bilieux"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Bloody",
+            "label_fr": "Sanglant"
+          },
+          {
+            "value": "coffee_ground",
+            "label_en": "Coffee-ground",
+            "label_fr": "Marc de café"
+          }
+        ]
+      },
+      {
+        "key": "gi.vomiting.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "gi.hematemesis",
@@ -54,7 +210,7 @@
     "prompt_en": "Hematemesis?",
     "prompt_fr": "Hématémèse ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "hematemesis",
     "report_phrase_fr": "hématémèse"
@@ -66,10 +222,61 @@
     "prompt_en": "Diarrhea?",
     "prompt_fr": "Diarrhée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "diarrhea",
-    "report_phrase_fr": "diarrhée"
+    "report_phrase_fr": "diarrhée",
+    "followups": [
+      {
+        "key": "gi.diarrhea.frequency",
+        "prompt_en": "Stools per day",
+        "prompt_fr": "Nombre de selles par jour",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "stool frequency per day",
+        "report_phrase_fr": "nombre de selles par jour"
+      },
+      {
+        "key": "gi.diarrhea.character",
+        "prompt_en": "Stool appearance",
+        "prompt_fr": "Aspect des selles",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "stool appearance",
+        "report_phrase_fr": "aspect des selles",
+        "options": [
+          {
+            "value": "watery",
+            "label_en": "Watery",
+            "label_fr": "Aqueuses"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Bloody",
+            "label_fr": "Sanglantes"
+          },
+          {
+            "value": "mucoid",
+            "label_en": "Mucoid",
+            "label_fr": "Glaireuses"
+          },
+          {
+            "value": "fatty",
+            "label_en": "Fatty, foul-smelling",
+            "label_fr": "Graisseuses et fétides"
+          }
+        ]
+      },
+      {
+        "key": "gi.diarrhea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "gi.dysentery",
@@ -90,7 +297,7 @@
     "prompt_en": "Constipation?",
     "prompt_fr": "Constipation ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "constipation",
     "report_phrase_fr": "constipation"
@@ -102,10 +309,73 @@
     "prompt_en": "Dysphagia?",
     "prompt_fr": "Dysphagie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "dysphagia",
-    "report_phrase_fr": "dysphagie"
+    "report_phrase_fr": "dysphagie",
+    "followups": [
+      {
+        "key": "gi.dysphagia.type",
+        "prompt_en": "Solids or liquids",
+        "prompt_fr": "Solides ou liquides",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "solids or liquids",
+        "report_phrase_fr": "solides ou liquides",
+        "options": [
+          {
+            "value": "solids",
+            "label_en": "Solids only",
+            "label_fr": "Solides uniquement"
+          },
+          {
+            "value": "liquids",
+            "label_en": "Liquids only",
+            "label_fr": "Liquides uniquement"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "gi.dysphagia.progression",
+        "prompt_en": "Course",
+        "prompt_fr": "Évolution",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "course",
+        "report_phrase_fr": "évolution",
+        "options": [
+          {
+            "value": "progressive",
+            "label_en": "Progressive",
+            "label_fr": "Progressive"
+          },
+          {
+            "value": "intermittent",
+            "label_en": "Intermittent",
+            "label_fr": "Intermittente"
+          },
+          {
+            "value": "stable",
+            "label_en": "Stable",
+            "label_fr": "Stable"
+          }
+        ]
+      },
+      {
+        "key": "gi.dysphagia.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "gi.anorexia",
@@ -114,7 +384,7 @@
     "prompt_en": "Anorexia?",
     "prompt_fr": "Anorexie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "anorexia",
     "report_phrase_fr": "anorexie"
@@ -138,7 +408,7 @@
     "prompt_en": "Melena?",
     "prompt_fr": "Méléna ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "melena",
     "report_phrase_fr": "méléna"
@@ -150,7 +420,7 @@
     "prompt_en": "Hematochezia?",
     "prompt_fr": "Hématochézie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "hematochezia",
     "report_phrase_fr": "hématochézie"
@@ -306,10 +576,57 @@
     "prompt_en": "Jaundice?",
     "prompt_fr": "Ictère ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "jaundice",
-    "report_phrase_fr": "ictère"
+    "report_phrase_fr": "ictère",
+    "followups": [
+      {
+        "key": "gi.jaundice.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "gi.jaundice.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "dark_urine",
+            "label_en": "Dark urine",
+            "label_fr": "Urines foncées"
+          },
+          {
+            "value": "pale_stools",
+            "label_en": "Pale stools",
+            "label_fr": "Selles décolorées"
+          },
+          {
+            "value": "pruritus",
+            "label_en": "Itching",
+            "label_fr": "Prurit"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucun"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "gi.pale_stools",
@@ -478,5 +795,98 @@
     "sex": null,
     "report_phrase_en": "abdominal cramps",
     "report_phrase_fr": "crampes abdominales"
+  },
+  {
+    "key": "gi.hx_peptic_ulcer",
+    "system": "gi",
+    "kind": "history",
+    "prompt_en": "History of peptic ulcer?",
+    "prompt_fr": "Antécédent d'ulcère gastro-duodénal ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of peptic ulcer disease",
+    "report_phrase_fr": "antécédent d'ulcère gastro-duodénal"
+  },
+  {
+    "key": "gi.hx_hepatitis_b",
+    "system": "gi",
+    "kind": "history",
+    "prompt_en": "Known hepatitis B infection?",
+    "prompt_fr": "Hépatite virale B connue ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known hepatitis B infection",
+    "report_phrase_fr": "hépatite virale B connue"
+  },
+  {
+    "key": "gi.alcohol_use",
+    "system": "gi",
+    "kind": "history",
+    "prompt_en": "Regular alcohol use?",
+    "prompt_fr": "Consommation régulière d'alcool ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "regular alcohol use",
+    "report_phrase_fr": "consommation régulière d'alcool"
+  },
+  {
+    "key": "gi.nsaid_use",
+    "system": "gi",
+    "kind": "history",
+    "prompt_en": "Regular NSAID use?",
+    "prompt_fr": "Prise régulière d'AINS ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "regular NSAID use",
+    "report_phrase_fr": "prise régulière d'AINS"
+  },
+  {
+    "key": "gi.fhx_colorectal_cancer",
+    "system": "gi",
+    "kind": "genetic",
+    "prompt_en": "Family history of colorectal cancer?",
+    "prompt_fr": "Antécédents familiaux de cancer colorectal ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of colorectal cancer",
+    "report_phrase_fr": "antécédents familiaux de cancer colorectal",
+    "followups": [
+      {
+        "key": "gi.fhx_colorectal_cancer.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Parent atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "parent atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
   }
 ]

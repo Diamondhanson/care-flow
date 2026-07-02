@@ -6,7 +6,7 @@
     "prompt_en": "Neck stiffness?",
     "prompt_fr": "Raideur de nuque ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "neck stiffness",
     "report_phrase_fr": "raideur de nuque"
@@ -18,10 +18,114 @@
     "prompt_en": "Headache?",
     "prompt_fr": "Céphalée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "headache",
-    "report_phrase_fr": "céphalée"
+    "report_phrase_fr": "céphalée",
+    "followups": [
+      {
+        "key": "neuro.headache.character",
+        "prompt_en": "Character",
+        "prompt_fr": "Caractère",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "throbbing",
+            "label_en": "Throbbing",
+            "label_fr": "Pulsatile"
+          },
+          {
+            "value": "pressing",
+            "label_en": "Pressing / tightening",
+            "label_fr": "En étau"
+          },
+          {
+            "value": "stabbing",
+            "label_en": "Stabbing",
+            "label_fr": "En coup de poignard"
+          }
+        ],
+        "report_phrase_en": "character",
+        "report_phrase_fr": "caractère"
+      },
+      {
+        "key": "neuro.headache.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ],
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité"
+      },
+      {
+        "key": "neuro.headache.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "neuro.headache.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "photophobia",
+            "label_en": "Photophobia",
+            "label_fr": "Photophobie"
+          },
+          {
+            "value": "neck_stiffness",
+            "label_en": "Neck stiffness",
+            "label_fr": "Raideur de nuque"
+          },
+          {
+            "value": "vomiting",
+            "label_en": "Vomiting",
+            "label_fr": "Vomissements"
+          },
+          {
+            "value": "aura",
+            "label_en": "Aura",
+            "label_fr": "Aura"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "neuro.vertigo",
@@ -42,10 +146,47 @@
     "prompt_en": "Syncope?",
     "prompt_fr": "Syncope ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "syncope",
-    "report_phrase_fr": "syncope"
+    "report_phrase_fr": "syncope",
+    "followups": [
+      {
+        "key": "neuro.syncope.circumstances",
+        "prompt_en": "Circumstances",
+        "prompt_fr": "Circonstances de survenue",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "on_exertion",
+            "label_en": "On exertion",
+            "label_fr": "À l'effort"
+          },
+          {
+            "value": "on_standing",
+            "label_en": "On standing",
+            "label_fr": "Au lever (orthostatisme)"
+          },
+          {
+            "value": "at_rest",
+            "label_en": "At rest",
+            "label_fr": "Au repos"
+          }
+        ],
+        "report_phrase_en": "circumstances",
+        "report_phrase_fr": "circonstances de survenue"
+      },
+      {
+        "key": "neuro.syncope.episodes",
+        "prompt_en": "Number of episodes",
+        "prompt_fr": "Nombre d'épisodes",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "number of episodes",
+        "report_phrase_fr": "nombre d'épisodes"
+      }
+    ]
   },
   {
     "key": "neuro.convulsions",
@@ -54,10 +195,73 @@
     "prompt_en": "Convulsions?",
     "prompt_fr": "Convulsions ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "convulsions",
-    "report_phrase_fr": "convulsions"
+    "report_phrase_fr": "convulsions",
+    "followups": [
+      {
+        "key": "neuro.convulsions.type",
+        "prompt_en": "Seizure type",
+        "prompt_fr": "Type de crise",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisée"
+          },
+          {
+            "value": "focal",
+            "label_en": "Focal",
+            "label_fr": "Focale"
+          }
+        ],
+        "report_phrase_en": "seizure type",
+        "report_phrase_fr": "type de crise"
+      },
+      {
+        "key": "neuro.convulsions.duration",
+        "prompt_en": "Duration of seizure",
+        "prompt_fr": "Durée de la crise",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "seizure duration",
+        "report_phrase_fr": "durée de la crise"
+      },
+      {
+        "key": "neuro.convulsions.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "tongue_biting",
+            "label_en": "Tongue biting",
+            "label_fr": "Morsure de langue"
+          },
+          {
+            "value": "urinary_incontinence",
+            "label_en": "Urinary incontinence",
+            "label_fr": "Incontinence urinaire"
+          },
+          {
+            "value": "post_ictal_confusion",
+            "label_en": "Post-ictal confusion",
+            "label_fr": "Confusion post-critique"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "neuro.paresthesia",
@@ -66,10 +270,52 @@
     "prompt_en": "Paresthesia?",
     "prompt_fr": "Paresthésie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "paresthesia",
-    "report_phrase_fr": "paresthésie"
+    "report_phrase_fr": "paresthésie",
+    "followups": [
+      {
+        "key": "neuro.paresthesia.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "hands",
+            "label_en": "Hands",
+            "label_fr": "Mains"
+          },
+          {
+            "value": "feet",
+            "label_en": "Feet",
+            "label_fr": "Pieds"
+          },
+          {
+            "value": "face",
+            "label_en": "Face",
+            "label_fr": "Visage"
+          },
+          {
+            "value": "trunk",
+            "label_en": "Trunk",
+            "label_fr": "Tronc"
+          }
+        ],
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation"
+      },
+      {
+        "key": "neuro.paresthesia.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "neuro.paralysis",
@@ -90,7 +336,7 @@
     "prompt_en": "Hemiplegia?",
     "prompt_fr": "Hémiplégie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "hemiplegia",
     "report_phrase_fr": "hémiplégie"
@@ -114,7 +360,7 @@
     "prompt_en": "Confusion?",
     "prompt_fr": "Confusion mentale ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "confusion",
     "report_phrase_fr": "confusion mentale"
@@ -174,7 +420,7 @@
     "prompt_en": "Memory loss?",
     "prompt_fr": "Troubles de la mémoire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "memory loss",
     "report_phrase_fr": "troubles de la mémoire"
@@ -222,10 +468,68 @@
     "prompt_en": "Limb weakness?",
     "prompt_fr": "Faiblesse d'un membre ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "limb weakness",
-    "report_phrase_fr": "faiblesse d'un membre"
+    "report_phrase_fr": "faiblesse d'un membre",
+    "followups": [
+      {
+        "key": "neuro.limb_weakness.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both sides",
+            "label_fr": "Bilatéral"
+          }
+        ],
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté"
+      },
+      {
+        "key": "neuro.limb_weakness.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ],
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation"
+      },
+      {
+        "key": "neuro.limb_weakness.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "neuro.sensory_loss",
@@ -234,7 +538,7 @@
     "prompt_en": "Sensory loss?",
     "prompt_fr": "Perte de sensibilité ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "sensory loss",
     "report_phrase_fr": "perte de sensibilité"
@@ -346,5 +650,143 @@
     "sex": null,
     "report_phrase_en": "perioral paresthesia",
     "report_phrase_fr": "paresthésies péribuccales"
+  },
+  {
+    "key": "neuro.hx_epilepsy",
+    "system": "neuro",
+    "kind": "history",
+    "prompt_en": "History of epilepsy?",
+    "prompt_fr": "Antécédent d'épilepsie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of epilepsy",
+    "report_phrase_fr": "antécédent d'épilepsie"
+  },
+  {
+    "key": "neuro.hx_stroke",
+    "system": "neuro",
+    "kind": "history",
+    "prompt_en": "Previous stroke?",
+    "prompt_fr": "Antécédent d'AVC ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "previous stroke",
+    "report_phrase_fr": "antécédent d'AVC"
+  },
+  {
+    "key": "neuro.hx_cerebral_malaria",
+    "system": "neuro",
+    "kind": "history",
+    "prompt_en": "History of cerebral malaria?",
+    "prompt_fr": "Antécédent de neuropaludisme ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of cerebral malaria",
+    "report_phrase_fr": "antécédent de neuropaludisme"
+  },
+  {
+    "key": "neuro.hx_head_injury",
+    "system": "neuro",
+    "kind": "history",
+    "prompt_en": "Previous head injury?",
+    "prompt_fr": "Antécédent de traumatisme crânien ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "previous head injury",
+    "report_phrase_fr": "antécédent de traumatisme crânien"
+  },
+  {
+    "key": "neuro.fhx_epilepsy",
+    "system": "neuro",
+    "kind": "genetic",
+    "prompt_en": "Family history of epilepsy?",
+    "prompt_fr": "Antécédents familiaux d'épilepsie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of epilepsy",
+    "report_phrase_fr": "antécédents familiaux d'épilepsie",
+    "followups": [
+      {
+        "key": "neuro.fhx_epilepsy.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Lien de parenté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ],
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "lien de parenté"
+      }
+    ]
+  },
+  {
+    "key": "neuro.fhx_stroke",
+    "system": "neuro",
+    "kind": "genetic",
+    "prompt_en": "Family history of stroke?",
+    "prompt_fr": "Antécédents familiaux d'AVC ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "family history of stroke",
+    "report_phrase_fr": "antécédents familiaux d'AVC",
+    "followups": [
+      {
+        "key": "neuro.fhx_stroke.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Lien de parenté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ],
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "lien de parenté"
+      }
+    ]
   }
 ]

@@ -6,7 +6,7 @@
     "prompt_en": "Myalgia?",
     "prompt_fr": "Myalgie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "myalgia",
     "report_phrase_fr": "myalgie"
@@ -18,10 +18,93 @@
     "prompt_en": "Arthralgia?",
     "prompt_fr": "Arthralgie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "arthralgia",
-    "report_phrase_fr": "arthralgie"
+    "report_phrase_fr": "arthralgie",
+    "followups": [
+      {
+        "key": "musculoskeletal.arthralgia.location",
+        "prompt_en": "Joints affected",
+        "prompt_fr": "Articulations atteintes",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "joints affected",
+        "report_phrase_fr": "articulations atteintes",
+        "options": [
+          {
+            "value": "knee",
+            "label_en": "Knee",
+            "label_fr": "Genou"
+          },
+          {
+            "value": "hip",
+            "label_en": "Hip",
+            "label_fr": "Hanche"
+          },
+          {
+            "value": "shoulder",
+            "label_en": "Shoulder",
+            "label_fr": "Épaule"
+          },
+          {
+            "value": "hands",
+            "label_en": "Hands",
+            "label_fr": "Mains"
+          },
+          {
+            "value": "wrist",
+            "label_en": "Wrist",
+            "label_fr": "Poignet"
+          },
+          {
+            "value": "elbow",
+            "label_en": "Elbow",
+            "label_fr": "Coude"
+          },
+          {
+            "value": "ankle",
+            "label_en": "Ankle",
+            "label_fr": "Cheville"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.arthralgia.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "musculoskeletal.arthralgia.morning_stiffness",
+        "prompt_en": "Morning stiffness",
+        "prompt_fr": "Raideur matinale",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "morning stiffness",
+        "report_phrase_fr": "raideur matinale",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "under_30min",
+            "label_en": "Under 30 minutes",
+            "label_fr": "Moins de 30 minutes"
+          },
+          {
+            "value": "over_30min",
+            "label_en": "Over 30 minutes",
+            "label_fr": "Plus de 30 minutes"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "musculoskeletal.joint_swelling",
@@ -30,10 +113,67 @@
     "prompt_en": "Joint swelling?",
     "prompt_fr": "Gonflement articulaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "joint swelling",
-    "report_phrase_fr": "gonflement articulaire"
+    "report_phrase_fr": "gonflement articulaire",
+    "followups": [
+      {
+        "key": "musculoskeletal.joint_swelling.location",
+        "prompt_en": "Joints affected",
+        "prompt_fr": "Articulations atteintes",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "joints affected",
+        "report_phrase_fr": "articulations atteintes",
+        "options": [
+          {
+            "value": "knee",
+            "label_en": "Knee",
+            "label_fr": "Genou"
+          },
+          {
+            "value": "hip",
+            "label_en": "Hip",
+            "label_fr": "Hanche"
+          },
+          {
+            "value": "shoulder",
+            "label_en": "Shoulder",
+            "label_fr": "Épaule"
+          },
+          {
+            "value": "hands",
+            "label_en": "Hands",
+            "label_fr": "Mains"
+          },
+          {
+            "value": "wrist",
+            "label_en": "Wrist",
+            "label_fr": "Poignet"
+          },
+          {
+            "value": "elbow",
+            "label_en": "Elbow",
+            "label_fr": "Coude"
+          },
+          {
+            "value": "ankle",
+            "label_en": "Ankle",
+            "label_fr": "Cheville"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.joint_swelling.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "musculoskeletal.back_pain",
@@ -42,10 +182,68 @@
     "prompt_en": "Back pain?",
     "prompt_fr": "Rachialgie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "back pain",
-    "report_phrase_fr": "rachialgie"
+    "report_phrase_fr": "rachialgie",
+    "followups": [
+      {
+        "key": "musculoskeletal.back_pain.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation",
+        "options": [
+          {
+            "value": "cervical",
+            "label_en": "Cervical",
+            "label_fr": "Cervicale"
+          },
+          {
+            "value": "thoracic",
+            "label_en": "Thoracic",
+            "label_fr": "Dorsale"
+          },
+          {
+            "value": "lumbar",
+            "label_en": "Lumbar",
+            "label_fr": "Lombaire"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.back_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "musculoskeletal.back_pain.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "musculoskeletal.bone_pain",
@@ -54,10 +252,88 @@
     "prompt_en": "Bone pain?",
     "prompt_fr": "Douleur osseuse ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "bone pain",
-    "report_phrase_fr": "douleur osseuse"
+    "report_phrase_fr": "douleur osseuse",
+    "followups": [
+      {
+        "key": "musculoskeletal.bone_pain.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation",
+        "options": [
+          {
+            "value": "long_bones",
+            "label_en": "Long bones",
+            "label_fr": "Os longs"
+          },
+          {
+            "value": "spine",
+            "label_en": "Spine",
+            "label_fr": "Rachis"
+          },
+          {
+            "value": "ribs",
+            "label_en": "Ribs",
+            "label_fr": "Côtes"
+          },
+          {
+            "value": "pelvis",
+            "label_en": "Pelvis",
+            "label_fr": "Bassin"
+          },
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisée"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.bone_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "musculoskeletal.bone_pain.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "musculoskeletal.joint_stiffness",
@@ -66,7 +342,7 @@
     "prompt_en": "Joint stiffness?",
     "prompt_fr": "Raideur articulaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "joint stiffness",
     "report_phrase_fr": "raideur articulaire"
@@ -78,10 +354,68 @@
     "prompt_en": "Muscle weakness?",
     "prompt_fr": "Faiblesse musculaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "muscle weakness",
-    "report_phrase_fr": "faiblesse musculaire"
+    "report_phrase_fr": "faiblesse musculaire",
+    "followups": [
+      {
+        "key": "musculoskeletal.muscle_weakness.distribution",
+        "prompt_en": "Distribution",
+        "prompt_fr": "Distribution",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "distribution",
+        "report_phrase_fr": "distribution",
+        "options": [
+          {
+            "value": "proximal",
+            "label_en": "Proximal",
+            "label_fr": "Proximale"
+          },
+          {
+            "value": "distal",
+            "label_en": "Distal",
+            "label_fr": "Distale"
+          },
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisée"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.muscle_weakness.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      },
+      {
+        "key": "musculoskeletal.muscle_weakness.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "musculoskeletal.limping",
@@ -102,7 +436,7 @@
     "prompt_en": "Difficulty walking?",
     "prompt_fr": "Difficulté à la marche ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "difficulty walking",
     "report_phrase_fr": "difficulté à la marche"
@@ -186,7 +520,7 @@
     "prompt_en": "Reduced range of motion?",
     "prompt_fr": "Limitation des mouvements ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "reduced range of motion",
     "report_phrase_fr": "limitation des mouvements"
@@ -294,7 +628,7 @@
     "prompt_en": "Joint redness?",
     "prompt_fr": "Rougeur articulaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "joint redness",
     "report_phrase_fr": "rougeur articulaire"
@@ -310,5 +644,98 @@
     "sex": null,
     "report_phrase_en": "difficulty climbing stairs",
     "report_phrase_fr": "difficulté à monter les escaliers"
+  },
+  {
+    "key": "musculoskeletal.hx_trauma",
+    "system": "musculoskeletal",
+    "kind": "history",
+    "prompt_en": "Recent trauma or injury?",
+    "prompt_fr": "Traumatisme récent ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "recent trauma",
+    "report_phrase_fr": "traumatisme récent"
+  },
+  {
+    "key": "musculoskeletal.hx_sickle_cell",
+    "system": "musculoskeletal",
+    "kind": "history",
+    "prompt_en": "Known sickle-cell disease?",
+    "prompt_fr": "Drépanocytose connue ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known sickle-cell disease",
+    "report_phrase_fr": "drépanocytose connue"
+  },
+  {
+    "key": "musculoskeletal.hx_gout",
+    "system": "musculoskeletal",
+    "kind": "history",
+    "prompt_en": "History of gout?",
+    "prompt_fr": "Antécédents de goutte ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of gout",
+    "report_phrase_fr": "antécédents de goutte"
+  },
+  {
+    "key": "musculoskeletal.hx_tuberculosis",
+    "system": "musculoskeletal",
+    "kind": "history",
+    "prompt_en": "History of tuberculosis?",
+    "prompt_fr": "Antécédents de tuberculose ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of tuberculosis",
+    "report_phrase_fr": "antécédents de tuberculose"
+  },
+  {
+    "key": "musculoskeletal.fhx_arthritis",
+    "system": "musculoskeletal",
+    "kind": "genetic",
+    "prompt_en": "Family history of arthritis?",
+    "prompt_fr": "Antécédents familiaux d'arthrite ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of arthritis",
+    "report_phrase_fr": "antécédents familiaux d'arthrite",
+    "followups": [
+      {
+        "key": "musculoskeletal.fhx_arthritis.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Apparenté atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "apparenté atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
   }
 ]

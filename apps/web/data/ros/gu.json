@@ -6,10 +6,52 @@
     "prompt_en": "Dysuria?",
     "prompt_fr": "Dysurie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "dysuria",
-    "report_phrase_fr": "dysurie"
+    "report_phrase_fr": "dysurie",
+    "followups": [
+      {
+        "key": "gu.dysuria.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "gu.dysuria.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          },
+          {
+            "value": "urgency",
+            "label_en": "Urinary urgency",
+            "label_fr": "Mictions impérieuses"
+          },
+          {
+            "value": "urethral_discharge",
+            "label_en": "Urethral discharge",
+            "label_fr": "Écoulement urétral"
+          },
+          {
+            "value": "flank_pain",
+            "label_en": "Flank pain",
+            "label_fr": "Douleur lombaire"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "gu.polyuria",
@@ -30,10 +72,73 @@
     "prompt_en": "Hematuria?",
     "prompt_fr": "Hématurie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "hematuria",
-    "report_phrase_fr": "hématurie"
+    "report_phrase_fr": "hématurie",
+    "followups": [
+      {
+        "key": "gu.hematuria.timing",
+        "prompt_en": "Timing in stream",
+        "prompt_fr": "Chronologie dans la miction",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "initial",
+            "label_en": "Initial",
+            "label_fr": "Initiale"
+          },
+          {
+            "value": "terminal",
+            "label_en": "Terminal",
+            "label_fr": "Terminale"
+          },
+          {
+            "value": "total",
+            "label_en": "Total",
+            "label_fr": "Totale"
+          }
+        ],
+        "report_phrase_en": "timing in stream",
+        "report_phrase_fr": "chronologie dans la miction"
+      },
+      {
+        "key": "gu.hematuria.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "gu.hematuria.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "clots",
+            "label_en": "Clots",
+            "label_fr": "Caillots"
+          },
+          {
+            "value": "pain",
+            "label_en": "Pain on urination",
+            "label_fr": "Douleur mictionnelle"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "gu.pollakiuria",
@@ -42,7 +147,7 @@
     "prompt_en": "Pollakiuria?",
     "prompt_fr": "Pollakiurie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "pollakiuria",
     "report_phrase_fr": "pollakiurie"
@@ -66,7 +171,7 @@
     "prompt_en": "Urinary incontinence?",
     "prompt_fr": "Incontinence urinaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "urinary incontinence",
     "report_phrase_fr": "incontinence urinaire"
@@ -78,7 +183,7 @@
     "prompt_en": "Urinary retention?",
     "prompt_fr": "Rétention aiguë d'urine ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "urinary retention",
     "report_phrase_fr": "rétention aiguë d'urine"
@@ -90,10 +195,47 @@
     "prompt_en": "Urethral discharge?",
     "prompt_fr": "Écoulement urétral ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "urethral discharge",
-    "report_phrase_fr": "écoulement urétral"
+    "report_phrase_fr": "écoulement urétral",
+    "followups": [
+      {
+        "key": "gu.urethral_discharge.character",
+        "prompt_en": "Character",
+        "prompt_fr": "Aspect",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "purulent",
+            "label_en": "Purulent",
+            "label_fr": "Purulent"
+          },
+          {
+            "value": "clear",
+            "label_en": "Clear",
+            "label_fr": "Clair"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Bloody",
+            "label_fr": "Sanglant"
+          }
+        ],
+        "report_phrase_en": "character",
+        "report_phrase_fr": "aspect"
+      },
+      {
+        "key": "gu.urethral_discharge.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "gu.flank_pain",
@@ -102,10 +244,78 @@
     "prompt_en": "Flank pain?",
     "prompt_fr": "Douleur lombaire ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "flank pain",
-    "report_phrase_fr": "douleur lombaire"
+    "report_phrase_fr": "douleur lombaire",
+    "followups": [
+      {
+        "key": "gu.flank_pain.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both sides",
+            "label_fr": "Bilatéral"
+          }
+        ],
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté"
+      },
+      {
+        "key": "gu.flank_pain.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ],
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité"
+      },
+      {
+        "key": "gu.flank_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "gu.pelvic_pain",
@@ -162,7 +372,7 @@
     "prompt_en": "Oliguria?",
     "prompt_fr": "Oligurie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "oliguria",
     "report_phrase_fr": "oligurie"
@@ -270,7 +480,7 @@
     "prompt_en": "Genital ulcer?",
     "prompt_fr": "Ulcération génitale ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "genital ulcer",
     "report_phrase_fr": "ulcération génitale"
@@ -282,10 +492,64 @@
     "prompt_en": "Renal colic?",
     "prompt_fr": "Colique néphrétique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "renal colic",
-    "report_phrase_fr": "colique néphrétique"
+    "report_phrase_fr": "colique néphrétique",
+    "followups": [
+      {
+        "key": "gu.renal_colic.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both sides",
+            "label_fr": "Bilatéral"
+          }
+        ],
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté"
+      },
+      {
+        "key": "gu.renal_colic.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "nausea_vomiting",
+            "label_en": "Nausea / vomiting",
+            "label_fr": "Nausées / vomissements"
+          },
+          {
+            "value": "hematuria",
+            "label_en": "Hematuria",
+            "label_fr": "Hématurie"
+          },
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
   },
   {
     "key": "gu.reduced_libido",
@@ -334,5 +598,98 @@
     "sex": null,
     "report_phrase_en": "hematospermia",
     "report_phrase_fr": "hémospermie"
+  },
+  {
+    "key": "gu.hx_kidney_stones",
+    "system": "gu",
+    "kind": "history",
+    "prompt_en": "History of kidney stones?",
+    "prompt_fr": "Antécédent de lithiase urinaire ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of kidney stones",
+    "report_phrase_fr": "antécédent de lithiase urinaire"
+  },
+  {
+    "key": "gu.hx_sti",
+    "system": "gu",
+    "kind": "history",
+    "prompt_en": "Previous sexually transmitted infection?",
+    "prompt_fr": "Antécédent d'infection sexuellement transmissible ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "previous sexually transmitted infection",
+    "report_phrase_fr": "antécédent d'infection sexuellement transmissible"
+  },
+  {
+    "key": "gu.hx_schistosomiasis",
+    "system": "gu",
+    "kind": "history",
+    "prompt_en": "History of urinary schistosomiasis?",
+    "prompt_fr": "Antécédent de bilharziose urinaire ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of urinary schistosomiasis",
+    "report_phrase_fr": "antécédent de bilharziose urinaire"
+  },
+  {
+    "key": "gu.hx_recurrent_uti",
+    "system": "gu",
+    "kind": "history",
+    "prompt_en": "Recurrent urinary tract infections?",
+    "prompt_fr": "Infections urinaires à répétition ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "recurrent urinary tract infections",
+    "report_phrase_fr": "infections urinaires à répétition"
+  },
+  {
+    "key": "gu.fhx_kidney_disease",
+    "system": "gu",
+    "kind": "genetic",
+    "prompt_en": "Family history of kidney disease?",
+    "prompt_fr": "Antécédents familiaux de maladie rénale ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of kidney disease",
+    "report_phrase_fr": "antécédents familiaux de maladie rénale",
+    "followups": [
+      {
+        "key": "gu.fhx_kidney_disease.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Lien de parenté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ],
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "lien de parenté"
+      }
+    ]
   }
 ]

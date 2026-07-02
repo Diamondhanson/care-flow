@@ -6,10 +6,83 @@
     "prompt_en": "Fever?",
     "prompt_fr": "Fièvre ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "fever",
-    "report_phrase_fr": "fièvre"
+    "report_phrase_fr": "fièvre",
+    "followups": [
+      {
+        "key": "general.fever.pattern",
+        "prompt_en": "Pattern",
+        "prompt_fr": "Allure",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "pattern",
+        "report_phrase_fr": "allure de la fièvre",
+        "options": [
+          {
+            "value": "continuous",
+            "label_en": "Continuous",
+            "label_fr": "Continue"
+          },
+          {
+            "value": "intermittent",
+            "label_en": "Intermittent",
+            "label_fr": "Intermittente"
+          },
+          {
+            "value": "remittent",
+            "label_en": "Remittent",
+            "label_fr": "Rémittente"
+          },
+          {
+            "value": "periodic",
+            "label_en": "Periodic (recurring episodes)",
+            "label_fr": "Périodique (accès récurrents)"
+          }
+        ]
+      },
+      {
+        "key": "general.fever.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "general.fever.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "chills",
+            "label_en": "Chills",
+            "label_fr": "Frissons"
+          },
+          {
+            "value": "night_sweats",
+            "label_en": "Night sweats",
+            "label_fr": "Sueurs nocturnes"
+          },
+          {
+            "value": "rash",
+            "label_en": "Rash",
+            "label_fr": "Éruption cutanée"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucun"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "general.asthenia",
@@ -18,7 +91,7 @@
     "prompt_en": "Asthenia?",
     "prompt_fr": "Asthénie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "asthenia",
     "report_phrase_fr": "asthénie"
@@ -30,10 +103,51 @@
     "prompt_en": "Weight loss?",
     "prompt_fr": "Amaigrissement ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "weight loss",
-    "report_phrase_fr": "amaigrissement"
+    "report_phrase_fr": "amaigrissement",
+    "followups": [
+      {
+        "key": "general.weight_loss.amount",
+        "prompt_en": "Approximate weight lost (kg)",
+        "prompt_fr": "Poids perdu approximatif (kg)",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "weight lost (kg)",
+        "report_phrase_fr": "poids perdu (kg)"
+      },
+      {
+        "key": "general.weight_loss.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "general.weight_loss.intent",
+        "prompt_en": "Intentional?",
+        "prompt_fr": "Intentionnelle ?",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "intentionality",
+        "report_phrase_fr": "caractère intentionnel",
+        "options": [
+          {
+            "value": "intentional",
+            "label_en": "Intentional",
+            "label_fr": "Intentionnelle"
+          },
+          {
+            "value": "unintentional",
+            "label_en": "Unintentional",
+            "label_fr": "Involontaire"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "general.night_sweats",
@@ -42,10 +156,52 @@
     "prompt_en": "Night sweats?",
     "prompt_fr": "Sueurs nocturnes ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "night sweats",
-    "report_phrase_fr": "sueurs nocturnes"
+    "report_phrase_fr": "sueurs nocturnes",
+    "followups": [
+      {
+        "key": "general.night_sweats.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Sévérité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "sévérité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      },
+      {
+        "key": "general.night_sweats.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "general.chills",
@@ -54,7 +210,7 @@
     "prompt_en": "Chills?",
     "prompt_fr": "Frissons ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "chills",
     "report_phrase_fr": "frissons"
@@ -66,10 +222,42 @@
     "prompt_en": "Generalized edema?",
     "prompt_fr": "Œdème généralisé ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "generalized edema",
-    "report_phrase_fr": "œdème généralisé"
+    "report_phrase_fr": "œdème généralisé",
+    "followups": [
+      {
+        "key": "general.generalized_edema.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      },
+      {
+        "key": "general.generalized_edema.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "general.anasarca",
@@ -138,7 +326,7 @@
     "prompt_en": "Pallor?",
     "prompt_fr": "Pâleur ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "pallor",
     "report_phrase_fr": "pâleur"
@@ -174,10 +362,73 @@
     "prompt_en": "Lymphadenopathy?",
     "prompt_fr": "Adénopathie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "lymphadenopathy",
-    "report_phrase_fr": "adénopathie"
+    "report_phrase_fr": "adénopathie",
+    "followups": [
+      {
+        "key": "general.lymphadenopathy.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Siège",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "siège",
+        "options": [
+          {
+            "value": "cervical",
+            "label_en": "Cervical",
+            "label_fr": "Cervical"
+          },
+          {
+            "value": "axillary",
+            "label_en": "Axillary",
+            "label_fr": "Axillaire"
+          },
+          {
+            "value": "inguinal",
+            "label_en": "Inguinal",
+            "label_fr": "Inguinal"
+          },
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisé"
+          }
+        ]
+      },
+      {
+        "key": "general.lymphadenopathy.tenderness",
+        "prompt_en": "Tenderness",
+        "prompt_fr": "Sensibilité",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "tenderness",
+        "report_phrase_fr": "sensibilité",
+        "options": [
+          {
+            "value": "painful",
+            "label_en": "Painful",
+            "label_fr": "Douloureuse"
+          },
+          {
+            "value": "painless",
+            "label_en": "Painless",
+            "label_fr": "Indolore"
+          }
+        ]
+      },
+      {
+        "key": "general.lymphadenopathy.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "general.heat_intolerance",
@@ -310,5 +561,98 @@
     "sex": null,
     "report_phrase_en": "weight gain",
     "report_phrase_fr": "prise de poids"
+  },
+  {
+    "key": "general.hx_sickle_cell",
+    "system": "general",
+    "kind": "genetic",
+    "prompt_en": "Known sickle cell disease?",
+    "prompt_fr": "Drépanocytose connue ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known sickle cell disease",
+    "report_phrase_fr": "drépanocytose connue"
+  },
+  {
+    "key": "general.fhx_sickle_cell",
+    "system": "general",
+    "kind": "genetic",
+    "prompt_en": "Family history of sickle cell disease?",
+    "prompt_fr": "Antécédents familiaux de drépanocytose ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "family history of sickle cell disease",
+    "report_phrase_fr": "antécédents familiaux de drépanocytose",
+    "followups": [
+      {
+        "key": "general.fhx_sickle_cell.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Parent atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "parent atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "general.hx_hiv",
+    "system": "general",
+    "kind": "history",
+    "prompt_en": "Known HIV infection?",
+    "prompt_fr": "Infection à VIH connue ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known HIV infection",
+    "report_phrase_fr": "infection à VIH connue"
+  },
+  {
+    "key": "general.fhx_diabetes",
+    "system": "general",
+    "kind": "genetic",
+    "prompt_en": "Family history of diabetes?",
+    "prompt_fr": "Antécédents familiaux de diabète ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of diabetes",
+    "report_phrase_fr": "antécédents familiaux de diabète"
+  },
+  {
+    "key": "general.hx_blood_transfusion",
+    "system": "general",
+    "kind": "history",
+    "prompt_en": "Previous blood transfusion?",
+    "prompt_fr": "Antécédent de transfusion sanguine ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "previous blood transfusion",
+    "report_phrase_fr": "antécédent de transfusion sanguine"
   }
 ]

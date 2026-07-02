@@ -6,10 +6,83 @@
     "prompt_en": "Chest pain?",
     "prompt_fr": "Douleur thoracique ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "chest pain",
-    "report_phrase_fr": "douleur thoracique"
+    "report_phrase_fr": "douleur thoracique",
+    "followups": [
+      {
+        "key": "cardiac.chest_pain.character",
+        "prompt_en": "Character",
+        "prompt_fr": "Caractère",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "character",
+        "report_phrase_fr": "caractère",
+        "options": [
+          {
+            "value": "crushing",
+            "label_en": "Crushing",
+            "label_fr": "Écrasante"
+          },
+          {
+            "value": "sharp",
+            "label_en": "Sharp",
+            "label_fr": "Aiguë"
+          },
+          {
+            "value": "dull",
+            "label_en": "Dull",
+            "label_fr": "Sourde"
+          },
+          {
+            "value": "burning",
+            "label_en": "Burning",
+            "label_fr": "Brûlure"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.chest_pain.radiation",
+        "prompt_en": "Radiation",
+        "prompt_fr": "Irradiation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "radiation",
+        "report_phrase_fr": "irradiation",
+        "options": [
+          {
+            "value": "left_arm",
+            "label_en": "Left arm",
+            "label_fr": "Bras gauche"
+          },
+          {
+            "value": "jaw",
+            "label_en": "Jaw",
+            "label_fr": "Mâchoire"
+          },
+          {
+            "value": "back",
+            "label_en": "Back",
+            "label_fr": "Dos"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.chest_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "cardiac.palpitations",
@@ -18,10 +91,78 @@
     "prompt_en": "Palpitations?",
     "prompt_fr": "Palpitations ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "palpitations",
-    "report_phrase_fr": "palpitations"
+    "report_phrase_fr": "palpitations",
+    "followups": [
+      {
+        "key": "cardiac.palpitations.rhythm",
+        "prompt_en": "Rhythm",
+        "prompt_fr": "Rythme ressenti",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "rhythm",
+        "report_phrase_fr": "rythme ressenti",
+        "options": [
+          {
+            "value": "regular_fast",
+            "label_en": "Regular and fast",
+            "label_fr": "Régulier et rapide"
+          },
+          {
+            "value": "irregular",
+            "label_en": "Irregular",
+            "label_fr": "Irrégulier"
+          },
+          {
+            "value": "skipped_beats",
+            "label_en": "Skipped beats",
+            "label_fr": "Extrasystoles ressenties"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.palpitations.duration",
+        "prompt_en": "Duration of episodes",
+        "prompt_fr": "Durée des épisodes",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "episode duration",
+        "report_phrase_fr": "durée des épisodes"
+      },
+      {
+        "key": "cardiac.palpitations.associated",
+        "prompt_en": "Associated symptoms",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated symptoms",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "dizziness",
+            "label_en": "Dizziness",
+            "label_fr": "Vertiges"
+          },
+          {
+            "value": "syncope",
+            "label_en": "Syncope",
+            "label_fr": "Syncope"
+          },
+          {
+            "value": "chest_pain",
+            "label_en": "Chest pain",
+            "label_fr": "Douleur thoracique"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucun"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "cardiac.intermittent_claudication",
@@ -30,7 +171,7 @@
     "prompt_en": "Intermittent claudication?",
     "prompt_fr": "Claudication intermittente ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "intermittent claudication",
     "report_phrase_fr": "claudication intermittente"
@@ -42,7 +183,7 @@
     "prompt_en": "Orthopnea?",
     "prompt_fr": "Orthopnée ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "orthopnea",
     "report_phrase_fr": "orthopnée"
@@ -54,7 +195,7 @@
     "prompt_en": "Paroxysmal nocturnal dyspnea?",
     "prompt_fr": "Dyspnée paroxystique nocturne ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "paroxysmal nocturnal dyspnea",
     "report_phrase_fr": "dyspnée paroxystique nocturne"
@@ -66,10 +207,52 @@
     "prompt_en": "Exertional dyspnea?",
     "prompt_fr": "Dyspnée d'effort ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "exertional dyspnea",
-    "report_phrase_fr": "dyspnée d'effort"
+    "report_phrase_fr": "dyspnée d'effort",
+    "followups": [
+      {
+        "key": "cardiac.exertional_dyspnea.exertion_level",
+        "prompt_en": "Exertion level triggering dyspnea",
+        "prompt_fr": "Niveau d'effort déclenchant",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "exertion level",
+        "report_phrase_fr": "niveau d'effort déclenchant",
+        "options": [
+          {
+            "value": "heavy_exertion",
+            "label_en": "Heavy exertion",
+            "label_fr": "Effort important"
+          },
+          {
+            "value": "moderate_exertion",
+            "label_en": "Moderate exertion (walking uphill)",
+            "label_fr": "Effort modéré (marche en côte)"
+          },
+          {
+            "value": "light_exertion",
+            "label_en": "Light exertion (walking on flat ground)",
+            "label_fr": "Effort léger (marche en terrain plat)"
+          },
+          {
+            "value": "at_rest",
+            "label_en": "At rest",
+            "label_fr": "Au repos"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.exertional_dyspnea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
   },
   {
     "key": "cardiac.ankle_swelling",
@@ -78,7 +261,7 @@
     "prompt_en": "Ankle swelling?",
     "prompt_fr": "Œdème des chevilles ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "ankle swelling",
     "report_phrase_fr": "œdème des chevilles"
@@ -90,10 +273,78 @@
     "prompt_en": "Bilateral leg edema?",
     "prompt_fr": "Œdème des membres inférieurs ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "bilateral leg edema",
-    "report_phrase_fr": "œdème des membres inférieurs"
+    "report_phrase_fr": "œdème des membres inférieurs",
+    "followups": [
+      {
+        "key": "cardiac.bilateral_leg_edema.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "cardiac.bilateral_leg_edema.pattern",
+        "prompt_en": "Daily pattern",
+        "prompt_fr": "Évolution dans la journée",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "daily pattern",
+        "report_phrase_fr": "évolution dans la journée",
+        "options": [
+          {
+            "value": "worse_evening",
+            "label_en": "Worse in the evening",
+            "label_fr": "Majoré le soir"
+          },
+          {
+            "value": "worse_morning",
+            "label_en": "Worse in the morning",
+            "label_fr": "Majoré le matin"
+          },
+          {
+            "value": "constant",
+            "label_en": "Constant",
+            "label_fr": "Permanent"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.bilateral_leg_edema.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Sévérité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "sévérité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "cardiac.cyanosis",
@@ -114,10 +365,74 @@
     "prompt_en": "Presyncope?",
     "prompt_fr": "Lipothymie ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "presyncope",
-    "report_phrase_fr": "lipothymie"
+    "report_phrase_fr": "lipothymie",
+    "followups": [
+      {
+        "key": "cardiac.presyncope.trigger",
+        "prompt_en": "Trigger",
+        "prompt_fr": "Circonstance déclenchante",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "trigger",
+        "report_phrase_fr": "circonstance déclenchante",
+        "options": [
+          {
+            "value": "on_standing",
+            "label_en": "On standing",
+            "label_fr": "Au lever"
+          },
+          {
+            "value": "on_exertion",
+            "label_en": "On exertion",
+            "label_fr": "À l'effort"
+          },
+          {
+            "value": "at_rest",
+            "label_en": "At rest",
+            "label_fr": "Au repos"
+          },
+          {
+            "value": "emotional_stress",
+            "label_en": "Emotional stress",
+            "label_fr": "Stress émotionnel"
+          }
+        ]
+      },
+      {
+        "key": "cardiac.presyncope.associated",
+        "prompt_en": "Associated symptoms",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated symptoms",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "palpitations",
+            "label_en": "Palpitations",
+            "label_fr": "Palpitations"
+          },
+          {
+            "value": "chest_pain",
+            "label_en": "Chest pain",
+            "label_fr": "Douleur thoracique"
+          },
+          {
+            "value": "sweating",
+            "label_en": "Sweating",
+            "label_fr": "Sueurs"
+          },
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucun"
+          }
+        ]
+      }
+    ]
   },
   {
     "key": "cardiac.retrosternal_chest_pain",
@@ -150,7 +465,7 @@
     "prompt_en": "Calf swelling?",
     "prompt_fr": "Œdème du mollet ?",
     "type": "boolean",
-    "key_question": false,
+    "key_question": true,
     "sex": null,
     "report_phrase_en": "calf swelling",
     "report_phrase_fr": "œdème du mollet"
@@ -202,5 +517,98 @@
     "sex": null,
     "report_phrase_en": "orthostatic dizziness",
     "report_phrase_fr": "vertige au lever"
+  },
+  {
+    "key": "cardiac.hx_hypertension",
+    "system": "cardiac",
+    "kind": "history",
+    "prompt_en": "Known hypertension?",
+    "prompt_fr": "Hypertension artérielle connue ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known hypertension",
+    "report_phrase_fr": "hypertension artérielle connue"
+  },
+  {
+    "key": "cardiac.hx_diabetes",
+    "system": "cardiac",
+    "kind": "history",
+    "prompt_en": "Known diabetes?",
+    "prompt_fr": "Diabète connu ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known diabetes mellitus",
+    "report_phrase_fr": "diabète connu"
+  },
+  {
+    "key": "cardiac.hx_rheumatic_fever",
+    "system": "cardiac",
+    "kind": "history",
+    "prompt_en": "History of rheumatic fever?",
+    "prompt_fr": "Antécédent de rhumatisme articulaire aigu ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of rheumatic fever",
+    "report_phrase_fr": "antécédent de rhumatisme articulaire aigu"
+  },
+  {
+    "key": "cardiac.fhx_early_cad",
+    "system": "cardiac",
+    "kind": "genetic",
+    "prompt_en": "Family history of premature coronary artery disease?",
+    "prompt_fr": "Antécédents familiaux de coronaropathie précoce ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "family history of premature coronary artery disease",
+    "report_phrase_fr": "antécédents familiaux de coronaropathie précoce",
+    "followups": [
+      {
+        "key": "cardiac.fhx_early_cad.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Parent atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "parent atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "cardiac.fhx_sudden_death",
+    "system": "cardiac",
+    "kind": "genetic",
+    "prompt_en": "Family history of sudden cardiac death?",
+    "prompt_fr": "Antécédents familiaux de mort subite ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of sudden cardiac death",
+    "report_phrase_fr": "antécédents familiaux de mort subite cardiaque"
   }
 ]
