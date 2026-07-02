@@ -141,9 +141,9 @@ describe("ROS question bank", () => {
 
   it("every system has authored key questions and history/genetics nodes", () => {
     for (const system of ROS_SYSTEMS) {
-      const module = getSystemModule(system);
-      const keyQuestions = module.filter((q) => q.key_question === true);
-      const background = module.filter((q) => q.kind !== "symptom");
+      const systemModule = getSystemModule(system);
+      const keyQuestions = systemModule.filter((q) => q.key_question === true);
+      const background = systemModule.filter((q) => q.kind !== "symptom");
       expect(keyQuestions.length, system).toBeGreaterThanOrEqual(5);
       expect(background.length, system).toBeGreaterThanOrEqual(3);
     }

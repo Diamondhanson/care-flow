@@ -69,7 +69,7 @@ describe("questionApplies / sex gating", () => {
 });
 
 describe("unansweredKeyQuestions (mark-remaining-as-No set)", () => {
-  const module: RosQuestion[] = [
+  const systemModule: RosQuestion[] = [
     boolQ("cardiac.chest_pain", { key_question: true }),
     boolQ("cardiac.palpitations", { key_question: true }),
     boolQ("cardiac.minor_symptom"),
@@ -83,7 +83,7 @@ describe("unansweredKeyQuestions (mark-remaining-as-No set)", () => {
 
   it("returns only unanswered boolean key questions that pass the sex gate", () => {
     const result = unansweredKeyQuestions(
-      module,
+      systemModule,
       new Set(["cardiac.chest_pain"]),
       "male",
     );
@@ -91,7 +91,7 @@ describe("unansweredKeyQuestions (mark-remaining-as-No set)", () => {
   });
 
   it("includes sex-gated questions for an eligible patient", () => {
-    const result = unansweredKeyQuestions(module, new Set(), "female");
+    const result = unansweredKeyQuestions(systemModule, new Set(), "female");
     expect(result.map((q) => q.key)).toContain("obstetric.gated");
   });
 });

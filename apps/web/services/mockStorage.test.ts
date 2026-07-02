@@ -607,4 +607,19 @@ describe("SUPABASE_TABLES", () => {
     );
     expect(order("care_plan_items")).toBeLessThan(order("care_plan_entries"));
   });
+
+  it("lists the Phase 21 tables after their FK parents", () => {
+    const order = (t: string) => SUPABASE_TABLES.indexOf(t);
+    expect(order("patient_history")).toBeGreaterThan(order("patients"));
+    expect(order("ros_responses")).toBeGreaterThan(order("visits"));
+    expect(order("ros_responses")).toBeGreaterThan(order("consultations"));
+  });
+});
+
+describe("normalizeDatabase (Phase 21 collections)", () => {
+  it("heals an old persisted blob to empty history/ROS collections", () => {
+    const db = normalizeDatabase({ patients: [makePatient()] });
+    expect(db.patientHistory).toEqual([]);
+    expect(db.rosResponses).toEqual([]);
+  });
 });

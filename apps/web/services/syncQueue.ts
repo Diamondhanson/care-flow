@@ -55,6 +55,8 @@ const VERSIONED_TABLES: ReadonlySet<string> = new Set([
   "admissions",
   "allergies",
   "care_plan_items",
+  "patient_history",
+  "ros_responses",
 ]);
 
 /** The kind of row change to replay against the server. */
