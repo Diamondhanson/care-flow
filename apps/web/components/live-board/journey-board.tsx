@@ -6,11 +6,20 @@ import {
   getActiveVisitsForDepartment,
   getAdmissionForVisit,
   getBedById,
+  getCarePlanEntriesForAdmission,
+  getCarePlanItemsForAdmission,
   getDepartmentById,
+  getMedicationAdministrationsForPrescription,
   getPatientById,
+  getPrescriptionsForVisit,
   getStaffById,
   getTreatmentRecordsForVisit,
 } from "@/services/mockStorage";
+import {
+  countDue,
+  doctorNeedsYouCount,
+} from "@/components/care-plans/collaboration";
+import type { MedicationAdministration } from "@careflow/shared";
 import {
   BOARD_COLUMNS,
   columnForStage,
@@ -50,7 +59,31 @@ function buildColumns(departmentId: string, t: TFunction): Columns {
     const doctor = visit.attending_doctor_id
       ? getStaffById(visit.attending_doctor_id)
       : undefined;
-    const latestGcs = getTreatmentRecordsForVisit(visit.id)[0]?.gcs_score ?? null;
+    const records = getTreatmentRecordsForVisit(visit.id);
+    const latestGcs = records[0]?.gcs_score ?? null;
+
+    // Phase 20 — collaboration counts for inpatients (drive the card badge).
+    const admission = getAdmissionForVisit(visit.id);
+    let dueCount = 0;
+    let needsYouCount = 0;
+    if (admission) {
+      const items = getCarePlanItemsForAdmission(admission.id);
+      const entries = getCarePlanEntriesForAdmission(admission.id);
+      const prescriptions = getPrescriptionsForVisit(visit.id);
+      const administrationsByRx: Record<string, MedicationAdministration[]> = {};
+      for (const rx of prescriptions) {
+        administrationsByRx[rx.id] =
+          getMedicationAdministrationsForPrescription(rx.id);
+      }
+      dueCount = countDue({
+        prescriptions,
+        administrationsByRx,
+        items,
+        entries,
+        lastVitalsAt: records[0]?.recorded_at ?? null,
+      });
+      needsYouCount = doctorNeedsYouCount(entries, records[0] ?? null);
+    }
 
     columns[column.key].push({
       visitId: visit.id,
@@ -66,6 +99,8 @@ function buildColumns(departmentId: string, t: TFunction): Columns {
       gcs: latestGcs,
       triage: visit.triage_level,
       nextStepKey: nextStepLabel(visit.stage, visit.visit_type),
+      dueCount,
+      needsYouCount,
     });
   }
   return columns;

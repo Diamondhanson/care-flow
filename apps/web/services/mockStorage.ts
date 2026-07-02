@@ -28,8 +28,10 @@ import type {
   BillableItemId,
   BillingCategory,
   BillingUnit,
+  CareItemKind,
   CareNeedCategory,
   CarePlanEntry,
+  CarePlanEntryId,
   CarePlanItem,
   CarePlanItemId,
   CareStage,
@@ -813,11 +815,18 @@ export interface AddAllergyInput {
 }
 
 export interface AddCarePlanItemInput {
-  category: CareNeedCategory;
+  /** Henderson tag — only for nursing_need items; omit for doctor instructions/monitoring. */
+  category?: CareNeedCategory | null;
   description: string;
   frequency?: string | null;
   goal?: string | null;
   created_by_id?: StaffId | null;
+  /** Phase 20 shared list — defaults to 'nursing_need'. */
+  kind?: CareItemKind;
+  /** Who raised it (for color-coding "who asked"). */
+  authored_role?: StaffRole | null;
+  /** Monitoring orders only: 'vitals' anchors due/overdue on treatment records. */
+  monitors?: string | null;
 }
 
 export interface AddCarePlanEntryInput {
@@ -826,6 +835,8 @@ export interface AddCarePlanEntryInput {
   care_plan_item_id?: CarePlanItemId | null;
   /** Mark as a shift-handover message for the next nurse. */
   is_handover?: boolean;
+  /** Phase 20 — flag this note to the doctor's "needs you" queue. */
+  needs_doctor?: boolean;
   recorded_by_id?: StaffId | null;
 }
 
@@ -1386,6 +1397,86 @@ export function getAdmittedPatientsForCarePlan(): CarePlanPatient[] {
     });
 }
 
+/**
+ * Raw, tenant-scoped data for every active inpatient — the input the
+ * cross-department worklist page feeds into the pure collaboration helpers
+ * (buildPatientWorklist / doctorNeedsYouCount). Kept in the service layer so the
+ * page stays thin and the helpers stay storage-agnostic. `records` is sorted
+ * newest-first so `records[0]` is the latest vitals reading.
+ */
+export interface InpatientCollabData {
+  admissionId: string;
+  visitId: string;
+  patientName: string;
+  mrn: string;
+  /** Bed label if assigned, else ward name, else null. */
+  location: string | null;
+  departmentName: string | null;
+  items: CarePlanItem[];
+  entries: CarePlanEntry[];
+  prescriptions: Prescription[];
+  administrationsByRx: Record<string, MedicationAdministration[]>;
+  records: TreatmentRecord[];
+}
+
+export function getActiveInpatientCollabData(): InpatientCollabData[] {
+  const db = loadScoped();
+  return db.admissions
+    .filter((a) => a.status === "active")
+    .map((admission) => {
+      const visit = db.visits.find((v) => v.id === admission.visit_id);
+      const patient = db.patients.find((p) => p.id === admission.patient_id);
+      const ward = admission.ward_id
+        ? db.wards.find((w) => w.id === admission.ward_id)
+        : undefined;
+      const bed = admission.bed_id
+        ? db.beds.find((b) => b.id === admission.bed_id)
+        : undefined;
+      const department = ward?.department_id
+        ? db.departments.find((d) => d.id === ward.department_id)
+        : visit?.department_id
+          ? db.departments.find((d) => d.id === visit.department_id)
+          : undefined;
+      const items = db.carePlanItems.filter(
+        (i) => i.admission_id === admission.id,
+      );
+      const entries = db.carePlanEntries.filter(
+        (e) => e.admission_id === admission.id,
+      );
+      const prescriptions = visit
+        ? db.prescriptions.filter((p) => p.visit_id === visit.id)
+        : [];
+      const administrationsByRx: Record<string, MedicationAdministration[]> = {};
+      for (const rx of prescriptions) {
+        administrationsByRx[rx.id] = db.medicationAdministrations.filter(
+          (m) => m.prescription_id === rx.id,
+        );
+      }
+      const records = visit
+        ? db.treatmentRecords
+            .filter((r) => r.visit_id === visit.id)
+            .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at))
+        : [];
+      const displayName =
+        patient?.is_emergency_anonymous && patient.anonymous_identifier
+          ? patient.anonymous_identifier
+          : (patient?.full_name ?? "—");
+      return {
+        admissionId: admission.id,
+        visitId: admission.visit_id,
+        patientName: displayName,
+        mrn: patient?.mrn ?? "—",
+        location: bed?.label ?? ward?.name ?? null,
+        departmentName: department?.name ?? null,
+        items,
+        entries,
+        prescriptions,
+        administrationsByRx,
+        records,
+      };
+    });
+}
+
 // ---------------------------------------------------------------------------
 // Whole-collection reads — used by the reporting/analytics layer, which needs
 // every row (not just the per-visit/per-patient slices above) to aggregate.
@@ -1776,9 +1867,12 @@ export function addCarePlanItem(
     hospital_id: admission.hospital_id,
     admission_id: admissionId,
     patient_id: admission.patient_id,
-    category: input.category,
+    kind: input.kind ?? "nursing_need",
+    authored_role: input.authored_role ?? null,
+    category: input.category ?? null,
     description: input.description.trim(),
     frequency: input.frequency?.trim() || null,
+    monitors: input.monitors?.trim() || null,
     goal: input.goal?.trim() || null,
     status: "active",
     created_by_id: input.created_by_id ?? null,
@@ -1823,10 +1917,33 @@ export function addCarePlanEntry(
     care_plan_item_id: input.care_plan_item_id ?? null,
     note: input.note.trim(),
     is_handover: input.is_handover ?? false,
+    needs_doctor: input.needs_doctor ?? false,
+    acknowledged_by_id: null,
+    acknowledged_at: null,
     recorded_by_id: input.recorded_by_id ?? null,
     recorded_at: nowISO(),
   };
   db.carePlanEntries.push(entry);
+  persist(db);
+  return entry;
+}
+
+/**
+ * Doctor one-tap acknowledgement of a nurse→doctor flag (Phase 20). Stamps who
+ * cleared it and when, so it drops off the doctor's "needs you" queue. Idempotent
+ * re-acks just refresh the stamp.
+ */
+export function acknowledgeCarePlanEntry(
+  entryId: CarePlanEntryId,
+  acknowledgedById: StaffId | null
+): CarePlanEntry {
+  const db = loadDatabase();
+  const entry = db.carePlanEntries.find((e) => e.id === entryId);
+  if (!entry) {
+    throw new Error(`acknowledgeCarePlanEntry: entry "${entryId}" not found`);
+  }
+  entry.acknowledged_by_id = acknowledgedById;
+  entry.acknowledged_at = nowISO();
   persist(db);
   return entry;
 }
@@ -3419,7 +3536,17 @@ function seedDatabaseObject(): Database {
   // Nursing care plans for the three admitted patients — the individualized,
   // non-medication care (hygiene, positioning, nutrition…) that fills a shift,
   // plus an append-only care log with shift-handover notes for the next nurse.
-  const carePlanItems: Seed<CarePlanItem>[] = [
+  // Seed rows may omit the Phase 20 fields (kind/authored_role/monitors/category);
+  // they are defaulted when stamped (legacy rows are nurse-authored ADL needs).
+  const carePlanItems: (Omit<
+    Seed<CarePlanItem>,
+    "kind" | "authored_role" | "monitors" | "category"
+  > & {
+    kind?: CareItemKind;
+    authored_role?: StaffRole | null;
+    monitors?: string | null;
+    category?: CareNeedCategory | null;
+  })[] = [
     // Samuel Idris — ICU-04, post-op laparotomy.
     { id: "cpi_idris_hyg", admission_id: "adm_idris", patient_id: "pat_idris", category: "hygiene", description: "Assist with bed bath, keep skin dry", frequency: "Daily", goal: "Skin remains intact", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
     { id: "cpi_idris_pos", admission_id: "adm_idris", patient_id: "pat_idris", category: "mobility_positioning", description: "Turn every 2h to prevent pressure sores", frequency: "Every 2h", goal: "No pressure injury", status: "active", created_by_id: "staff_patel", created_at: day(18), updated_at: day(18) },
@@ -3435,9 +3562,25 @@ function seedDatabaseObject(): Database {
     { id: "cpi_anon_elim", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "elimination", description: "Catheter care, monitor output", frequency: "Each shift", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
     { id: "cpi_anon_eye", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "other", description: "Eye care: clean and protect eyes to prevent dryness", frequency: "Every 4h", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
     { id: "cpi_anon_safe", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", category: "safety", description: "Cot sides up, neuro observations", frequency: "Each shift", goal: null, status: "active", created_by_id: "staff_patel", created_at: day(4), updated_at: day(4) },
+    // ---- Phase 20 demo: doctor → nurse instructions & monitoring orders ----
+    // Doctor instruction (one-off) on Samuel Idris from Dr Chen during rounds.
+    { id: "cpi_idris_instr", admission_id: "adm_idris", patient_id: "pat_idris", kind: "instruction", authored_role: "doctor", description: "Encourage oral fluids — aim for 2 L/day and chart intake", frequency: "Today", goal: null, status: "active", created_by_id: "staff_chen", created_at: day(20), updated_at: day(20) },
+    // Doctor monitoring order: hourly vitals on the unstable ICU head-trauma patient.
+    { id: "cpi_anon_mon", admission_id: "adm_anon_gamma", patient_id: "pat_anon_gamma", kind: "monitoring", authored_role: "doctor", monitors: "vitals", description: "Vitals + GCS every hour while GCS < 12", frequency: "every 1 hour", goal: null, status: "active", created_by_id: "staff_okafor", created_at: day(6), updated_at: day(6) },
+    // Doctor monitoring order: 4-hourly vitals on the recovering pneumonia patient.
+    { id: "cpi_bello_mon", admission_id: "adm_bello", patient_id: "pat_bello", kind: "monitoring", authored_role: "doctor", monitors: "vitals", description: "Routine vitals", frequency: "every 4 hours", goal: null, status: "active", created_by_id: "staff_chen", created_at: day(90), updated_at: day(90) },
   ];
 
-  const carePlanEntries: Seed<CarePlanEntry>[] = [
+  // Seed rows may omit the Phase 20 fields (needs_doctor/acknowledged_*); they are
+  // defaulted when stamped (legacy notes are not doctor-flagged).
+  const carePlanEntries: (Omit<
+    Seed<CarePlanEntry>,
+    "needs_doctor" | "acknowledged_by_id" | "acknowledged_at"
+  > & {
+    needs_doctor?: boolean;
+    acknowledged_by_id?: StaffId | null;
+    acknowledged_at?: string | null;
+  })[] = [
     // Samuel Idris — care log + a fresh handover for the evening shift.
     { id: "cpe_idris_1", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_pos", note: "Turned to left side. Temp 37.8°C, settling.", is_handover: false, recorded_by_id: "staff_romero", recorded_at: day(9) },
     { id: "cpe_idris_2", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_hyg", note: "Bed bath given, skin intact. Ate half of lunch.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(7) },
@@ -3448,6 +3591,11 @@ function seedDatabaseObject(): Database {
     // John Doe · Gamma — care log + handover.
     { id: "cpe_anon_1", admission_id: "adm_anon_gamma", care_plan_item_id: "cpi_anon_hyg", note: "Full bed bath and mouth care done. Repositioned. Output adequate.", is_handover: false, recorded_by_id: "staff_patel", recorded_at: day(3) },
     { id: "cpe_anon_ho", admission_id: "adm_anon_gamma", care_plan_item_id: null, note: "GCS improving (7→9). Continue 2-hourly turns and eye care. Family visited.", is_handover: true, recorded_by_id: "staff_patel", recorded_at: day(2) },
+    // ---- Phase 20 demo: nurse → doctor flags (one open, one acknowledged) ----
+    // Open flag on Samuel Idris — waiting for the doctor to see it on rounds.
+    { id: "cpe_idris_flag", admission_id: "adm_idris", care_plan_item_id: "cpi_idris_hyg", note: "Wound lower edge looks slightly red and warm — please review when you round.", is_handover: false, needs_doctor: true, recorded_by_id: "staff_patel", recorded_at: day(3) },
+    // Already-acknowledged flag on Aisha Bello — Dr Chen has seen it.
+    { id: "cpe_bello_flag", admission_id: "adm_bello", care_plan_item_id: null, note: "Patient reports new mild left calf pain — ?DVT.", is_handover: false, needs_doctor: true, acknowledged_by_id: "staff_chen", acknowledged_at: day(8), recorded_by_id: "staff_patel", recorded_at: day(9) },
   ];
 
   // -------------------------------------------------------------------------
@@ -3568,8 +3716,21 @@ function seedDatabaseObject(): Database {
     treatmentRecords: stamp<TreatmentRecord>(treatmentRecords),
     admissions: stamp<Admission>(admissions),
     transfers: stamp<Transfer>(transfers),
-    carePlanItems: stamp<CarePlanItem>(carePlanItems),
-    carePlanEntries: stamp<CarePlanEntry>(carePlanEntries),
+    carePlanItems: carePlanItems.map((r) => ({
+      kind: "nursing_need" as CareItemKind,
+      authored_role: null as StaffRole | null,
+      monitors: null as string | null,
+      category: null as CareNeedCategory | null,
+      ...r,
+      hospital_id: DEMO_HOSPITAL_ID,
+    })) as CarePlanItem[],
+    carePlanEntries: carePlanEntries.map((r) => ({
+      needs_doctor: false,
+      acknowledged_by_id: null as StaffId | null,
+      acknowledged_at: null as string | null,
+      ...r,
+      hospital_id: DEMO_HOSPITAL_ID,
+    })) as CarePlanEntry[],
     billableItems: stamp<BillableItem>(billableItems),
     charges: stamp<Charge>(charges),
   };

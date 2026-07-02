@@ -1,10 +1,18 @@
 "use client";
 
-import { ShieldAlert, Stethoscope, MapPin, ArrowRight } from "lucide-react";
+import {
+  ShieldAlert,
+  Stethoscope,
+  MapPin,
+  ArrowRight,
+  BellRing,
+  ListChecks,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/locale-provider";
+import { useRole } from "@/components/role-provider";
 import type { BoardColumn } from "@/components/live-board/stages";
 import type { TriageLevel } from "@careflow/shared";
 
@@ -22,6 +30,10 @@ export interface PatientCardData {
   triage: TriageLevel | null;
   /** i18n key for the "next step" nudge, or null at the final stage. */
   nextStepKey: string | null;
+  /** Phase 20 — items the nurse currently owes this patient (due meds/monitoring/instructions). */
+  dueCount: number;
+  /** Phase 20 — things needing the doctor (open nurse flags + concerning vitals). */
+  needsYouCount: number;
 }
 
 export function PatientCard({
@@ -34,6 +46,9 @@ export function PatientCard({
   onSelect?: (visitId: string) => void;
 }) {
   const { t } = useT();
+  const { mounted, actingRole } = useRole();
+  const isDoctorView = actingRole === "doctor";
+  const collabCount = isDoctorView ? data.needsYouCount : data.dueCount;
   return (
     <button
       type="button"
@@ -60,6 +75,26 @@ export function PatientCard({
           {data.displayName}
         </span>
         <div className="flex shrink-0 items-center gap-1">
+          {mounted && collabCount > 0 ? (
+            <Badge
+              variant="outline"
+              className="gap-1 border-transparent px-1.5 text-[10px] font-semibold uppercase tracking-wide tabular-nums"
+              style={{
+                backgroundColor:
+                  "color-mix(in oklab, var(--status-treatment) 18%, transparent)",
+                color: "var(--status-treatment)",
+              }}
+            >
+              {isDoctorView ? (
+                <BellRing className="size-3" />
+              ) : (
+                <ListChecks className="size-3" />
+              )}
+              {t(isDoctorView ? "carePlan.needsYouBadge" : "carePlan.dueBadge", {
+                n: String(collabCount),
+              })}
+            </Badge>
+          ) : null}
           {data.triage !== null ? (
             <Badge
               variant="outline"

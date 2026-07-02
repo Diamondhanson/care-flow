@@ -13,6 +13,7 @@ import {
   GitMerge,
   LayoutDashboard,
   LayoutGrid,
+  ListChecks,
   LogOut,
   Menu,
   Pill,
@@ -62,6 +63,7 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { title: "nav.liveBoard", href: "/dashboard", icon: LayoutDashboard },
+  { title: "nav.worklist", href: "/worklist", icon: ListChecks },
   { title: "nav.intake", href: "/intake", icon: ClipboardPlus },
   { title: "nav.diagnostics", href: "/diagnostics", icon: FlaskConical },
   { title: "nav.medications", href: "/medications", icon: Pill },
@@ -84,10 +86,10 @@ const NAV_ITEMS: NavItem[] = [
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
   receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation", "/billing"],
-  // Nurse: the board, medications due, care plans, and bed/ward status.
-  nurse: ["/dashboard", "/medications", "/care-plans", "/floor-map"],
-  // Doctor: the board (their patients), tests & results, prescribing, care plans.
-  doctor: ["/dashboard", "/diagnostics", "/medications", "/care-plans"],
+  // Nurse: the board, the cross-ward worklist, medications, care plans, beds.
+  nurse: ["/dashboard", "/worklist", "/medications", "/care-plans", "/floor-map"],
+  // Doctor: the board, the "needs you" worklist, tests, prescribing, care plans.
+  doctor: ["/dashboard", "/worklist", "/diagnostics", "/medications", "/care-plans"],
   // Pharmacist: medications and the tests that inform them.
   pharmacist: ["/dashboard", "/medications", "/diagnostics"],
   // Lab tech: the diagnostics queue.

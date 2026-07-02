@@ -136,7 +136,7 @@ function NeedCard({
   onResolve: () => void;
   t: TFunction;
 }) {
-  const Icon = CARE_NEED_CATEGORY_ICON[item.category];
+  const Icon = CARE_NEED_CATEGORY_ICON[item.category ?? "other"];
   const resolved = item.status === "resolved";
   return (
     <Card className={cn(resolved && "opacity-60")}>
@@ -155,7 +155,7 @@ function NeedCard({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-              {t(CARE_NEED_CATEGORY_LABEL[item.category])}
+              {t(CARE_NEED_CATEGORY_LABEL[item.category ?? "other"])}
             </span>
             {resolved ? (
               <Badge variant="outline" className="gap-1 text-[10px]">
@@ -329,7 +329,7 @@ function LogEntry({
         {need ? (
           <span className="text-[11px] font-medium text-muted-foreground">
             {t("carePlan.forNeed", {
-              need: t(CARE_NEED_CATEGORY_LABEL[need.category]),
+              need: t(CARE_NEED_CATEGORY_LABEL[need.category ?? "other"]),
             })}
           </span>
         ) : null}
@@ -378,7 +378,7 @@ function RecordCareForm({
       none: t("carePlan.generalNote"),
     };
     for (const i of activeItems) {
-      entries[i.id] = `${t(CARE_NEED_CATEGORY_LABEL[i.category])} — ${i.description}`;
+      entries[i.id] = `${t(CARE_NEED_CATEGORY_LABEL[i.category ?? "other"])} — ${i.description}`;
     }
     return entries;
   }, [activeItems, t]);
@@ -419,7 +419,7 @@ function RecordCareForm({
                 <SelectItem value="none">{t("carePlan.generalNote")}</SelectItem>
                 {activeItems.map((i) => (
                   <SelectItem key={i.id} value={i.id}>
-                    {t(CARE_NEED_CATEGORY_LABEL[i.category])} — {i.description}
+                    {t(CARE_NEED_CATEGORY_LABEL[i.category ?? "other"])} — {i.description}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -465,7 +465,13 @@ export default function CarePlansPage() {
       setEntries([]);
       return;
     }
-    setItems(getCarePlanItemsForAdmission(admissionId));
+    // Nurse's Henderson care plan stays nursing-focused; doctor instructions and
+    // monitoring orders (the shared Phase 20 list) live in the patient drawer.
+    setItems(
+      getCarePlanItemsForAdmission(admissionId).filter(
+        (i) => i.kind === "nursing_need",
+      ),
+    );
     setEntries(getCarePlanEntriesForAdmission(admissionId));
   }
 
