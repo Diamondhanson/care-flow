@@ -264,17 +264,21 @@ export function RosReview({
 
         {isOpen ? (
           <div className="flex flex-col gap-2.5 border-t border-border p-2.5">
-            {keyQuestions.map((q) => (
-              <RosQuestionRow
-                key={q.key}
-                question={q}
-                responses={responses}
-                locale={activeLocale}
-                disabled={readOnly}
-                onAnswer={handleAnswer}
-                onNote={handleNote}
-              />
-            ))}
+            {/* Two columns on the wide drawer — questions are independent, so
+                halving the scroll depth beats one long list. */}
+            <div className="grid gap-2.5 lg:grid-cols-2 lg:gap-x-8">
+              {keyQuestions.map((q) => (
+                <RosQuestionRow
+                  key={q.key}
+                  question={q}
+                  responses={responses}
+                  locale={activeLocale}
+                  disabled={readOnly}
+                  onAnswer={handleAnswer}
+                  onNote={handleNote}
+                />
+              ))}
+            </div>
 
             <MoreQuestions
               questions={symptoms.filter((q) => q.key_question !== true)}
@@ -294,17 +298,19 @@ export function RosReview({
                   </span>
                   <span className="h-px flex-1 bg-border" />
                 </div>
-                {background.map((q) => (
-                  <RosQuestionRow
-                    key={q.key}
-                    question={q}
-                    responses={responses}
-                    locale={activeLocale}
-                    disabled={readOnly}
-                    onAnswer={handleAnswer}
-                    onNote={handleNote}
-                  />
-                ))}
+                <div className="grid gap-2.5 lg:grid-cols-2 lg:gap-x-8">
+                  {background.map((q) => (
+                    <RosQuestionRow
+                      key={q.key}
+                      question={q}
+                      responses={responses}
+                      locale={activeLocale}
+                      disabled={readOnly}
+                      onAnswer={handleAnswer}
+                      onNote={handleNote}
+                    />
+                  ))}
+                </div>
               </>
             ) : null}
 
@@ -438,17 +444,21 @@ function MoreQuestions({
   const shown = open ? questions : pinned;
   return (
     <>
-      {shown.map((q) => (
-        <RosQuestionRow
-          key={q.key}
-          question={q}
-          responses={responses}
-          locale={locale}
-          disabled={disabled}
-          onAnswer={onAnswer}
-          onNote={onNote}
-        />
-      ))}
+      {shown.length > 0 ? (
+        <div className="grid gap-2.5 lg:grid-cols-2 lg:gap-x-8">
+          {shown.map((q) => (
+            <RosQuestionRow
+              key={q.key}
+              question={q}
+              responses={responses}
+              locale={locale}
+              disabled={disabled}
+              onAnswer={onAnswer}
+              onNote={onNote}
+            />
+          ))}
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

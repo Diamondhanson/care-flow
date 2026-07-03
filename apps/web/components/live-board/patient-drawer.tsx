@@ -439,7 +439,7 @@ export function PatientDrawer({
   if (!visit || !patient) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="sm:max-w-md" />
+        <SheetContent className="sm:max-w-xl! lg:w-[40vw]! lg:max-w-none!" />
       </Sheet>
     );
   }
@@ -749,7 +749,10 @@ export function PatientDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-md">
+      {/* ~40% of the viewport on desktop (capped only by the viewport itself);
+          tablets get a fixed comfortable width, phones stay full-bleed. The
+          important modifiers out-rank the base sheet's data-[side]-scoped cap. */}
+      <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-xl! lg:w-[40vw]! lg:max-w-none!">
         <SheetHeader className="border-b border-border">
           <div className="flex items-center gap-2 pr-8">
             <SheetTitle
@@ -987,28 +990,35 @@ export function PatientDrawer({
                   changing over time, with out-of-range values highlighted. */}
               <VitalsTrend records={records} />
 
-              {/* SOAP note entry */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
+              {/* SOAP note entry. On the wide drawer the note fills a two-column
+                  grid: S and the ROS block span full width (they carry the most
+                  content), examination/assessment pair up, plan closes full
+                  width — top-to-bottom still reads S → ROS → O → A → P. */}
+              <div className="grid gap-3 lg:grid-cols-2">
+                <div className="flex items-center gap-2 lg:col-span-2">
                   <FileText className="size-4 text-muted-foreground" />
                   <span className="text-sm font-medium">{t("drawer.newConsultation")}</span>
                 </div>
-                <TermChips
-                  category="subjective"
-                  label={t("drawer.subjective")}
-                  id="soap-s"
-                  value={subjective}
-                  onValueChange={setSubjective}
-                  placeholder={t("drawer.subjectivePlaceholder")}
-                />
+                <div className="lg:col-span-2">
+                  <TermChips
+                    category="subjective"
+                    label={t("drawer.subjective")}
+                    id="soap-s"
+                    value={subjective}
+                    onValueChange={setSubjective}
+                    placeholder={t("drawer.subjectivePlaceholder")}
+                  />
+                </div>
                 {/* Structured Review of Systems (Phase 21) — complaint-driven,
                     tap-first; every answer persists immediately. */}
-                <RosReview
-                  visitId={visit.id}
-                  chiefComplaint={visit.chief_complaint}
-                  patientSex={patient.sex}
-                  recorderId={recorderId}
-                />
+                <div className="lg:col-span-2">
+                  <RosReview
+                    visitId={visit.id}
+                    chiefComplaint={visit.chief_complaint}
+                    patientSex={patient.sex}
+                    recorderId={recorderId}
+                  />
+                </div>
                 <TermChips
                   category="examination"
                   label={t("drawer.examination")}
@@ -1025,15 +1035,20 @@ export function PatientDrawer({
                   onValueChange={setAssessment}
                   placeholder={t("drawer.assessmentPlaceholder")}
                 />
-                <TermChips
-                  category="plan"
-                  label={t("drawer.plan")}
-                  id="soap-p"
-                  value={plan}
-                  onValueChange={setPlan}
-                  placeholder={t("drawer.planPlaceholder")}
-                />
-                <Button onClick={handleSaveConsultation} className="self-end">
+                <div className="lg:col-span-2">
+                  <TermChips
+                    category="plan"
+                    label={t("drawer.plan")}
+                    id="soap-p"
+                    value={plan}
+                    onValueChange={setPlan}
+                    placeholder={t("drawer.planPlaceholder")}
+                  />
+                </div>
+                <Button
+                  onClick={handleSaveConsultation}
+                  className="self-end justify-self-end lg:col-span-2"
+                >
                   {t("drawer.saveConsultation")}
                 </Button>
               </div>
@@ -1936,7 +1951,7 @@ export function PatientDrawer({
                 {t("drawer.logVitals")}
               </h3>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <FieldNum label={t("drawer.vitalsSpo2")} id="spo2" value={spo2} onChange={setSpo2} />
               <FieldNum label={t("drawer.vitalsPulse")} id="pulse" value={pulse} onChange={setPulse} />
               <FieldNum label={t("drawer.vitalsSys")} id="sys" value={sys} onChange={setSys} />

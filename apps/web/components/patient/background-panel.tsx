@@ -300,7 +300,8 @@ export function BackgroundPanel({
             />
           </dl>
 
-          {/* History groups, in clinical order */}
+          {/* History groups, in clinical order — two columns on the wide drawer. */}
+          <div className="grid gap-3 lg:grid-cols-2 lg:gap-x-6">
           {PATIENT_HISTORY_TYPE_ORDER.map((type) => {
             const items = history.filter((h) => h.type === type);
             const isAddingHere = form?.mode === "add" && form.type === type;
@@ -401,6 +402,7 @@ export function BackgroundPanel({
               </div>
             );
           })}
+          </div>
         </div>
       ) : null}
     </section>
