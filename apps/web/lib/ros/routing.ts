@@ -44,21 +44,37 @@ export function normalizeSystem(label: string): BodySystem | null {
 /**
  * Resolve one term/complaint line to its body system by matching the
  * subjective term library (term_en / term_fr / synonyms, case-insensitive).
+ * Exact matches win; otherwise the complaint is free text ("Acute chest
+ * pain"), so fall back to containment — the longest library term found inside
+ * the line decides (length-gated so short fragments can't misroute).
  */
 export function systemForTerm(term: string): BodySystem | null {
   const needle = term.trim().toLowerCase();
   if (!needle) return null;
+
+  let containment: { length: number; system: string } | null = null;
   for (const t of SEED_TERMS.subjective) {
-    if (
-      t.term_en.toLowerCase() === needle ||
-      t.term_fr.toLowerCase() === needle ||
-      (t.synonyms_en ?? []).some((s) => s.toLowerCase() === needle) ||
-      (t.synonyms_fr ?? []).some((s) => s.toLowerCase() === needle)
-    ) {
-      return t.system ? normalizeSystem(t.system) : null;
+    if (!t.system) continue;
+    const labels = [
+      t.term_en,
+      t.term_fr,
+      ...(t.synonyms_en ?? []),
+      ...(t.synonyms_fr ?? []),
+    ].map((s) => s.toLowerCase());
+    if (labels.some((l) => l === needle)) {
+      return normalizeSystem(t.system);
+    }
+    for (const label of labels) {
+      if (
+        label.length >= 5 &&
+        needle.includes(label) &&
+        label.length > (containment?.length ?? 0)
+      ) {
+        containment = { length: label.length, system: t.system };
+      }
     }
   }
-  return null;
+  return containment ? normalizeSystem(containment.system) : null;
 }
 
 /**

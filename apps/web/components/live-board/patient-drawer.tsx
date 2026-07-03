@@ -59,6 +59,7 @@ import {
   getConsultationsForVisit,
   getDepartmentById,
   getDiagnosesForVisit,
+  getRosResponsesForVisit,
   getOrdersForVisit,
   getResultsForVisit,
   getPatientById,
@@ -121,6 +122,8 @@ import {
 import { CareOrders } from "@/components/care-plans/care-orders";
 import { VitalsTrend } from "@/components/care-plans/vitals-trend";
 import { BackgroundPanel } from "@/components/patient/background-panel";
+import { RosReview } from "@/components/ros/ros-review";
+import { compileRosNarrative } from "@/lib/ros/compile";
 import { cn } from "@/lib/utils";
 import { useRole } from "@/components/role-provider";
 import { useT, useLocale } from "@/components/locale-provider";
@@ -553,11 +556,16 @@ export function PatientDrawer({
   }
 
   function handleSaveConsultation() {
+    // Structured ROS answers are recorded per tap (Phase 21); saving links
+    // them to this consultation and stores the compiled narrative beside the
+    // SOAP note. A pure-ROS encounter (no free text) is still saveable.
+    const rosRows = getRosResponsesForVisit(visit!.id);
     if (
       !subjective.trim() &&
       !examination.trim() &&
       !assessment.trim() &&
-      !plan.trim()
+      !plan.trim() &&
+      rosRows.length === 0
     ) {
       return;
     }
@@ -567,6 +575,8 @@ export function PatientDrawer({
       examination,
       assessment,
       plan,
+      ros_summary:
+        rosRows.length > 0 ? compileRosNarrative(rosRows, activeLocale) : null,
     });
     refresh();
   }
@@ -990,6 +1000,14 @@ export function PatientDrawer({
                   value={subjective}
                   onValueChange={setSubjective}
                   placeholder={t("drawer.subjectivePlaceholder")}
+                />
+                {/* Structured Review of Systems (Phase 21) — complaint-driven,
+                    tap-first; every answer persists immediately. */}
+                <RosReview
+                  visitId={visit.id}
+                  chiefComplaint={visit.chief_complaint}
+                  patientSex={patient.sex}
+                  recorderId={recorderId}
                 />
                 <TermChips
                   category="examination"
@@ -2126,6 +2144,9 @@ function ConsultationNote({ consultation }: { consultation: Consultation }) {
   const activeLocale = mounted ? locale : "en";
   const rows: { label: string; value: string | null }[] = [
     { label: "S", value: consultation.subjective },
+    // Compiled Review-of-Systems narrative (Phase 21); rows hydrated from a
+    // pre-Phase-21 hosted schema may lack the field entirely.
+    { label: "ROS", value: consultation.ros_summary ?? null },
     { label: "O", value: consultation.examination },
     { label: "A", value: consultation.assessment },
     { label: "P", value: consultation.plan },

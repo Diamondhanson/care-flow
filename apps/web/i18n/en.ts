@@ -173,6 +173,25 @@ export const en = {
     immunization: "Immunizations",
   },
 
+  ros: {
+    title: "Review of Systems",
+    compiledReport: "Compiled report",
+    suggested: "(suggested)",
+    addSystem: "Add system",
+    reviewOtherSystems: "Review other systems ({count})",
+    hideOtherSystems: "Hide other systems",
+    markRemainingNo: "Mark remaining as No ({count})",
+    moreQuestions: "{count} more questions",
+    fewerQuestions: "Fewer questions",
+    historyGenetics: "History & genetics",
+    answeredCount: "{count} answered",
+    yes: "Yes",
+    no: "No",
+    addNote: "Add a note",
+    notePlaceholder: "Optional note",
+    textPlaceholder: "Specify…",
+  },
+
   background: {
     title: "Background",
     ageYears: "{age} yrs",

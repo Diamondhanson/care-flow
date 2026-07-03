@@ -195,6 +195,11 @@ describe("ROS question bank", () => {
       expect(systemForTerm("totally unknown complaint")).toBeNull();
     });
 
+    it("routes free-text complaints by longest contained term", () => {
+      expect(systemForTerm("Acute chest pain")).toBe("cardiac");
+      expect(systemForTerm("Severe headache since morning")).toBe("neuro");
+    });
+
     it("routes a multi-line chief complaint: first resolving line is primary", () => {
       const routing = systemsForComplaint("Chest pain\nCough");
       expect(routing.primary).toBe("cardiac");

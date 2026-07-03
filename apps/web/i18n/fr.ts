@@ -170,6 +170,25 @@ export const fr = {
     immunization: "Vaccinations",
   },
 
+  ros: {
+    title: "Revue des systèmes",
+    compiledReport: "Compte rendu compilé",
+    suggested: "(suggéré)",
+    addSystem: "Ajouter un système",
+    reviewOtherSystems: "Passer en revue les autres systèmes ({count})",
+    hideOtherSystems: "Masquer les autres systèmes",
+    markRemainingNo: "Marquer le reste comme Non ({count})",
+    moreQuestions: "{count} questions de plus",
+    fewerQuestions: "Moins de questions",
+    historyGenetics: "Antécédents & génétique",
+    answeredCount: "{count} répondues",
+    yes: "Oui",
+    no: "Non",
+    addNote: "Ajouter une note",
+    notePlaceholder: "Note facultative",
+    textPlaceholder: "Préciser…",
+  },
+
   background: {
     title: "Contexte patient",
     ageYears: "{age} ans",
