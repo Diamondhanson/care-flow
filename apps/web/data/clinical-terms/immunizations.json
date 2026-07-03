@@ -1,0 +1,404 @@
+[
+  {
+    "term_en": "BCG vaccine",
+    "term_fr": "Vaccin BCG",
+    "synonyms_en": [
+      "BCG",
+      "tuberculosis vaccine",
+      "vaccine at birth on the arm",
+      "TB vaccine"
+    ],
+    "synonyms_fr": [
+      "BCG",
+      "vaccin contre la tuberculose",
+      "vaccin à la naissance sur le bras"
+    ]
+  },
+  {
+    "term_en": "Cholera vaccine (oral)",
+    "term_fr": "Vaccin anticholérique (oral)",
+    "synonyms_en": [
+      "OCV",
+      "oral cholera vaccine",
+      "cholera drops",
+      "vaccine against cholera"
+    ],
+    "synonyms_fr": [
+      "vaccin oral contre le choléra",
+      "vaccin contre le choléra",
+      "gouttes contre le choléra"
+    ]
+  },
+  {
+    "term_en": "COVID-19 vaccine",
+    "term_fr": "Vaccin contre la COVID-19",
+    "synonyms_en": [
+      "coronavirus vaccine",
+      "corona vaccine",
+      "covid jab",
+      "COVID vaccine"
+    ],
+    "synonyms_fr": [
+      "vaccin contre le coronavirus",
+      "vaccin corona",
+      "vaccin covid"
+    ]
+  },
+  {
+    "term_en": "Diphtheria-tetanus vaccine",
+    "term_fr": "Vaccin diphtérie-tétanos",
+    "synonyms_en": [
+      "DT",
+      "paediatric diphtheria tetanus vaccine",
+      "diphtheria and tetanus shot"
+    ],
+    "synonyms_fr": [
+      "DT",
+      "vaccin diphtérie et tétanos",
+      "vaccin contre la diphtérie et le tétanos"
+    ]
+  },
+  {
+    "term_en": "Diphtheria-tetanus-pertussis vaccine",
+    "term_fr": "Vaccin diphtérie-tétanos-coqueluche",
+    "synonyms_en": [
+      "DTP",
+      "DPT",
+      "whooping cough vaccine",
+      "triple vaccine"
+    ],
+    "synonyms_fr": [
+      "DTC",
+      "vaccin contre la coqueluche",
+      "vaccin diphtérie tétanos coqueluche"
+    ]
+  },
+  {
+    "term_en": "Haemophilus influenzae type b vaccine",
+    "term_fr": "Vaccin contre l'Haemophilus influenzae type b",
+    "synonyms_en": [
+      "Hib",
+      "Hib vaccine",
+      "vaccine against meningitis germ Hib"
+    ],
+    "synonyms_fr": [
+      "Hib",
+      "vaccin contre l'Hib",
+      "vaccin contre la méningite à Hib"
+    ]
+  },
+  {
+    "term_en": "Hepatitis A vaccine",
+    "term_fr": "Vaccin contre l'hépatite A",
+    "synonyms_en": [
+      "hep A vaccine",
+      "vaccine against hepatitis A",
+      "hepatitis A shot"
+    ],
+    "synonyms_fr": [
+      "vaccin hépatite A",
+      "vaccin contre l'hépatite A",
+      "vaccin contre le jaunisse A"
+    ]
+  },
+  {
+    "term_en": "Hepatitis B vaccine",
+    "term_fr": "Vaccin contre l'hépatite B",
+    "synonyms_en": [
+      "hep B vaccine",
+      "HepB",
+      "vaccine against hepatitis B",
+      "birth dose hepatitis vaccine"
+    ],
+    "synonyms_fr": [
+      "vaccin hépatite B",
+      "vaccin contre l'hépatite B",
+      "vaccin contre le jaunisse B"
+    ]
+  },
+  {
+    "term_en": "Human papillomavirus vaccine",
+    "term_fr": "Vaccin contre le papillomavirus humain",
+    "synonyms_en": [
+      "HPV",
+      "HPV vaccine",
+      "cervical cancer vaccine",
+      "vaccine for girls against cervical cancer"
+    ],
+    "synonyms_fr": [
+      "HPV",
+      "vaccin contre le cancer du col de l'utérus",
+      "vaccin HPV"
+    ]
+  },
+  {
+    "term_en": "Inactivated polio vaccine",
+    "term_fr": "Vaccin polio inactivé",
+    "synonyms_en": [
+      "IPV",
+      "polio injection",
+      "injectable polio vaccine",
+      "polio shot"
+    ],
+    "synonyms_fr": [
+      "VPI",
+      "vaccin polio injectable",
+      "vaccin contre la polio en piqûre"
+    ]
+  },
+  {
+    "term_en": "Influenza vaccine",
+    "term_fr": "Vaccin contre la grippe",
+    "synonyms_en": [
+      "flu vaccine",
+      "flu shot",
+      "seasonal flu jab"
+    ],
+    "synonyms_fr": [
+      "vaccin antigrippal",
+      "vaccin contre la grippe",
+      "piqûre contre la grippe"
+    ]
+  },
+  {
+    "term_en": "Malaria vaccine",
+    "term_fr": "Vaccin contre le paludisme",
+    "synonyms_en": [
+      "RTS,S",
+      "RTS,S vaccine",
+      "Mosquirix",
+      "vaccine against malaria"
+    ],
+    "synonyms_fr": [
+      "RTS,S",
+      "vaccin antipaludique",
+      "vaccin contre le palu"
+    ]
+  },
+  {
+    "term_en": "Measles vaccine",
+    "term_fr": "Vaccin contre la rougeole",
+    "synonyms_en": [
+      "measles shot",
+      "vaccine against measles",
+      "nine month vaccine"
+    ],
+    "synonyms_fr": [
+      "vaccin antirougeoleux",
+      "vaccin contre la rougeole",
+      "vaccin de neuf mois"
+    ]
+  },
+  {
+    "term_en": "Measles-rubella vaccine",
+    "term_fr": "Vaccin rougeole-rubéole",
+    "synonyms_en": [
+      "MR",
+      "MR vaccine",
+      "measles and rubella vaccine"
+    ],
+    "synonyms_fr": [
+      "RR",
+      "vaccin rougeole et rubéole",
+      "vaccin contre la rougeole et la rubéole"
+    ]
+  },
+  {
+    "term_en": "Meningococcal A conjugate vaccine",
+    "term_fr": "Vaccin conjugué contre le méningocoque A",
+    "synonyms_en": [
+      "MenAfriVac",
+      "MenA vaccine",
+      "meningitis A vaccine",
+      "vaccine against meningitis"
+    ],
+    "synonyms_fr": [
+      "MenAfriVac",
+      "vaccin contre la méningite A",
+      "vaccin contre la méningite"
+    ]
+  },
+  {
+    "term_en": "Meningococcal ACWY vaccine",
+    "term_fr": "Vaccin méningococcique ACWY",
+    "synonyms_en": [
+      "MenACWY",
+      "quadrivalent meningitis vaccine",
+      "meningitis vaccine for travel and Hajj"
+    ],
+    "synonyms_fr": [
+      "MenACWY",
+      "vaccin méningite ACWY",
+      "vaccin contre la méningite pour le voyage"
+    ]
+  },
+  {
+    "term_en": "Mumps-measles-rubella vaccine",
+    "term_fr": "Vaccin rougeole-oreillons-rubéole",
+    "synonyms_en": [
+      "MMR",
+      "MMR vaccine",
+      "measles mumps rubella vaccine"
+    ],
+    "synonyms_fr": [
+      "ROR",
+      "vaccin ROR",
+      "vaccin rougeole oreillons rubéole"
+    ]
+  },
+  {
+    "term_en": "Oral polio vaccine",
+    "term_fr": "Vaccin polio oral",
+    "synonyms_en": [
+      "OPV",
+      "polio drops",
+      "polio drops in the mouth",
+      "oral polio drops"
+    ],
+    "synonyms_fr": [
+      "VPO",
+      "gouttes contre la polio",
+      "vaccin polio buccal"
+    ]
+  },
+  {
+    "term_en": "Pentavalent vaccine",
+    "term_fr": "Vaccin pentavalent",
+    "synonyms_en": [
+      "penta",
+      "DTP-HepB-Hib",
+      "five-in-one vaccine",
+      "5-in-1 vaccine"
+    ],
+    "synonyms_fr": [
+      "pentavalent",
+      "vaccin cinq en un",
+      "DTC-HepB-Hib"
+    ]
+  },
+  {
+    "term_en": "Pneumococcal conjugate vaccine",
+    "term_fr": "Vaccin conjugué antipneumococcique",
+    "synonyms_en": [
+      "PCV13",
+      "PCV",
+      "pneumonia vaccine",
+      "vaccine against pneumonia germ"
+    ],
+    "synonyms_fr": [
+      "VPC13",
+      "vaccin contre le pneumocoque",
+      "vaccin contre la pneumonie"
+    ]
+  },
+  {
+    "term_en": "Rabies vaccine",
+    "term_fr": "Vaccin antirabique",
+    "synonyms_en": [
+      "anti-rabies vaccine",
+      "vaccine after a dog bite",
+      "rabies shot"
+    ],
+    "synonyms_fr": [
+      "vaccin contre la rage",
+      "vaccin après une morsure de chien",
+      "vaccin antirabique"
+    ]
+  },
+  {
+    "term_en": "Rotavirus vaccine",
+    "term_fr": "Vaccin contre le rotavirus",
+    "synonyms_en": [
+      "rota vaccine",
+      "vaccine against diarrhoea in babies",
+      "rotavirus drops"
+    ],
+    "synonyms_fr": [
+      "vaccin rotavirus",
+      "vaccin contre la diarrhée du bébé",
+      "gouttes contre le rotavirus"
+    ]
+  },
+  {
+    "term_en": "Rubella vaccine",
+    "term_fr": "Vaccin contre la rubéole",
+    "synonyms_en": [
+      "German measles vaccine",
+      "vaccine against rubella"
+    ],
+    "synonyms_fr": [
+      "vaccin antirubéoleux",
+      "vaccin contre la rubéole"
+    ]
+  },
+  {
+    "term_en": "Tetanus toxoid vaccine",
+    "term_fr": "Vaccin antitétanique (anatoxine tétanique)",
+    "synonyms_en": [
+      "TT",
+      "tetanus vaccine",
+      "tetanus shot in pregnancy",
+      "anti-tetanus injection"
+    ],
+    "synonyms_fr": [
+      "VAT",
+      "vaccin contre le tétanos",
+      "vaccin antitétanique de la grossesse"
+    ]
+  },
+  {
+    "term_en": "Tetanus-diphtheria booster",
+    "term_fr": "Rappel tétanos-diphtérie",
+    "synonyms_en": [
+      "Td",
+      "Td booster",
+      "tetanus diphtheria booster shot"
+    ],
+    "synonyms_fr": [
+      "dT",
+      "rappel dT",
+      "rappel contre le tétanos et la diphtérie"
+    ]
+  },
+  {
+    "term_en": "Typhoid vaccine",
+    "term_fr": "Vaccin contre la typhoïde",
+    "synonyms_en": [
+      "typhoid shot",
+      "vaccine against typhoid fever",
+      "TCV"
+    ],
+    "synonyms_fr": [
+      "vaccin antityphoïdique",
+      "vaccin contre la fièvre typhoïde",
+      "vaccin contre la typhoïde"
+    ]
+  },
+  {
+    "term_en": "Varicella vaccine",
+    "term_fr": "Vaccin contre la varicelle",
+    "synonyms_en": [
+      "chickenpox vaccine",
+      "vaccine against chickenpox"
+    ],
+    "synonyms_fr": [
+      "vaccin contre la varicelle",
+      "vaccin varicelle"
+    ]
+  },
+  {
+    "term_en": "Yellow fever vaccine",
+    "term_fr": "Vaccin contre la fièvre jaune",
+    "synonyms_en": [
+      "yellow fever shot",
+      "vaccine against yellow fever",
+      "vaccine for the travel card",
+      "amaril vaccine"
+    ],
+    "synonyms_fr": [
+      "vaccin antiamaril",
+      "vaccin contre la fièvre jaune",
+      "vaccin du carnet de voyage"
+    ]
+  }
+]

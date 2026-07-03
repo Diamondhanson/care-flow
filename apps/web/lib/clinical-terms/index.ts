@@ -28,6 +28,8 @@ import assessmentSeed from "@/data/clinical-terms/assessment.json";
 import planSeed from "@/data/clinical-terms/plan.json";
 import medicationSeed from "@/data/clinical-terms/medication.json";
 import investigationsSeed from "@/data/clinical-terms/investigations.json";
+import proceduresSeed from "@/data/clinical-terms/procedures.json";
+import immunizationsSeed from "@/data/clinical-terms/immunizations.json";
 
 import { dedupeTerms, rankTerms } from "./search";
 import { getCustomTerms, getUsageMap } from "./learned";
@@ -50,6 +52,12 @@ export const SEED_TERMS: Record<ClinicalTermCategory, ClinicalTerm[]> = {
   investigations: withCategory(
     "investigations",
     investigationsSeed as ClinicalTermSeed[],
+  ),
+  // Phase 21 follow-up — feed the Background panel's history autocomplete.
+  procedures: withCategory("procedures", proceduresSeed as ClinicalTermSeed[]),
+  immunizations: withCategory(
+    "immunizations",
+    immunizationsSeed as ClinicalTermSeed[],
   ),
 };
 

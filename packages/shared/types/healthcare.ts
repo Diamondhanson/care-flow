@@ -124,7 +124,11 @@ export type ClinicalTermCategory =
   | "assessment"
   | "plan"
   | "medication"
-  | "investigations";
+  | "investigations"
+  // Phase 21 follow-up: patient-background autocomplete (past-surgical
+  // procedures and vaccines for the immunization history).
+  | "procedures"
+  | "immunizations";
 
 /**
  * A single entry in the clinical-term library. Bilingual, with synonyms (incl.

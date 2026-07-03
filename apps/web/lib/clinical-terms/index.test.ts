@@ -15,6 +15,8 @@ const CATEGORIES: ClinicalTermCategory[] = [
   "plan",
   "medication",
   "investigations",
+  "procedures",
+  "immunizations",
 ];
 
 describe("SEED_TERMS", () => {
@@ -72,5 +74,26 @@ describe("searchTerms", () => {
 
   it("returns nothing for a query that matches no term", () => {
     expect(searchTerms("plan", "zzzzz", "en")).toEqual([]);
+  });
+
+  it("finds surgical procedures in both languages and by lay synonym", () => {
+    expect(searchTerms("procedures", "césar", "fr")[0]?.term_en).toBe(
+      "Caesarean section",
+    );
+    expect(searchTerms("procedures", "c-section", "en")[0]?.term_en).toBe(
+      "Caesarean section",
+    );
+    expect(
+      searchTerms("procedures", "appendic", "en")[0]?.term_en,
+    ).toMatch(/Appendectomy/);
+  });
+
+  it("finds vaccines by abbreviation and lay phrasing", () => {
+    expect(searchTerms("immunizations", "BCG", "en")[0]?.term_en).toBe(
+      "BCG vaccine",
+    );
+    expect(
+      searchTerms("immunizations", "fièvre jaune", "fr")[0]?.term_en,
+    ).toBe("Yellow fever vaccine");
   });
 });

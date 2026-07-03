@@ -64,18 +64,21 @@ const FAMILY_RELATIONS = ["father", "mother", "sibling", "child", "other"] as co
 const ALCOHOL_LEVELS = ["none", "occasional", "regular"] as const;
 
 /**
- * History groups whose description autocompletes from an existing clinical-term
- * library: conditions (assessment) for past-medical and family history, the
- * drug catalogue for medications. Groups without a suitable library
- * (past-surgical procedures, immunizations) fall back to plain text until a
- * seed list ships for them.
+ * History groups whose description autocompletes from a clinical-term library:
+ * conditions (assessment) for past-medical and family history, the drug
+ * catalogue for medications, surgical procedures for past-surgical, and the
+ * vaccine list (Cameroon EPI schedule + common adult/travel) for
+ * immunizations. Social and obstetric stay free text — their structured
+ * selectors carry the signal.
  */
 const HISTORY_TERM_CATEGORY: Partial<
   Record<PatientHistoryType, ClinicalTermCategory>
 > = {
   past_medical: "assessment",
+  past_surgical: "procedures",
   family: "assessment",
   medication: "medication",
+  immunization: "immunizations",
 };
 
 function ageFromDob(dob: string | null): number | null {

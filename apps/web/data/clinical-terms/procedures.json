@@ -1,0 +1,1162 @@
+[
+  {
+    "term_en": "Above-knee amputation",
+    "term_fr": "Amputation au-dessus du genou",
+    "synonyms_en": [
+      "AKA",
+      "above knee amputation",
+      "leg cut off above the knee",
+      "thigh amputation"
+    ],
+    "synonyms_fr": [
+      "amputation de la cuisse",
+      "on m'a coupé la jambe au-dessus du genou",
+      "amputation transfémorale"
+    ]
+  },
+  {
+    "term_en": "Adenoidectomy",
+    "term_fr": "Adénoïdectomie",
+    "synonyms_en": [
+      "adenoid removal",
+      "removal of adenoids",
+      "operation for adenoids"
+    ],
+    "synonyms_fr": [
+      "ablation des végétations",
+      "opération des végétations adénoïdes",
+      "on m'a enlevé les végétations"
+    ]
+  },
+  {
+    "term_en": "Amputation of a finger or toe",
+    "term_fr": "Amputation d'un doigt ou d'un orteil",
+    "synonyms_en": [
+      "digit amputation",
+      "finger removed",
+      "toe cut off",
+      "they cut off my finger"
+    ],
+    "synonyms_fr": [
+      "on m'a coupé le doigt",
+      "ablation d'un orteil",
+      "amputation d'un doigt"
+    ]
+  },
+  {
+    "term_en": "Appendectomy",
+    "term_fr": "Appendicectomie",
+    "synonyms_en": [
+      "appendicectomy",
+      "appendix removal",
+      "operation to remove appendix",
+      "they took out my appendix"
+    ],
+    "synonyms_fr": [
+      "opération de l'appendice",
+      "ablation de l'appendice",
+      "on m'a enlevé l'appendice"
+    ]
+  },
+  {
+    "term_en": "Below-knee amputation",
+    "term_fr": "Amputation au-dessous du genou",
+    "synonyms_en": [
+      "BKA",
+      "below knee amputation",
+      "leg cut off below the knee",
+      "lower leg amputation"
+    ],
+    "synonyms_fr": [
+      "amputation de la jambe",
+      "on m'a coupé la jambe sous le genou",
+      "amputation transtibiale"
+    ]
+  },
+  {
+    "term_en": "Bladder stone removal",
+    "term_fr": "Ablation de calcul vésical",
+    "synonyms_en": [
+      "cystolithotomy",
+      "removal of stone from the bladder",
+      "operation for bladder stone"
+    ],
+    "synonyms_fr": [
+      "cystolithotomie",
+      "opération pour enlever une pierre dans la vessie",
+      "ablation de la pierre de la vessie"
+    ]
+  },
+  {
+    "term_en": "Bowel resection",
+    "term_fr": "Résection intestinale",
+    "synonyms_en": [
+      "intestinal resection",
+      "part of the intestine removed",
+      "they cut out part of my bowel",
+      "gut resection"
+    ],
+    "synonyms_fr": [
+      "on m'a enlevé une partie de l'intestin",
+      "ablation d'une partie du gros intestin",
+      "résection de l'intestin"
+    ]
+  },
+  {
+    "term_en": "Breast abscess drainage",
+    "term_fr": "Drainage d'un abcès du sein",
+    "synonyms_en": [
+      "drainage of breast abscess",
+      "they opened the boil in my breast",
+      "incision of breast abscess"
+    ],
+    "synonyms_fr": [
+      "incision d'un abcès au sein",
+      "on m'a percé l'abcès du sein",
+      "drainage d'un furoncle au sein"
+    ]
+  },
+  {
+    "term_en": "Burr hole surgery",
+    "term_fr": "Trou de trépan",
+    "synonyms_en": [
+      "burr hole",
+      "hole drilled in the skull",
+      "brain drainage operation",
+      "trephination"
+    ],
+    "synonyms_fr": [
+      "trépanation",
+      "on m'a fait un trou dans le crâne",
+      "opération pour évacuer le sang du cerveau"
+    ]
+  },
+  {
+    "term_en": "Caesarean section",
+    "term_fr": "Césarienne",
+    "synonyms_en": [
+      "c-section",
+      "cesarean delivery",
+      "CS",
+      "operation to deliver the baby"
+    ],
+    "synonyms_fr": [
+      "opération pour accoucher",
+      "accouchement par opération",
+      "on m'a ouvert le ventre pour sortir le bébé"
+    ]
+  },
+  {
+    "term_en": "Cataract surgery",
+    "term_fr": "Chirurgie de la cataracte",
+    "synonyms_en": [
+      "cataract operation",
+      "eye operation for cloudy lens",
+      "they removed the white in my eye"
+    ],
+    "synonyms_fr": [
+      "opération de la cataracte",
+      "opération de l'œil pour le voile blanc",
+      "on m'a enlevé le voile de l'œil"
+    ]
+  },
+  {
+    "term_en": "Cervical cerclage",
+    "term_fr": "Cerclage du col de l'utérus",
+    "synonyms_en": [
+      "cerclage",
+      "stitch on the cervix",
+      "cervical stitch to hold pregnancy"
+    ],
+    "synonyms_fr": [
+      "cerclage",
+      "point sur le col pour garder la grossesse",
+      "on m'a cousu le col"
+    ]
+  },
+  {
+    "term_en": "Chest tube insertion",
+    "term_fr": "Pose d'un drain thoracique",
+    "synonyms_en": [
+      "chest drain",
+      "tube placed in the chest",
+      "thoracostomy",
+      "pleural drain"
+    ],
+    "synonyms_fr": [
+      "drain thoracique",
+      "on m'a mis un tuyau dans la poitrine",
+      "drainage de la plèvre"
+    ]
+  },
+  {
+    "term_en": "Cholecystectomy",
+    "term_fr": "Cholécystectomie",
+    "synonyms_en": [
+      "gallbladder removal",
+      "operation to remove gallbladder",
+      "they took out my gallbladder"
+    ],
+    "synonyms_fr": [
+      "ablation de la vésicule biliaire",
+      "opération de la vésicule",
+      "on m'a enlevé la vésicule"
+    ]
+  },
+  {
+    "term_en": "Circumcision",
+    "term_fr": "Circoncision",
+    "synonyms_en": [
+      "male circumcision",
+      "cut the foreskin",
+      "they circumcised me"
+    ],
+    "synonyms_fr": [
+      "on m'a circoncis",
+      "coupé le prépuce",
+      "excision du prépuce"
+    ]
+  },
+  {
+    "term_en": "Cleft lip repair",
+    "term_fr": "Réparation d'une fente labiale",
+    "synonyms_en": [
+      "harelip repair",
+      "operation for split lip",
+      "cheiloplasty"
+    ],
+    "synonyms_fr": [
+      "opération du bec-de-lièvre",
+      "réparation de la lèvre fendue",
+      "chéiloplastie"
+    ]
+  },
+  {
+    "term_en": "Cleft palate repair",
+    "term_fr": "Réparation d'une fente palatine",
+    "synonyms_en": [
+      "palatoplasty",
+      "operation for split palate",
+      "repair of hole in the roof of the mouth"
+    ],
+    "synonyms_fr": [
+      "palatoplastie",
+      "opération de la fente du palais",
+      "réparation du trou dans le palais"
+    ]
+  },
+  {
+    "term_en": "Closed reduction and casting",
+    "term_fr": "Réduction fermée et plâtre",
+    "synonyms_en": [
+      "bone set and plaster cast",
+      "they set the bone and put plaster",
+      "reduction without surgery"
+    ],
+    "synonyms_fr": [
+      "réduction du fracture et plâtre",
+      "on m'a remis l'os et mis un plâtre",
+      "réduction sans opération"
+    ]
+  },
+  {
+    "term_en": "Colostomy",
+    "term_fr": "Colostomie",
+    "synonyms_en": [
+      "stoma bag operation",
+      "opening of the bowel onto the belly",
+      "they made me pass stool through the stomach"
+    ],
+    "synonyms_fr": [
+      "poche de colostomie",
+      "on m'a fait une ouverture sur le ventre pour les selles",
+      "anus artificiel"
+    ]
+  },
+  {
+    "term_en": "Craniotomy",
+    "term_fr": "Craniotomie",
+    "synonyms_en": [
+      "brain surgery",
+      "opening of the skull",
+      "operation on the brain"
+    ],
+    "synonyms_fr": [
+      "opération du cerveau",
+      "ouverture du crâne",
+      "on m'a opéré la tête"
+    ]
+  },
+  {
+    "term_en": "Cystoscopy",
+    "term_fr": "Cystoscopie",
+    "synonyms_en": [
+      "bladder camera",
+      "looking inside the bladder",
+      "scope into the bladder"
+    ],
+    "synonyms_fr": [
+      "cystoscopie",
+      "examen de la vessie avec la caméra",
+      "on a regardé dans la vessie"
+    ]
+  },
+  {
+    "term_en": "Dilation and curettage",
+    "term_fr": "Dilatation et curetage",
+    "synonyms_en": [
+      "D&C",
+      "womb scraping",
+      "cleaning of the womb",
+      "they cleaned the uterus"
+    ],
+    "synonyms_fr": [
+      "curetage",
+      "nettoyage de l'utérus",
+      "on m'a curé la matrice",
+      "D et C"
+    ]
+  },
+  {
+    "term_en": "Episiotomy repair",
+    "term_fr": "Réparation d'épisiotomie",
+    "synonyms_en": [
+      "stitches after delivery",
+      "repair of the cut during childbirth",
+      "perineal stitching"
+    ],
+    "synonyms_fr": [
+      "points après l'accouchement",
+      "recousu après la coupure de l'accouchement",
+      "suture du périnée"
+    ]
+  },
+  {
+    "term_en": "Evacuation of retained products of conception",
+    "term_fr": "Évacuation des produits de conception retenus",
+    "synonyms_en": [
+      "ERPC",
+      "cleaning of the womb after miscarriage",
+      "evacuation after miscarriage"
+    ],
+    "synonyms_fr": [
+      "nettoyage de l'utérus après fausse couche",
+      "curetage après avortement",
+      "on m'a nettoyé la matrice après la fausse couche"
+    ]
+  },
+  {
+    "term_en": "Exploratory laparotomy",
+    "term_fr": "Laparotomie exploratrice",
+    "synonyms_en": [
+      "open the belly to look inside",
+      "abdominal exploration",
+      "they opened my stomach to check"
+    ],
+    "synonyms_fr": [
+      "laparotomie",
+      "on m'a ouvert le ventre pour regarder",
+      "exploration du ventre"
+    ]
+  },
+  {
+    "term_en": "Femoral hernia repair",
+    "term_fr": "Cure de hernie crurale",
+    "synonyms_en": [
+      "femoral hernia operation",
+      "groin hernia repair",
+      "repair of hernia in the upper thigh"
+    ],
+    "synonyms_fr": [
+      "opération d'une hernie crurale",
+      "réparation de la hernie de l'aine",
+      "on m'a réparé la hernie en haut de la cuisse"
+    ]
+  },
+  {
+    "term_en": "Fistulectomy",
+    "term_fr": "Fistulectomie",
+    "synonyms_en": [
+      "anal fistula surgery",
+      "removal of a fistula",
+      "operation for a fistula near the anus"
+    ],
+    "synonyms_fr": [
+      "opération d'une fistule anale",
+      "ablation d'une fistule",
+      "on m'a opéré la fistule"
+    ]
+  },
+  {
+    "term_en": "Gastrectomy",
+    "term_fr": "Gastrectomie",
+    "synonyms_en": [
+      "stomach removal",
+      "removal of part of the stomach",
+      "they took out part of my stomach"
+    ],
+    "synonyms_fr": [
+      "ablation de l'estomac",
+      "ablation d'une partie de l'estomac",
+      "on m'a enlevé l'estomac"
+    ]
+  },
+  {
+    "term_en": "Gastrostomy",
+    "term_fr": "Gastrostomie",
+    "synonyms_en": [
+      "feeding tube into the stomach",
+      "PEG tube",
+      "opening into the stomach for feeding"
+    ],
+    "synonyms_fr": [
+      "sonde d'alimentation dans l'estomac",
+      "on m'a mis un tuyau pour manger dans l'estomac",
+      "ouverture pour l'alimentation"
+    ]
+  },
+  {
+    "term_en": "Haemorrhoidectomy",
+    "term_fr": "Hémorroïdectomie",
+    "synonyms_en": [
+      "hemorrhoidectomy",
+      "piles operation",
+      "removal of piles",
+      "they cut off my piles"
+    ],
+    "synonyms_fr": [
+      "opération des hémorroïdes",
+      "ablation des hémorroïdes",
+      "on m'a enlevé les crises (hémorroïdes)"
+    ]
+  },
+  {
+    "term_en": "Hip replacement",
+    "term_fr": "Prothèse de hanche",
+    "synonyms_en": [
+      "hip arthroplasty",
+      "artificial hip",
+      "they replaced my hip joint"
+    ],
+    "synonyms_fr": [
+      "arthroplastie de la hanche",
+      "hanche artificielle",
+      "on m'a remplacé l'articulation de la hanche"
+    ]
+  },
+  {
+    "term_en": "Hydrocelectomy",
+    "term_fr": "Cure d'hydrocèle",
+    "synonyms_en": [
+      "hydrocele operation",
+      "drainage of water in the scrotum",
+      "operation for swollen scrotum"
+    ],
+    "synonyms_fr": [
+      "opération d'une hydrocèle",
+      "on m'a enlevé l'eau dans les bourses",
+      "opération des bourses gonflées"
+    ]
+  },
+  {
+    "term_en": "Ileostomy",
+    "term_fr": "Iléostomie",
+    "synonyms_en": [
+      "small bowel stoma",
+      "opening of the small intestine onto the belly",
+      "stoma bag"
+    ],
+    "synonyms_fr": [
+      "iléostomie",
+      "poche sur le ventre pour l'intestin grêle",
+      "ouverture de l'intestin sur le ventre"
+    ]
+  },
+  {
+    "term_en": "Incision and drainage of abscess",
+    "term_fr": "Incision et drainage d'un abcès",
+    "synonyms_en": [
+      "I&D",
+      "lancing a boil",
+      "they opened and drained the abscess"
+    ],
+    "synonyms_fr": [
+      "incision et drainage",
+      "on m'a percé l'abcès",
+      "on a ouvert le furoncle pour vider le pus"
+    ]
+  },
+  {
+    "term_en": "Inguinal hernia repair",
+    "term_fr": "Cure de hernie inguinale",
+    "synonyms_en": [
+      "inguinal herniorrhaphy",
+      "groin hernia operation",
+      "repair of hernia in the groin"
+    ],
+    "synonyms_fr": [
+      "opération d'une hernie inguinale",
+      "réparation de la hernie de l'aine",
+      "on m'a opéré la hernie à l'aine"
+    ]
+  },
+  {
+    "term_en": "Intramedullary nailing",
+    "term_fr": "Enclouage centromédullaire",
+    "synonyms_en": [
+      "IM nail",
+      "metal rod placed in the bone",
+      "nail for broken leg bone"
+    ],
+    "synonyms_fr": [
+      "clou dans l'os",
+      "on m'a mis une tige métallique dans l'os",
+      "enclouage de l'os"
+    ]
+  },
+  {
+    "term_en": "Knee arthroscopy",
+    "term_fr": "Arthroscopie du genou",
+    "synonyms_en": [
+      "keyhole knee surgery",
+      "camera in the knee",
+      "scope of the knee"
+    ],
+    "synonyms_fr": [
+      "arthroscopie du genou",
+      "opération du genou avec la caméra",
+      "on a regardé dans le genou"
+    ]
+  },
+  {
+    "term_en": "Laminectomy",
+    "term_fr": "Laminectomie",
+    "synonyms_en": [
+      "back surgery",
+      "spine decompression",
+      "operation on the spine"
+    ],
+    "synonyms_fr": [
+      "opération de la colonne vertébrale",
+      "on m'a opéré le dos",
+      "décompression de la colonne"
+    ]
+  },
+  {
+    "term_en": "Laparoscopy",
+    "term_fr": "Laparoscopie",
+    "synonyms_en": [
+      "keyhole surgery",
+      "camera into the belly",
+      "coelioscopy"
+    ],
+    "synonyms_fr": [
+      "cœlioscopie",
+      "opération du ventre avec la caméra",
+      "on a regardé dans le ventre par de petits trous"
+    ]
+  },
+  {
+    "term_en": "Lipoma excision",
+    "term_fr": "Exérèse d'un lipome",
+    "synonyms_en": [
+      "removal of a fatty lump",
+      "they cut out the fat ball under the skin",
+      "excision of a lipoma"
+    ],
+    "synonyms_fr": [
+      "ablation d'une boule de graisse",
+      "on m'a enlevé la boule sous la peau",
+      "ablation d'un lipome"
+    ]
+  },
+  {
+    "term_en": "Lumpectomy",
+    "term_fr": "Tumorectomie du sein",
+    "synonyms_en": [
+      "breast lump removal",
+      "removal of a lump in the breast",
+      "they took out the lump in my breast"
+    ],
+    "synonyms_fr": [
+      "ablation d'une boule au sein",
+      "on m'a enlevé la boule dans le sein",
+      "exérèse d'une masse du sein"
+    ]
+  },
+  {
+    "term_en": "Lymph node biopsy",
+    "term_fr": "Biopsie ganglionnaire",
+    "synonyms_en": [
+      "gland biopsy",
+      "they took a piece of the swollen gland",
+      "node biopsy"
+    ],
+    "synonyms_fr": [
+      "biopsie d'un ganglion",
+      "on a prélevé un morceau du ganglion",
+      "prélèvement d'une glande gonflée"
+    ]
+  },
+  {
+    "term_en": "Manual vacuum aspiration",
+    "term_fr": "Aspiration manuelle intra-utérine",
+    "synonyms_en": [
+      "MVA",
+      "AMIU",
+      "suction cleaning of the womb"
+    ],
+    "synonyms_fr": [
+      "AMIU",
+      "aspiration de l'utérus",
+      "nettoyage de la matrice par aspiration"
+    ]
+  },
+  {
+    "term_en": "Mastectomy",
+    "term_fr": "Mastectomie",
+    "synonyms_en": [
+      "breast removal",
+      "removal of the whole breast",
+      "they took off my breast"
+    ],
+    "synonyms_fr": [
+      "ablation du sein",
+      "on m'a enlevé le sein",
+      "ablation totale du sein"
+    ]
+  },
+  {
+    "term_en": "Mastoidectomy",
+    "term_fr": "Mastoïdectomie",
+    "synonyms_en": [
+      "ear bone operation",
+      "surgery behind the ear",
+      "operation for chronic ear infection"
+    ],
+    "synonyms_fr": [
+      "opération de l'os derrière l'oreille",
+      "chirurgie de la mastoïde",
+      "opération pour l'infection chronique de l'oreille"
+    ]
+  },
+  {
+    "term_en": "Myomectomy",
+    "term_fr": "Myomectomie",
+    "synonyms_en": [
+      "fibroid removal",
+      "removal of fibroids from the womb",
+      "they took out my fibroids"
+    ],
+    "synonyms_fr": [
+      "ablation des fibromes",
+      "on m'a enlevé les fibromes",
+      "ablation des myomes de l'utérus"
+    ]
+  },
+  {
+    "term_en": "Nephrectomy",
+    "term_fr": "Néphrectomie",
+    "synonyms_en": [
+      "kidney removal",
+      "removal of a kidney",
+      "they took out my kidney"
+    ],
+    "synonyms_fr": [
+      "ablation d'un rein",
+      "on m'a enlevé le rein",
+      "ablation du rein"
+    ]
+  },
+  {
+    "term_en": "Nephrolithotomy",
+    "term_fr": "Néphrolithotomie",
+    "synonyms_en": [
+      "kidney stone removal surgery",
+      "operation to remove a stone from the kidney",
+      "open kidney stone surgery"
+    ],
+    "synonyms_fr": [
+      "ablation d'un calcul du rein",
+      "opération pour enlever une pierre dans le rein",
+      "on m'a enlevé la pierre du rein"
+    ]
+  },
+  {
+    "term_en": "Open prostatectomy",
+    "term_fr": "Prostatectomie à ciel ouvert",
+    "synonyms_en": [
+      "prostate removal",
+      "prostatectomy",
+      "operation to remove the prostate"
+    ],
+    "synonyms_fr": [
+      "ablation de la prostate",
+      "opération de la prostate",
+      "on m'a enlevé la prostate"
+    ]
+  },
+  {
+    "term_en": "Open reduction and internal fixation",
+    "term_fr": "Réduction ouverte et fixation interne",
+    "synonyms_en": [
+      "ORIF",
+      "plate and screws for broken bone",
+      "surgery to fix a fracture with metal"
+    ],
+    "synonyms_fr": [
+      "ostéosynthèse",
+      "plaque et vis pour l'os cassé",
+      "on m'a opéré la fracture avec des vis"
+    ]
+  },
+  {
+    "term_en": "Orchidectomy",
+    "term_fr": "Orchidectomie",
+    "synonyms_en": [
+      "orchiectomy",
+      "testicle removal",
+      "they removed my testicle"
+    ],
+    "synonyms_fr": [
+      "ablation d'un testicule",
+      "on m'a enlevé le testicule",
+      "orchiectomie"
+    ]
+  },
+  {
+    "term_en": "Orchidopexy",
+    "term_fr": "Orchidopexie",
+    "synonyms_en": [
+      "undescended testicle surgery",
+      "bringing down the testicle",
+      "operation for a testicle that did not drop"
+    ],
+    "synonyms_fr": [
+      "abaissement du testicule",
+      "opération pour un testicule non descendu",
+      "on a fait descendre le testicule"
+    ]
+  },
+  {
+    "term_en": "Ovarian cystectomy",
+    "term_fr": "Kystectomie ovarienne",
+    "synonyms_en": [
+      "ovarian cyst removal",
+      "removal of a cyst on the ovary",
+      "they took out the cyst on my ovary"
+    ],
+    "synonyms_fr": [
+      "ablation d'un kyste de l'ovaire",
+      "on m'a enlevé le kyste sur l'ovaire",
+      "ablation d'un kyste ovarien"
+    ]
+  },
+  {
+    "term_en": "Partial hysterectomy",
+    "term_fr": "Hystérectomie subtotale",
+    "synonyms_en": [
+      "subtotal hysterectomy",
+      "partial removal of the womb",
+      "they removed part of my womb"
+    ],
+    "synonyms_fr": [
+      "hystérectomie partielle",
+      "ablation partielle de l'utérus",
+      "on m'a enlevé une partie de la matrice"
+    ]
+  },
+  {
+    "term_en": "Repair of ruptured uterus",
+    "term_fr": "Réparation d'une rupture utérine",
+    "synonyms_en": [
+      "torn womb repair",
+      "surgery for a burst womb during labour",
+      "uterine rupture repair"
+    ],
+    "synonyms_fr": [
+      "réparation d'un utérus rompu",
+      "on m'a recousu la matrice déchirée",
+      "réparation de la matrice éclatée à l'accouchement"
+    ]
+  },
+  {
+    "term_en": "Salpingectomy",
+    "term_fr": "Salpingectomie",
+    "synonyms_en": [
+      "ectopic pregnancy surgery",
+      "removal of a fallopian tube",
+      "operation for a pregnancy in the tube"
+    ],
+    "synonyms_fr": [
+      "ablation d'une trompe",
+      "opération pour grossesse extra-utérine",
+      "on m'a enlevé la trompe"
+    ]
+  },
+  {
+    "term_en": "Salpingo-oophorectomy",
+    "term_fr": "Salpingo-ovariectomie",
+    "synonyms_en": [
+      "removal of ovary and tube",
+      "they took out the ovary and the tube",
+      "adnexectomy"
+    ],
+    "synonyms_fr": [
+      "annexectomie",
+      "ablation de l'ovaire et de la trompe",
+      "on m'a enlevé l'ovaire et la trompe"
+    ]
+  },
+  {
+    "term_en": "Septoplasty",
+    "term_fr": "Septoplastie",
+    "synonyms_en": [
+      "nasal septum surgery",
+      "operation to straighten the nose partition",
+      "deviated septum repair"
+    ],
+    "synonyms_fr": [
+      "opération de la cloison nasale",
+      "on m'a redressé la cloison du nez",
+      "correction de la cloison déviée"
+    ]
+  },
+  {
+    "term_en": "Sequestrectomy",
+    "term_fr": "Séquestrectomie",
+    "synonyms_en": [
+      "removal of dead bone",
+      "surgery for bone infection",
+      "operation for osteomyelitis"
+    ],
+    "synonyms_fr": [
+      "ablation d'un séquestre osseux",
+      "opération pour infection de l'os",
+      "on m'a enlevé l'os mort"
+    ]
+  },
+  {
+    "term_en": "Skin biopsy",
+    "term_fr": "Biopsie cutanée",
+    "synonyms_en": [
+      "they took a piece of skin",
+      "skin sample",
+      "biopsy of the skin"
+    ],
+    "synonyms_fr": [
+      "prélèvement de peau",
+      "on a pris un morceau de peau",
+      "biopsie de la peau"
+    ]
+  },
+  {
+    "term_en": "Skin grafting",
+    "term_fr": "Greffe de peau",
+    "synonyms_en": [
+      "skin graft",
+      "split skin graft",
+      "they put new skin on the wound"
+    ],
+    "synonyms_fr": [
+      "greffe cutanée",
+      "on m'a mis de la peau sur la plaie",
+      "greffe de peau mince"
+    ]
+  },
+  {
+    "term_en": "Splenectomy",
+    "term_fr": "Splénectomie",
+    "synonyms_en": [
+      "spleen removal",
+      "removal of the spleen",
+      "they took out my spleen"
+    ],
+    "synonyms_fr": [
+      "ablation de la rate",
+      "on m'a enlevé la rate",
+      "ablation de la rate après accident"
+    ]
+  },
+  {
+    "term_en": "Suprapubic cystostomy",
+    "term_fr": "Cystostomie sus-pubienne",
+    "synonyms_en": [
+      "suprapubic catheter",
+      "tube into the bladder through the belly",
+      "urine tube above the pubic bone"
+    ],
+    "synonyms_fr": [
+      "cathéter sus-pubien",
+      "on m'a mis un tuyau dans la vessie par le ventre",
+      "sonde sus-pubienne"
+    ]
+  },
+  {
+    "term_en": "Symphysiotomy",
+    "term_fr": "Symphysiotomie",
+    "synonyms_en": [
+      "cutting the pelvic joint to deliver",
+      "operation to widen the pelvis in labour",
+      "pelvic joint division"
+    ],
+    "synonyms_fr": [
+      "section de la symphyse pubienne",
+      "on m'a ouvert le bassin pour accoucher",
+      "symphyséotomie"
+    ]
+  },
+  {
+    "term_en": "Thoracotomy",
+    "term_fr": "Thoracotomie",
+    "synonyms_en": [
+      "chest surgery",
+      "opening of the chest",
+      "operation on the chest"
+    ],
+    "synonyms_fr": [
+      "ouverture de la poitrine",
+      "opération de la poitrine",
+      "on m'a ouvert le thorax"
+    ]
+  },
+  {
+    "term_en": "Thyroidectomy",
+    "term_fr": "Thyroïdectomie",
+    "synonyms_en": [
+      "thyroid removal",
+      "goitre operation",
+      "removal of the thyroid gland",
+      "operation for goitre"
+    ],
+    "synonyms_fr": [
+      "opération du goitre",
+      "ablation de la thyroïde",
+      "on m'a enlevé le goitre"
+    ]
+  },
+  {
+    "term_en": "Tonsillectomy",
+    "term_fr": "Amygdalectomie",
+    "synonyms_en": [
+      "tonsil removal",
+      "removal of the tonsils",
+      "they took out my tonsils"
+    ],
+    "synonyms_fr": [
+      "ablation des amygdales",
+      "opération des amygdales",
+      "on m'a enlevé les amygdales"
+    ]
+  },
+  {
+    "term_en": "Total hysterectomy",
+    "term_fr": "Hystérectomie totale",
+    "synonyms_en": [
+      "removal of the whole womb",
+      "womb removal",
+      "they took out my uterus"
+    ],
+    "synonyms_fr": [
+      "ablation totale de l'utérus",
+      "on m'a enlevé la matrice",
+      "ablation de la matrice"
+    ]
+  },
+  {
+    "term_en": "Trabeculectomy",
+    "term_fr": "Trabéculectomie",
+    "synonyms_en": [
+      "glaucoma surgery",
+      "operation to lower eye pressure",
+      "eye operation for glaucoma"
+    ],
+    "synonyms_fr": [
+      "opération du glaucome",
+      "chirurgie pour baisser la tension de l'œil",
+      "on m'a opéré pour le glaucome"
+    ]
+  },
+  {
+    "term_en": "Tracheostomy",
+    "term_fr": "Trachéotomie",
+    "synonyms_en": [
+      "tracheotomy",
+      "hole in the throat to breathe",
+      "breathing tube in the neck"
+    ],
+    "synonyms_fr": [
+      "trachéotomie",
+      "on m'a fait un trou dans la gorge pour respirer",
+      "canule dans le cou pour respirer"
+    ]
+  },
+  {
+    "term_en": "Tubal ligation",
+    "term_fr": "Ligature des trompes",
+    "synonyms_en": [
+      "tying the tubes",
+      "female sterilisation",
+      "permanent family planning operation"
+    ],
+    "synonyms_fr": [
+      "on m'a attaché les trompes",
+      "stérilisation féminine",
+      "ligature des trompes pour ne plus avoir d'enfants"
+    ]
+  },
+  {
+    "term_en": "Tympanoplasty",
+    "term_fr": "Tympanoplastie",
+    "synonyms_en": [
+      "eardrum repair",
+      "operation to close a hole in the eardrum",
+      "ear drum surgery"
+    ],
+    "synonyms_fr": [
+      "réparation du tympan",
+      "opération pour fermer le trou du tympan",
+      "on m'a réparé le tympan"
+    ]
+  },
+  {
+    "term_en": "Umbilical hernia repair",
+    "term_fr": "Cure de hernie ombilicale",
+    "synonyms_en": [
+      "umbilical hernia operation",
+      "belly button hernia repair",
+      "repair of hernia at the navel"
+    ],
+    "synonyms_fr": [
+      "opération d'une hernie ombilicale",
+      "réparation de la hernie du nombril",
+      "on m'a opéré la hernie du nombril"
+    ]
+  },
+  {
+    "term_en": "Ureterolithotomy",
+    "term_fr": "Urétérolithotomie",
+    "synonyms_en": [
+      "removal of a stone from the ureter",
+      "surgery for stone in the urine tube",
+      "operation for ureteric stone"
+    ],
+    "synonyms_fr": [
+      "ablation d'un calcul de l'uretère",
+      "opération pour une pierre dans le canal de l'urine",
+      "on m'a enlevé la pierre de l'uretère"
+    ]
+  },
+  {
+    "term_en": "Urethral dilatation",
+    "term_fr": "Dilatation urétrale",
+    "synonyms_en": [
+      "widening of the urine tube",
+      "treatment for narrow urethra",
+      "urethral dilation for stricture"
+    ],
+    "synonyms_fr": [
+      "dilatation de l'urètre",
+      "on m'a élargi le canal de l'urine",
+      "traitement du rétrécissement de l'urètre"
+    ]
+  },
+  {
+    "term_en": "Urethroplasty",
+    "term_fr": "Urétroplastie",
+    "synonyms_en": [
+      "urethral stricture surgery",
+      "repair of the urine tube",
+      "operation for narrow urethra"
+    ],
+    "synonyms_fr": [
+      "réparation de l'urètre",
+      "opération du rétrécissement de l'urètre",
+      "on m'a réparé le canal de l'urine"
+    ]
+  },
+  {
+    "term_en": "Varicose vein surgery",
+    "term_fr": "Chirurgie des varices",
+    "synonyms_en": [
+      "vein stripping",
+      "operation for varicose veins",
+      "removal of swollen leg veins"
+    ],
+    "synonyms_fr": [
+      "opération des varices",
+      "on m'a enlevé les veines gonflées de la jambe",
+      "éveinage"
+    ]
+  },
+  {
+    "term_en": "Vasectomy",
+    "term_fr": "Vasectomie",
+    "synonyms_en": [
+      "male sterilisation",
+      "tying the male tubes",
+      "permanent family planning for men"
+    ],
+    "synonyms_fr": [
+      "stérilisation masculine",
+      "on m'a attaché les canaux",
+      "vasectomie pour ne plus avoir d'enfants"
+    ]
+  },
+  {
+    "term_en": "Ventral hernia repair",
+    "term_fr": "Cure de hernie ventrale",
+    "synonyms_en": [
+      "incisional hernia repair",
+      "repair of a hernia on the belly",
+      "operation for a hernia at an old scar"
+    ],
+    "synonyms_fr": [
+      "opération d'une hernie ventrale",
+      "réparation d'une hernie sur l'ancienne cicatrice",
+      "cure d'éventration"
+    ]
+  },
+  {
+    "term_en": "Vesicovaginal fistula repair",
+    "term_fr": "Réparation d'une fistule vésico-vaginale",
+    "synonyms_en": [
+      "VVF repair",
+      "surgery for leaking urine after childbirth",
+      "operation for a hole between bladder and vagina"
+    ],
+    "synonyms_fr": [
+      "cure de fistule vésico-vaginale",
+      "opération pour les fuites d'urine après l'accouchement",
+      "réparation du trou entre la vessie et le vagin"
+    ]
+  },
+  {
+    "term_en": "Wide local excision",
+    "term_fr": "Exérèse large",
+    "synonyms_en": [
+      "WLE",
+      "removal of a lump with a margin",
+      "cutting out a growth with surrounding tissue"
+    ],
+    "synonyms_fr": [
+      "exérèse large",
+      "ablation d'une masse avec une marge",
+      "on a enlevé la masse et le tissu autour"
+    ]
+  },
+  {
+    "term_en": "Wound debridement",
+    "term_fr": "Parage de plaie",
+    "synonyms_en": [
+      "cleaning of the wound",
+      "removal of dead tissue from a wound",
+      "they cleaned out the wound"
+    ],
+    "synonyms_fr": [
+      "débridement d'une plaie",
+      "nettoyage de la plaie",
+      "on a enlevé les tissus morts de la plaie"
+    ]
+  }
+]
