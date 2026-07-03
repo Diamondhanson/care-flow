@@ -198,8 +198,13 @@ export const fr = {
     emergencyContactPhone: "Téléphone du contact",
     add: "ajouter",
     edit: "Modifier",
+    editDemographics: "Modifier les données démographiques",
     delete: "Supprimer",
     noneRecorded: "Rien d'enregistré",
+    noneRecordedAdd: "Rien d'enregistré — touchez pour ajouter",
+    notRecorded: "données non renseignées",
+    explainer:
+      "Enregistré une fois, suit le patient à chaque visite — à relire et mettre à jour, pas à ressaisir.",
     description: "Description",
     descriptionRequired: "Une description est requise.",
     saveFailed: "Impossible d'enregistrer cette entrée.",

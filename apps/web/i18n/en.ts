@@ -201,8 +201,13 @@ export const en = {
     emergencyContactPhone: "Contact phone",
     add: "add",
     edit: "Edit",
+    editDemographics: "Edit demographics",
     delete: "Delete",
     noneRecorded: "None recorded",
+    noneRecordedAdd: "None recorded — tap to add",
+    notRecorded: "details not recorded",
+    explainer:
+      "Recorded once, follows the patient across every visit — review and update rather than re-enter.",
     description: "Description",
     descriptionRequired: "A description is required.",
     saveFailed: "Could not save this record.",

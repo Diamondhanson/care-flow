@@ -10,6 +10,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, Pencil, Plus, UserRound } from "lucide-react";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 import type {
   MaritalStatus,
@@ -22,6 +23,7 @@ import {
   deletePatientHistory,
   getHistoryForPatient,
   PATIENT_HISTORY_TYPE_ORDER,
+  updatePatientDemographics,
   updatePatientHistory,
   type AddPatientHistoryInput,
 } from "@/services/mockStorage";
@@ -30,6 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Select,
   SelectContent,
@@ -155,6 +158,9 @@ export function BackgroundPanel({
   const { t } = useT();
   const [expanded, setExpanded] = useState(false);
   const [history, setHistory] = useState<PatientHistory[]>([]);
+  // The drawer's `patient` prop goes stale once demographics are edited here,
+  // so the panel keeps its own copy, refreshed from each mutation's return.
+  const [patientState, setPatientState] = useState<Patient>(patient);
   // The open inline form: adding to a group, or editing one record.
   const [form, setForm] = useState<
     | { mode: "add"; type: PatientHistoryType }
@@ -164,6 +170,17 @@ export function BackgroundPanel({
   const [draft, setDraft] = useState<HistoryDraft>(EMPTY_DRAFT);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Demographics inline editor (occupation · marital status · emergency contact).
+  const [editingDemo, setEditingDemo] = useState(false);
+  const [demoDraft, setDemoDraft] = useState({
+    occupation: "",
+    maritalStatus: "unknown" as MaritalStatus,
+    ecName: "",
+    ecPhone: "",
+  });
+  const demoPhoneInvalid =
+    demoDraft.ecPhone !== "" && !isValidPhoneNumber(demoDraft.ecPhone);
+
   const refresh = useCallback(() => {
     setHistory(getHistoryForPatient(patient.id));
   }, [patient.id]);
@@ -172,17 +189,45 @@ export function BackgroundPanel({
     refresh();
   }, [refresh]);
 
-  const age = ageFromDob(patient.date_of_birth);
+  useEffect(() => {
+    setPatientState(patient);
+    setEditingDemo(false);
+  }, [patient]);
+
+  function openDemoEditor() {
+    setDemoDraft({
+      occupation: patientState.occupation ?? "",
+      maritalStatus: patientState.marital_status ?? "unknown",
+      ecName: patientState.emergency_contact_name ?? "",
+      ecPhone: patientState.emergency_contact_phone ?? "",
+    });
+    setEditingDemo(true);
+  }
+
+  function saveDemographics() {
+    if (demoPhoneInvalid) return;
+    const updated = updatePatientDemographics(patientState.id, {
+      occupation: demoDraft.occupation || null,
+      marital_status: demoDraft.maritalStatus,
+      emergency_contact_name: demoDraft.ecName || null,
+      emergency_contact_phone: demoDraft.ecPhone || null,
+    });
+    setPatientState(updated);
+    setEditingDemo(false);
+  }
+
+  const age = ageFromDob(patientState.date_of_birth);
   // Rows hydrated from a hosted schema that predates Phase 21 lack the new
   // demographic columns entirely — treat missing as unrecorded, never crash.
   const maritalLabel =
-    patient.marital_status && patient.marital_status !== "unknown"
-      ? t(MARITAL_STATUS_LABEL[patient.marital_status])
+    patientState.marital_status && patientState.marital_status !== "unknown"
+      ? t(MARITAL_STATUS_LABEL[patientState.marital_status])
       : null;
+  // "Unknown" sex reads like a status badge in the strip — omit it instead.
   const glance = [
     age !== null ? t("background.ageYears", { age: String(age) }) : null,
-    t(`sex.${patient.sex}`),
-    patient.occupation,
+    patientState.sex !== "unknown" ? t(`sex.${patientState.sex}`) : null,
+    patientState.occupation,
     maritalLabel,
   ]
     .filter(Boolean)
@@ -268,7 +313,11 @@ export function BackgroundPanel({
         />
         <h3 className="text-sm font-semibold">{t("background.title")}</h3>
         <span className="ml-auto truncate font-mono text-xs text-muted-foreground">
-          {glance}
+          {glance || (
+            <span className="font-sans italic text-muted-foreground/60">
+              {t("background.notRecorded")}
+            </span>
+          )}
         </span>
         {history.length > 0 ? (
           <Badge variant="outline" className="shrink-0 text-[10px]">
@@ -279,26 +328,147 @@ export function BackgroundPanel({
 
       {expanded ? (
         <div className="flex flex-col gap-3 border-t border-border p-3">
-          {/* Demographics detail row */}
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
-            <DemographicItem
-              label={t("background.occupation")}
-              value={patient.occupation}
-            />
-            <DemographicItem
-              label={t("background.maritalStatus")}
-              value={maritalLabel}
-            />
-            <DemographicItem
-              label={t("background.emergencyContact")}
-              value={patient.emergency_contact_name}
-            />
-            <DemographicItem
-              label={t("background.emergencyContactPhone")}
-              value={patient.emergency_contact_phone}
-              mono
-            />
-          </dl>
+          {history.length === 0 && !glance ? (
+            <p className="text-xs italic text-muted-foreground/70">
+              {t("background.explainer")}
+            </p>
+          ) : null}
+
+          {/* Demographics — captured at intake, editable here afterwards. */}
+          {editingDemo ? (
+            <div className="flex flex-col gap-2 rounded-md border border-border bg-background p-2.5">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="demo_occupation" className="text-xs">
+                    {t("background.occupation")}
+                  </Label>
+                  <Input
+                    id="demo_occupation"
+                    value={demoDraft.occupation}
+                    onChange={(e) =>
+                      setDemoDraft({ ...demoDraft, occupation: e.target.value })
+                    }
+                    placeholder={t("intake.occupationPlaceholder")}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="demo_marital" className="text-xs">
+                    {t("background.maritalStatus")}
+                  </Label>
+                  <Select
+                    items={Object.fromEntries(
+                      (Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                        (m) => [m, t(MARITAL_STATUS_LABEL[m])],
+                      ),
+                    )}
+                    value={demoDraft.maritalStatus}
+                    onValueChange={(v) =>
+                      setDemoDraft({
+                        ...demoDraft,
+                        maritalStatus: v as MaritalStatus,
+                      })
+                    }
+                  >
+                    <SelectTrigger id="demo_marital" className="h-8 w-full text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                        (m) => (
+                          <SelectItem key={m} value={m}>
+                            {t(MARITAL_STATUS_LABEL[m])}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="demo_ec_name" className="text-xs">
+                    {t("background.emergencyContact")}
+                  </Label>
+                  <Input
+                    id="demo_ec_name"
+                    value={demoDraft.ecName}
+                    onChange={(e) =>
+                      setDemoDraft({ ...demoDraft, ecName: e.target.value })
+                    }
+                    placeholder={t("intake.emergencyContactNamePlaceholder")}
+                    className="h-8 text-xs"
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="demo_ec_phone" className="text-xs">
+                    {t("background.emergencyContactPhone")}
+                  </Label>
+                  <PhoneInput
+                    id="demo_ec_phone"
+                    value={demoDraft.ecPhone}
+                    onChange={(value) =>
+                      setDemoDraft({ ...demoDraft, ecPhone: value ?? "" })
+                    }
+                    invalid={demoPhoneInvalid}
+                  />
+                  {demoPhoneInvalid ? (
+                    <p role="alert" className="text-xs text-destructive">
+                      {t("intake.invalidPhone")}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  className="h-7 text-xs"
+                  disabled={demoPhoneInvalid}
+                  onClick={saveDemographics}
+                >
+                  {t("common.save")}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs"
+                  onClick={() => setEditingDemo(false)}
+                >
+                  {t("common.cancel")}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-start gap-2">
+              <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
+                <DemographicItem
+                  label={t("background.occupation")}
+                  value={patientState.occupation}
+                />
+                <DemographicItem
+                  label={t("background.maritalStatus")}
+                  value={maritalLabel}
+                />
+                <DemographicItem
+                  label={t("background.emergencyContact")}
+                  value={patientState.emergency_contact_name}
+                />
+                <DemographicItem
+                  label={t("background.emergencyContactPhone")}
+                  value={patientState.emergency_contact_phone}
+                  mono
+                />
+              </dl>
+              {canWrite ? (
+                <button
+                  type="button"
+                  aria-label={t("background.editDemographics")}
+                  onClick={openDemoEditor}
+                  className="shrink-0 pt-0.5 text-muted-foreground hover:text-foreground"
+                >
+                  <Pencil className="size-3.5" />
+                </button>
+              ) : null}
+            </div>
+          )}
 
           {/* History groups, in clinical order — two columns on the wide drawer. */}
           <div className="grid gap-3 lg:grid-cols-2 lg:gap-x-6">
@@ -307,7 +477,7 @@ export function BackgroundPanel({
             const isAddingHere = form?.mode === "add" && form.type === type;
             return (
               <div key={type} className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     {t(HISTORY_TYPE_LABEL[type])}
                   </span>
@@ -315,7 +485,7 @@ export function BackgroundPanel({
                     <button
                       type="button"
                       onClick={() => openAdd(type)}
-                      className="inline-flex items-center gap-0.5 text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                      className="inline-flex items-center gap-0.5 rounded-md border border-border px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
                     >
                       <Plus className="size-3" />
                       {t("background.add")}
@@ -324,9 +494,20 @@ export function BackgroundPanel({
                 </div>
 
                 {items.length === 0 && !isAddingHere ? (
-                  <span className="text-xs text-muted-foreground/70">
-                    {t("background.noneRecorded")}
-                  </span>
+                  canWrite && !form ? (
+                    // The empty state itself is an add target — one obvious tap.
+                    <button
+                      type="button"
+                      onClick={() => openAdd(type)}
+                      className="self-start rounded-md border border-dashed border-border px-2 py-1 text-left text-xs text-muted-foreground/70 transition-colors hover:border-primary hover:text-foreground"
+                    >
+                      {t("background.noneRecordedAdd")}
+                    </button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground/70">
+                      {t("background.noneRecorded")}
+                    </span>
+                  )
                 ) : (
                   <ul className="flex flex-col gap-1">
                     {items.map((h) =>

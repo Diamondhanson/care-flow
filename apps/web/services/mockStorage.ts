@@ -3093,6 +3093,52 @@ export function markNoKnownAllergies(
 // Mutations — patient background & Review of Systems (Phase 21)
 // ---------------------------------------------------------------------------
 
+export interface UpdatePatientDemographicsInput {
+  occupation?: string | null;
+  marital_status?: MaritalStatus;
+  emergency_contact_name?: string | null;
+  emergency_contact_phone?: string | null;
+}
+
+/**
+ * Review-and-update the demographic context captured at intake (occupation,
+ * marital status, emergency contact) — the Background panel's edit path for
+ * patients registered before these fields existed, or whose details changed.
+ */
+export function updatePatientDemographics(
+  patientId: PatientId,
+  input: UpdatePatientDemographicsInput
+): Patient {
+  CreatePatientInputSchema.pick({
+    occupation: true,
+    marital_status: true,
+    emergency_contact_name: true,
+    emergency_contact_phone: true,
+  }).parse(input);
+
+  const db = loadDatabase();
+  const patient = db.patients.find((p) => p.id === patientId);
+  if (!patient) {
+    throw new Error(`updatePatientDemographics: patient "${patientId}" not found`);
+  }
+
+  if (input.occupation !== undefined) {
+    patient.occupation = input.occupation?.trim() || null;
+  }
+  if (input.marital_status !== undefined) {
+    patient.marital_status = input.marital_status;
+  }
+  if (input.emergency_contact_name !== undefined) {
+    patient.emergency_contact_name = input.emergency_contact_name?.trim() || null;
+  }
+  if (input.emergency_contact_phone !== undefined) {
+    patient.emergency_contact_phone = input.emergency_contact_phone?.trim() || null;
+  }
+  patient.updated_at = nowISO();
+  persist(db);
+  return patient;
+}
+
 /** Record one clinical-background item (patient-level; persists across visits). */
 export function addPatientHistory(
   patientId: PatientId,

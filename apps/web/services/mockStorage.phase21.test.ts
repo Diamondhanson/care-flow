@@ -44,7 +44,9 @@ import {
   clearRosResponse,
   deletePatientHistory,
   getHistoryForPatient,
+  getPatientById,
   getRosResponsesForVisit,
+  updatePatientDemographics,
   updatePatientHistory,
   upsertRosResponse,
 } from "@/services/mockStorage";
@@ -122,6 +124,37 @@ describe("patient history CRUD", () => {
   it("throws for an unknown patient", () => {
     expect(() =>
       addPatientHistory("nope", { type: "family", description: "X" }),
+    ).toThrow(/not found/);
+  });
+});
+
+describe("updatePatientDemographics", () => {
+  it("review-and-updates occupation, marital status and emergency contact", () => {
+    const updated = updatePatientDemographics("pat_anon_gamma", {
+      occupation: "Farmer",
+      marital_status: "married",
+      emergency_contact_name: "Ama K.",
+      emergency_contact_phone: "+237670000000",
+    });
+    expect(updated.occupation).toBe("Farmer");
+    expect(updated.marital_status).toBe("married");
+    expect(getPatientById("pat_anon_gamma")?.emergency_contact_name).toBe("Ama K.");
+  });
+
+  it("only touches the provided fields; empty strings clear to null", () => {
+    updatePatientDemographics("pat_owusu", { occupation: "Retired teacher" });
+    const partial = updatePatientDemographics("pat_owusu", { occupation: "" });
+    expect(partial.occupation).toBeNull();
+    // marital_status untouched by either call
+    expect(partial.marital_status).toBe("widowed");
+  });
+
+  it("rejects oversized input and unknown patients", () => {
+    expect(() =>
+      updatePatientDemographics("pat_owusu", { occupation: "x".repeat(200) }),
+    ).toThrow();
+    expect(() =>
+      updatePatientDemographics("nope", { occupation: "Farmer" }),
     ).toThrow(/not found/);
   });
 });
