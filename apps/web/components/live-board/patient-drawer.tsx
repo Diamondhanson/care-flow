@@ -872,18 +872,18 @@ export function PatientDrawer({
           </div>
 
           {/* Background — demographics + patient-level history (Phase 21).
-              Pinned under the allergies banner; collapses to a one-line strip. */}
-          <div style={{ order: -9 }}>
-            <BackgroundPanel
-              patient={patient}
-              recorderId={recorderId}
-              canWrite={
-                actingRole === "nurse" ||
-                actingRole === "doctor" ||
-                actingRole === "admin"
-              }
-            />
-          </div>
+              For doctors it lives inside the SOAP flow (after Subjective,
+              before the ROS); other roles get it pinned under the allergies
+              banner, collapsed to a one-line strip. */}
+          {!isDoctor ? (
+            <div style={{ order: -9 }}>
+              <BackgroundPanel
+                patient={patient}
+                recorderId={recorderId}
+                canWrite={actingRole === "nurse" || actingRole === "admin"}
+              />
+            </div>
+          ) : null}
 
           {/* Reconciliation — anonymous patients only */}
           {patient.is_emergency_anonymous ? (
@@ -1007,6 +1007,16 @@ export function PatientDrawer({
                     value={subjective}
                     onValueChange={setSubjective}
                     placeholder={t("drawer.subjectivePlaceholder")}
+                  />
+                </div>
+                {/* Patient background between S and the ROS — the clinical
+                    reading order: what they report, who they are, then the
+                    systems review. */}
+                <div className="lg:col-span-2">
+                  <BackgroundPanel
+                    patient={patient}
+                    recorderId={recorderId}
+                    canWrite
                   />
                 </div>
                 {/* Structured Review of Systems (Phase 21) — complaint-driven,
