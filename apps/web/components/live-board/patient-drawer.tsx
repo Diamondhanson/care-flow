@@ -439,7 +439,7 @@ export function PatientDrawer({
   if (!visit || !patient) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="sm:max-w-xl! lg:w-[40vw]! lg:max-w-none!" />
+        <SheetContent className="sm:max-w-xl! lg:w-[45vw]! lg:max-w-none!" />
       </Sheet>
     );
   }
@@ -749,10 +749,10 @@ export function PatientDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      {/* ~40% of the viewport on desktop (capped only by the viewport itself);
+      {/* ~45% of the viewport on desktop (capped only by the viewport itself);
           tablets get a fixed comfortable width, phones stay full-bleed. The
           important modifiers out-rank the base sheet's data-[side]-scoped cap. */}
-      <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-xl! lg:w-[40vw]! lg:max-w-none!">
+      <SheetContent className="flex w-full flex-col gap-0 overflow-y-auto p-0 sm:max-w-xl! lg:w-[45vw]! lg:max-w-none!">
         <SheetHeader className="border-b border-border">
           <div className="flex items-center gap-2 pr-8">
             <SheetTitle
