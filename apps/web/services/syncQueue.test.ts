@@ -6,6 +6,7 @@ import {
   drainOutbox,
   isSyncConfigured,
   markFailed,
+  pushChangeToServer,
   removeFromQueue,
   type NewChange,
   type OutboxChange,
@@ -162,5 +163,66 @@ describe("the sync seam", () => {
   it("drainOutbox is a no-op that leaves the queue intact while unconfigured", async () => {
     const result = await drainOutbox();
     expect(result).toMatchObject({ skipped: true, uploaded: 0, failed: 0 });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Upsert conflict targets (Phase 21) — ros_responses rows are unique on the
+// business key (visit_id, question_key), not the row id. Two devices answering
+// the same question offline mint different ids; landing the upsert on the
+// business key converges instead of wedging the queue on the unique constraint.
+// ---------------------------------------------------------------------------
+
+interface CapturedUpsert {
+  table: string;
+  payload: Record<string, unknown>;
+  options: { onConflict?: string } | undefined;
+}
+
+/** A minimal Supabase-client stub that records upsert calls. */
+function stubClient(captured: CapturedUpsert[]) {
+  return {
+    from: (table: string) => ({
+      upsert: (payload: Record<string, unknown>, options?: { onConflict?: string }) => {
+        captured.push({ table, payload, options });
+        return {
+          select: () => Promise.resolve({ data: [{ version: 1 }], error: null }),
+          then: (resolve: (v: { error: null }) => void) =>
+            resolve({ error: null }),
+        };
+      },
+    }),
+  } as unknown as Parameters<typeof pushChangeToServer>[1];
+}
+
+describe("pushChangeToServer upsert conflict targets", () => {
+  it("lands ros_responses inserts on (visit_id, question_key)", async () => {
+    const captured: CapturedUpsert[] = [];
+    await pushChangeToServer(
+      entry({
+        table: "ros_responses",
+        op: "insert",
+        row_id: "ros_1",
+        payload: { id: "ros_1", visit_id: "v1", question_key: "cardiac.chest_pain" },
+      }),
+      stubClient(captured),
+    );
+    expect(captured).toHaveLength(1);
+    expect(captured[0].options).toEqual({ onConflict: "visit_id,question_key" });
+  });
+
+  it("leaves id-keyed tables on the default primary-key upsert", async () => {
+    const captured: CapturedUpsert[] = [];
+    await pushChangeToServer(
+      entry({
+        table: "patient_history",
+        op: "insert",
+        row_id: "ph_1",
+        payload: { id: "ph_1", patient_id: "p1" },
+      }),
+      stubClient(captured),
+    );
+    expect(captured).toHaveLength(1);
+    expect(captured[0].options).toBeUndefined();
   });
 });

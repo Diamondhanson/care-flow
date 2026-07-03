@@ -195,16 +195,21 @@ export function RosReview({
     return n;
   };
 
+  // Sex-gated modules (obstetric/gynae) disappear entirely when no question
+  // applies to this patient — an empty card helps no one.
+  const applicableSystems = getAllSystems().filter((s) =>
+    getSystemModule(s).some((q) => questionApplies(q, patientSex)),
+  );
   // A system earns a visible card when routed to, manually added, or already
   // carrying answers (e.g. reopening a drawer after answering).
-  const visibleSystems = getAllSystems().filter(
+  const visibleSystems = applicableSystems.filter(
     (s) =>
       s === routing.primary ||
       routing.secondary.includes(s) ||
       added.has(s) ||
       answeredCountFor(s) > 0,
   );
-  const otherSystems = getAllSystems().filter(
+  const otherSystems = applicableSystems.filter(
     (s) => !visibleSystems.includes(s),
   );
 

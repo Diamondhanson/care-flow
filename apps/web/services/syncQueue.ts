@@ -59,6 +59,18 @@ const VERSIONED_TABLES: ReadonlySet<string> = new Set([
   "ros_responses",
 ]);
 
+/**
+ * Upsert conflict targets for tables whose true uniqueness is a business key,
+ * not the row id. Two devices answering the same ROS question offline mint
+ * different ids for the same (visit, question) — an id-keyed upsert would then
+ * violate the unique constraint and wedge the queue. Landing on the business
+ * key converges instead; the accepted trade-off is that the later writer's row
+ * id supersedes the earlier one's.
+ */
+const UPSERT_ON_CONFLICT: Readonly<Record<string, string>> = {
+  ros_responses: "visit_id,question_key",
+};
+
 /** The kind of row change to replay against the server. */
 export type ChangeOp = "insert" | "update" | "delete";
 
@@ -316,17 +328,20 @@ export async function pushChangeToServer(
   // Insert, or an update on a row not yet server-synced (no base to guard on):
   // upsert by primary key. On a versioned table, capture the resulting version
   // so the cache + later queued edits pick up a real base to guard on next time.
+  const onConflict = UPSERT_ON_CONFLICT[change.table];
+  const upsertOptions = onConflict ? { onConflict } : undefined;
+
   if (versioned) {
     const { data, error } = await client
       .from(change.table)
-      .upsert(stripVersion(change.payload))
+      .upsert(stripVersion(change.payload), upsertOptions)
       .select("version");
     if (error) throw error;
     const newVersion = data && data[0] ? (data[0] as { version?: number }).version : undefined;
     return { status: "ok", version: typeof newVersion === "number" ? newVersion : undefined };
   }
 
-  const { error } = await client.from(change.table).upsert(change.payload);
+  const { error } = await client.from(change.table).upsert(change.payload, upsertOptions);
   if (error) throw error;
   return { status: "ok" };
 }

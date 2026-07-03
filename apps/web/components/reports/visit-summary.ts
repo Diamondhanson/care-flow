@@ -17,6 +17,7 @@ import {
   getWards,
   getBeds,
   getAllergiesForPatient,
+  getHistoryForPatient,
   getTreatmentRecordsForVisit,
   getConsultationsForVisit,
   getDiagnosesForVisit,
@@ -36,6 +37,7 @@ import type {
   MedicationAdministration,
   Order,
   Patient,
+  PatientHistory,
   Prescription,
   Result,
   Staff,
@@ -61,6 +63,8 @@ export interface VisitSummaryData {
   attendingDoctor: Staff | null;
   registeredBy: Staff | null;
   allergies: Allergy[];
+  /** Patient-level clinical background (Phase 21) — persists across visits. */
+  background: PatientHistory[];
   vitals: TreatmentRecord[];
   consultations: Consultation[];
   diagnoses: Diagnosis[];
@@ -141,6 +145,7 @@ function buildSummaryFromVisit(visit: Visit, patient: Patient): VisitSummaryData
       ? (staffById.get(visit.registered_by_id) ?? null)
       : null,
     allergies: getAllergiesForPatient(patient.id),
+    background: getHistoryForPatient(patient.id),
     vitals: [...getTreatmentRecordsForVisit(visit.id)].sort((a, b) =>
       a.recorded_at.localeCompare(b.recorded_at),
     ),
@@ -169,6 +174,8 @@ export interface PatientHistoryData {
   patient: Patient;
   /** Patient-level allergies, shown once at the top of the history. */
   allergies: Allergy[];
+  /** Patient-level clinical background (Phase 21), shown once at the top. */
+  background: PatientHistory[];
   /** One full summary per visit, oldest → newest (chronological timeline). */
   visits: VisitSummaryData[];
   totalVisits: number;
@@ -196,6 +203,7 @@ export function buildPatientHistory(patientId: string): PatientHistoryData | nul
   return {
     patient,
     allergies: getAllergiesForPatient(patient.id),
+    background: getHistoryForPatient(patient.id),
     visits: summaries,
     totalVisits: summaries.length,
     firstArrivedAt: visits.length ? visits[0].arrived_at : null,

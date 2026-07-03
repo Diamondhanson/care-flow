@@ -3725,6 +3725,15 @@ function seedDatabaseObject(): Database {
     { id: "alg_idris_peanut", patient_id: "pat_idris", substance: "Peanuts", category: "food", severity: "mild", reaction: "Hives", noted_by_id: "staff_patel", created_at: day(28), updated_at: day(28) },
   ];
 
+  // Phase 21: Owusu carries a realistic clinical background so the drawer's
+  // Background panel demos populated (persists across his visits).
+  const patientHistory: Seed<PatientHistory>[] = [
+    { id: "ph_owusu_dm", patient_id: "pat_owusu", type: "past_medical", description: "Type 2 diabetes", detail: null, onset: "2019", is_active: true, noted_by_id: "staff_okafor", created_at: day(720), updated_at: day(2) },
+    { id: "ph_owusu_fhx", patient_id: "pat_owusu", type: "family", description: "Hypertension", detail: { relation: "father" }, onset: null, is_active: null, noted_by_id: "staff_okafor", created_at: day(720), updated_at: day(720) },
+    { id: "ph_owusu_social", patient_id: "pat_owusu", type: "social", description: "Non-smoker, occasional alcohol", detail: { alcohol: "occasional" }, onset: null, is_active: null, noted_by_id: "staff_okafor", created_at: day(720), updated_at: day(720) },
+    { id: "ph_owusu_med", patient_id: "pat_owusu", type: "medication", description: "Metformin 500 mg twice daily", detail: null, onset: "2019", is_active: null, noted_by_id: "staff_okafor", created_at: day(720), updated_at: day(2) },
+  ];
+
   const visits: Seed<Visit>[] = [
     // Intake column (registration/triage) — emergency, just arrived.
     { id: "vis_mensah", patient_id: "pat_mensah", visit_type: "emergency", status: "open", stage: "triage", department_id: "dept_emergency", attending_doctor_id: "staff_okafor", registered_by_id: "staff_romero", chief_complaint: "Acute chest pain", triage_notes: "Diaphoretic, BP elevated. ECG ordered. Awaiting cardiac workup.", triage_level: 2, arrived_at: day(3), closed_at: null, created_at: day(3), updated_at: day(3) },
@@ -3743,6 +3752,20 @@ function seedDatabaseObject(): Database {
     { id: "con_idris", visit_id: "vis_idris", doctor_id: "staff_chen", subjective: "Mild incisional pain, controlled. Passing flatus.", examination: "Wound clean and dry. Abdomen soft. Bowel sounds present.", assessment: "Day-2 post laparotomy, recovering well.", plan: "Continue analgesia & DVT prophylaxis. Mobilize. Monitor wound.", ros_summary: null, created_at: day(26), updated_at: day(26) },
     { id: "con_bello", visit_id: "vis_bello", doctor_id: "staff_okafor", subjective: "Cough improving. No fever for 48h. Appetite returning.", examination: "Chest clear on auscultation. SpO₂ 98% on air.", assessment: "Community-acquired pneumonia, resolving.", plan: "Complete oral antibiotics. Plan discharge once finance cleared.", ros_summary: null, created_at: day(24), updated_at: day(24) },
     { id: "con_anon", visit_id: "vis_anon", doctor_id: "staff_okafor", subjective: "Unable to obtain — patient unresponsive.", examination: "GCS 7 on arrival. Pupils equal & reactive. Localizes to pain.", assessment: "Traumatic brain injury, RTA. Awaiting CT head.", plan: "Neuro protocol, mannitol, close monitoring. CT head urgent.", ros_summary: null, created_at: day(5), updated_at: day(5) },
+  ];
+
+  // Phase 21: Mensah's open chest-pain encounter carries a partial Review of
+  // Systems, so the doctor's ROS block (and its compiled narrative) demos
+  // populated. Not yet linked to a consultation — the encounter is open.
+  const rosResponses: Seed<RosResponse>[] = [
+    { id: "ros_mensah_cp", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.chest_pain", kind: "symptom", question_text: "Chest pain?", answer_type: "boolean", answer_value: true, answer_label: "Yes", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_cp_char", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.chest_pain.character", kind: "symptom", question_text: "Character", answer_type: "single_select", answer_value: "crushing", answer_label: "Crushing", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_cp_rad", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.chest_pain.radiation", kind: "symptom", question_text: "Radiation", answer_type: "multi_select", answer_value: ["left_arm"], answer_label: "Left arm", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_cp_dur", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.chest_pain.duration", kind: "symptom", question_text: "Duration", answer_type: "duration", answer_value: { value: 2, unit: "hours" }, answer_label: "2 hours", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_palp", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.palpitations", kind: "symptom", question_text: "Palpitations?", answer_type: "boolean", answer_value: false, answer_label: "No", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_fhx", visit_id: "vis_mensah", consultation_id: null, system: "cardiac", question_key: "cardiac.fhx_early_cad", kind: "genetic", question_text: "Family history of heart disease or early cardiac death?", answer_type: "boolean", answer_value: true, answer_label: "Yes", note: "Father", recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_cough", visit_id: "vis_mensah", consultation_id: null, system: "respiratory", question_key: "respiratory.cough", kind: "symptom", question_text: "Cough?", answer_type: "boolean", answer_value: false, answer_label: "No", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
+    { id: "ros_mensah_dysp", visit_id: "vis_mensah", consultation_id: null, system: "respiratory", question_key: "respiratory.dyspnea", kind: "symptom", question_text: "Dyspnea?", answer_type: "boolean", answer_value: false, answer_label: "No", note: null, recorded_by_id: "staff_okafor", created_at: day(3), updated_at: day(3) },
   ];
 
   const diagnoses: Seed<Diagnosis>[] = [
@@ -3973,12 +3996,11 @@ function seedDatabaseObject(): Database {
     staff: stamp<Staff>(staff),
     patients: stamp<Patient>(patients),
     allergies: stamp<Allergy>(allergies),
-    // Realistic background/ROS demo rows land with the Phase 21F seed pass.
-    patientHistory: [],
+    patientHistory: stamp<PatientHistory>(patientHistory),
     visits: stamp<Visit>(visits),
     consultations: stamp<Consultation>(consultations),
     diagnoses: stamp<Diagnosis>(diagnoses),
-    rosResponses: [],
+    rosResponses: stamp<RosResponse>(rosResponses),
     orders: stamp<Order>(orders),
     results: stamp<Result>(results),
     prescriptions: stamp<Prescription>(prescriptions),

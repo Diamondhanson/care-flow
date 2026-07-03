@@ -48,6 +48,7 @@ import {
   updatePatientHistory,
   upsertRosResponse,
 } from "@/services/mockStorage";
+import { compileRosNarrative } from "@/lib/ros/compile";
 
 beforeEach(() => {
   // A fresh localStorage per test re-seeds the demo DB lazily on first access.
@@ -244,5 +245,32 @@ describe("addConsultation with ROS", () => {
       assessment: "Plain note.",
     });
     expect(consultation.ros_summary).toBeNull();
+  });
+});
+
+describe("seeded demo ROS (Mensah's chest-pain encounter)", () => {
+  it("ships a partial ROS whose narrative compiles in EN and FR", () => {
+    const rows = getRosResponsesForVisit("vis_mensah");
+    expect(rows.length).toBeGreaterThanOrEqual(8);
+
+    const en = compileRosNarrative(rows, "en");
+    expect(en).toContain("Cardiac: Reports chest pain");
+    expect(en).toContain("character: Crushing");
+    expect(en).toContain("Denies palpitations");
+    expect(en).toContain("family history of premature coronary");
+    expect(en).toContain("Respiratory: Denies");
+
+    const fr = compileRosNarrative(rows, "fr");
+    expect(fr).toContain("Cardiaque: Signale douleur thoracique");
+    expect(fr).toContain("caractère: Écrasante");
+    expect(fr).toContain("Nie palpitations");
+    expect(fr).toContain("Respiratoire: Nie");
+  });
+
+  it("seeds Owusu's background for the drawer demo", () => {
+    const history = getHistoryForPatient("pat_owusu");
+    expect(history.length).toBeGreaterThanOrEqual(4);
+    expect(history.some((h) => h.type === "past_medical" && /diabetes/i.test(h.description))).toBe(true);
+    expect(history.some((h) => h.type === "family")).toBe(true);
   });
 });

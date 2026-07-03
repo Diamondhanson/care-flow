@@ -274,6 +274,112 @@ describe("audit trail capture", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Phase 21 — patient background & Review of Systems (tenant + role gates)
+// ---------------------------------------------------------------------------
+
+describe("patient_history / ros_responses policies (Phase 21)", () => {
+  async function makeVisit(hospitalId: string, patientId: string): Promise<string> {
+    const { rows } = await client.query(
+      "insert into public.visits (hospital_id, patient_id) values ($1, $2) returning id",
+      [hospitalId, patientId],
+    );
+    return rows[0].id as string;
+  }
+
+  it("cross-tenant reads and writes are blocked on both tables", async () => {
+    await inRolledBackTx(async () => {
+      const { userA, hospitalA, hospitalB } = await twoTenants();
+      const patientB = await makePatient(hospitalB, "Tenant B Patient");
+      const visitB = await makeVisit(hospitalB, patientB);
+      await client.query(
+        `insert into public.patient_history (hospital_id, patient_id, type, description)
+         values ($1, $2, 'past_medical', 'B secret history')`,
+        [hospitalB, patientB],
+      );
+      await client.query(
+        `insert into public.ros_responses
+           (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+         values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'true'::jsonb, 'Yes')`,
+        [hospitalB, visitB],
+      );
+
+      await actAs(userA); // admin at hospital A
+      const history = await client.query("select * from public.patient_history");
+      const ros = await client.query("select * from public.ros_responses");
+      expect(history.rows).toHaveLength(0);
+      expect(ros.rows).toHaveLength(0);
+
+      // WITH CHECK stops writes stamped to the other tenant.
+      await expect(
+        client.query(
+          `insert into public.patient_history (hospital_id, patient_id, type, description)
+           values ($1, $2, 'family', 'smuggled')`,
+          [hospitalB, patientB],
+        ),
+      ).rejects.toThrow(/row-level security/i);
+      await expect(
+        client.query(
+          `insert into public.ros_responses
+             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+           values ($1, $2, 'cardiac', 'cardiac.palpitations', 'Palpitations?', 'boolean', 'false'::jsonb, 'No')`,
+          [hospitalB, visitB],
+        ),
+      ).rejects.toThrow(/row-level security/i);
+    });
+  });
+
+  it("a nurse may write background but not ROS; a doctor writes both", async () => {
+    await inRolledBackTx(async () => {
+      const hospital = await makeHospital("Role Gate Hospital");
+      const nurseUser = await makeAuthUser("nurse@careflow.local");
+      const doctorUser = await makeAuthUser("doctor@careflow.local");
+      await makeStaff(hospital, nurseUser, "nurse");
+      await makeStaff(hospital, doctorUser, "doctor");
+      const patient = await makePatient(hospital, "Role Gate Patient");
+      const visit = await makeVisit(hospital, patient);
+
+      await actAs(nurseUser);
+      await client.query(
+        `insert into public.patient_history (hospital_id, patient_id, type, description)
+         values ($1, $2, 'social', 'Non-smoker')`,
+        [hospital, patient],
+      );
+      await expect(
+        client.query(
+          `insert into public.ros_responses
+             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+           values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'true'::jsonb, 'Yes')`,
+          [hospital, visit],
+        ),
+      ).rejects.toThrow(/row-level security/i);
+
+      await actAs(doctorUser);
+      await client.query(
+        `insert into public.ros_responses
+           (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+         values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'true'::jsonb, 'Yes')`,
+        [hospital, visit],
+      );
+
+      // Re-answering in place respects unique (visit_id, question_key).
+      await expect(
+        client.query(
+          `insert into public.ros_responses
+             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+           values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'false'::jsonb, 'No')`,
+          [hospital, visit],
+        ),
+      ).rejects.toThrow(/duplicate key|unique/i);
+
+      // All staff (the nurse) can read what the doctor charted.
+      await actAs(nurseUser);
+      const readable = await client.query("select * from public.ros_responses");
+      expect(readable.rows).toHaveLength(1);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Structural verification — catches a future table that forgets RLS / audit
 // ---------------------------------------------------------------------------
 
@@ -298,6 +404,8 @@ describe("RLS structural verification", () => {
     "allergies",
     "care_plan_items",
     "care_plan_entries",
+    "patient_history",
+    "ros_responses",
     "audit_log",
   ];
 
@@ -320,6 +428,8 @@ describe("RLS structural verification", () => {
     "allergies",
     "care_plan_items",
     "care_plan_entries",
+    "patient_history",
+    "ros_responses",
   ];
 
   it("RLS is enabled on every domain + audit table", async () => {

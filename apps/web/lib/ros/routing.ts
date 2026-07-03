@@ -79,9 +79,19 @@ export function systemForTerm(term: string): BodySystem | null {
 
 /**
  * Curated complaint-system → additional systems worth reviewing for a
- * differential. Populated in Phase 21F; empty = primary-only routing.
+ * differential (Phase 21F). Deliberately small: only pairings where the
+ * differential routinely crosses systems — e.g. chest pain is cardiac until
+ * proven respiratory or oesophageal; fever needs a source survey.
  */
-export const SECONDARY_SYSTEMS: Partial<Record<BodySystem, BodySystem[]>> = {};
+export const SECONDARY_SYSTEMS: Partial<Record<BodySystem, BodySystem[]>> = {
+  cardiac: ["respiratory", "gi"],
+  respiratory: ["cardiac", "ent"],
+  general: ["respiratory", "gi"],
+  gi: ["gu", "obstetric_gynae"],
+  gu: ["gi", "obstetric_gynae"],
+  neuro: ["eyes", "psych"],
+  ent: ["respiratory"],
+};
 
 export interface ComplaintRouting {
   primary: BodySystem | null;

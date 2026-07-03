@@ -28,8 +28,17 @@ import {
 } from "@/components/allergies/allergies";
 import { formatDate, formatDateTime } from "@/i18n/format";
 import { getCurrentHospital } from "@/services/mockStorage";
+import {
+  HISTORY_TYPE_LABEL,
+  MARITAL_STATUS_LABEL,
+} from "@/components/patient/background-panel";
 import type { Locale } from "@/i18n";
-import type { Allergy, MarStatus, Patient } from "@careflow/shared";
+import type {
+  Allergy,
+  MarStatus,
+  Patient,
+  PatientHistory,
+} from "@careflow/shared";
 import type { PatientHistoryData, VisitSummaryData } from "./visit-summary";
 
 type DocWithAutoTable = jsPDF & { lastAutoTable?: { finalY: number } };
@@ -218,7 +227,75 @@ function drawPatientSection(
       [t("visitReport.field.phone"), v(patient.phone)],
       [t("visitReport.field.address"), v(patient.address)],
       [t("visitReport.field.nationalId"), v(patient.national_id)],
+      [t("visitReport.field.occupation"), v(patient.occupation)],
+      [
+        t("visitReport.field.maritalStatus"),
+        // Missing on rows from a pre-Phase-21 hosted schema.
+        patient.marital_status && patient.marital_status !== "unknown"
+          ? t(MARITAL_STATUS_LABEL[patient.marital_status])
+          : DASH,
+      ],
+      [
+        t("visitReport.field.emergencyContact"),
+        [patient.emergency_contact_name, patient.emergency_contact_phone]
+          .filter(Boolean)
+          .join(" · ") || DASH,
+      ],
     ],
+    yy,
+  );
+  return yy;
+}
+
+/** Patient-level clinical background (Phase 21), grouped by history type. */
+function drawBackgroundSection(
+  doc: jsPDF,
+  background: PatientHistory[],
+  t: Translate,
+  y: number,
+): number {
+  let yy = sectionTitle(doc, t("visitReport.section.background"), y + 14);
+  if (background.length === 0) {
+    return emptyLine(doc, t("visitReport.empty.noBackground"), yy);
+  }
+  yy = table(
+    doc,
+    [
+      t("visitReport.field.category"),
+      t("visitReport.field.detail"),
+      t("visitReport.field.since"),
+    ],
+    background.map((h) => {
+      const detail = (h.detail ?? {}) as Record<string, unknown>;
+      const extras = [
+        typeof detail.relation === "string"
+          ? t(`background.relation.${detail.relation}`)
+          : null,
+        typeof detail.alcohol === "string"
+          ? `${t("background.alcohol")}: ${t(`background.alcoholLevel.${detail.alcohol}`)}`
+          : null,
+        typeof detail.tobacco_pack_years === "number"
+          ? t("background.packYears", {
+              count: String(detail.tobacco_pack_years),
+            })
+          : null,
+        typeof detail.gravida === "number" ? `G${detail.gravida}` : null,
+        typeof detail.para === "number" ? `P${detail.para}` : null,
+        typeof detail.lmp === "string"
+          ? `${t("background.lmp")} ${detail.lmp}`
+          : null,
+        h.is_active === true
+          ? t("background.active")
+          : h.is_active === false
+            ? t("background.resolved")
+            : null,
+      ].filter(Boolean);
+      return [
+        t(HISTORY_TYPE_LABEL[h.type]),
+        [h.description, ...extras].join(" · "),
+        v(h.onset),
+      ];
+    }),
     yy,
   );
   return yy;
@@ -364,6 +441,7 @@ function drawClinicalSections(
         yy += 12;
       }
       if (c.subjective) yy = labelledText(doc, t("visitReport.field.subjective"), c.subjective, yy);
+      if (c.ros_summary) yy = labelledText(doc, t("visitReport.field.ros"), c.ros_summary, yy);
       if (c.examination) yy = labelledText(doc, t("visitReport.field.examination"), c.examination, yy);
       if (c.assessment) yy = labelledText(doc, t("visitReport.field.assessment"), c.assessment, yy);
       if (c.plan) yy = labelledText(doc, t("visitReport.field.plan"), c.plan, yy);
@@ -624,6 +702,7 @@ export function exportVisitSummaryPdf(
     t,
     y,
   );
+  y = drawBackgroundSection(doc, data.background, t, y);
   drawClinicalSections(doc, data, t, locale, y);
   drawFooter(doc, t("visitReport.disclaimer"), t);
   doc.save(fileName(data.patient, "visit", data.generatedAtMs));
@@ -671,6 +750,7 @@ export function exportPatientHistoryPdf(
     t,
     y,
   );
+  y = drawBackgroundSection(doc, data.background, t, y);
 
   if (data.visits.length === 0) {
     y = sectionTitle(doc, t("visitReport.section.visit"), y + 14);
