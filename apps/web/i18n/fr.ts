@@ -194,8 +194,6 @@ export const fr = {
     ageYears: "{age} ans",
     occupation: "Profession",
     maritalStatus: "État civil",
-    emergencyContact: "Contact d'urgence",
-    emergencyContactPhone: "Téléphone du contact",
     add: "ajouter",
     edit: "Modifier",
     editDemographics: "Modifier les données démographiques",

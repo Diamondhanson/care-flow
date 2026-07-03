@@ -197,8 +197,6 @@ export const en = {
     ageYears: "{age} yrs",
     occupation: "Occupation",
     maritalStatus: "Marital status",
-    emergencyContact: "Emergency contact",
-    emergencyContactPhone: "Contact phone",
     add: "add",
     edit: "Edit",
     editDemographics: "Edit demographics",

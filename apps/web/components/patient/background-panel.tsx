@@ -10,9 +10,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, Pencil, Plus, UserRound } from "lucide-react";
-import { isValidPhoneNumber } from "react-phone-number-input";
 
 import type {
+  ClinicalTermCategory,
   MaritalStatus,
   Patient,
   PatientHistory,
@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PhoneInput } from "@/components/ui/phone-input";
+import { TermAutocomplete } from "@/components/clinical-terms/term-autocomplete";
 import {
   Select,
   SelectContent,
@@ -62,6 +62,21 @@ export const MARITAL_STATUS_LABEL: Record<MaritalStatus, string> = {
 
 const FAMILY_RELATIONS = ["father", "mother", "sibling", "child", "other"] as const;
 const ALCOHOL_LEVELS = ["none", "occasional", "regular"] as const;
+
+/**
+ * History groups whose description autocompletes from an existing clinical-term
+ * library: conditions (assessment) for past-medical and family history, the
+ * drug catalogue for medications. Groups without a suitable library
+ * (past-surgical procedures, immunizations) fall back to plain text until a
+ * seed list ships for them.
+ */
+const HISTORY_TERM_CATEGORY: Partial<
+  Record<PatientHistoryType, ClinicalTermCategory>
+> = {
+  past_medical: "assessment",
+  family: "assessment",
+  medication: "medication",
+};
 
 function ageFromDob(dob: string | null): number | null {
   if (!dob) return null;
@@ -170,16 +185,13 @@ export function BackgroundPanel({
   const [draft, setDraft] = useState<HistoryDraft>(EMPTY_DRAFT);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Demographics inline editor (occupation · marital status · emergency contact).
+  // Demographics inline editor (occupation · marital status). Emergency
+  // contact is registration data — captured and kept on the intake form.
   const [editingDemo, setEditingDemo] = useState(false);
   const [demoDraft, setDemoDraft] = useState({
     occupation: "",
     maritalStatus: "unknown" as MaritalStatus,
-    ecName: "",
-    ecPhone: "",
   });
-  const demoPhoneInvalid =
-    demoDraft.ecPhone !== "" && !isValidPhoneNumber(demoDraft.ecPhone);
 
   const refresh = useCallback(() => {
     setHistory(getHistoryForPatient(patient.id));
@@ -198,19 +210,14 @@ export function BackgroundPanel({
     setDemoDraft({
       occupation: patientState.occupation ?? "",
       maritalStatus: patientState.marital_status ?? "unknown",
-      ecName: patientState.emergency_contact_name ?? "",
-      ecPhone: patientState.emergency_contact_phone ?? "",
     });
     setEditingDemo(true);
   }
 
   function saveDemographics() {
-    if (demoPhoneInvalid) return;
     const updated = updatePatientDemographics(patientState.id, {
       occupation: demoDraft.occupation || null,
       marital_status: demoDraft.maritalStatus,
-      emergency_contact_name: demoDraft.ecName || null,
-      emergency_contact_phone: demoDraft.ecPhone || null,
     });
     setPatientState(updated);
     setEditingDemo(false);
@@ -384,46 +391,9 @@ export function BackgroundPanel({
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="demo_ec_name" className="text-xs">
-                    {t("background.emergencyContact")}
-                  </Label>
-                  <Input
-                    id="demo_ec_name"
-                    value={demoDraft.ecName}
-                    onChange={(e) =>
-                      setDemoDraft({ ...demoDraft, ecName: e.target.value })
-                    }
-                    placeholder={t("intake.emergencyContactNamePlaceholder")}
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="demo_ec_phone" className="text-xs">
-                    {t("background.emergencyContactPhone")}
-                  </Label>
-                  <PhoneInput
-                    id="demo_ec_phone"
-                    value={demoDraft.ecPhone}
-                    onChange={(value) =>
-                      setDemoDraft({ ...demoDraft, ecPhone: value ?? "" })
-                    }
-                    invalid={demoPhoneInvalid}
-                  />
-                  {demoPhoneInvalid ? (
-                    <p role="alert" className="text-xs text-destructive">
-                      {t("intake.invalidPhone")}
-                    </p>
-                  ) : null}
-                </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  className="h-7 text-xs"
-                  disabled={demoPhoneInvalid}
-                  onClick={saveDemographics}
-                >
+                <Button size="sm" className="h-7 text-xs" onClick={saveDemographics}>
                   {t("common.save")}
                 </Button>
                 <Button
@@ -438,7 +408,7 @@ export function BackgroundPanel({
             </div>
           ) : (
             <div className="flex items-start gap-2">
-              <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-1 text-xs sm:grid-cols-4">
+              <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-1 text-xs">
                 <DemographicItem
                   label={t("background.occupation")}
                   value={patientState.occupation}
@@ -446,15 +416,6 @@ export function BackgroundPanel({
                 <DemographicItem
                   label={t("background.maritalStatus")}
                   value={maritalLabel}
-                />
-                <DemographicItem
-                  label={t("background.emergencyContact")}
-                  value={patientState.emergency_contact_name}
-                />
-                <DemographicItem
-                  label={t("background.emergencyContactPhone")}
-                  value={patientState.emergency_contact_phone}
-                  mono
                 />
               </dl>
               {canWrite ? (
@@ -664,13 +625,26 @@ function HistoryForm({
         <Label htmlFor="bg_description" className="text-xs">
           {t("background.description")}
         </Label>
-        <Input
-          id="bg_description"
-          value={draft.description}
-          onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-          placeholder={t(`background.placeholder.${type}`)}
-          className="h-8 text-xs"
-        />
+        {HISTORY_TERM_CATEGORY[type] ? (
+          // Conditions / drugs autocomplete from the clinical-term library —
+          // the doctor picks rather than types.
+          <TermAutocomplete
+            id="bg_description"
+            category={HISTORY_TERM_CATEGORY[type]}
+            value={draft.description}
+            onChange={(v) => setDraft({ ...draft, description: v })}
+            placeholder={t(`background.placeholder.${type}`)}
+            inputClassName="h-8 text-xs"
+          />
+        ) : (
+          <Input
+            id="bg_description"
+            value={draft.description}
+            onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+            placeholder={t(`background.placeholder.${type}`)}
+            className="h-8 text-xs"
+          />
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
