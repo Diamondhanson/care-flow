@@ -7,6 +7,7 @@ import {
   isSyncConfigured,
   markFailed,
   pushChangeToServer,
+  reconcileOutboxAfterDrain,
   removeFromQueue,
   type NewChange,
   type OutboxChange,
@@ -148,6 +149,52 @@ describe("applyServerVersion", () => {
     const queue = [entry({ id: "a", table: "orders", row_id: "o1", payload: { id: "o1" } })];
     applyServerVersion(queue, "orders", "o1", 2);
     expect(queue[0].payload.version).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// reconcileOutboxAfterDrain — closes the mid-drain lost-update data-loss race.
+// ---------------------------------------------------------------------------
+
+describe("reconcileOutboxAfterDrain", () => {
+  it("preserves a change enqueued during the drain (the data-loss race)", () => {
+    // Drain started with [a], uploaded it. Meanwhile a mutation enqueued [b].
+    const preDrain = [entry({ id: "a" })];
+    const uploaded = ["a"];
+    const live = [entry({ id: "a" }), entry({ id: "b", row_id: "p2", payload: { id: "p2" } })];
+    const result = reconcileOutboxAfterDrain(live, preDrain, uploaded);
+    // `a` uploaded → gone; `b` enqueued mid-drain → MUST survive.
+    expect(result.map((c) => c.id)).toEqual(["b"]);
+  });
+
+  it("drops every resolved id and keeps the rest", () => {
+    const live = [entry({ id: "a" }), entry({ id: "b" }), entry({ id: "c" })];
+    const result = reconcileOutboxAfterDrain(live, live, ["a", "c"]);
+    expect(result.map((c) => c.id)).toEqual(["b"]);
+  });
+
+  it("applies the drain's per-entry updates (version rebase / attempts) to survivors", () => {
+    const live = [entry({ id: "a", attempts: 0 })];
+    const updated = [entry({ id: "a", attempts: 1, last_error: "rebased" })];
+    const result = reconcileOutboxAfterDrain(live, updated, []);
+    expect(result[0].attempts).toBe(1);
+    expect(result[0].last_error).toBe("rebased");
+  });
+
+  it("keeps a mid-drain entry even when a same-row entry was just resolved", () => {
+    // A row re-edited during the drain: old edit (id a) uploaded, new edit (id b)
+    // for the same row_id enqueued mid-drain — the new edit must not be lost.
+    const preDrain = [entry({ id: "a", row_id: "r1" })];
+    const live = [entry({ id: "a", row_id: "r1" }), entry({ id: "b", row_id: "r1" })];
+    const result = reconcileOutboxAfterDrain(live, preDrain, ["a"]);
+    expect(result.map((c) => c.id)).toEqual(["b"]);
+  });
+
+  it("is pure — does not mutate its inputs", () => {
+    const live = [entry({ id: "a" })];
+    const snapshot = JSON.stringify(live);
+    reconcileOutboxAfterDrain(live, live, ["a"]);
+    expect(JSON.stringify(live)).toBe(snapshot);
   });
 });
 

@@ -199,6 +199,35 @@ export function applyServerVersion(
   );
 }
 
+/**
+ * Reconcile the outbox after a drain that spanned `await`s.
+ *
+ * `drainOutbox` reads the queue once, then makes one network round-trip per
+ * change. A mutation can enqueue NEW changes while those awaits are in flight.
+ * Persisting the drain's pre-drain working set would overwrite the localStorage
+ * outbox and silently drop those mid-drain enqueues — a real data-loss race
+ * (observed: a consultation + lab order saved during a slow drain vanished on
+ * the next hydrate). To close it, the drain re-reads the LIVE queue and
+ * reconciles by stable entry id:
+ *   - drop entries it resolved (uploaded, or conflict-dropped),
+ *   - apply its per-entry updates (version rebases / attempt counters) to
+ *     entries that still exist,
+ *   - preserve any entry enqueued mid-drain (present in `live`, absent from the
+ *     drain's `updated` set) untouched.
+ * Pure — no storage access.
+ */
+export function reconcileOutboxAfterDrain(
+  live: OutboxChange[],
+  updated: OutboxChange[],
+  resolvedIds: readonly string[]
+): OutboxChange[] {
+  const resolved = new Set(resolvedIds);
+  const updatedById = new Map(updated.map((c) => [c.id, c]));
+  return live
+    .filter((c) => !resolved.has(c.id))
+    .map((c) => updatedById.get(c.id) ?? c);
+}
+
 // ---------------------------------------------------------------------------
 // Persisted outbox (browser only)
 // ---------------------------------------------------------------------------
@@ -504,12 +533,21 @@ export async function drainOutbox(): Promise<DrainResult> {
   }
 
   const resolvedIds = [...uploadedIds, ...conflictedIds];
-  working = removeFromQueue(working, resolvedIds);
+  // Re-read the LIVE queue and reconcile by id rather than overwriting with our
+  // pre-drain snapshot: a mutation may have enqueued changes during the awaits
+  // above, and clobbering them here is silent data loss (see
+  // reconcileOutboxAfterDrain). Synchronous read→write, so nothing can slip in
+  // between the reconcile and the persist.
+  const reconciled = reconcileOutboxAfterDrain(readOutbox(), working, resolvedIds);
   // Fire the change event when the pending set shrank OR a change was re-based
-  // (so the engine re-drains and the re-based retry actually pushes). A pass that
-  // only failed (e.g. offline) changes nothing and must NOT wake the engine, or
-  // it would re-drain in a tight loop while offline.
-  writeOutbox(working, { emit: resolvedIds.length > 0 || rebasedAny });
+  // (so the engine re-drains and the re-based retry actually pushes) OR a change
+  // arrived mid-drain (so it gets a drain pass). A pass that only failed (e.g.
+  // offline) with no new work must NOT wake the engine, or it would re-drain in
+  // a tight loop while offline.
+  const grewMidDrain = reconciled.length > working.length - resolvedIds.length;
+  writeOutbox(reconciled, {
+    emit: resolvedIds.length > 0 || rebasedAny || grewMidDrain,
+  });
   if (conflictedIds.length > 0) emitConflict();
 
   return {

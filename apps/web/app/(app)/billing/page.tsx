@@ -439,6 +439,9 @@ export default function BillingPage() {
   const [search, setSearch] = useState("");
   const [chargeDialog, setChargeDialog] = useState(false);
   const [discountDialog, setDiscountDialog] = useState(false);
+  // Settling a bill is a financial commitment — gate it behind an explicit
+  // confirm step, like discharge/death, rather than firing on a single click.
+  const [confirmingSettle, setConfirmingSettle] = useState(false);
 
   const allowed = !roleMounted || actingRole === "admin" || actingRole === "receptionist";
 
@@ -469,6 +472,8 @@ export default function BillingPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshCharges(selectedId);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConfirmingSettle(false); // a fresh patient starts un-armed
   }, [selectedId]);
 
   const filtered = useMemo(() => {
@@ -539,6 +544,7 @@ export default function BillingPage() {
   function handleSettle() {
     if (!selectedId) return;
     settleBill(selectedId, actingStaff?.id ?? null);
+    setConfirmingSettle(false);
     reload();
   }
 
@@ -793,8 +799,30 @@ export default function BillingPage() {
                           <CheckCircle2 className="size-3.5" />
                           {t("billing.settled")}
                         </div>
+                      ) : confirmingSettle ? (
+                        <div className="mt-1.5 flex flex-col gap-1.5">
+                          <p className="text-center text-xs text-muted-foreground">
+                            {t("billing.settleConfirm")}
+                          </p>
+                          <div className="flex gap-1.5">
+                            <Button
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => setConfirmingSettle(false)}
+                            >
+                              {t("common.cancel")}
+                            </Button>
+                            <Button className="flex-1" onClick={handleSettle}>
+                              <Wallet className="size-4" />
+                              {t("billing.markPaid")}
+                            </Button>
+                          </div>
+                        </div>
                       ) : (
-                        <Button className="mt-1.5 w-full" onClick={handleSettle}>
+                        <Button
+                          className="mt-1.5 w-full"
+                          onClick={() => setConfirmingSettle(true)}
+                        >
                           <Wallet className="size-4" />
                           {t("billing.settle")}
                         </Button>
