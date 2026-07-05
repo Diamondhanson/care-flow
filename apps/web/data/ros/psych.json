@@ -1,0 +1,558 @@
+[
+  {
+    "key": "psych.anxiety",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Anxiety?",
+    "prompt_fr": "Anxiété ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "anxiety",
+    "report_phrase_fr": "anxiété",
+    "followups": [
+      {
+        "key": "psych.anxiety.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "psych.anxiety.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ],
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité"
+      },
+      {
+        "key": "psych.anxiety.pattern",
+        "prompt_en": "Pattern",
+        "prompt_fr": "Mode évolutif",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "generalized",
+            "label_en": "Generalized (constant)",
+            "label_fr": "Généralisée (permanente)"
+          },
+          {
+            "value": "episodic",
+            "label_en": "Episodic",
+            "label_fr": "Paroxystique"
+          },
+          {
+            "value": "situational",
+            "label_en": "Situational",
+            "label_fr": "Situationnelle"
+          }
+        ],
+        "report_phrase_en": "pattern",
+        "report_phrase_fr": "mode évolutif"
+      }
+    ]
+  },
+  {
+    "key": "psych.depressed_mood",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Depressed mood?",
+    "prompt_fr": "Humeur dépressive ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "depressed mood",
+    "report_phrase_fr": "humeur dépressive",
+    "followups": [
+      {
+        "key": "psych.depressed_mood.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "psych.depressed_mood.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ],
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité"
+      },
+      {
+        "key": "psych.depressed_mood.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "anhedonia",
+            "label_en": "Anhedonia",
+            "label_fr": "Anhédonie"
+          },
+          {
+            "value": "sleep_disturbance",
+            "label_en": "Sleep disturbance",
+            "label_fr": "Troubles du sommeil"
+          },
+          {
+            "value": "appetite_change",
+            "label_en": "Appetite change",
+            "label_fr": "Troubles de l'appétit"
+          },
+          {
+            "value": "fatigue",
+            "label_en": "Fatigue",
+            "label_fr": "Asthénie"
+          },
+          {
+            "value": "guilt",
+            "label_en": "Feelings of guilt",
+            "label_fr": "Sentiment de culpabilité"
+          }
+        ],
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés"
+      }
+    ]
+  },
+  {
+    "key": "psych.agitation",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Agitation?",
+    "prompt_fr": "Agitation psychomotrice ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "agitation",
+    "report_phrase_fr": "agitation psychomotrice"
+  },
+  {
+    "key": "psych.hallucinations",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Hallucinations?",
+    "prompt_fr": "Hallucinations ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "hallucinations",
+    "report_phrase_fr": "hallucinations",
+    "followups": [
+      {
+        "key": "psych.hallucinations.modality",
+        "prompt_en": "Type",
+        "prompt_fr": "Type",
+        "type": "multi_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "auditory",
+            "label_en": "Auditory",
+            "label_fr": "Auditives"
+          },
+          {
+            "value": "visual",
+            "label_en": "Visual",
+            "label_fr": "Visuelles"
+          },
+          {
+            "value": "olfactory",
+            "label_en": "Olfactory",
+            "label_fr": "Olfactives"
+          },
+          {
+            "value": "tactile",
+            "label_en": "Tactile",
+            "label_fr": "Tactiles"
+          }
+        ],
+        "report_phrase_en": "type",
+        "report_phrase_fr": "type"
+      },
+      {
+        "key": "psych.hallucinations.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "psych.suicidal_ideation",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Suicidal ideation?",
+    "prompt_fr": "Idées suicidaires ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "suicidal ideation",
+    "report_phrase_fr": "idées suicidaires",
+    "followups": [
+      {
+        "key": "psych.suicidal_ideation.extent",
+        "prompt_en": "Extent",
+        "prompt_fr": "Degré d'élaboration",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "thoughts_only",
+            "label_en": "Thoughts only",
+            "label_fr": "Idées seules"
+          },
+          {
+            "value": "with_plan",
+            "label_en": "With a plan",
+            "label_fr": "Avec un plan précis"
+          },
+          {
+            "value": "previous_attempt",
+            "label_en": "Previous attempt",
+            "label_fr": "Passage à l'acte antérieur"
+          }
+        ],
+        "report_phrase_en": "extent",
+        "report_phrase_fr": "degré d'élaboration"
+      },
+      {
+        "key": "psych.suicidal_ideation.frequency",
+        "prompt_en": "Frequency",
+        "prompt_fr": "Fréquence",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "occasional",
+            "label_en": "Occasional",
+            "label_fr": "Occasionnelles"
+          },
+          {
+            "value": "frequent",
+            "label_en": "Frequent",
+            "label_fr": "Fréquentes"
+          },
+          {
+            "value": "constant",
+            "label_en": "Constant",
+            "label_fr": "Permanentes"
+          }
+        ],
+        "report_phrase_en": "frequency",
+        "report_phrase_fr": "fréquence"
+      },
+      {
+        "key": "psych.suicidal_ideation.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "psych.irritability",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Irritability?",
+    "prompt_fr": "Irritabilité ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "irritability",
+    "report_phrase_fr": "irritabilité"
+  },
+  {
+    "key": "psych.anhedonia",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Anhedonia?",
+    "prompt_fr": "Anhédonie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "anhedonia",
+    "report_phrase_fr": "anhédonie"
+  },
+  {
+    "key": "psych.panic_attacks",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Panic attacks?",
+    "prompt_fr": "Crises de panique ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "panic attacks",
+    "report_phrase_fr": "crises de panique",
+    "followups": [
+      {
+        "key": "psych.panic_attacks.frequency",
+        "prompt_en": "Attacks per month",
+        "prompt_fr": "Crises par mois",
+        "type": "numeric",
+        "show_if": "yes",
+        "report_phrase_en": "attacks per month",
+        "report_phrase_fr": "crises par mois"
+      },
+      {
+        "key": "psych.panic_attacks.duration",
+        "prompt_en": "Duration of attacks",
+        "prompt_fr": "Durée des crises",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration of attacks",
+        "report_phrase_fr": "durée des crises"
+      }
+    ]
+  },
+  {
+    "key": "psych.aggressive_behavior",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Aggressive behavior?",
+    "prompt_fr": "Comportement agressif ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "aggressive behavior",
+    "report_phrase_fr": "comportement agressif"
+  },
+  {
+    "key": "psych.social_withdrawal",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Social withdrawal?",
+    "prompt_fr": "Repli sur soi ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "social withdrawal",
+    "report_phrase_fr": "repli sur soi"
+  },
+  {
+    "key": "psych.delusions",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Delusions?",
+    "prompt_fr": "Idées délirantes ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "delusions",
+    "report_phrase_fr": "idées délirantes"
+  },
+  {
+    "key": "psych.mood_lability",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Mood lability?",
+    "prompt_fr": "Labilité de l'humeur ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "mood lability",
+    "report_phrase_fr": "labilité de l'humeur"
+  },
+  {
+    "key": "psych.nightmares",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Nightmares?",
+    "prompt_fr": "Cauchemars ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "nightmares",
+    "report_phrase_fr": "cauchemars"
+  },
+  {
+    "key": "psych.crying_spells",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Crying spells?",
+    "prompt_fr": "Crises de larmes ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "crying spells",
+    "report_phrase_fr": "crises de larmes"
+  },
+  {
+    "key": "psych.obsessive_thoughts",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Obsessive thoughts?",
+    "prompt_fr": "Pensées obsédantes ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "obsessive thoughts",
+    "report_phrase_fr": "pensées obsédantes"
+  },
+  {
+    "key": "psych.flashbacks",
+    "system": "psych",
+    "kind": "symptom",
+    "prompt_en": "Flashbacks?",
+    "prompt_fr": "Reviviscences ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "flashbacks",
+    "report_phrase_fr": "reviviscences"
+  },
+  {
+    "key": "psych.hx_previous_episode",
+    "system": "psych",
+    "kind": "history",
+    "prompt_en": "Previous psychiatric episode?",
+    "prompt_fr": "Antécédent d'épisode psychiatrique ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "previous psychiatric episode",
+    "report_phrase_fr": "antécédent d'épisode psychiatrique"
+  },
+  {
+    "key": "psych.hx_suicide_attempt",
+    "system": "psych",
+    "kind": "history",
+    "prompt_en": "Previous suicide attempt?",
+    "prompt_fr": "Antécédent de tentative de suicide ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "previous suicide attempt",
+    "report_phrase_fr": "antécédent de tentative de suicide"
+  },
+  {
+    "key": "psych.hx_psychiatric_admission",
+    "system": "psych",
+    "kind": "history",
+    "prompt_en": "Previous psychiatric admission?",
+    "prompt_fr": "Antécédent d'hospitalisation en psychiatrie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "previous psychiatric admission",
+    "report_phrase_fr": "antécédent d'hospitalisation en psychiatrie"
+  },
+  {
+    "key": "psych.hx_substance_use",
+    "system": "psych",
+    "kind": "history",
+    "prompt_en": "History of alcohol or substance use?",
+    "prompt_fr": "Antécédent de consommation d'alcool ou de substances psychoactives ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of alcohol or substance use",
+    "report_phrase_fr": "antécédent de consommation d'alcool ou de substances psychoactives"
+  },
+  {
+    "key": "psych.fhx_mental_illness",
+    "system": "psych",
+    "kind": "genetic",
+    "prompt_en": "Family history of mental illness?",
+    "prompt_fr": "Antécédents familiaux de troubles psychiatriques ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "family history of mental illness",
+    "report_phrase_fr": "antécédents familiaux de troubles psychiatriques",
+    "followups": [
+      {
+        "key": "psych.fhx_mental_illness.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Lien de parenté",
+        "type": "single_select",
+        "show_if": "yes",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ],
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "lien de parenté"
+      }
+    ]
+  }
+]

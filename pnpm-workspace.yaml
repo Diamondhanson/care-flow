@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+# Native postinstall builds we trust (pnpm blocks these by default).
+# esbuild → vitest, sharp → Next image optimization, unrs-resolver → eslint.
+# core-js's postinstall is only a funding message, so it stays off.
+allowBuilds:
+  core-js: false
+  esbuild: true
+  sharp: true
+  unrs-resolver: true

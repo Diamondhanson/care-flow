@@ -1,0 +1,6 @@
+{
+  "name": "@careflow/db",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Single source of truth for the CareFlow Postgres schema (schema.sql) + future migrations and generated types, shared by apps/web and apps/owner-console."
+}

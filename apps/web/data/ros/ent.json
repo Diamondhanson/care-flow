@@ -1,0 +1,780 @@
+[
+  {
+    "key": "ent.earache",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Earache?",
+    "prompt_fr": "Otalgie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "earache",
+    "report_phrase_fr": "otalgie",
+    "followups": [
+      {
+        "key": "ent.earache.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "ent.earache.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "ent.earache.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "ent.otorrhea",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Otorrhea?",
+    "prompt_fr": "Otorrhée ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "otorrhea",
+    "report_phrase_fr": "otorrhée",
+    "followups": [
+      {
+        "key": "ent.otorrhea.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "ent.otorrhea.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "ent.otorrhea.character",
+        "prompt_en": "Discharge character",
+        "prompt_fr": "Caractère de l'écoulement",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "discharge character",
+        "report_phrase_fr": "caractère de l'écoulement",
+        "options": [
+          {
+            "value": "purulent",
+            "label_en": "Purulent",
+            "label_fr": "Purulent"
+          },
+          {
+            "value": "bloody",
+            "label_en": "Bloody",
+            "label_fr": "Sanglant"
+          },
+          {
+            "value": "clear",
+            "label_en": "Clear",
+            "label_fr": "Clair"
+          },
+          {
+            "value": "foul_smelling",
+            "label_en": "Foul-smelling",
+            "label_fr": "Nauséabond"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "ent.tinnitus",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Tinnitus?",
+    "prompt_fr": "Acouphènes ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "tinnitus",
+    "report_phrase_fr": "acouphènes"
+  },
+  {
+    "key": "ent.hearing_loss",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Hearing loss?",
+    "prompt_fr": "Baisse de l'acuité auditive ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "hearing loss",
+    "report_phrase_fr": "baisse de l'acuité auditive",
+    "followups": [
+      {
+        "key": "ent.hearing_loss.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "ent.hearing_loss.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      },
+      {
+        "key": "ent.hearing_loss.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "ent.epistaxis",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Epistaxis?",
+    "prompt_fr": "Épistaxis ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "epistaxis",
+    "report_phrase_fr": "épistaxis",
+    "followups": [
+      {
+        "key": "ent.epistaxis.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "ent.epistaxis.pattern",
+        "prompt_en": "Pattern",
+        "prompt_fr": "Évolution",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "pattern",
+        "report_phrase_fr": "évolution",
+        "options": [
+          {
+            "value": "single_episode",
+            "label_en": "Single episode",
+            "label_fr": "Épisode unique"
+          },
+          {
+            "value": "recurrent",
+            "label_en": "Recurrent",
+            "label_fr": "Récidivante"
+          }
+        ]
+      },
+      {
+        "key": "ent.epistaxis.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "ent.rhinorrhea",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Rhinorrhea?",
+    "prompt_fr": "Rhinorrhée ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "rhinorrhea",
+    "report_phrase_fr": "rhinorrhée"
+  },
+  {
+    "key": "ent.nasal_congestion",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Nasal congestion?",
+    "prompt_fr": "Obstruction nasale ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "nasal congestion",
+    "report_phrase_fr": "obstruction nasale"
+  },
+  {
+    "key": "ent.sore_throat",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Sore throat?",
+    "prompt_fr": "Odynophagie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "sore throat",
+    "report_phrase_fr": "odynophagie",
+    "followups": [
+      {
+        "key": "ent.sore_throat.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "ent.sore_throat.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      },
+      {
+        "key": "ent.sore_throat.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "fever",
+            "label_en": "Fever",
+            "label_fr": "Fièvre"
+          },
+          {
+            "value": "difficulty_swallowing",
+            "label_en": "Difficulty swallowing",
+            "label_fr": "Difficulté à avaler"
+          },
+          {
+            "value": "swollen_neck_glands",
+            "label_en": "Swollen neck glands",
+            "label_fr": "Adénopathies cervicales"
+          },
+          {
+            "value": "voice_change",
+            "label_en": "Voice change",
+            "label_fr": "Modification de la voix"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "ent.dysphonia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Dysphonia?",
+    "prompt_fr": "Dysphonie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "dysphonia",
+    "report_phrase_fr": "dysphonie"
+  },
+  {
+    "key": "ent.aural_fullness",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Aural fullness?",
+    "prompt_fr": "Sensation d'oreille bouchée ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "aural fullness",
+    "report_phrase_fr": "sensation d'oreille bouchée"
+  },
+  {
+    "key": "ent.otorrhagia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Otorrhagia?",
+    "prompt_fr": "Otorragie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "otorrhagia",
+    "report_phrase_fr": "otorragie"
+  },
+  {
+    "key": "ent.throat_foreign_body_sensation",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Throat foreign body sensation?",
+    "prompt_fr": "Sensation de corps étranger pharyngé ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "throat foreign body sensation",
+    "report_phrase_fr": "sensation de corps étranger pharyngé"
+  },
+  {
+    "key": "ent.postnasal_drip",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Postnasal drip?",
+    "prompt_fr": "Écoulement nasal postérieur ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "postnasal drip",
+    "report_phrase_fr": "écoulement nasal postérieur"
+  },
+  {
+    "key": "ent.anosmia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Anosmia?",
+    "prompt_fr": "Anosmie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "anosmia",
+    "report_phrase_fr": "anosmie"
+  },
+  {
+    "key": "ent.dysgeusia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Dysgeusia?",
+    "prompt_fr": "Dysgueusie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "dysgeusia",
+    "report_phrase_fr": "dysgueusie"
+  },
+  {
+    "key": "ent.toothache",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Toothache?",
+    "prompt_fr": "Odontalgie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "toothache",
+    "report_phrase_fr": "odontalgie"
+  },
+  {
+    "key": "ent.gum_bleeding",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Gum bleeding?",
+    "prompt_fr": "Gingivorragie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "gum bleeding",
+    "report_phrase_fr": "gingivorragie"
+  },
+  {
+    "key": "ent.mouth_ulcers",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Mouth ulcers?",
+    "prompt_fr": "Aphtes ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "mouth ulcers",
+    "report_phrase_fr": "aphtes"
+  },
+  {
+    "key": "ent.halitosis",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Halitosis?",
+    "prompt_fr": "Halitose ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "halitosis",
+    "report_phrase_fr": "halitose"
+  },
+  {
+    "key": "ent.xerostomia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Xerostomia?",
+    "prompt_fr": "Xérostomie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "xerostomia",
+    "report_phrase_fr": "xérostomie"
+  },
+  {
+    "key": "ent.sialorrhea",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Sialorrhea?",
+    "prompt_fr": "Hypersialorrhée ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "sialorrhea",
+    "report_phrase_fr": "hypersialorrhée"
+  },
+  {
+    "key": "ent.neck_swelling",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Neck swelling?",
+    "prompt_fr": "Tuméfaction cervicale ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "neck swelling",
+    "report_phrase_fr": "tuméfaction cervicale"
+  },
+  {
+    "key": "ent.trismus",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Trismus?",
+    "prompt_fr": "Trismus ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "trismus",
+    "report_phrase_fr": "trismus"
+  },
+  {
+    "key": "ent.goitre",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Goitre?",
+    "prompt_fr": "Goitre ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "goitre",
+    "report_phrase_fr": "goitre"
+  },
+  {
+    "key": "ent.glossodynia",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Glossodynia?",
+    "prompt_fr": "Glossodynie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "glossodynia",
+    "report_phrase_fr": "glossodynie"
+  },
+  {
+    "key": "ent.ear_canal_itching",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Ear canal itching?",
+    "prompt_fr": "Prurit du conduit auditif ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "ear canal itching",
+    "report_phrase_fr": "prurit du conduit auditif"
+  },
+  {
+    "key": "ent.temporomandibular_joint_pain",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Temporomandibular joint pain?",
+    "prompt_fr": "Douleur temporo-mandibulaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "temporomandibular joint pain",
+    "report_phrase_fr": "douleur temporo-mandibulaire"
+  },
+  {
+    "key": "ent.gum_swelling",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Gum swelling?",
+    "prompt_fr": "Gonflement des gencives ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "gum swelling",
+    "report_phrase_fr": "gonflement des gencives"
+  },
+  {
+    "key": "ent.throat_tightness",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Throat tightness?",
+    "prompt_fr": "Constriction de la gorge ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "throat tightness",
+    "report_phrase_fr": "constriction de la gorge"
+  },
+  {
+    "key": "ent.cerumen_impaction",
+    "system": "ent",
+    "kind": "symptom",
+    "prompt_en": "Cerumen impaction?",
+    "prompt_fr": "Bouchon de cérumen ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "cerumen impaction",
+    "report_phrase_fr": "bouchon de cérumen"
+  },
+  {
+    "key": "ent.hx_recurrent_tonsillitis",
+    "system": "ent",
+    "kind": "history",
+    "prompt_en": "History of recurrent tonsillitis?",
+    "prompt_fr": "Antécédents d'angines à répétition ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of recurrent tonsillitis",
+    "report_phrase_fr": "antécédents d'angines à répétition"
+  },
+  {
+    "key": "ent.hx_chronic_otitis",
+    "system": "ent",
+    "kind": "history",
+    "prompt_en": "History of chronic ear infections?",
+    "prompt_fr": "Antécédents d'otites chroniques ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of chronic otitis",
+    "report_phrase_fr": "antécédents d'otites chroniques"
+  },
+  {
+    "key": "ent.hx_noise_exposure",
+    "system": "ent",
+    "kind": "history",
+    "prompt_en": "Prolonged exposure to loud noise?",
+    "prompt_fr": "Exposition prolongée au bruit ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "prolonged noise exposure",
+    "report_phrase_fr": "exposition prolongée au bruit"
+  },
+  {
+    "key": "ent.hx_allergic_rhinitis",
+    "system": "ent",
+    "kind": "history",
+    "prompt_en": "History of allergic rhinitis?",
+    "prompt_fr": "Antécédents de rhinite allergique ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "history of allergic rhinitis",
+    "report_phrase_fr": "antécédents de rhinite allergique"
+  },
+  {
+    "key": "ent.fhx_hearing_loss",
+    "system": "ent",
+    "kind": "genetic",
+    "prompt_en": "Family history of hearing loss?",
+    "prompt_fr": "Antécédents familiaux de surdité ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of hearing loss",
+    "report_phrase_fr": "antécédents familiaux de surdité",
+    "followups": [
+      {
+        "key": "ent.fhx_hearing_loss.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Apparenté atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "apparenté atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
+  }
+]

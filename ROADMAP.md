@@ -978,10 +978,12 @@ recoverable real identity, and removes password friction (Google) with a passwor
       in prod). Confirmed live (`302 → accounts.google.com`).
 * [x] Authentication → URL Configuration: **Site URL** + `…/auth/callback` added to the **Redirect
       URLs** allow-list.
-* [ ] Authentication → Email templates → **Magic Link**: paste the `{{ .Token }}` 6-digit template.
-      *(Pending on hosted — local confirmed.)*
-* [ ] Configure a real **SMTP provider** (Resend — deferred) + verified sending domain (SPF/DKIM/DMARC),
-      then raise the hosted auth email rate limit.
+* [~] Authentication → Email templates → **Magic Link**: ~~paste the `{{ .Token }}` template~~ — moot
+      for OTP now: delivery is handled app-side via Resend (Phase 18.6), not Supabase's built-in email.
+* [x] **Email provider wired — Resend** (Phase 18.6, no longer deferred): OTP is generated app-side
+      (`admin.generateLink`) and delivered via Resend. For real multi-recipient delivery, still
+      **verify a sending domain** in Resend + set `RESEND_FROM` (today's `onboarding@resend.dev` test
+      sender only reaches the Resend account email). Hosted **OTP expiry set to 5 min**.
 
 **Host env (Vercel)**
 * [ ] Set prod env vars: `NEXT_PUBLIC_SUPABASE_URL=https://ftudvptmhblydmrsmazw.supabase.co` and
@@ -991,6 +993,47 @@ recoverable real identity, and removes password friction (Google) with a passwor
 **Optional but recommended**
 * [ ] Supabase **custom auth domain** (e.g. `auth.<yourdomain>`): then the Google redirect URI becomes
       `https://auth.<yourdomain>/auth/v1/callback` and the consent screen shows your domain, not `supabase.co`.
+
+## PHASE 18.6 — Security, Email & Reliability Hardening ✅ COMPLETE
+
+**Goal:** a post-launch hardening pass — close input-validation gaps, deliver auth email through a real
+provider, fix a local-first sync data-loss bug, and add the missing clinical edit affordances surfaced
+in use. All shipped together after Phase 18.5.
+
+* [x] **Resend email + verified-OTP delivery.** OTP login is now delivered by **Resend**, not Supabase's
+      built-in email: client → server action (`app/actions/otp.ts`) → `admin.generateLink` mints the code
+      without sending → `lib/email/resend.ts` delivers it (themed, header-injection-guarded) → client
+      verifies (`verifyOtp`). Server-only keys in `.env.local`. The OTP screen gained a **5-minute
+      countdown timer** and a **segmented one-cell-per-digit input** (`components/auth/otp-input.tsx`).
+      *(OTP length is project-configurable; the input is length-flexible.)*
+* [x] **Centralized runtime input validation (Zod).** New `lib/validation/` (`primitives`, `schemas`,
+      `email`) — strict parsing at the **service-role server actions** + **auth/OTP** boundary (length
+      caps, email/phone format, role enum, UUID, 6–8 digit OTP) and at the **core clinical mutators**
+      (intake / results / MAR / vitals). Validation-only (never rewrites a value); a strict email
+      validator + `assertNoHeaderInjection` (CR/LF/NUL guard) replace 3 weak inline regexes. Audit
+      verdict: **no live SQLi**, **RLS complete on all 22 tables** — verify-and-documented, no rewrites.
+* [x] **DB defense-in-depth.** Idempotent length/format + vitals-range `CHECK` constraints added to
+      `supabase/schema.sql` (section 11). **Captured in schema only — NOT applied to the hosted DB**
+      (apply via `test:rls` locally / a deliberate prod migration later).
+* [x] **Local-first sync data-loss fix (vitals disappearing).** `hydrateFromSupabase` atomically
+      replaced the cache and was re-triggered on *every* auth event (token refresh / tab refocus),
+      clobbering un-synced local writes. Fixed three ways: **drain the outbox before hydrating**,
+      **overlay still-pending outbox rows** on top of the server snapshot (`replaceDatabaseFromTables`),
+      and **hydrate only on a genuine identity change** (not passive events; explicit logins/onboarding
+      force it). Regression-tested.
+* [x] **Vitals entry no longer silently lost.** Over-tight ranges + an uncaught throw discarded the whole
+      entry; ranges loosened to plausible physiological extremes and the form now surfaces a
+      field-specific error ("check GCS…") instead of dropping the observation.
+* [x] **Delete for mistaken orders & medications.** `deleteOrder` / `deletePrescription` (cascade to
+      results / MAR), exposed as a two-step in-place confirm (trash → "Delete?") on each card in the
+      doctor console. RLS already permitted it.
+* [x] **Patient register in Reports (Phase 12 extension).** A line-by-line hospital register
+      (`components/reports/register*`) inside the Reports tab — toggle between **Analytics** and
+      **Patient register**, modeled on the Cameroon MINSANTE register; filterable (period, status incl.
+      "currently in hospital", type, department, sex, search) and exportable to **PDF / Excel / CSV**.
+* [x] **Verify:** `tsc` clean; full unit suite green (incl. new validation, sync-overlay, delete and
+      register tests); i18n parity green. Interactive flows confirmed via unit tests (the hosted auth
+      wall blocks automated click-through).
 
 ## PHASE 19 — Platform Owner / Super-Admin Console (+ Monorepo) 🔜 NEXT
 
@@ -1008,6 +1051,38 @@ it reads *across* tenants. Now buildable because Phases 17–18 (multi-tenancy +
 >    content** — both for privacy and because "we can't read your patients' records" is a trust
 >    statement worth making to hospitals. Any "view as hospital" support tool is rare, consented, and
 >    heavily audited.
+
+### 🔒 Locked decisions (2026-06-20)
+
+* **Package manager / build:** **pnpm workspaces + Turborepo** (strict, fast monorepo ergonomics;
+  sidesteps the npm-lockfile EBADPLATFORM friction we've hit on macOS).
+* **Telemetry transport:** a **dedicated lightweight emitter** in the hospital app (buffered,
+  fire-and-forget), **separate from the clinical sync outbox**, so telemetry never bloats clinical sync.
+* **Cross-tenant data path:** **service-role behind server-only code** (RSC / server actions) with a
+  `requirePlatformAdmin()` guard on every call, returning **aggregates only** — tenant RLS is **never**
+  weakened with `platform_admin` SELECT policies.
+
+### 📦 Delivery sequence (each sub-phase independently shippable + verifiable)
+
+* **19.0 — Monorepo migration** (pure refactor, no features): Turborepo + pnpm workspaces; move the
+  current app to `apps/web` (keep its `@/*` alias internally); extract `packages/shared`
+  (`types/healthcare.ts`, the `lib/validation/*` layer, Supabase generated types) and `packages/db`
+  (`schema.sql` as the single source of truth); scaffold an empty `apps/owner-console`. Two Vercel
+  projects / subdomains (`app.` + `admin.`). Done when both apps `build` and the full test suite is green.
+* **19.1 — Telemetry groundwork:** `platform_admins` + append-only `usage_events` (metadata only) +
+  `hospitals.{subscription_tier, trial_ends_at, feature_flags}`; **write-only RLS** from tenants (staff
+  may INSERT their own hospital's events, **no SELECT** — only service_role reads). `services/telemetry.ts`
+  emitter in `apps/web` (login, patient registered, visit opened, record counts, sync failures, feature use).
+* **19.2 — Owner console MVP:** console auth (reuse `OwnerAuth`/Resend) **gated on `platform_admins`**;
+  cross-tenant reads via the service-role server path; tenants list + basic activity + suspend/reactivate.
+* **19.3 — Dashboard depth:** adoption (DAU/WAU/MAU, at-risk list), onboarding funnel, system/sync health,
+  charts (reuse `recharts` + the export patterns). Add nightly rollup tables if raw aggregation gets slow.
+* **19.4 — Management & monetization:** tier/trial/billing ops; **feature flags end-to-end** (console
+  writes `hospitals.feature_flags`; the hospital app reads + gates modules — this also closes the Phase-17
+  suspend→restrict gap by blocking suspended tenants in `RequireAuth`); support tools; broadcast banners;
+  central seed-library publishing.
+* **19.5 — Hardening:** audit-log every owner action; a consented, audited "view as"; rate limits;
+  cross-tenant **isolation integration tests** (console can't leak PHI; hospital app can't reach console data).
 
 ### Monorepo transformation (first step)
 
@@ -1060,6 +1135,492 @@ it reads *across* tenants. Now buildable because Phases 17–18 (multi-tenancy +
       tests green.
 
 ---
+
+## PHASE 21 — Patient Demographics & Review of Systems (ROS) ✅ COMPLETE (2026-07-03; hosted schema apply pending)
+
+> **Update log (2026-07-03):** shipped end-to-end on the mock engine + Supabase code path in six
+> commits (21A–21F, branch `phase-21-demographics-ros`). 358 tests green, `tsc` clean, builds pass.
+> Question bank: 301 auto-converted symptom questions + hand-authored follow-ups/history/genetics for
+> all 12 systems (**clinical content needs clinician review** — isolated in commit 21B(2)). Two
+> deviations from spec, both deliberate: no mock-DB storage-key bump (`normalizeDatabase` heals old
+> blobs without wiping local data), and complaint→system routing gained a longest-contained-term
+> fallback because real chief complaints are free text ("Acute chest pain"). Two hardening items
+> pulled forward/added after live verification: hydration tolerates tables missing from the hosted
+> schema (42P01/PGRST205 → warn + empty, instead of silently falling back to seed data), and
+> `ros_responses` outbox upserts land on `(visit_id, question_key)` so concurrent offline answers
+> converge. **⚠️ Deploy coupling:** apply `packages/db/migrations/2026-07-phase21-demographics-ros.sql`
+> to hosted **before** deploying this app version — patient/consultation rows now carry new columns
+> that the old hosted schema rejects (writes would queue, not land). Docker integration suites
+> (`test:rls` etc.) extended but not run this session (no Docker); run before the hosted apply.
+
+**Goal:** give the doctor a **complaint-driven Review of Systems** and a full **patient
+demographic/clinical-background** record, so a consultation captures the same structured signal a
+clinician gathers on paper — presenting complaint → the systems worth reviewing → the specific
+questions for those systems (symptoms **plus** the relevant history and genetics) → a compiled
+narrative that guides investigations and diagnosis. Flagged by a practicing nurse: CareFlow captures a
+free-text SOAP note but has no structured ROS and no past-medical / family / social history, so the
+doctor loses the reasoning trail that decides what to test for.
+
+**Design principle — select, don't type.** Every question that *can* be answered by a tap is a
+selectable control (Yes/No, option chips, multi-select, severity scale, duration stepper, date
+picker). Free text is reserved only for genuine "other, specify" cases. Follow-up questions appear
+only when the parent is answered positively, so a negative costs one tap and reveals nothing.
+
+**Design principle — a system contains everything.** Each body system is a self-contained **module**
+holding its complete question set (symptoms, their follow-ups, and the pertinent history/genetics for
+that system). The chief complaint auto-opens the relevant module(s); the doctor can add **any** of the
+12 systems at will and skip anything. As answers are selected, the block **compiles a readable patient
+report** per system (positives, pertinent negatives, family history) that folds into the consultation
+note.
+
+**Why now / what it builds on:** `apps/web/data/clinical-terms/subjective.json` already holds **301
+symptom terms, each tagged with a `system`, bilingual EN/FR** across the 12 systems (Cardiac,
+Respiratory, GI, GU, Neuro, ENT, Eyes, Skin, Musculoskeletal, Psych, Obstetric/Gynae, General). That
+tagged vocabulary is the **seed of the ROS question bank** — each term becomes a boolean question in
+its module. The full design rationale lives in `DEMOGRAPHICS_ROS_DESIGN.md` (repo root); this phase is
+the execution checklist.
+
+**Scope:** the doctor's consultation surface (`components/live-board/patient-drawer.tsx`, doctor
+section) for ROS; intake + drawer for demographics/background. Reuses every existing pattern —
+`allergies` (patient-level table), `consultations`/`diagnoses` (visit-level), `clinical_terms` (seed
+files), `TermChips` (autocomplete), the four-layer data change (schema → shared types → mockStorage →
+supabaseData), offline `syncQueue`, optimistic-concurrency `version`, audit triggers, tenant RLS.
+
+**Prerequisites:** none blocking. Mergeable after Phase 18 (Supabase cutover) is live; UI ships on the
+`mockStorage` engine first, Supabase parity follows (sub-phase F).
+
+### Decisions (locked)
+
+* **ROS answers are stored structured** (one row per answered question), **not** free text — queryable
+  for reports and future decision-support. Chosen over a JSONB blob on `consultations`.
+* **Clinical background is full-scope** on day one: past medical, past surgical, family/genetic,
+  social, obstetric/gynae, medication, immunization — one patient-level `patient_history` table
+  distinguished by a `type` enum (mirrors `care_plan_items.kind`).
+* **Background is patient-level** (persists across visits, pre-fills on return); **ROS answers are
+  visit-level** (a snapshot of *this* encounter).
+* **The question bank is reference data as bilingual seed files** (`data/ros/<system>.json`), loaded
+  in-memory exactly like `clinical_terms` — so questions are added/edited by shipping a file, **no
+  migration**. A per-hospital DB-backed override table is deferred (parking lot).
+* **Denormalize for history-safety.** Each `ros_responses` row snapshots `question_text` and a
+  localized `answer_label` (like `diagnoses.description` beside `icd10_code`), so editing the bank
+  never rewrites past encounters.
+* **The compiled ROS narrative gets its own `consultations.ros_summary` column** (cleaner than
+  appending into `subjective`); the structured rows remain the source of truth, the summary is derived
+  on save.
+* **Follow-ups are one level deep** (parent → follow-up) in v1. Obstetric/Gynae questions are
+  `sex`-gated by default but always addable.
+
+### Data model — enums (`packages/db/schema.sql`, section 1, idempotent idiom)
+
+* [x] Add the enums (place beside the existing `allergy_*` enums, `~schema.sql:112`):
+
+```sql
+-- Body system — the ROS axis. Mirrors the `system` values in the clinical-term
+-- library (data/clinical-terms/subjective.json) so a subjective term routes to its module.
+do $$ begin
+  create type body_system as enum (
+    'general','cardiac','respiratory','gi','gu','neuro',
+    'ent','eyes','skin','musculoskeletal','psych','obstetric_gynae'
+  );
+exception when duplicate_object then null; end $$;
+
+-- How a bank question is answered → which selectable control renders and how the value is stored.
+-- boolean | single_select | multi_select | scale | duration | numeric | date | text
+do $$ begin
+  create type ros_answer_type as enum (
+    'boolean','single_select','multi_select','scale','duration','numeric','date','text'
+  );
+exception when duplicate_object then null; end $$;
+
+-- Question kind — lets one system module carry symptoms AND its pertinent history/genetics.
+do $$ begin
+  create type ros_question_kind as enum ('symptom','history','genetic');
+exception when duplicate_object then null; end $$;
+
+-- Patient background/history record type (one shared patient-level list).
+do $$ begin
+  create type patient_history_type as enum (
+    'past_medical','past_surgical','family','social',
+    'obstetric_gynae','medication','immunization'
+  );
+exception when duplicate_object then null; end $$;
+
+-- Marital status — demographic context.
+do $$ begin
+  create type marital_status as enum (
+    'single','married','partnered','divorced','widowed','unknown'
+  );
+exception when duplicate_object then null; end $$;
+```
+
+### Data model — demographic columns on `patients`
+
+* [x] Additive, idempotent (safe to re-apply `schema.sql`):
+
+```sql
+alter table patients add column if not exists occupation              text;
+alter table patients add column if not exists marital_status          marital_status not null default 'unknown';
+alter table patients add column if not exists emergency_contact_name  text;
+alter table patients add column if not exists emergency_contact_phone text;
+```
+
+*(Age needs no column — intake already derives a placeholder DOB from approximate age via
+`approximateDob` in `intake/page.tsx`.)*
+
+### Data model — `patient_history` (patient-level, modeled on `allergies`)
+
+* [x] New table (place after `allergies`, `~schema.sql:464`):
+
+```sql
+-- Patient-level clinical background. Keyed to the patient (not a visit) because history
+-- persists across encounters — pre-filled on every return visit (review-and-update, not re-enter).
+-- `detail` (jsonb) carries type-specific structured fields without a table per type:
+--   social  → {tobacco_pack_years, alcohol, drugs}
+--   obstetric_gynae → {gravida, para, lmp}
+--   family  → {relation, condition}
+create table if not exists patient_history (
+  id           uuid primary key default gen_random_uuid(),
+  hospital_id  uuid not null references hospitals(id) on delete cascade,
+  patient_id   uuid not null references patients(id) on delete cascade,
+  type         patient_history_type not null,
+  description  text not null,   -- "Type 2 diabetes", "Appendectomy 2015", "Mother — breast cancer"
+  detail       jsonb,
+  onset        text,            -- coarse: "2015", "childhood", "since 2020"
+  is_active    boolean,         -- past_medical: still active? null = n/a
+  noted_by_id  uuid references staff(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+```
+
+### Data model — `ros_responses` (visit-level, one row per answered question)
+
+* [x] New table (place after `diagnoses`, `~schema.sql:516`):
+
+```sql
+-- A single answered ROS question for one encounter. Rows exist only for questions the doctor
+-- answered — absence = "not asked". `answer_value` (jsonb) holds any answer shape; `answer_label`
+-- is the denormalized, localized, printable answer; `question_text` snapshots the prompt so bank
+-- edits never rewrite history (same denormalization principle as diagnoses.description).
+create table if not exists ros_responses (
+  id              uuid primary key default gen_random_uuid(),
+  hospital_id     uuid not null references hospitals(id) on delete cascade,
+  visit_id        uuid not null references visits(id) on delete cascade,
+  consultation_id uuid references consultations(id) on delete set null,
+  system          body_system not null,
+  question_key    text not null,      -- stable bank id, e.g. "cardiac.chest_pain.character"
+  kind            ros_question_kind not null default 'symptom',
+  question_text   text not null,      -- snapshot of the prompt at answer time
+  answer_type     ros_answer_type not null,
+  -- answer_value by type: boolean→true|false · single_select→"crushing" · multi_select→["nausea"]
+  --   scale→"moderate" · duration→{value,unit} · numeric→{value,unit} · date→"2026-06-14" · text→"…"
+  answer_value    jsonb not null,
+  answer_label    text not null,      -- localized human-readable answer for the report
+  note            text,               -- optional free qualifier
+  recorded_by_id  uuid references staff(id) on delete set null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  unique (visit_id, question_key)     -- re-answering updates in place
+);
+```
+
+* [x] Add the compiled-narrative column to `consultations`:
+
+```sql
+alter table consultations add column if not exists ros_summary text;
+```
+
+### Data model — indexes, triggers, RLS (register in every existing loop — no new machinery)
+
+* [x] Indexes (mirror `idx_allergies_*` / `idx_consultations_*`, `~schema.sql:796`+):
+
+```sql
+create index if not exists idx_patient_history_patient  on patient_history(patient_id);
+create index if not exists idx_patient_history_type     on patient_history(type);
+create index if not exists idx_patient_history_hospital on patient_history(hospital_id);
+create index if not exists idx_ros_responses_visit      on ros_responses(visit_id);
+create index if not exists idx_ros_responses_system     on ros_responses(system);
+create index if not exists idx_ros_responses_hospital   on ros_responses(hospital_id);
+```
+
+* [x] Add `'patient_history'` and `'ros_responses'` to the string arrays in **each** loop:
+  * `set_updated_at` trigger loop — **6a** (`~schema.sql:837`).
+  * `bump_version` / `version` column loop — **6a-bis** (`~schema.sql:858`) → both get optimistic-concurrency `version`.
+  * `audit_trigger` loop — **6b** (`~schema.sql:877`) → both are audited (insert/update/delete).
+  * RLS `enable row level security` loop (`~schema.sql:1060`).
+  * **9a** universal "read for staff" loop (`~schema.sql:1093`) → all active staff can read.
+* [x] Write policies (mirror `clinical write allergies`, `~schema.sql:1200`; add after it):
+
+```sql
+-- History: recorded/updated by clinicians (nurse at intake, doctor in consult).
+drop policy if exists "clinical write patient history" on patient_history;
+create policy "clinical write patient history" on patient_history
+  for all to authenticated
+  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+
+-- ROS: authored by the doctor during the consultation.
+drop policy if exists "doctor write ros" on ros_responses;
+create policy "doctor write ros" on ros_responses
+  for all to authenticated
+  using (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id())
+  with check (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id());
+```
+
+### Question bank — seed files + loader (`data/ros/`, `lib/ros/`)
+
+* [x] One bilingual JSON file per system: `apps/web/data/ros/<system>.json` (12 files). Each entry is a
+  self-describing question node; the same file carries the system's **symptom, history, and genetic**
+  questions so the module is complete. Node shape:
+
+```jsonc
+{
+  "key": "cardiac.chest_pain",          // stable id, snapshotted onto answers
+  "system": "cardiac",
+  "kind": "symptom",                     // symptom | history | genetic
+  "prompt_en": "Chest pain?",
+  "prompt_fr": "Douleur thoracique ?",
+  "type": "boolean",
+  "key_question": true,                  // high-yield → shown first / in quick review
+  "sex": null,                           // 'female' to gate obstetric, else null
+  "report_phrase_en": "chest pain",      // used to compile the narrative
+  "report_phrase_fr": "douleur thoracique",
+  "options": [],                         // for *_select / scale (bilingual: value,label_en,label_fr)
+  "triggers": [],                        // optional complaint keys that promote this question
+  "followups": [                         // one level; revealed by show_if on the parent answer
+    { "key": "cardiac.chest_pain.character", "prompt_en": "Character", "prompt_fr": "Caractère",
+      "type": "single_select", "show_if": "yes",
+      "options": [
+        { "value": "crushing", "label_en": "Crushing", "label_fr": "Écrasante" },
+        { "value": "sharp",    "label_en": "Sharp",    "label_fr": "Aiguë" },
+        { "value": "dull",     "label_en": "Dull",     "label_fr": "Sourde" },
+        { "value": "burning",  "label_en": "Burning",  "label_fr": "Brûlante" } ] },
+    { "key": "cardiac.chest_pain.radiation", "prompt_en": "Radiation", "prompt_fr": "Irradiation",
+      "type": "multi_select", "show_if": "yes",
+      "options": [
+        { "value": "left_arm", "label_en": "Left arm", "label_fr": "Bras gauche" },
+        { "value": "jaw",      "label_en": "Jaw",      "label_fr": "Mâchoire" },
+        { "value": "back",     "label_en": "Back",     "label_fr": "Dos" } ] },
+    { "key": "cardiac.chest_pain.duration", "prompt_en": "Duration", "prompt_fr": "Durée",
+      "type": "duration", "show_if": "yes" }
+  ]
+}
+```
+
+  And a history/genetics node in the same file:
+
+```jsonc
+{ "key": "cardiac.fhx_early_cad", "system": "cardiac", "kind": "genetic",
+  "prompt_en": "Family history of heart disease or early cardiac death?",
+  "prompt_fr": "Antécédents familiaux de maladie cardiaque ou de mort subite précoce ?",
+  "type": "boolean", "key_question": true,
+  "report_phrase_en": "family history of premature coronary disease",
+  "report_phrase_fr": "antécédents familiaux de coronaropathie précoce" }
+```
+
+* [x] **Seed-conversion script** (`scripts/ros-seed-from-subjective.ts`, one-off): read
+  `data/clinical-terms/subjective.json`, and for each term emit a `boolean` symptom question
+  `{ key: "<system>.<slug(term_en)>", prompt_en: "<term_en>?", prompt_fr: "<term_fr> ?", type:
+  "boolean", kind: "symptom" }` into the matching `data/ros/<system>.json`. Gives all 12 modules a
+  complete first-pass symptom set automatically (301 questions). Follow-ups + history + genetics are
+  then authored per system (clinician-reviewed content — the clinical core of this phase).
+* [x] **Loader** `apps/web/lib/ros/index.ts` (mirror `lib/clinical-terms/index.ts`): load all
+  `data/ros/*.json`, stamp `system` from filename, validate with a `zod` schema, flatten follow-ups,
+  expose `getSystemModule(system)`, `getQuestion(key)`, `getAllSystems()`. Unit tests in
+  `lib/ros/index.test.ts`: every file parses, keys are unique, options present for `*_select`/`scale`,
+  `sex` values valid.
+* [x] **Routing map** `apps/web/lib/ros/routing.ts`: `systemForTerm(term)` (normalize the
+  `clinical_terms` `system` string: lowercase, `/`→`_`, `"Obstetric/Gynae"`→`obstetric_gynae`) and a
+  curated `SECONDARY_SYSTEMS: Partial<Record<string, BodySystem[]>>` (e.g. chest-pain complaint →
+  `['respiratory','gi']`). v1 ships primary-system routing (free from existing tags); the curated
+  secondary map is a Phase-F refinement.
+* [x] **Narrative compiler** `apps/web/lib/ros/compile.ts`:
+  `compileRosNarrative(responses: RosResponse[], locale): string` — pure, grouped by system, using each
+  question's `report_phrase` + `answer_label`, separating positives / pertinent-negatives /
+  history-genetics into readable prose. Unit-tested with a fixed response set → expected string (EN+FR).
+
+### Shared types (`packages/shared/types/healthcare.ts`)
+
+* [x] Add ID aliases `PatientHistoryId`, `RosResponseId`; unions `BodySystem`, `RosAnswerType`,
+  `RosQuestionKind`, `PatientHistoryType`, `MaritalStatus`; the bank shapes `RosOption`, `RosQuestion`
+  (recursive `followups?: RosQuestion[]`, `show_if?`); the answer union
+  `RosAnswerValue = boolean | string | string[] | { value: number; unit?: string }`; and interfaces
+  `PatientHistory`, `RosResponse` (fields 1:1 with the DDL, nullable server-managed `version?`). Add
+  `occupation`, `marital_status`, `emergency_contact_name`, `emergency_contact_phone` to `Patient`;
+  add `ros_summary: string | null` to `Consultation`. Also add barrel exports and mirror any changes
+  into `packages/shared/types/healthcare.js` if that file is hand-maintained.
+
+### Service layer — `apps/web/services/mockStorage.ts` (what the UI reads today)
+
+* [x] Add `patient_history: PatientHistory[]` and `ros_responses: RosResponse[]` to the `db` shape, the
+  collection-key lists (`~:254`/`:307`), and the **hydration guard** (default `[]` for old localStorage
+  blobs, `~:232`) — bump the mock-DB storage version key.
+* [x] Readers (copy `getAllergiesForPatient` `~:1141` / `getConsultationsForVisit` `~:1194`):
+  `getHistoryForPatient(patientId)` (sorted, grouped by `type`), `getRosResponsesForVisit(visitId)`.
+* [x] Mutations (copy `addConsultation` `~:2383`, incl. `emitUsage("record_created", …)`):
+  `addPatientHistory`, `updatePatientHistory`, `deletePatientHistory`;
+  `upsertRosResponse` (unique on `visit_id`+`question_key` → update in place), `clearRosResponse`;
+  and on consultation save, compute `ros_summary` via `compileRosNarrative` and persist it on the
+  `Consultation`. Input interfaces `AddPatientHistoryInput`, `UpsertRosInput` beside the existing
+  `Add*Input` (`~:757`/`:809`).
+* [x] Unit tests mirroring `mockStorage.test.ts`: upsert replaces (not duplicates) a re-answered
+  question; clearing removes the row; history CRUD round-trips; `ros_summary` regenerates on save.
+
+### Service layer — `apps/web/services/supabaseData.ts` + offline sync
+
+* [x] Tenant-scoped Supabase reads/writes for `patient_history` and `ros_responses` (select filtered by
+  RLS; upsert on the `(visit_id, question_key)` unique). Register both tables' writes with the offline
+  **`syncQueue`** (`services/syncQueue.ts`) so ROS answered offline queues and replays, consistent with
+  other clinical writes. Respect optimistic-concurrency `version` (retry/refresh on conflict, like
+  existing mutations — see `concurrency.integration.test.ts`).
+
+### Intake (`apps/web/app/(app)/intake/page.tsx`)
+
+* [x] Add demographic fields — **Occupation** (text), **Marital status** (`Select`), **Emergency
+  contact name/phone** (`Input` + `PhoneInput`, validated with `isValidPhoneNumber` as the existing
+  phone is). All optional; keep intake fast.
+* [x] Optional **Background** step (collapsible): quick add of past-medical / family / social history
+  via the existing autocomplete pattern. Optional — the doctor can complete it in consult.
+
+### UI — Background panel (`components/live-board/patient-drawer.tsx`)
+
+* [x] A collapsible **"Background"** block in the drawer header area (above the SOAP note), using
+  theme tokens (`bg-card`, `text-muted-foreground`, `border-border`) and `font-mono` for metrics:
+  * At-a-glance strip: **age · sex · occupation · marital status**.
+  * History grouped by `type` (Past medical, Surgical, Family, Social, Obstetric/Gynae, Medications,
+    Immunizations); each item one tap to edit; `+ add` uses autocomplete; social/obstetric use light
+    structured selectors written to `detail`.
+  * **Pre-filled from `patient_history`** on return visits → review-and-update. Empty groups render a
+    faint `+ add`. Fully FR/EN.
+
+### UI — Review of Systems block (the core surface)
+
+* [x] Render under the SOAP `subjective` field in the doctor section. Each **system = a collapsible
+  card module**; answering is tapping. Answer controls by `answer_type`:
+
+  | type | control | typing |
+  |---|---|---|
+  | `boolean` | Yes / No segmented toggle (3rd state = unasked) | none |
+  | `single_select` / `scale` | option chips / segmented | none |
+  | `multi_select` | multi-toggle chips | none |
+  | `duration` | number stepper + unit dropdown | step only |
+  | `numeric` | stepper (+ unit) | minimal |
+  | `date` | date picker | none |
+  | `text` | inline field — **only** where no option set fits | by design |
+
+* [x] Behaviours:
+  * **Complaint-driven open:** primary system (from `systemForTerm(chief complaint)`) auto-expands with
+    `key_question`s visible; secondary systems show folded as "(suggested)"; the rest behind "Review
+    other systems" — reuse the drawer's lead-vs-folded pattern (`SECTION_ORDER`/`PRIMARY_BY_ROLE`,
+    `~patient-drawer.tsx:220`).
+  * **Progressive depth:** follow-ups appear only when the parent answer matches `show_if`.
+  * **`+ Add system`** dropdown lists all 12; picking one opens its full module. Nothing locked.
+  * **"Mark remaining as No"** per system → one tap sets untouched `key_question`s to No (charts a
+    negative review without dozens of taps).
+  * Optional **note** per answer. Untouched ROS collapses to a one-line summary. Never forced.
+  * Each tap calls `upsertRosResponse`; a live **"compiled report ▸"** drawer at the top of the block
+    re-renders `compileRosNarrative(...)`.
+* [x] **On "Save consultation":** persist the `ros_responses` rows, compute `ros_summary` via the
+  compiler, store it on the `Consultation`, and surface it wherever consultations already appear
+  (board, printouts, `/reports`). Show `ros_summary` read-only in past-consultation views.
+* [x] New reusable component `components/ros/ros-review.tsx` (+ `ros-question.tsx`,
+  `ros-answer-control.tsx`) so the block is testable in isolation.
+
+### i18n (`apps/web/i18n/en.ts` + `fr.ts`, `locale-provider`)
+
+* [x] All static labels bilingual (system names, section titles, control labels, "Mark remaining as
+  No", "Add system", "Background", history-type labels, demographic field labels). Question prompts +
+  options carry `_fr` in the seed files (reuse `term_fr` from `clinical_terms` for the auto-generated
+  symptom prompts). The compiled narrative renders in the active locale via the compiler's `locale`
+  arg. Guard any resolved-theme/locale reads against hydration mismatch (mount check) per `AGENTS.md`.
+
+### Security (must-haves — verify each)
+
+* [x] **Tenant isolation:** both new tables carry `hospital_id`; every RLS policy ANDs
+  `hospital_id = current_hospital_id()`; both added to the RLS-enable + universal-read loops. Extend
+  `rls.integration.test.ts` / `tenancy.test.ts` to prove a doctor in hospital A cannot read/write
+  hospital B's `patient_history` or `ros_responses`.
+* [x] **Role gating:** ROS writable only by `doctor`/`admin`; history by `nurse`/`doctor`/`admin`;
+  read by all active staff (`is_staff()`). No client INSERT path bypasses RLS.
+* [x] **Input validation:** validate `answer_value` **against its `answer_type`** with a `zod` schema
+  per type in `packages/shared/validation` (boolean is bool; `single_select`/`scale` value ∈ options;
+  `multi_select` ⊆ options; `duration`/`numeric` = `{value:number, unit:enum}`; `date` = ISO; `text`
+  length-capped). Reject unknown `question_key`s not in the loaded bank. Constrain `detail` jsonb to
+  the documented `HISTORY_DETAIL_SHAPES` per `patient_history.type`. This prevents malformed/injected
+  jsonb even if a client is tampered with (second wall behind RLS).
+* [x] **Audit + provenance:** both tables in the `audit_trigger` loop (who changed what, when);
+  `recorded_by_id` / `noted_by_id` set server-side from the acting staff, never trusted from the
+  client. All timestamps server-set (`now()`), never client clock.
+* [x] **PII discipline:** family/social/genetic history is sensitive — never logged to
+  `telemetry.ts`/`usage_events` beyond a bare `record_created` counter (no content, no patient
+  identifiers), consistent with the existing "write-only counter, no PII" telemetry rule.
+
+### Stability & performance
+
+* [x] **Optimistic concurrency:** both tables get the `version` column + `bump_version` trigger; the
+  ROS block refreshes-and-retries on a version conflict (two clinicians on one visit). Cover in
+  `concurrency.integration.test.ts`.
+* [x] **Offline-first:** ROS/history writes go through `syncQueue` (queue + replay), matching every
+  other clinical write; the drawer stays usable offline. Cover in `syncQueue.test.ts` /
+  `sync-hydrate.test.ts`.
+* [x] **Hydration safety:** new mock collections default to `[]`; bump the mock-DB version key so old
+  localStorage blobs migrate without crashing accessors (`~mockStorage.ts:232`).
+* [x] **History-safe denormalization:** `question_text` + `answer_label` snapshots mean bank edits or
+  a deleted question never corrupt a past encounter's report.
+* [x] **Query cost:** the `(visit_id, question_key)` unique index and `idx_ros_responses_visit` keep
+  per-visit reads and upserts O(log n); the bank is in-memory (no per-render DB hit). ROS narrative is
+  compiled from already-loaded rows — no extra round-trip.
+* [x] **Bundle:** 12 seed JSON files are static imports tree-shaken like `clinical_terms`; lazy-load a
+  system module's follow-up options only when its card expands if payload grows.
+
+### Seed sample data (so the drawer demos populated)
+
+* [x] Give 2–3 seeded patients a realistic **background** (e.g. Daniel Owusu — past_medical "Type 2
+  diabetes" active, family "Father — hypertension", social "Non-smoker, occasional alcohol").
+* [x] Seed one open visit (e.g. Grace Mensah, chief complaint "Chest pain") with a partial **ROS**:
+  Cardiac — chest pain = Yes (character crushing, radiates left arm, duration 2h), palpitations = No,
+  FHx early CAD = Yes (father); Respiratory — cough = No, dyspnoea = No. Confirm the compiled
+  `ros_summary` reads correctly in EN + FR.
+
+### Verify (end-to-end)
+
+* [x] Apply `packages/db/schema.sql` clean (idempotent re-run OK); enums, tables, indexes, triggers,
+  RLS all present; `patient_history` + `ros_responses` appear in the updated_at/version/audit/RLS
+  loops.
+* [x] As a **doctor**: open a patient with chief complaint "Chest pain" → Cardiac (and suggested
+  Respiratory) auto-expand; answering questions is all taps; follow-ups reveal only on Yes; "Mark
+  remaining as No" charts negatives; "+ Add system" opens any module; the live compiled report updates
+  per answer; Save persists rows + `ros_summary`, visible on the board/printout/reports.
+* [x] **Background** panel shows/edits history, pre-fills on the next visit; demographics captured at
+  intake and shown in the drawer.
+* [x] **Security:** cross-tenant read/write blocked (RLS tests green); non-doctor cannot write ROS;
+  malformed `answer_value` / unknown `question_key` / bad `detail` rejected by validation; audit rows
+  written; `recorded_by_id` server-set.
+* [x] **Stability:** offline answer queues + replays; version conflict handled; old localStorage blob
+  hydrates without error; bank + loader unit tests, compiler tests, and service tests green.
+* [x] `tsc` clean across the monorepo; FR + EN pass with no overflow; both light + dark mode correct.
+
+### Delivery sequence (each sub-phase independently shippable + verifiable)
+
+* [x] **A — Data foundation:** enums, `patients` columns, `patient_history` + `ros_responses` +
+  `consultations.ros_summary`, loop registrations, RLS, indexes; shared types. Apply schema.
+* [x] **B — Question bank + loader:** conversion script (301 symptom questions), authored
+  follow-ups/history/genetics per system, `lib/ros` loader + routing + compiler, unit tests. *(Clinical
+  content core — do carefully.)*
+* [x] **C — Mock service parity:** `mockStorage` readers/mutations/inputs/hydration + tests.
+* [x] **D — Background UI:** demographics at intake + Background panel in drawer (ships value alone).
+* [x] **E — ROS UI + auto-report:** `ros-review` block with selectable controls, complaint routing,
+  follow-up reveal, "Mark remaining as No", `+ Add system`, live `compileRosNarrative`; Save writes
+  rows + `ros_summary`.
+* [x] **F — Supabase parity + hardening:** `supabaseData` writes + `syncQueue` + concurrency; curated
+  secondary-system routing map; RLS/tenancy/validation tests; reporting surfaces.
+
+> **Reference:** full rationale, alternatives considered, and open decisions in
+> `DEMOGRAPHICS_ROS_DESIGN.md` (repo root). Open decisions carried into execution: (1) narrative in
+> `ros_summary` column [chosen] vs appended to `subjective`; (2) seed-file bank [chosen] vs per-hospital
+> `ros_questions` table [parking lot]; (3) one-level follow-ups [chosen]; (4) primary routing in E,
+> curated secondary map in F; (5) obstetric `sex`-gated-but-addable [chosen]; (6) background writable by
+> nurse+doctor [chosen].
 
 ## 🅿️ Future / parking lot (out of current scope)
 
@@ -1124,6 +1685,24 @@ them before they become expensive to retrofit:
 ## 📈 Update Logs
 
 When working with Claude Code, log completed steps, timestamps, and architectural shifts here.
+
+* 2026-07-02: **Added Phase 21 — Patient Demographics & Review of Systems (ROS).** Execution-ready
+  spec (no code yet) for a complaint-driven ROS and full patient background/demographic record. Raised
+  by a practicing nurse: CareFlow has a free-text SOAP note but no structured ROS and no
+  past-medical/family/social history, losing the reasoning trail that decides what to test for. Design:
+  **select-don't-type** question controls; each body system is a self-contained **module** (symptoms +
+  history + genetics); the chief complaint auto-opens the relevant modules and the doctor can add any
+  of the 12; answers compile a readable **`ros_summary`** narrative. Reuses existing patterns — the
+  301 system-tagged bilingual terms in `data/clinical-terms/subjective.json` seed the question bank
+  (bilingual JSON seed files like `clinical_terms`, no migration to grow); `allergies` (patient-level)
+  and `consultations`/`diagnoses` (visit-level) as table models; the four-layer change (schema → shared
+  types → mockStorage → supabaseData); `syncQueue` offline, `version` concurrency, audit + tenant RLS.
+  New: `patient_history` + `ros_responses` tables, `body_system`/`ros_answer_type`/`ros_question_kind`/
+  `patient_history_type`/`marital_status` enums, demographic columns on `patients`, `consultations.
+  ros_summary`. Full DDL, types, service wiring, UI, security (per-type `zod` validation of
+  `answer_value`, role gating, cross-tenant tests, PII-safe telemetry), stability (offline/concurrency/
+  hydration/denormalization), i18n, seed, verify, and a 6-step delivery sequence (A–F) are in the phase;
+  rationale + alternatives in `DEMOGRAPHICS_ROS_DESIGN.md` (repo root).
 
 * 2026-06-02: **Added Phase 18.5 — Verified Tenant Onboarding.** Before a hospital is created, the
   founding admin must verify identity via **Google sign-in or email OTP**; only then do they fill the

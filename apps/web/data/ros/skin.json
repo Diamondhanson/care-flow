@@ -1,0 +1,738 @@
+[
+  {
+    "key": "skin.pruritus",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Pruritus?",
+    "prompt_fr": "Prurit ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "pruritus",
+    "report_phrase_fr": "prurit",
+    "followups": [
+      {
+        "key": "skin.pruritus.extent",
+        "prompt_en": "Extent",
+        "prompt_fr": "Étendue",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "extent",
+        "report_phrase_fr": "étendue",
+        "options": [
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisé"
+          },
+          {
+            "value": "localized",
+            "label_en": "Localized",
+            "label_fr": "Localisé"
+          }
+        ]
+      },
+      {
+        "key": "skin.pruritus.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "skin.pruritus.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "skin.skin_rash",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin rash?",
+    "prompt_fr": "Éruption cutanée ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "skin rash",
+    "report_phrase_fr": "éruption cutanée",
+    "followups": [
+      {
+        "key": "skin.skin_rash.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation",
+        "options": [
+          {
+            "value": "face",
+            "label_en": "Face",
+            "label_fr": "Visage"
+          },
+          {
+            "value": "trunk",
+            "label_en": "Trunk",
+            "label_fr": "Tronc"
+          },
+          {
+            "value": "limbs",
+            "label_en": "Limbs",
+            "label_fr": "Membres"
+          },
+          {
+            "value": "hands_feet",
+            "label_en": "Hands and feet",
+            "label_fr": "Mains et pieds"
+          },
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisée"
+          }
+        ]
+      },
+      {
+        "key": "skin.skin_rash.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "skin.skin_rash.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "skin.skin_ulcer",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin ulcer?",
+    "prompt_fr": "Ulcération cutanée ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "skin ulcer",
+    "report_phrase_fr": "ulcération cutanée",
+    "followups": [
+      {
+        "key": "skin.skin_ulcer.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation",
+        "options": [
+          {
+            "value": "leg",
+            "label_en": "Leg",
+            "label_fr": "Jambe"
+          },
+          {
+            "value": "foot",
+            "label_en": "Foot",
+            "label_fr": "Pied"
+          },
+          {
+            "value": "arm",
+            "label_en": "Arm",
+            "label_fr": "Bras"
+          },
+          {
+            "value": "trunk",
+            "label_en": "Trunk",
+            "label_fr": "Tronc"
+          },
+          {
+            "value": "genital_area",
+            "label_en": "Genital area",
+            "label_fr": "Région génitale"
+          }
+        ]
+      },
+      {
+        "key": "skin.skin_ulcer.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      },
+      {
+        "key": "skin.skin_ulcer.pain_character",
+        "prompt_en": "Pain character",
+        "prompt_fr": "Caractère douloureux",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "pain character",
+        "report_phrase_fr": "caractère douloureux",
+        "options": [
+          {
+            "value": "painful",
+            "label_en": "Painful",
+            "label_fr": "Douloureuse"
+          },
+          {
+            "value": "painless",
+            "label_en": "Painless",
+            "label_fr": "Indolore"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "skin.localized_edema",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Localized edema?",
+    "prompt_fr": "Œdème localisé ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "localized edema",
+    "report_phrase_fr": "œdème localisé"
+  },
+  {
+    "key": "skin.skin_discoloration",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin discoloration?",
+    "prompt_fr": "Dyschromie cutanée ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "skin discoloration",
+    "report_phrase_fr": "dyschromie cutanée"
+  },
+  {
+    "key": "skin.hyperpigmentation",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Hyperpigmentation?",
+    "prompt_fr": "Hyperpigmentation ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "hyperpigmentation",
+    "report_phrase_fr": "hyperpigmentation"
+  },
+  {
+    "key": "skin.hypopigmentation",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Hypopigmentation?",
+    "prompt_fr": "Hypopigmentation ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "hypopigmentation",
+    "report_phrase_fr": "hypopigmentation",
+    "followups": [
+      {
+        "key": "skin.hypopigmentation.location",
+        "prompt_en": "Location",
+        "prompt_fr": "Localisation",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "location",
+        "report_phrase_fr": "localisation",
+        "options": [
+          {
+            "value": "face",
+            "label_en": "Face",
+            "label_fr": "Visage"
+          },
+          {
+            "value": "trunk",
+            "label_en": "Trunk",
+            "label_fr": "Tronc"
+          },
+          {
+            "value": "limbs",
+            "label_en": "Limbs",
+            "label_fr": "Membres"
+          },
+          {
+            "value": "hands_feet",
+            "label_en": "Hands and feet",
+            "label_fr": "Mains et pieds"
+          },
+          {
+            "value": "generalized",
+            "label_en": "Generalized",
+            "label_fr": "Généralisée"
+          }
+        ]
+      },
+      {
+        "key": "skin.hypopigmentation.associated",
+        "prompt_en": "Associated features",
+        "prompt_fr": "Signes associés",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "associated features",
+        "report_phrase_fr": "signes associés",
+        "options": [
+          {
+            "value": "loss_of_sensation",
+            "label_en": "Loss of sensation",
+            "label_fr": "Perte de sensibilité"
+          },
+          {
+            "value": "scaling",
+            "label_en": "Scaling",
+            "label_fr": "Desquamation"
+          },
+          {
+            "value": "itching",
+            "label_en": "Itching",
+            "label_fr": "Prurit"
+          }
+        ]
+      },
+      {
+        "key": "skin.hypopigmentation.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "skin.cutaneous_nodule",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Cutaneous nodule?",
+    "prompt_fr": "Nodule cutané ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "cutaneous nodule",
+    "report_phrase_fr": "nodule cutané"
+  },
+  {
+    "key": "skin.skin_abscess",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin abscess?",
+    "prompt_fr": "Abcès cutané ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "skin abscess",
+    "report_phrase_fr": "abcès cutané"
+  },
+  {
+    "key": "skin.skin_blisters",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin blisters?",
+    "prompt_fr": "Vésicules cutanées ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "skin blisters",
+    "report_phrase_fr": "vésicules cutanées"
+  },
+  {
+    "key": "skin.skin_peeling",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin peeling?",
+    "prompt_fr": "Desquamation ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "skin peeling",
+    "report_phrase_fr": "desquamation"
+  },
+  {
+    "key": "skin.dry_skin",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Dry skin?",
+    "prompt_fr": "Xérose cutanée ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "dry skin",
+    "report_phrase_fr": "xérose cutanée"
+  },
+  {
+    "key": "skin.hair_loss",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Hair loss?",
+    "prompt_fr": "Alopécie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "hair loss",
+    "report_phrase_fr": "alopécie"
+  },
+  {
+    "key": "skin.nail_changes",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Nail changes?",
+    "prompt_fr": "Anomalies des ongles ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "nail changes",
+    "report_phrase_fr": "anomalies des ongles"
+  },
+  {
+    "key": "skin.easy_bruising",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Easy bruising?",
+    "prompt_fr": "Ecchymoses faciles ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "easy bruising",
+    "report_phrase_fr": "ecchymoses faciles"
+  },
+  {
+    "key": "skin.petechiae",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Petechiae?",
+    "prompt_fr": "Pétéchies ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "petechiae",
+    "report_phrase_fr": "pétéchies"
+  },
+  {
+    "key": "skin.urticaria",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Urticaria?",
+    "prompt_fr": "Urticaire ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "urticaria",
+    "report_phrase_fr": "urticaire"
+  },
+  {
+    "key": "skin.changing_mole",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Changing mole?",
+    "prompt_fr": "Modification d'un grain de beauté ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "changing mole",
+    "report_phrase_fr": "modification d'un grain de beauté",
+    "followups": [
+      {
+        "key": "skin.changing_mole.changes",
+        "prompt_en": "Changes noticed",
+        "prompt_fr": "Modifications constatées",
+        "type": "multi_select",
+        "show_if": "yes",
+        "report_phrase_en": "changes noticed",
+        "report_phrase_fr": "modifications constatées",
+        "options": [
+          {
+            "value": "size_increase",
+            "label_en": "Size increase",
+            "label_fr": "Augmentation de taille"
+          },
+          {
+            "value": "color_change",
+            "label_en": "Color change",
+            "label_fr": "Changement de couleur"
+          },
+          {
+            "value": "irregular_border",
+            "label_en": "Irregular border",
+            "label_fr": "Bords irréguliers"
+          },
+          {
+            "value": "bleeding",
+            "label_en": "Bleeding",
+            "label_fr": "Saignement"
+          },
+          {
+            "value": "itching",
+            "label_en": "Itching",
+            "label_fr": "Prurit"
+          }
+        ]
+      },
+      {
+        "key": "skin.changing_mole.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "skin.skin_lump",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin lump?",
+    "prompt_fr": "Tuméfaction cutanée ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "skin lump",
+    "report_phrase_fr": "tuméfaction cutanée"
+  },
+  {
+    "key": "skin.spontaneous_bruising",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Spontaneous bruising?",
+    "prompt_fr": "Hématomes spontanés ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "spontaneous bruising",
+    "report_phrase_fr": "hématomes spontanés"
+  },
+  {
+    "key": "skin.skin_redness",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Skin redness?",
+    "prompt_fr": "Érythème cutané ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "skin redness",
+    "report_phrase_fr": "érythème cutané"
+  },
+  {
+    "key": "skin.cold_sores",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Cold sores?",
+    "prompt_fr": "Herpès labial ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "cold sores",
+    "report_phrase_fr": "herpès labial"
+  },
+  {
+    "key": "skin.warts",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Warts?",
+    "prompt_fr": "Verrues ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "warts",
+    "report_phrase_fr": "verrues"
+  },
+  {
+    "key": "skin.palmar_hyperhidrosis",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Palmar hyperhidrosis?",
+    "prompt_fr": "Hyperhidrose palmaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "palmar hyperhidrosis",
+    "report_phrase_fr": "hyperhidrose palmaire"
+  },
+  {
+    "key": "skin.cracked_lips",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Cracked lips?",
+    "prompt_fr": "Lèvres gercées ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "cracked lips",
+    "report_phrase_fr": "lèvres gercées"
+  },
+  {
+    "key": "skin.brittle_hair",
+    "system": "skin",
+    "kind": "symptom",
+    "prompt_en": "Brittle hair?",
+    "prompt_fr": "Cheveux cassants ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "brittle hair",
+    "report_phrase_fr": "cheveux cassants"
+  },
+  {
+    "key": "skin.hx_eczema",
+    "system": "skin",
+    "kind": "history",
+    "prompt_en": "History of eczema or atopy?",
+    "prompt_fr": "Antécédents d'eczéma ou d'atopie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of eczema or atopy",
+    "report_phrase_fr": "antécédents d'eczéma ou d'atopie"
+  },
+  {
+    "key": "skin.hx_drug_reaction",
+    "system": "skin",
+    "kind": "history",
+    "prompt_en": "Previous drug-related skin reaction?",
+    "prompt_fr": "Antécédent de réaction cutanée médicamenteuse ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of cutaneous drug reaction",
+    "report_phrase_fr": "antécédent de toxidermie médicamenteuse"
+  },
+  {
+    "key": "skin.hx_skin_lightening_products",
+    "system": "skin",
+    "kind": "history",
+    "prompt_en": "Use of skin-lightening products?",
+    "prompt_fr": "Utilisation de produits dépigmentants ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "use of skin-lightening products",
+    "report_phrase_fr": "utilisation de produits dépigmentants"
+  },
+  {
+    "key": "skin.hx_onchocerciasis_exposure",
+    "system": "skin",
+    "kind": "history",
+    "prompt_en": "Prolonged stay near a river in an onchocerciasis area?",
+    "prompt_fr": "Séjour prolongé près d'une rivière en zone d'onchocercose ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "residence in onchocerciasis-endemic river area",
+    "report_phrase_fr": "séjour en zone d'endémie onchocerquienne"
+  },
+  {
+    "key": "skin.hx_keloids",
+    "system": "skin",
+    "kind": "history",
+    "prompt_en": "Tendency to form keloid scars?",
+    "prompt_fr": "Tendance aux cicatrices chéloïdes ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "tendency to keloid scarring",
+    "report_phrase_fr": "tendance aux cicatrices chéloïdes"
+  },
+  {
+    "key": "skin.fhx_atopy",
+    "system": "skin",
+    "kind": "genetic",
+    "prompt_en": "Family history of atopy (eczema, asthma, allergic rhinitis)?",
+    "prompt_fr": "Antécédents familiaux d'atopie (eczéma, asthme, rhinite allergique) ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "family history of atopy",
+    "report_phrase_fr": "antécédents familiaux d'atopie",
+    "followups": [
+      {
+        "key": "skin.fhx_atopy.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Apparenté atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "apparenté atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,130 @@
+/**
+ * Complaint → system routing (Phase 21).
+ *
+ * The chief complaint chosen at intake usually comes from the clinical-term
+ * library, whose subjective terms carry a `system` tag ("Cardiac",
+ * "Obstetric/Gynae", …). This module normalizes that tag to a `BodySystem`
+ * and resolves free-text complaints back to a term so the doctor's ROS block
+ * can auto-open the right module.
+ *
+ * v1 ships primary-system routing only (free from the existing tags). The
+ * curated secondary map (e.g. chest pain → also review respiratory + GI) is a
+ * Phase-F refinement — additions go in SECONDARY_SYSTEMS below.
+ */
+
+import type { BodySystem } from "@careflow/shared";
+import { SEED_TERMS } from "@/lib/clinical-terms";
+
+/**
+ * Normalize a clinical-term `system` label to a `BodySystem`:
+ * lowercase, `/` and spaces → `_`, "Obstetric/Gynae" → "obstetric_gynae".
+ */
+export function normalizeSystem(label: string): BodySystem | null {
+  const normalized = label
+    .trim()
+    .toLowerCase()
+    .replace(/[\s/]+/g, "_");
+  const KNOWN: Record<string, BodySystem> = {
+    general: "general",
+    cardiac: "cardiac",
+    respiratory: "respiratory",
+    gi: "gi",
+    gu: "gu",
+    neuro: "neuro",
+    ent: "ent",
+    eyes: "eyes",
+    skin: "skin",
+    musculoskeletal: "musculoskeletal",
+    psych: "psych",
+    obstetric_gynae: "obstetric_gynae",
+  };
+  return KNOWN[normalized] ?? null;
+}
+
+/**
+ * Resolve one term/complaint line to its body system by matching the
+ * subjective term library (term_en / term_fr / synonyms, case-insensitive).
+ * Exact matches win; otherwise the complaint is free text ("Acute chest
+ * pain"), so fall back to containment — the longest library term found inside
+ * the line decides (length-gated so short fragments can't misroute).
+ */
+export function systemForTerm(term: string): BodySystem | null {
+  const needle = term.trim().toLowerCase();
+  if (!needle) return null;
+
+  let containment: { length: number; system: string } | null = null;
+  for (const t of SEED_TERMS.subjective) {
+    if (!t.system) continue;
+    const labels = [
+      t.term_en,
+      t.term_fr,
+      ...(t.synonyms_en ?? []),
+      ...(t.synonyms_fr ?? []),
+    ].map((s) => s.toLowerCase());
+    if (labels.some((l) => l === needle)) {
+      return normalizeSystem(t.system);
+    }
+    for (const label of labels) {
+      if (
+        label.length >= 5 &&
+        needle.includes(label) &&
+        label.length > (containment?.length ?? 0)
+      ) {
+        containment = { length: label.length, system: t.system };
+      }
+    }
+  }
+  return containment ? normalizeSystem(containment.system) : null;
+}
+
+/**
+ * Curated complaint-system → additional systems worth reviewing for a
+ * differential (Phase 21F). Deliberately small: only pairings where the
+ * differential routinely crosses systems — e.g. chest pain is cardiac until
+ * proven respiratory or oesophageal; fever needs a source survey.
+ */
+export const SECONDARY_SYSTEMS: Partial<Record<BodySystem, BodySystem[]>> = {
+  cardiac: ["respiratory", "gi"],
+  respiratory: ["cardiac", "ent"],
+  general: ["respiratory", "gi"],
+  gi: ["gu", "obstetric_gynae"],
+  gu: ["gi", "obstetric_gynae"],
+  neuro: ["eyes", "psych"],
+  ent: ["respiratory"],
+};
+
+export interface ComplaintRouting {
+  primary: BodySystem | null;
+  secondary: BodySystem[];
+}
+
+/**
+ * Route a chief complaint to ROS systems. Chief complaints written via the
+ * intake chips may hold several newline-separated terms — the first line that
+ * resolves wins as primary; other resolving lines join the secondary set.
+ */
+export function systemsForComplaint(chiefComplaint: string): ComplaintRouting {
+  const lines = chiefComplaint
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  let primary: BodySystem | null = null;
+  const secondary = new Set<BodySystem>();
+
+  for (const line of lines) {
+    const system = systemForTerm(line);
+    if (!system) continue;
+    if (!primary) {
+      primary = system;
+    } else if (system !== primary) {
+      secondary.add(system);
+    }
+  }
+
+  for (const extra of primary ? (SECONDARY_SYSTEMS[primary] ?? []) : []) {
+    if (extra !== primary) secondary.add(extra);
+  }
+
+  return { primary, secondary: [...secondary] };
+}

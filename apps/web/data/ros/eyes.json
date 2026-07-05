@@ -1,0 +1,643 @@
+[
+  {
+    "key": "eyes.eye_pain",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Eye pain?",
+    "prompt_fr": "Douleur oculaire ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "eye pain",
+    "report_phrase_fr": "douleur oculaire",
+    "followups": [
+      {
+        "key": "eyes.eye_pain.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "eyes.eye_pain.severity",
+        "prompt_en": "Severity",
+        "prompt_fr": "Intensité",
+        "type": "scale",
+        "show_if": "yes",
+        "report_phrase_en": "severity",
+        "report_phrase_fr": "intensité",
+        "options": [
+          {
+            "value": "none",
+            "label_en": "None",
+            "label_fr": "Aucune"
+          },
+          {
+            "value": "mild",
+            "label_en": "Mild",
+            "label_fr": "Légère"
+          },
+          {
+            "value": "moderate",
+            "label_en": "Moderate",
+            "label_fr": "Modérée"
+          },
+          {
+            "value": "severe",
+            "label_en": "Severe",
+            "label_fr": "Sévère"
+          }
+        ]
+      },
+      {
+        "key": "eyes.eye_pain.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "eyes.visual_impairment",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Visual impairment?",
+    "prompt_fr": "Baisse de l'acuité visuelle ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "visual impairment",
+    "report_phrase_fr": "baisse de l'acuité visuelle",
+    "followups": [
+      {
+        "key": "eyes.visual_impairment.onset",
+        "prompt_en": "Onset",
+        "prompt_fr": "Mode d'installation",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "onset",
+        "report_phrase_fr": "mode d'installation",
+        "options": [
+          {
+            "value": "sudden",
+            "label_en": "Sudden",
+            "label_fr": "Brutal"
+          },
+          {
+            "value": "gradual",
+            "label_en": "Gradual",
+            "label_fr": "Progressif"
+          }
+        ]
+      },
+      {
+        "key": "eyes.visual_impairment.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "eyes.visual_impairment.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "eyes.photophobia",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Photophobia?",
+    "prompt_fr": "Photophobie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "photophobia",
+    "report_phrase_fr": "photophobie"
+  },
+  {
+    "key": "eyes.pruritus_of_eye",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Pruritus of eye?",
+    "prompt_fr": "Prurit oculaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "pruritus of eye",
+    "report_phrase_fr": "prurit oculaire"
+  },
+  {
+    "key": "eyes.epiphora",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Epiphora?",
+    "prompt_fr": "Épiphora ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "epiphora",
+    "report_phrase_fr": "épiphora"
+  },
+  {
+    "key": "eyes.red_eye",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Red eye?",
+    "prompt_fr": "Œil rouge ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "red eye",
+    "report_phrase_fr": "œil rouge",
+    "followups": [
+      {
+        "key": "eyes.red_eye.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "eyes.red_eye.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "eyes.eye_discharge",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Eye discharge?",
+    "prompt_fr": "Sécrétions oculaires ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "eye discharge",
+    "report_phrase_fr": "sécrétions oculaires",
+    "followups": [
+      {
+        "key": "eyes.eye_discharge.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "eyes.eye_discharge.character",
+        "prompt_en": "Discharge character",
+        "prompt_fr": "Caractère des sécrétions",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "discharge character",
+        "report_phrase_fr": "caractère des sécrétions",
+        "options": [
+          {
+            "value": "watery",
+            "label_en": "Watery",
+            "label_fr": "Aqueuses"
+          },
+          {
+            "value": "mucoid",
+            "label_en": "Mucoid",
+            "label_fr": "Muqueuses"
+          },
+          {
+            "value": "purulent",
+            "label_en": "Purulent",
+            "label_fr": "Purulentes"
+          }
+        ]
+      },
+      {
+        "key": "eyes.eye_discharge.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "eyes.diplopia",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Diplopia?",
+    "prompt_fr": "Diplopie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "diplopia",
+    "report_phrase_fr": "diplopie"
+  },
+  {
+    "key": "eyes.visual_floaters",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Visual floaters?",
+    "prompt_fr": "Corps flottants ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "visual floaters",
+    "report_phrase_fr": "corps flottants"
+  },
+  {
+    "key": "eyes.ocular_foreign_body_sensation",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Ocular foreign body sensation?",
+    "prompt_fr": "Sensation de corps étranger oculaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "ocular foreign body sensation",
+    "report_phrase_fr": "sensation de corps étranger oculaire"
+  },
+  {
+    "key": "eyes.sudden_vision_loss",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Sudden vision loss?",
+    "prompt_fr": "Perte brutale de la vision ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "sudden vision loss",
+    "report_phrase_fr": "perte brutale de la vision",
+    "followups": [
+      {
+        "key": "eyes.sudden_vision_loss.side",
+        "prompt_en": "Side",
+        "prompt_fr": "Côté",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "side",
+        "report_phrase_fr": "côté",
+        "options": [
+          {
+            "value": "left",
+            "label_en": "Left",
+            "label_fr": "Gauche"
+          },
+          {
+            "value": "right",
+            "label_en": "Right",
+            "label_fr": "Droit"
+          },
+          {
+            "value": "both",
+            "label_en": "Both",
+            "label_fr": "Les deux"
+          }
+        ]
+      },
+      {
+        "key": "eyes.sudden_vision_loss.extent",
+        "prompt_en": "Extent",
+        "prompt_fr": "Étendue",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "extent",
+        "report_phrase_fr": "étendue",
+        "options": [
+          {
+            "value": "complete",
+            "label_en": "Complete",
+            "label_fr": "Totale"
+          },
+          {
+            "value": "partial",
+            "label_en": "Partial",
+            "label_fr": "Partielle"
+          }
+        ]
+      },
+      {
+        "key": "eyes.sudden_vision_loss.duration",
+        "prompt_en": "Duration",
+        "prompt_fr": "Durée",
+        "type": "duration",
+        "show_if": "yes",
+        "report_phrase_en": "duration",
+        "report_phrase_fr": "durée"
+      }
+    ]
+  },
+  {
+    "key": "eyes.night_blindness",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Night blindness?",
+    "prompt_fr": "Héméralopie ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "night blindness",
+    "report_phrase_fr": "héméralopie"
+  },
+  {
+    "key": "eyes.eyelid_swelling",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Eyelid swelling?",
+    "prompt_fr": "Œdème palpébral ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "eyelid swelling",
+    "report_phrase_fr": "œdème palpébral"
+  },
+  {
+    "key": "eyes.ocular_burning",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Ocular burning?",
+    "prompt_fr": "Brûlure oculaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "ocular burning",
+    "report_phrase_fr": "brûlure oculaire"
+  },
+  {
+    "key": "eyes.strabismus",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Strabismus?",
+    "prompt_fr": "Strabisme ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "strabismus",
+    "report_phrase_fr": "strabisme"
+  },
+  {
+    "key": "eyes.eyelid_twitching",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Eyelid twitching?",
+    "prompt_fr": "Myokymie palpébrale ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "eyelid twitching",
+    "report_phrase_fr": "myokymie palpébrale"
+  },
+  {
+    "key": "eyes.dry_eyes",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Dry eyes?",
+    "prompt_fr": "Sécheresse oculaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "dry eyes",
+    "report_phrase_fr": "sécheresse oculaire"
+  },
+  {
+    "key": "eyes.halos_around_lights",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Halos around lights?",
+    "prompt_fr": "Halos lumineux ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "halos around lights",
+    "report_phrase_fr": "halos lumineux"
+  },
+  {
+    "key": "eyes.exophthalmos",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Exophthalmos?",
+    "prompt_fr": "Exophtalmie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "exophthalmos",
+    "report_phrase_fr": "exophtalmie"
+  },
+  {
+    "key": "eyes.ptosis",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Ptosis?",
+    "prompt_fr": "Ptôsis palpébral ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "ptosis",
+    "report_phrase_fr": "ptôsis palpébral"
+  },
+  {
+    "key": "eyes.asthenopia",
+    "system": "eyes",
+    "kind": "symptom",
+    "prompt_en": "Asthenopia?",
+    "prompt_fr": "Asthénopie ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "asthenopia",
+    "report_phrase_fr": "asthénopie"
+  },
+  {
+    "key": "eyes.hx_glaucoma",
+    "system": "eyes",
+    "kind": "history",
+    "prompt_en": "History of glaucoma?",
+    "prompt_fr": "Antécédents de glaucome ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "history of glaucoma",
+    "report_phrase_fr": "antécédents de glaucome"
+  },
+  {
+    "key": "eyes.fhx_glaucoma",
+    "system": "eyes",
+    "kind": "genetic",
+    "prompt_en": "Family history of glaucoma?",
+    "prompt_fr": "Antécédents familiaux de glaucome ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "family history of glaucoma",
+    "report_phrase_fr": "antécédents familiaux de glaucome",
+    "followups": [
+      {
+        "key": "eyes.fhx_glaucoma.relation",
+        "prompt_en": "Affected relative",
+        "prompt_fr": "Apparenté atteint",
+        "type": "single_select",
+        "show_if": "yes",
+        "report_phrase_en": "affected relative",
+        "report_phrase_fr": "apparenté atteint",
+        "options": [
+          {
+            "value": "father",
+            "label_en": "Father",
+            "label_fr": "Père"
+          },
+          {
+            "value": "mother",
+            "label_en": "Mother",
+            "label_fr": "Mère"
+          },
+          {
+            "value": "sibling",
+            "label_en": "Sibling",
+            "label_fr": "Frère ou sœur"
+          },
+          {
+            "value": "child",
+            "label_en": "Child",
+            "label_fr": "Enfant"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "key": "eyes.hx_diabetes_eye",
+    "system": "eyes",
+    "kind": "history",
+    "prompt_en": "Known diabetes?",
+    "prompt_fr": "Diabète connu ?",
+    "type": "boolean",
+    "key_question": true,
+    "sex": null,
+    "report_phrase_en": "known diabetes",
+    "report_phrase_fr": "diabète connu"
+  },
+  {
+    "key": "eyes.hx_eye_surgery",
+    "system": "eyes",
+    "kind": "history",
+    "prompt_en": "Previous eye surgery?",
+    "prompt_fr": "Antécédents de chirurgie oculaire ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "previous eye surgery",
+    "report_phrase_fr": "antécédents de chirurgie oculaire"
+  },
+  {
+    "key": "eyes.hx_onchocerciasis_exposure",
+    "system": "eyes",
+    "kind": "history",
+    "prompt_en": "Prolonged stay near a river in an onchocerciasis area?",
+    "prompt_fr": "Séjour prolongé près d'une rivière en zone d'onchocercose ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "residence in onchocerciasis-endemic river area",
+    "report_phrase_fr": "séjour en zone d'endémie onchocerquienne"
+  },
+  {
+    "key": "eyes.hx_corrective_lenses",
+    "system": "eyes",
+    "kind": "history",
+    "prompt_en": "Wears glasses or contact lenses?",
+    "prompt_fr": "Port de lunettes ou de lentilles de contact ?",
+    "type": "boolean",
+    "key_question": false,
+    "sex": null,
+    "report_phrase_en": "wears corrective lenses",
+    "report_phrase_fr": "port de verres correcteurs"
+  }
+]
