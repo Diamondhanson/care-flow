@@ -140,7 +140,7 @@ function fileName(patient: Patient, ms: number): string {
   const slug = (s: string) =>
     s.replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-+|-+$/g, "");
   const base = slug(displayNameOf(patient));
-  return `careflow-bill-${base || slug(patient.mrn) || "patient"}-${fileStamp(ms)}.pdf`;
+  return `careflow-bill-${base || slug(patient.mrn ?? "") || "patient"}-${fileStamp(ms)}.pdf`;
 }
 
 // ---------------------------------------------------------------------------

@@ -191,7 +191,7 @@ export default function IntakePage() {
           ? patient.anonymous_identifier
           : patient.full_name,
       isAnonymous: patient.is_emergency_anonymous,
-      mrn: patient.mrn,
+      mrn: patient.mrn ?? "",
     });
   }
 

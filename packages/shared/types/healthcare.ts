@@ -458,10 +458,12 @@ export interface Patient {
    * mother's-first-name initial, e.g. "981120BHN - N" (born 1998-11-20, mother
    * Ndung). On a clash, a counter is appended (`… - N-2`). The field name stays
    * `mrn` for continuity, but it is no longer the old `CF-YYYY-NNNNNN` sequence.
-   * Empty for an emergency-anonymous record until reconciliation supplies real
-   * details. The patient UUID (`id`) remains the true internal key for all FKs.
+   * NULL for an emergency-anonymous record until reconciliation supplies real
+   * details — NULL (not "") so multiple unidentified patients coexist under the
+   * `unique (hospital_id, mrn)` constraint (Postgres allows many NULLs, but "" is
+   * a value that would collide). The patient UUID (`id`) is the true internal key.
    */
-  mrn: string;
+  mrn: string | null;
   full_name: string;
   date_of_birth: ISODate | null;
   /**

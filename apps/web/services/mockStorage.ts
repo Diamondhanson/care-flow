@@ -1156,7 +1156,7 @@ export function searchPatients(query: string, limit = 8): Patient[] {
   const matches = loadScoped().patients.filter((p) => {
     const haystacks = [
       p.full_name,
-      p.mrn,
+      p.mrn ?? "",
       p.national_id ?? "",
       p.phone ?? "",
       p.anonymous_identifier ?? "",
@@ -1165,7 +1165,7 @@ export function searchPatients(query: string, limit = 8): Patient[] {
   });
   // Rank: hospital-number / name prefix matches before mid-string matches.
   const score = (p: Patient): number => {
-    const mrn = p.mrn.toLowerCase();
+    const mrn = (p.mrn ?? "").toLowerCase();
     const name = p.full_name.toLowerCase();
     if (mrn === q || name === q) return 0;
     if (mrn.startsWith(q) || name.startsWith(q)) return 1;
@@ -2362,15 +2362,17 @@ export function createNewVisit(
   // Anonymous emergency records get no patient ID until reconciliation supplies
   // real identity details; everyone else gets a Cameroon booklet ID derived from
   // birth date + name initials + mother's initial, de-duplicated against peers.
+  // NULL (not "") for anonymous so multiple unidentified patients coexist under
+  // the unique(hospital_id, mrn) constraint — "" is a value that would collide.
   const mrn = isAnonymous
-    ? ""
+    ? null
     : uniquePatientId(
         generatePatientId(
           patientData.date_of_birth ?? null,
           patientData.full_name,
           patientData.mother_first_name ?? null,
         ),
-        db.patients.map((p) => p.mrn),
+        db.patients.map((p) => p.mrn ?? ""),
       );
 
   const patient: Patient = {
@@ -3568,7 +3570,7 @@ export function completeAnonymousProfile(
       patient.full_name,
       patient.mother_first_name
     ),
-    db.patients.filter((p) => p.id !== patient.id).map((p) => p.mrn)
+    db.patients.filter((p) => p.id !== patient.id).map((p) => p.mrn ?? "")
   );
   patient.updated_at = nowISO();
 
@@ -3655,7 +3657,7 @@ export function reconcileAnonymousProfile(
         realPatient.full_name,
         realPatient.mother_first_name ?? null,
       ),
-      db.patients.filter((p) => p.id !== realPatient.id).map((p) => p.mrn),
+      db.patients.filter((p) => p.id !== realPatient.id).map((p) => p.mrn ?? ""),
     );
   }
 
@@ -4271,7 +4273,7 @@ function seedHistoricalCaseload(ctx: HistoricalSeedCtx): void {
       id: patientId,
       mrn: uniquePatientId(
         generatePatientId(dob, fullName, motherFirstName),
-        ctx.patients.map((p) => p.mrn),
+        ctx.patients.map((p) => p.mrn ?? ""),
       ),
       full_name: fullName,
       date_of_birth: dob,

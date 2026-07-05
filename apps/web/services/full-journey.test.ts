@@ -392,7 +392,9 @@ describe("EMERGENCY — anonymous intake and reconciliation", () => {
       { visit_type: "emergency", chief_complaint: "Unconscious, RTA" },
     );
     expect(patient.is_emergency_anonymous).toBe(true);
-    expect(patient.mrn).toBe(""); // no booklet ID until identified
+    // NULL (not "") until identified, so multiple unidentified patients coexist
+    // under unique(hospital_id, mrn) — "" is a value that would collide.
+    expect(patient.mrn).toBeNull();
     expect(patient.anonymous_identifier).toBeTruthy();
 
     const identified = completeAnonymousProfile(patient.id, {
@@ -405,6 +407,23 @@ describe("EMERGENCY — anonymous intake and reconciliation", () => {
     expect(identified.mrn).toMatch(/870515SE - R/);
     // Same patient row → the visit stays attached.
     expect(getVisitById(visit.id)?.patient_id).toBe(identified.id);
+  });
+
+  it("lets two unidentified patients coexist (null MRN, no unique collision)", () => {
+    // A real hospital can have two unconscious arrivals at once. Both must get a
+    // NULL mrn — not "" — or the second collides on unique(hospital_id, mrn) and
+    // never syncs (regression: F#4 from UAT).
+    const a = createNewVisit(
+      { full_name: "Unknown A", is_emergency_anonymous: true },
+      { visit_type: "emergency" },
+    );
+    const b = createNewVisit(
+      { full_name: "Unknown B", is_emergency_anonymous: true },
+      { visit_type: "emergency" },
+    );
+    expect(a.patient.mrn).toBeNull();
+    expect(b.patient.mrn).toBeNull();
+    expect(a.patient.id).not.toBe(b.patient.id);
   });
 
   it("folds an anonymous record into an already-registered patient", () => {

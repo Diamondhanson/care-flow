@@ -103,7 +103,7 @@ export function ReconcileDialog({
     if (!q) return [];
     return verified
       .filter((p) =>
-        [p.full_name, p.mrn, p.phone ?? "", p.national_id ?? ""].some((h) =>
+        [p.full_name, p.mrn ?? "", p.phone ?? "", p.national_id ?? ""].some((h) =>
           h.toLowerCase().includes(q),
         ),
       )
@@ -137,7 +137,7 @@ export function ReconcileDialog({
     onDone(
       t("reconciliation.successReconciled", {
         name: patient.full_name,
-        id: patient.mrn,
+        id: patient.mrn ?? "",
       }),
     );
   }
