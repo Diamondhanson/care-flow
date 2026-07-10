@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleToggle } from "@/components/locale-toggle";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import { RoleSwitcher } from "@/components/role-switcher";
 import { GlobalSearch } from "@/components/search/global-search";
 import { GuidedTour, TourHelpButton } from "@/components/onboarding/guided-tour";
@@ -360,6 +361,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 user_id in production, so hide it outside development. */}
             {process.env.NODE_ENV !== "production" ? <RoleSwitcher /> : null}
             <TourHelpButton />
+            <NotificationBell />
             <LocaleToggle />
             <ThemeToggle />
             <Separator orientation="vertical" className="hidden h-5 sm:block" />

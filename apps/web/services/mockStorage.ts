@@ -49,6 +49,8 @@ import type {
   MarStatus,
   MedicationAdministration,
   MedicationAdministrationId,
+  Notification,
+  NotificationType,
   Order,
   OrderId,
   OrderStatus,
@@ -139,6 +141,7 @@ interface Database {
   carePlanEntries: CarePlanEntry[];
   billableItems: BillableItem[];
   charges: Charge[];
+  notifications: Notification[];
 }
 
 // ---------------------------------------------------------------------------
@@ -283,6 +286,7 @@ const DB_COLLECTIONS = [
   "carePlanEntries",
   "billableItems",
   "charges",
+  "notifications",
 ] as const satisfies readonly (keyof Database)[];
 
 /**
@@ -338,6 +342,7 @@ const COLLECTION_TO_TABLE: Record<(typeof DB_COLLECTIONS)[number], string> = {
   carePlanEntries: "care_plan_entries",
   billableItems: "billable_items",
   charges: "charges",
+  notifications: "notifications",
 };
 
 /**
@@ -562,6 +567,180 @@ function tenantId(db: Database): HospitalId {
   return currentHospitalId(db) ?? DEMO_HOSPITAL_ID;
 }
 
+// ===========================================================================
+// Notifications — the who-notifies-whom seam (in-app bell + Web Push).
+//
+// Producers below build rows addressed to OTHER staff and push them into
+// `db.notifications`. Because that happens BEFORE `persist(db)`, the row-diff
+// captures each one and the outbox uploads it exactly like clinical data — no
+// separate transport. Supabase Realtime then streams the insert to its
+// recipient's tab (see notifications-client.ts), and the send-push Edge
+// Function delivers Web Push when their app is closed.
+//
+// Rules baked in here: never notify the actor themselves, de-dupe recipients,
+// and store STRUCTURED data + English fallback copy (the bell localises from
+// `type` + `data`; Web Push, built server-side, uses `title`/`body`).
+// ===========================================================================
+
+/** Window event fired whenever the local notifications collection changes, so
+ *  the bell's store re-reads. Separate from OUTBOX_EVENT (which fires on every
+ *  mutation) so the bell only recomputes when notifications actually move. */
+export const NOTIFICATIONS_EVENT = "careflow:notifications";
+
+function emitNotificationsChanged(): void {
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new Event(NOTIFICATIONS_EVENT));
+  }
+}
+
+/** Resolved display name for a staff id (denormalised onto the row). */
+function staffDisplayName(db: Database, id: StaffId | null | undefined): string | null {
+  if (!id) return null;
+  return db.staff.find((s) => s.id === id)?.full_name ?? null;
+}
+
+/** Patient's human label — the anonymous identifier for unidentified records. */
+function patientDisplayName(patient: Patient | undefined): string | null {
+  if (!patient) return null;
+  return patient.is_emergency_anonymous
+    ? patient.anonymous_identifier ?? "Unidentified patient"
+    : patient.full_name;
+}
+
+/** Active staff members holding any of the given roles (whole hospital). */
+function activeStaffByRole(db: Database, roles: readonly StaffRole[]): Staff[] {
+  return db.staff.filter((s) => s.is_active && roles.includes(s.role));
+}
+
+/**
+ * Nurses who should hear about a visit. There is no explicit patient→nurse
+ * assignment, so we infer: nurses in the ward's department (for an admission),
+ * else nurses in the visit's department, else — so a small ward with no
+ * departmental nurse still gets alerted — every active nurse in the hospital.
+ */
+function nurseIdsForVisit(
+  db: Database,
+  visit: Visit,
+  admission?: Admission,
+): StaffId[] {
+  let departmentId: DepartmentId | null = visit.department_id ?? null;
+  if (admission?.ward_id) {
+    const ward = db.wards.find((w) => w.id === admission.ward_id);
+    if (ward?.department_id) departmentId = ward.department_id;
+  }
+  const nurses = activeStaffByRole(db, ["nurse"]);
+  const scoped = departmentId
+    ? nurses.filter((s) => s.department_id === departmentId)
+    : [];
+  const chosen = scoped.length > 0 ? scoped : nurses;
+  return chosen.map((s) => s.id);
+}
+
+/** All active staff ids holding a role — used for lab/pharmacy fan-out. */
+function staffIdsByRole(db: Database, roles: readonly StaffRole[]): StaffId[] {
+  return activeStaffByRole(db, roles).map((s) => s.id);
+}
+
+interface NotifySpec {
+  type: NotificationType;
+  /** The acting staff member (excluded from recipients; names the row). */
+  actorId: StaffId | null | undefined;
+  /** English fallback headline — also the Web Push title. */
+  title: string;
+  body?: string | null;
+  entityType?: string | null;
+  /** Usually the visit id — the bell opens the patient drawer from it. */
+  entityId?: string | null;
+  patientId?: string | null;
+  patientName?: string | null;
+  link?: string | null;
+  data?: Record<string, unknown>;
+}
+
+/**
+ * Build one notification row per distinct recipient and push them onto
+ * `db.notifications` (the caller persists afterwards). Skips the actor and any
+ * blank/duplicate recipient. Pure w.r.t. storage — only mutates the passed db.
+ */
+function queueNotifications(
+  db: Database,
+  recipientIds: readonly (StaffId | null | undefined)[],
+  spec: NotifySpec,
+): void {
+  const actorId = spec.actorId ?? null;
+  const actorName = staffDisplayName(db, actorId);
+  const seen = new Set<string>();
+  for (const rid of recipientIds) {
+    if (!rid || rid === actorId || seen.has(rid)) continue;
+    seen.add(rid);
+    db.notifications.push({
+      id: generateId(),
+      hospital_id: tenantId(db),
+      recipient_staff_id: rid,
+      actor_staff_id: actorId,
+      actor_name: actorName,
+      type: spec.type,
+      title: spec.title,
+      body: spec.body ?? null,
+      entity_type: spec.entityType ?? null,
+      entity_id: spec.entityId ?? null,
+      patient_id: spec.patientId ?? null,
+      patient_name: spec.patientName ?? null,
+      link: spec.link ?? null,
+      data: spec.data ?? {},
+      read_at: null,
+      created_at: nowISO(),
+    });
+  }
+}
+
+// ---- Notification reads + read-state (consumed by the bell) ----------------
+
+/** This device's notifications for one staff member, newest first. */
+export function getNotificationsForStaff(
+  staffId: StaffId,
+  limit = 50,
+): Notification[] {
+  return loadDatabase()
+    .notifications.filter((n) => n.recipient_staff_id === staffId)
+    .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+    .slice(0, limit);
+}
+
+/** Count of unread notifications for one staff member. */
+export function getUnreadNotificationCount(staffId: StaffId): number {
+  return loadDatabase().notifications.filter(
+    (n) => n.recipient_staff_id === staffId && n.read_at === null,
+  ).length;
+}
+
+/** Stamp a single notification read (idempotent). Returns the updated row. */
+export function markNotificationRead(id: string): Notification | undefined {
+  const db = loadDatabase();
+  const row = db.notifications.find((n) => n.id === id);
+  if (!row || row.read_at !== null) return row;
+  row.read_at = nowISO();
+  persist(db);
+  emitNotificationsChanged();
+  return row;
+}
+
+/** Mark every unread notification for a staff member read. */
+export function markAllNotificationsRead(staffId: StaffId): void {
+  const db = loadDatabase();
+  const ts = nowISO();
+  let changed = false;
+  for (const n of db.notifications) {
+    if (n.recipient_staff_id === staffId && n.read_at === null) {
+      n.read_at = ts;
+      changed = true;
+    }
+  }
+  if (!changed) return;
+  persist(db);
+  emitNotificationsChanged();
+}
+
 /**
  * Public resolver for the active tenant's hospital record (the account row).
  * Returns undefined only when the store somehow holds no hospitals.
@@ -653,6 +832,7 @@ function loadScoped(): Database {
     carePlanEntries: only(db.carePlanEntries),
     billableItems: only(db.billableItems),
     charges: only(db.charges),
+    notifications: only(db.notifications),
   };
 }
 
@@ -1922,6 +2102,21 @@ export function transferAdmission(
   };
   db.transfers.push(transfer);
 
+  // A move touches both doctors: the one handing off and the one taking over.
+  const transferPatient = db.patients.find((p) => p.id === admission.patient_id);
+  queueNotifications(db, [fromDoctor, toDoctor], {
+    type: "transfer.recorded",
+    actorId: transfer.transferred_by_id,
+    title: `Patient transferred: ${patientDisplayName(transferPatient) ?? "patient"}`,
+    body: transfer.reason,
+    entityType: "visit",
+    entityId: admission.visit_id,
+    patientId: admission.patient_id,
+    patientName: patientDisplayName(transferPatient),
+    link: "/care-plans",
+    data: { changed_doctor: toDoctor !== fromDoctor, changed_ward: toWard !== fromWard },
+  });
+
   persist(db);
   return { admission, transfer };
 }
@@ -2017,6 +2212,27 @@ export function addCarePlanEntry(
     recorded_at: nowISO(),
   };
   db.carePlanEntries.push(entry);
+
+  // Nurse→doctor escalation: an entry flagged `needs_doctor` pages the attending
+  // doctor (the highest-priority relationship in the ward). Routine log entries
+  // stay quiet.
+  if (entry.needs_doctor) {
+    const escVisit = db.visits.find((v) => v.id === admission.visit_id);
+    const escPatient = db.patients.find((p) => p.id === admission.patient_id);
+    queueNotifications(db, [admission.attending_doctor_id], {
+      type: "careplan.escalation",
+      actorId: entry.recorded_by_id,
+      title: `Nurse needs you: ${patientDisplayName(escPatient) ?? "patient"}`,
+      body: entry.note,
+      entityType: "visit",
+      entityId: escVisit?.id ?? admission.visit_id,
+      patientId: admission.patient_id,
+      patientName: patientDisplayName(escPatient),
+      link: "/care-plans",
+      data: { is_handover: entry.is_handover },
+    });
+  }
+
   persist(db);
   return entry;
 }
@@ -2037,6 +2253,25 @@ export function acknowledgeCarePlanEntry(
   }
   entry.acknowledged_by_id = acknowledgedById;
   entry.acknowledged_at = nowISO();
+
+  // Close the loop back to the nurse who raised the flag: the doctor has seen it.
+  const ackAdmission = db.admissions.find((a) => a.id === entry.admission_id);
+  const ackPatient = ackAdmission
+    ? db.patients.find((p) => p.id === ackAdmission.patient_id)
+    : undefined;
+  queueNotifications(db, [entry.recorded_by_id], {
+    type: "careplan.acknowledged",
+    actorId: acknowledgedById,
+    title: `Doctor acknowledged: ${patientDisplayName(ackPatient) ?? "your note"}`,
+    body: entry.note,
+    entityType: "visit",
+    entityId: ackAdmission?.visit_id ?? null,
+    patientId: ackAdmission?.patient_id ?? null,
+    patientName: patientDisplayName(ackPatient),
+    link: "/care-plans",
+    data: {},
+  });
+
   persist(db);
   return entry;
 }
@@ -2418,6 +2653,22 @@ export function createNewVisit(
 
   db.patients.push(patient);
   db.visits.push(visit);
+
+  // Alert the attending doctor a patient was registered/assigned to them. The
+  // actor (reception/intake nurse) is excluded from recipients automatically.
+  queueNotifications(db, [visit.attending_doctor_id], {
+    type: "visit.registered",
+    actorId: visit.registered_by_id,
+    title: `New ${visit.visit_type} visit: ${patientDisplayName(patient) ?? "patient"}`,
+    body: visit.chief_complaint,
+    entityType: "visit",
+    entityId: visit.id,
+    patientId: patient.id,
+    patientName: patientDisplayName(patient),
+    link: "/worklist",
+    data: { visit_type: visit.visit_type, chief_complaint: visit.chief_complaint },
+  });
+
   persist(db);
 
   emitUsage("patient_registered", {
@@ -2461,6 +2712,38 @@ export function addTreatmentLog(
   };
 
   db.treatmentRecords.push(record);
+
+  // Nurse logged vitals → let the attending doctor know (they may need to act on
+  // an abnormal reading). Actor (the recording nurse) is excluded.
+  const vitalsPatient = db.patients.find((p) => p.id === visit.patient_id);
+  queueNotifications(db, [visit.attending_doctor_id], {
+    type: "vitals.recorded",
+    actorId: record.recorded_by_id,
+    title: `Vitals recorded: ${patientDisplayName(vitalsPatient) ?? "patient"}`,
+    body: [
+      record.bp_systolic && record.bp_diastolic
+        ? `BP ${record.bp_systolic}/${record.bp_diastolic}`
+        : null,
+      record.pulse ? `HR ${record.pulse}` : null,
+      record.spo2 ? `SpO₂ ${record.spo2}%` : null,
+      record.temperature_c ? `T ${record.temperature_c}°C` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ") || null,
+    entityType: "visit",
+    entityId: visitId,
+    patientId: visit.patient_id,
+    patientName: patientDisplayName(vitalsPatient),
+    link: "/worklist",
+    data: {
+      spo2: record.spo2,
+      pulse: record.pulse,
+      bp_systolic: record.bp_systolic,
+      bp_diastolic: record.bp_diastolic,
+      temperature_c: record.temperature_c,
+      gcs_score: record.gcs_score,
+    },
+  });
 
   // Touch the parent visit so consumers see fresh activity.
   visit.updated_at = timestamp;
@@ -2521,6 +2804,24 @@ export function addConsultation(
     visit.stage = "consultation";
   }
   visit.updated_at = timestamp;
+
+  // Doctor wrote a note → alert the nursing team caring for this patient.
+  const consultPatient = db.patients.find((p) => p.id === visit.patient_id);
+  const admissionForConsult = db.admissions.find(
+    (a) => a.visit_id === visitId && a.status === "active",
+  );
+  queueNotifications(db, nurseIdsForVisit(db, visit, admissionForConsult), {
+    type: "consultation.created",
+    actorId: consultation.doctor_id,
+    title: `Consultation note: ${patientDisplayName(consultPatient) ?? "patient"}`,
+    body: consultation.plan ?? consultation.assessment,
+    entityType: "visit",
+    entityId: visitId,
+    patientId: visit.patient_id,
+    patientName: patientDisplayName(consultPatient),
+    link: "/worklist",
+    data: { has_plan: Boolean(consultation.plan) },
+  });
 
   persist(db);
   emitUsage("record_created", { kind: "consultation" });
@@ -2717,6 +3018,26 @@ export function addOrder(visitId: VisitId, input: AddOrderInput): Order {
   }
   visit.updated_at = timestamp;
 
+  // Route to whoever fulfils the order: lab/imaging → lab techs; a bedside
+  // procedure → the nursing team. Actor (ordering clinician) excluded.
+  const orderPatient = db.patients.find((p) => p.id === visit.patient_id);
+  const orderRecipients =
+    order.order_type === "procedure"
+      ? nurseIdsForVisit(db, visit)
+      : staffIdsByRole(db, ["lab_tech"]);
+  queueNotifications(db, orderRecipients, {
+    type: "order.created",
+    actorId: order.ordered_by_id,
+    title: `New ${order.order_type} order: ${order.description}`,
+    body: patientDisplayName(orderPatient),
+    entityType: "visit",
+    entityId: visitId,
+    patientId: visit.patient_id,
+    patientName: patientDisplayName(orderPatient),
+    link: "/diagnostics",
+    data: { order_type: order.order_type, description: order.description },
+  });
+
   persist(db);
   emitUsage("record_created", { kind: "order", order_type: order.order_type });
   return order;
@@ -2824,6 +3145,29 @@ export function addResult(orderId: OrderId, input: AddResultInput): Result {
   order.completed_at = timestamp;
   order.updated_at = timestamp;
 
+  // Result is back → notify the clinician who ordered it and the attending
+  // doctor (they may differ). Abnormal results carry a flag for emphasis.
+  const resultVisit = db.visits.find((v) => v.id === order.visit_id);
+  const resultPatient = resultVisit
+    ? db.patients.find((p) => p.id === resultVisit.patient_id)
+    : undefined;
+  queueNotifications(
+    db,
+    [order.ordered_by_id, resultVisit?.attending_doctor_id],
+    {
+      type: "result.recorded",
+      actorId: result.recorded_by_id,
+      title: `${result.is_abnormal ? "Abnormal result" : "Result ready"}: ${order.description}`,
+      body: result.value ?? result.summary,
+      entityType: "visit",
+      entityId: order.visit_id,
+      patientId: resultVisit?.patient_id ?? null,
+      patientName: patientDisplayName(resultPatient),
+      link: "/diagnostics",
+      data: { is_abnormal: result.is_abnormal, description: order.description },
+    },
+  );
+
   persist(db);
   emitUsage("record_created", { kind: "result" });
   return result;
@@ -2872,6 +3216,31 @@ export function addPrescription(
 
   db.prescriptions.push(prescription);
   visit.updated_at = timestamp;
+
+  // New medication → nurses (to administer) and pharmacists (to dispense).
+  const rxPatient = db.patients.find((p) => p.id === visit.patient_id);
+  const rxAdmission = db.admissions.find(
+    (a) => a.visit_id === visitId && a.status === "active",
+  );
+  queueNotifications(
+    db,
+    [...nurseIdsForVisit(db, visit, rxAdmission), ...staffIdsByRole(db, ["pharmacist"])],
+    {
+      type: "prescription.created",
+      actorId: prescription.prescribed_by_id,
+      title: `New prescription: ${prescription.drug_name}`,
+      body: [prescription.dose, prescription.route, prescription.frequency]
+        .filter(Boolean)
+        .join(" · ") || patientDisplayName(rxPatient),
+      entityType: "visit",
+      entityId: visitId,
+      patientId: visit.patient_id,
+      patientName: patientDisplayName(rxPatient),
+      link: "/medications",
+      data: { drug_name: prescription.drug_name },
+    },
+  );
+
   persist(db);
   emitUsage("record_created", { kind: "prescription" });
   return prescription;
@@ -3007,6 +3376,32 @@ export function recordMedicationAdministration(
   };
 
   db.medicationAdministrations.push(record);
+
+  // A dose that was NOT given (held/refused/missed) is a clinical exception the
+  // prescriber and attending doctor need to see. A normal "given" is routine and
+  // stays quiet, so the bell doesn't drown in medication noise.
+  if (record.status !== "given" && record.status !== "suspended") {
+    const marVisit = db.visits.find((v) => v.id === prescription.visit_id);
+    const marPatient = marVisit
+      ? db.patients.find((p) => p.id === marVisit.patient_id)
+      : undefined;
+    queueNotifications(
+      db,
+      [prescription.prescribed_by_id, marVisit?.attending_doctor_id],
+      {
+        type: "mar.exception",
+        actorId: record.administered_by_id,
+        title: `Dose ${record.status}: ${prescription.drug_name}`,
+        body: record.notes ?? patientDisplayName(marPatient),
+        entityType: "visit",
+        entityId: prescription.visit_id,
+        patientId: marVisit?.patient_id ?? null,
+        patientName: patientDisplayName(marPatient),
+        link: "/medications",
+        data: { status: record.status, drug_name: prescription.drug_name },
+      },
+    );
+  }
 
   // Touch the parent prescription so consumers see fresh activity.
   prescription.updated_at = timestamp;
@@ -3350,6 +3745,22 @@ export function createAdmissionForVisit(
 
   visit.visit_type = "inpatient";
   visit.updated_at = timestamp;
+
+  // Patient admitted → alert the ward's nursing team to take over care.
+  const admitPatient = db.patients.find((p) => p.id === visit.patient_id);
+  queueNotifications(db, nurseIdsForVisit(db, visit, admission), {
+    type: "admission.created",
+    actorId: admission.attending_doctor_id,
+    title: `Patient admitted: ${patientDisplayName(admitPatient) ?? "patient"}`,
+    body: admission.reason,
+    entityType: "visit",
+    entityId: visitId,
+    patientId: visit.patient_id,
+    patientName: patientDisplayName(admitPatient),
+    link: "/care-plans",
+    data: { ward_id: admission.ward_id, bed_id: admission.bed_id },
+  });
+
   persist(db);
 
   return admission;
@@ -4073,6 +4484,7 @@ function seedDatabaseObject(): Database {
     })) as CarePlanEntry[],
     billableItems: stamp<BillableItem>(billableItems),
     charges: stamp<Charge>(charges),
+    notifications: [],
   };
 }
 

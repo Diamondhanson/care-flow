@@ -175,6 +175,11 @@ export const fr = {
     compiledReport: "Compte rendu compilé",
     suggested: "(suggéré)",
     addSystem: "Ajouter un système",
+    removeSystem: "Retirer {system}",
+    removeSystemConfirm: "Retirer {system} de cette revue ?",
+    removeSystemConfirmAnswers:
+      "Retirer {system} ? Ses {count} réponses enregistrées seront effacées.",
+    remove: "Retirer",
     reviewOtherSystems: "Passer en revue les autres systèmes ({count})",
     hideOtherSystems: "Masquer les autres systèmes",
     markRemainingNo: "Marquer le reste comme Non ({count})",
@@ -196,7 +201,6 @@ export const fr = {
     maritalStatus: "État civil",
     add: "ajouter",
     edit: "Modifier",
-    editDemographics: "Modifier les données démographiques",
     delete: "Supprimer",
     noneRecorded: "Rien d'enregistré",
     noneRecordedAdd: "Rien d'enregistré — touchez pour ajouter",
@@ -1490,5 +1494,23 @@ export const fr = {
     trialBadge: "Essai gratuit",
     trialMessage:
       "Vous êtes en essai gratuit. Toutes les fonctionnalités sont débloquées pendant votre évaluation de CareFlow.",
+  },
+
+  notifications: {
+    title: "Notifications",
+    ariaLabel: "Notifications",
+    empty: "Vous êtes à jour",
+    emptyHint: "Les mises à jour concernant vos patients apparaîtront ici.",
+    markAllRead: "Tout marquer comme lu",
+    unreadCount: "{count} non lues",
+    justNow: "à l'instant",
+    minutesAgo: "il y a {count} min",
+    hoursAgo: "il y a {count} h",
+    daysAgo: "il y a {count} j",
+    enablePush: "Activer les alertes push",
+    pushEnabled: "Alertes push activées",
+    pushBlocked: "Le push est bloqué dans les paramètres du navigateur",
+    pushUnsupported: "Le push n'est pas pris en charge sur cet appareil",
+    pushPrompt: "Soyez alerté même lorsque CareFlow est fermé.",
   },
 } satisfies Messages;

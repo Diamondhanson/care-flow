@@ -188,13 +188,12 @@ export function BackgroundPanel({
   const [draft, setDraft] = useState<HistoryDraft>(EMPTY_DRAFT);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Demographics inline editor (occupation · marital status). Emergency
-  // contact is registration data — captured and kept on the intake form.
-  const [editingDemo, setEditingDemo] = useState(false);
-  const [demoDraft, setDemoDraft] = useState({
-    occupation: "",
-    maritalStatus: "unknown" as MaritalStatus,
-  });
+  // Demographics edit live in place (occupation · marital status) — no edit
+  // mode to enter. Occupation commits on blur, marital status on select.
+  // Emergency contact is registration data — captured and kept on intake.
+  const [occupationDraft, setOccupationDraft] = useState(
+    patient.occupation ?? "",
+  );
 
   const refresh = useCallback(() => {
     setHistory(getHistoryForPatient(patient.id));
@@ -206,24 +205,25 @@ export function BackgroundPanel({
 
   useEffect(() => {
     setPatientState(patient);
-    setEditingDemo(false);
+    setOccupationDraft(patient.occupation ?? "");
   }, [patient]);
 
-  function openDemoEditor() {
-    setDemoDraft({
-      occupation: patientState.occupation ?? "",
-      maritalStatus: patientState.marital_status ?? "unknown",
-    });
-    setEditingDemo(true);
-  }
-
-  function saveDemographics() {
+  function saveOccupation() {
+    const next = occupationDraft.trim();
+    if (next === (patientState.occupation ?? "")) return;
     const updated = updatePatientDemographics(patientState.id, {
-      occupation: demoDraft.occupation || null,
-      marital_status: demoDraft.maritalStatus,
+      occupation: next || null,
     });
     setPatientState(updated);
-    setEditingDemo(false);
+    setOccupationDraft(updated.occupation ?? "");
+  }
+
+  function saveMaritalStatus(value: MaritalStatus) {
+    if (value === (patientState.marital_status ?? "unknown")) return;
+    const updated = updatePatientDemographics(patientState.id, {
+      marital_status: value,
+    });
+    setPatientState(updated);
   }
 
   const age = ageFromDob(patientState.date_of_birth);
@@ -337,110 +337,87 @@ export function BackgroundPanel({
       </button>
 
       {expanded ? (
-        <div className="flex flex-col gap-3 border-t border-border p-3">
+        <div className="flex flex-col gap-4 border-t border-border p-3">
           {history.length === 0 && !glance ? (
             <p className="text-xs italic text-muted-foreground/70">
               {t("background.explainer")}
             </p>
           ) : null}
 
-          {/* Demographics — captured at intake, editable here afterwards. */}
-          {editingDemo ? (
-            <div className="flex flex-col gap-2 rounded-md border border-border bg-background p-2.5">
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="demo_occupation" className="text-xs">
-                    {t("background.occupation")}
-                  </Label>
-                  <Input
-                    id="demo_occupation"
-                    value={demoDraft.occupation}
-                    onChange={(e) =>
-                      setDemoDraft({ ...demoDraft, occupation: e.target.value })
-                    }
-                    placeholder={t("intake.occupationPlaceholder")}
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="demo_marital" className="text-xs">
-                    {t("background.maritalStatus")}
-                  </Label>
-                  <Select
-                    items={Object.fromEntries(
-                      (Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
-                        (m) => [m, t(MARITAL_STATUS_LABEL[m])],
+          {/* Demographics — captured at intake, edited directly in place here:
+              type the occupation, pick the marital status. No edit mode. */}
+          {canWrite ? (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="demo_occupation"
+                  className="text-[10px] uppercase tracking-wide text-muted-foreground/70"
+                >
+                  {t("background.occupation")}
+                </Label>
+                <Input
+                  id="demo_occupation"
+                  value={occupationDraft}
+                  onChange={(e) => setOccupationDraft(e.target.value)}
+                  onBlur={saveOccupation}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") e.currentTarget.blur();
+                  }}
+                  placeholder={t("intake.occupationPlaceholder")}
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label
+                  htmlFor="demo_marital"
+                  className="text-[10px] uppercase tracking-wide text-muted-foreground/70"
+                >
+                  {t("background.maritalStatus")}
+                </Label>
+                <Select
+                  items={Object.fromEntries(
+                    (Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                      (m) => [m, t(MARITAL_STATUS_LABEL[m])],
+                    ),
+                  )}
+                  value={patientState.marital_status ?? "unknown"}
+                  onValueChange={(v) => saveMaritalStatus(v as MaritalStatus)}
+                >
+                  <SelectTrigger id="demo_marital" className="h-8 w-full text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
+                      (m) => (
+                        <SelectItem key={m} value={m}>
+                          {t(MARITAL_STATUS_LABEL[m])}
+                        </SelectItem>
                       ),
                     )}
-                    value={demoDraft.maritalStatus}
-                    onValueChange={(v) =>
-                      setDemoDraft({
-                        ...demoDraft,
-                        maritalStatus: v as MaritalStatus,
-                      })
-                    }
-                  >
-                    <SelectTrigger id="demo_marital" className="h-8 w-full text-xs">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.keys(MARITAL_STATUS_LABEL) as MaritalStatus[]).map(
-                        (m) => (
-                          <SelectItem key={m} value={m}>
-                            {t(MARITAL_STATUS_LABEL[m])}
-                          </SelectItem>
-                        ),
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button size="sm" className="h-7 text-xs" onClick={saveDemographics}>
-                  {t("common.save")}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 text-xs"
-                  onClick={() => setEditingDemo(false)}
-                >
-                  {t("common.cancel")}
-                </Button>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           ) : (
-            <div className="flex items-start gap-2">
-              <dl className="grid flex-1 grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                <DemographicItem
-                  label={t("background.occupation")}
-                  value={patientState.occupation}
-                />
-                <DemographicItem
-                  label={t("background.maritalStatus")}
-                  value={maritalLabel}
-                />
-              </dl>
-              {canWrite ? (
-                <button
-                  type="button"
-                  aria-label={t("background.editDemographics")}
-                  onClick={openDemoEditor}
-                  className="shrink-0 pt-0.5 text-muted-foreground hover:text-foreground"
-                >
-                  <Pencil className="size-3.5" />
-                </button>
-              ) : null}
-            </div>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+              <DemographicItem
+                label={t("background.occupation")}
+                value={patientState.occupation}
+              />
+              <DemographicItem
+                label={t("background.maritalStatus")}
+                value={maritalLabel}
+              />
+            </dl>
           )}
 
           {/* History groups, in clinical order — two columns on the wide drawer. */}
-          <div className="grid gap-3 lg:grid-cols-2 lg:gap-x-6">
+          <div className="grid gap-y-5 pt-1 lg:grid-cols-2 lg:gap-x-6">
           {PATIENT_HISTORY_TYPE_ORDER.map((type) => {
             const items = history.filter((h) => h.type === type);
             const isAddingHere = form?.mode === "add" && form.type === type;
             return (
-              <div key={type} className="flex flex-col gap-1">
+              <div key={type} className="flex flex-col gap-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                     {t(HISTORY_TYPE_LABEL[type])}

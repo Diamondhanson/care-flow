@@ -1,0 +1,74 @@
+flowchart TB
+  %% ============ CLIENT: Hospital PWA ============
+  subgraph WEB["@careflow/web — Hospital PWA (Next.js 16 - React 19 - installable - FR/EN - offline)"]
+    direction TB
+    UI["UI layer<br/>route groups: (app) / (marketing)<br/>shadcn + Base UI - recharts - next-themes"]
+    SW["Service worker<br/>offline shell + asset cache"]
+    CACHE[("Local-first cache<br/>mockStorage - localStorage")]
+    OUTBOX[("Sync outbox<br/>syncQueue - localStorage")]
+    SYNC["SyncEngine<br/>drainOutbox / pushChangeToServer"]
+    TELE["Telemetry buffer<br/>emitUsage (metadata only)"]
+    ANON["Supabase browser client<br/>anon key - PKCE session"]
+  end
+
+  %% ============ SERVER: web server actions ============
+  subgraph SRV["Next.js server — @careflow/web (RSC - Server Actions)"]
+    ACT["Server Actions<br/>provisionStaffLogin - provisionHospital - requestEmailOtp"]
+    ADMIN["Service-role client<br/>bypasses RLS - server-only"]
+  end
+
+  %% ============ OWNER CONSOLE ============
+  subgraph OWNER["@careflow/owner-console — Platform admin (Next.js - port 3001)"]
+    OC["SSR pages - @supabase/ssr<br/>requirePlatformAdmin (email allowlist)"]
+    OCADM["Service-role client<br/>cross-tenant reads"]
+  end
+
+  %% ============ SUPABASE BACKEND ============
+  subgraph SUPA["Supabase (managed backend)"]
+    AUTH["Auth<br/>username to synthetic email<br/>Google OAuth - email OTP"]
+    PG[("Postgres<br/>24 tables - RLS tenant isolation<br/>functions - triggers - views")]
+    STOR[("Storage<br/>lab-results - patient-documents<br/>private - tenant-prefixed")]
+  end
+
+  %% ============ SHARED PACKAGES + EXTERNAL ============
+  subgraph PKG["Shared workspace packages"]
+    DBP["@careflow/db<br/>schema.sql (source of truth)"]
+    SH["@careflow/shared<br/>types + Zod validation"]
+  end
+  RESEND["Resend<br/>transactional email"]
+
+  %% ---- client internals ----
+  UI <-->|"instant read / write"| CACHE
+  UI -->|"mutations enqueue"| OUTBOX
+  SW -.->|"serves shell offline"| UI
+  OUTBOX --> SYNC
+  UI --> TELE
+
+  %% ---- client to backend ----
+  ANON -->|"sign in / session"| AUTH
+  SYNC -->|"drain - upsert/insert/delete<br/>optimistic concurrency"| ANON
+  ANON -->|"RLS-scoped SQL"| PG
+  PG -->|"hydrateFromSupabase<br/>(RLS-scoped, paged)"| CACHE
+  ANON -->|"create_hospital_and_admin RPC"| PG
+  ANON -->|"signed upload / download"| STOR
+  TELE -->|"write-only usage_events"| ANON
+
+  %% ---- server actions ----
+  ACT --> ADMIN
+  ADMIN -->|"auth.admin.createUser"| AUTH
+  ADMIN -->|"service role"| PG
+  ACT -->|"OTP / invite email"| RESEND
+
+  %% ---- owner console ----
+  OC --> OCADM
+  OCADM -->|"cross-tenant: hospitals - usage_events - platform_admins"| PG
+
+  %% ---- packages ----
+  DBP -.->|"defines schema"| PG
+  UI -.->|"imports"| SH
+  OC -.->|"imports"| SH
+
+  classDef store fill:#e2e8f0,stroke:#475569,color:#0f172a;
+  classDef ext fill:#fef9c3,stroke:#a16207,color:#0f172a;
+  class CACHE,OUTBOX,PG,STOR store;
+  class RESEND ext;

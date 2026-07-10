@@ -1,0 +1,68 @@
+erDiagram
+  hospitals     ||--o{ departments   : "has"
+  hospitals     ||--o{ staff         : "employs"
+  hospitals     ||--o{ patients      : "registers"
+  departments   ||--o{ wards         : "contains"
+  wards         ||--o{ beds          : "holds"
+  patients      ||--o{ allergies     : "has"
+  patients      ||--o{ visits        : "makes"
+  visits        ||--o{ consultations : "documents"
+  visits        ||--o{ diagnoses     : "yields"
+  visits        ||--o{ orders        : "requests"
+  orders        ||--o{ results       : "closed by"
+  visits        ||--o{ prescriptions : "prescribes"
+  prescriptions ||--o{ medication_administrations : "given as"
+  visits        ||--o{ treatment_records : "vitals"
+  visits        ||--o{ admissions    : "may admit"
+  admissions    ||--o{ transfers     : "moves via"
+  admissions    ||--o{ care_plan_items : "plans"
+  care_plan_items ||--o{ care_plan_entries : "logged as"
+  admissions    }o--|| wards         : "placed in"
+  admissions    }o--o| beds          : "occupies"
+  visits        ||--o{ charges       : "bills"
+  billable_items ||--o{ charges      : "prices"
+
+  hospitals {
+    uuid id PK
+    text name
+    text region
+    enum subscription_status
+    jsonb feature_flags
+  }
+  staff {
+    uuid id PK
+    uuid hospital_id FK
+    uuid user_id FK "auth.users"
+    enum role
+    text full_name
+  }
+  patients {
+    uuid id PK
+    uuid hospital_id FK
+    text mrn "Cameroon booklet ID"
+    text full_name
+    bool is_emergency_anonymous
+  }
+  visits {
+    uuid id PK
+    uuid hospital_id FK
+    uuid patient_id FK
+    enum visit_type
+    enum stage "care journey"
+    smallint triage_level
+  }
+  admissions {
+    uuid id PK
+    uuid visit_id FK
+    uuid bed_id FK
+    bool is_medical_cleared
+    bool is_financial_cleared
+    bool is_pharmacy_ready
+  }
+  charges {
+    uuid id PK
+    uuid visit_id FK
+    enum source
+    int amount "XAF"
+    enum status
+  }

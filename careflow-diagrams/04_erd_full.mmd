@@ -1,0 +1,263 @@
+erDiagram
+  %% ===== Tenant root (every domain table also carries hospital_id FK -> hospitals) =====
+  auth_users    ||--o| staff           : "authenticates"
+  auth_users    ||--o| platform_admins : "authorizes"
+  hospitals     ||--o{ departments     : ""
+  hospitals     ||--o{ staff           : ""
+  hospitals     ||--o{ patients        : ""
+  hospitals     ||--o{ visits          : ""
+  hospitals     ||--o{ billable_items  : ""
+  hospitals     ||--o{ usage_events    : ""
+
+  %% ===== Structure / floor map =====
+  departments   ||--o{ wards           : ""
+  departments   ||--o{ staff           : "assigned"
+  wards         ||--o{ beds            : ""
+
+  %% ===== People / safety =====
+  patients      ||--o{ allergies       : ""
+  patients      ||--o{ visits          : ""
+  patients      ||--o{ admissions      : ""
+
+  %% ===== Visit-centric clinical record =====
+  visits        ||--o{ consultations   : ""
+  visits        ||--o{ diagnoses       : ""
+  consultations ||--o{ diagnoses       : ""
+  visits        ||--o{ orders          : ""
+  orders        ||--o{ results         : ""
+  visits        ||--o{ prescriptions   : ""
+  prescriptions ||--o{ medication_administrations : ""
+  visits        ||--o{ treatment_records : ""
+  visits        ||--o{ admissions      : ""
+  visits        ||--o{ charges         : ""
+
+  %% ===== Inpatient admission =====
+  admissions    ||--o{ transfers       : ""
+  admissions    ||--o{ care_plan_items : ""
+  admissions    ||--o{ care_plan_entries : ""
+  care_plan_items ||--o{ care_plan_entries : ""
+  admissions    }o--|| wards           : "ward"
+  admissions    }o--o| beds            : "bed"
+
+  %% ===== Billing =====
+  billable_items ||--o{ charges        : ""
+
+  %% =====================================================================
+  hospitals {
+    uuid id PK
+    text name
+    text region
+    text subscription_tier
+    enum subscription_status
+    ts trial_ends_at
+    jsonb feature_flags
+  }
+  departments {
+    uuid id PK
+    uuid hospital_id FK
+    text name
+    text code
+    bool is_active
+  }
+  wards {
+    uuid id PK
+    uuid hospital_id FK
+    uuid department_id FK
+    text name
+    text floor_label
+  }
+  beds {
+    uuid id PK
+    uuid hospital_id FK
+    uuid ward_id FK
+    uuid current_admission_id FK
+    text label
+    enum status
+  }
+  staff {
+    uuid id PK
+    uuid hospital_id FK
+    uuid user_id FK "auth.users"
+    uuid department_id FK
+    text full_name
+    enum role
+    text username
+  }
+  patients {
+    uuid id PK
+    uuid hospital_id FK
+    text mrn "booklet ID"
+    text full_name
+    enum sex
+    bool is_emergency_anonymous
+    bool no_known_allergies
+  }
+  allergies {
+    uuid id PK
+    uuid hospital_id FK
+    uuid patient_id FK
+    uuid noted_by_id FK "staff"
+    text substance
+    enum category
+    enum severity
+  }
+  visits {
+    uuid id PK
+    uuid hospital_id FK
+    uuid patient_id FK
+    uuid department_id FK
+    uuid attending_doctor_id FK "staff"
+    uuid registered_by_id FK "staff"
+    enum visit_type
+    enum status
+    enum stage
+    smallint triage_level
+  }
+  consultations {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid doctor_id FK "staff"
+    text subjective
+    text assessment
+    text plan
+  }
+  diagnoses {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid consultation_id FK
+    uuid diagnosed_by_id FK "staff"
+    text icd10_code
+    bool is_primary
+  }
+  orders {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid ordered_by_id FK "staff"
+    enum order_type
+    enum status
+  }
+  results {
+    uuid id PK
+    uuid hospital_id FK
+    uuid order_id FK
+    uuid recorded_by_id FK "staff"
+    text value
+    bool is_abnormal
+    text attachment_path
+  }
+  prescriptions {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid prescribed_by_id FK "staff"
+    text drug_name
+    enum status
+  }
+  medication_administrations {
+    uuid id PK
+    uuid hospital_id FK
+    uuid prescription_id FK
+    uuid administered_by_id FK "staff"
+    enum status
+    ts scheduled_for
+  }
+  treatment_records {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid recorded_by_id FK "staff"
+    numeric spo2
+    numeric pulse
+    int gcs_score
+  }
+  admissions {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid patient_id FK
+    uuid ward_id FK
+    uuid bed_id FK
+    uuid attending_doctor_id FK "staff"
+    enum status
+    enum stage
+    bool is_medical_cleared
+    bool is_financial_cleared
+    bool is_pharmacy_ready
+  }
+  transfers {
+    uuid id PK
+    uuid hospital_id FK
+    uuid admission_id FK
+    uuid patient_id FK
+    uuid from_ward_id FK
+    uuid to_ward_id FK
+    uuid from_bed_id FK
+    uuid to_bed_id FK
+  }
+  care_plan_items {
+    uuid id PK
+    uuid hospital_id FK
+    uuid admission_id FK
+    uuid patient_id FK
+    enum category
+    enum status
+    text goal
+  }
+  care_plan_entries {
+    uuid id PK
+    uuid hospital_id FK
+    uuid admission_id FK
+    uuid care_plan_item_id FK
+    text note
+    bool is_handover
+  }
+  billable_items {
+    uuid id PK
+    uuid hospital_id FK
+    enum category
+    text name
+    enum unit
+    int unit_price "XAF"
+    text ref_code
+  }
+  charges {
+    uuid id PK
+    uuid hospital_id FK
+    uuid visit_id FK
+    uuid billable_item_id FK
+    enum source
+    text source_ref_id
+    int quantity
+    int amount "XAF"
+    enum status
+  }
+  audit_log {
+    bigint id PK
+    text table_name
+    text record_id
+    text action
+    uuid changed_by_user
+    uuid changed_by_staff
+    uuid hospital_id
+    jsonb old_data
+    jsonb new_data
+  }
+  usage_events {
+    uuid id PK
+    uuid hospital_id FK
+    uuid actor_staff_id FK "staff"
+    enum event_type
+    jsonb metadata
+  }
+  platform_admins {
+    uuid user_id PK "auth.users"
+    text email
+    text full_name
+  }
+  auth_users {
+    uuid id PK "Supabase Auth"
+    text email
+  }

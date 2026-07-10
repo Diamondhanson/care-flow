@@ -14,6 +14,7 @@ import {
 } from "@/services/mockStorage";
 import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
+import { OPEN_VISIT_EVENT } from "@/services/visit-drawer";
 import type { Patient, Visit } from "@careflow/shared";
 
 interface ResultRow {
@@ -45,6 +46,20 @@ export function GlobalSearch() {
   useEffect(() => {
     if (!open) setQuery("");
   }, [open]);
+
+  // Deep links (e.g. a notification click) open the drawer via this app-wide
+  // event, since the drawer has no URL of its own and this instance is always
+  // mounted in the navbar.
+  useEffect(() => {
+    const onOpenVisit = (e: Event) => {
+      const id = (e as CustomEvent<{ visitId?: string }>).detail?.visitId;
+      if (!id) return;
+      setVisitId(id);
+      setDrawerOpen(true);
+    };
+    window.addEventListener(OPEN_VISIT_EVENT, onOpenVisit);
+    return () => window.removeEventListener(OPEN_VISIT_EVENT, onOpenVisit);
+  }, []);
 
   const results: ResultRow[] = useMemo(() => {
     const trimmed = query.trim();

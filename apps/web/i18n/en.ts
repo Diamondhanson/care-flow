@@ -178,6 +178,11 @@ export const en = {
     compiledReport: "Compiled report",
     suggested: "(suggested)",
     addSystem: "Add system",
+    removeSystem: "Remove {system}",
+    removeSystemConfirm: "Remove {system} from this review?",
+    removeSystemConfirmAnswers:
+      "Remove {system}? Its {count} recorded answers will be cleared.",
+    remove: "Remove",
     reviewOtherSystems: "Review other systems ({count})",
     hideOtherSystems: "Hide other systems",
     markRemainingNo: "Mark remaining as No ({count})",
@@ -199,7 +204,6 @@ export const en = {
     maritalStatus: "Marital status",
     add: "add",
     edit: "Edit",
-    editDemographics: "Edit demographics",
     delete: "Delete",
     noneRecorded: "None recorded",
     noneRecordedAdd: "None recorded — tap to add",
@@ -1496,6 +1500,24 @@ export const en = {
     trialBadge: "Free trial",
     trialMessage:
       "You're on a free trial. All features are unlocked while you evaluate CareFlow.",
+  },
+
+  notifications: {
+    title: "Notifications",
+    ariaLabel: "Notifications",
+    empty: "You're all caught up",
+    emptyHint: "Updates about your patients will show up here.",
+    markAllRead: "Mark all read",
+    unreadCount: "{count} unread",
+    justNow: "just now",
+    minutesAgo: "{count}m ago",
+    hoursAgo: "{count}h ago",
+    daysAgo: "{count}d ago",
+    enablePush: "Enable push alerts",
+    pushEnabled: "Push alerts on",
+    pushBlocked: "Push is blocked in your browser settings",
+    pushUnsupported: "Push isn't supported on this device",
+    pushPrompt: "Get alerted even when CareFlow is closed.",
   },
 };
 

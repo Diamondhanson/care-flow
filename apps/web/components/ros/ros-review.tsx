@@ -15,7 +15,14 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChevronDown, ChevronRight, FileText, ListChecks, Plus } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  ListChecks,
+  Plus,
+  X,
+} from "lucide-react";
 
 import type {
   BodySystem,
@@ -82,6 +89,9 @@ export function RosReview({
   const [added, setAdded] = useState<ReadonlySet<BodySystem>>(new Set());
   const [showOther, setShowOther] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  // A mistakenly added system can be removed again — but only after an inline
+  // confirmation, since removal also clears any answers already recorded.
+  const [confirmRemove, setConfirmRemove] = useState<BodySystem | null>(null);
 
   const refresh = useCallback(() => {
     setResponses(responsesByKey(getRosResponsesForVisit(visitId)));
@@ -180,6 +190,29 @@ export function RosReview({
     [visitId, activeLocale, recorderId, answeredKeys, patientSex, refresh],
   );
 
+  /** Drop a system from the review: clear every answer recorded under it and
+   *  un-add it, so it folds back into "Review other systems". */
+  const removeSystem = useCallback(
+    (system: BodySystem) => {
+      for (const r of responses.values()) {
+        if (r.system === system) clearRosResponse(visitId, r.question_key);
+      }
+      setAdded((prev) => {
+        const next = new Set(prev);
+        next.delete(system);
+        return next;
+      });
+      setExpanded((prev) => {
+        const next = new Set(prev);
+        next.delete(system);
+        return next;
+      });
+      setConfirmRemove(null);
+      refresh();
+    },
+    [visitId, responses, refresh],
+  );
+
   const toggleExpanded = (system: BodySystem) => {
     setExpanded((prev) => {
       const next = new Set(prev);
@@ -230,37 +263,85 @@ export function RosReview({
       answeredKeys,
       patientSex,
     ).length;
+    // Complaint-routed systems stay (collapsing suffices); only ones the
+    // doctor pulled in themselves can be taken back out.
+    const removable =
+      !readOnly &&
+      system !== routing.primary &&
+      !routing.secondary.includes(system);
+    const label = SYSTEM_LABELS[system][activeLocale];
 
     return (
       <div
         key={system}
         className="flex flex-col rounded-md border border-border bg-background"
       >
-        <button
-          type="button"
-          onClick={() => toggleExpanded(system)}
-          aria-expanded={isOpen}
-          className="flex items-center gap-2 p-2.5 text-left"
-        >
-          {isOpen ? (
-            <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
-          ) : (
-            <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />
-          )}
-          <span className="text-xs font-semibold uppercase tracking-wide">
-            {SYSTEM_LABELS[system][activeLocale]}
-          </span>
-          {suggested ? (
-            <span className="text-[10px] text-muted-foreground">
-              {t("ros.suggested")}
+        <div className="flex items-center">
+          <button
+            type="button"
+            onClick={() => toggleExpanded(system)}
+            aria-expanded={isOpen}
+            className="flex flex-1 items-center gap-2 p-2.5 text-left"
+          >
+            {isOpen ? (
+              <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="size-3.5 shrink-0 text-muted-foreground" />
+            )}
+            <span className="text-xs font-semibold uppercase tracking-wide">
+              {label}
             </span>
+            {suggested ? (
+              <span className="text-[10px] text-muted-foreground">
+                {t("ros.suggested")}
+              </span>
+            ) : null}
+            {count > 0 ? (
+              <Badge variant="outline" className="ml-auto font-mono text-[10px]">
+                {t("ros.answeredCount", { count: String(count) })}
+              </Badge>
+            ) : null}
+          </button>
+          {removable ? (
+            <button
+              type="button"
+              aria-label={t("ros.removeSystem", { system: label })}
+              onClick={() => setConfirmRemove(system)}
+              className="shrink-0 p-2.5 text-muted-foreground transition-colors hover:text-destructive"
+            >
+              <X className="size-3.5" />
+            </button>
           ) : null}
-          {count > 0 ? (
-            <Badge variant="outline" className="ml-auto font-mono text-[10px]">
-              {t("ros.answeredCount", { count: String(count) })}
-            </Badge>
-          ) : null}
-        </button>
+        </div>
+
+        {confirmRemove === system ? (
+          <div className="flex flex-wrap items-center gap-2 border-t border-border bg-muted/40 p-2.5">
+            <p className="flex-1 text-xs text-muted-foreground">
+              {count > 0
+                ? t("ros.removeSystemConfirmAnswers", {
+                    system: label,
+                    count: String(count),
+                  })
+                : t("ros.removeSystemConfirm", { system: label })}
+            </p>
+            <Button
+              size="sm"
+              variant="destructive"
+              className="h-7 text-xs"
+              onClick={() => removeSystem(system)}
+            >
+              {t("ros.remove")}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 text-xs"
+              onClick={() => setConfirmRemove(null)}
+            >
+              {t("common.cancel")}
+            </Button>
+          </div>
+        ) : null}
 
         {isOpen ? (
           <div className="flex flex-col gap-2.5 border-t border-border p-2.5">

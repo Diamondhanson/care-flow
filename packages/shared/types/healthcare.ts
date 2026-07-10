@@ -1062,3 +1062,82 @@ export interface AuditLog {
   old_data: unknown | null;
   new_data: unknown | null;
 }
+
+// ---------------------------------------------------------------------------
+// 4i. Notifications + Web Push
+// ---------------------------------------------------------------------------
+
+export type NotificationId = string;
+
+/**
+ * Machine key for a notification event. The bell localises copy from this key +
+ * {@link Notification.data}; `title`/`body` on the row are English fallbacks
+ * used by Web Push (built server-side, no i18n) and when a locale template is
+ * missing. Add a new member here, an i18n template, and a producer to grow the
+ * catalogue.
+ */
+export type NotificationType =
+  | "consultation.created" // doctor wrote a SOAP note → nurses
+  | "order.created" // test/imaging ordered → lab + nurses
+  | "result.recorded" // result entered → ordering + attending doctor
+  | "prescription.created" // new medication → nurses + pharmacist
+  | "vitals.recorded" // vitals logged (esp. abnormal) → attending doctor
+  | "mar.exception" // dose held/refused/missed → prescriber
+  | "careplan.escalation" // nurse flagged needs_doctor → attending doctor
+  | "careplan.acknowledged" // doctor acknowledged an entry → the nurse
+  | "visit.registered" // new visit opened → attending doctor + intake nurse
+  | "admission.created" // patient admitted → ward nurses
+  | "transfer.recorded"; // ward/bed/doctor move → from + to doctor
+
+/**
+ * `notifications` — one row per (recipient, event). The acting client writes
+ * rows addressed to OTHER staff into the same outbox as clinical data; Supabase
+ * Realtime then streams each insert to its recipient. RLS: insert for any active
+ * staff in the hospital, select/update/delete self-only.
+ */
+export interface Notification {
+  id: NotificationId;
+  hospital_id: HospitalId;
+  /** Staff member who should see it. */
+  recipient_staff_id: StaffId;
+  /** Staff member whose action produced it (null for system events). */
+  actor_staff_id: StaffId | null;
+  /** Denormalised actor display name, so the bell needs no staff join. */
+  actor_name: string | null;
+  type: NotificationType;
+  /** English fallback headline (Web Push + missing-template fallback). */
+  title: string;
+  /** English fallback detail line. */
+  body: string | null;
+  /** What the notification points at, e.g. "visit" | "patient" | "order". */
+  entity_type: string | null;
+  /** Id of that entity — usually the visit id, used to open the patient drawer. */
+  entity_id: string | null;
+  patient_id: PatientId | null;
+  patient_name: string | null;
+  /** Deep-link path for click-through (fallback when no visit drawer applies). */
+  link: string | null;
+  /** Structured payload for rich localised rendering. */
+  data: Record<string, unknown>;
+  /** ISO timestamp the recipient opened/marked it read; null while unread. */
+  read_at: ISODateString | null;
+  created_at: ISODateString;
+}
+
+/**
+ * `push_subscriptions` — one row per browser+device that granted OS push
+ * permission. Written directly (not through the offline cache), keyed by the
+ * unique push `endpoint`. The `send-push` Edge Function reads these to deliver
+ * Web Push when the recipient's app is backgrounded or closed.
+ */
+export interface PushSubscriptionRecord {
+  id: string;
+  hospital_id: HospitalId;
+  staff_id: StaffId;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  user_agent: string | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+}

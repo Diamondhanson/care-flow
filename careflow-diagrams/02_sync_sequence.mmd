@@ -1,0 +1,45 @@
+sequenceDiagram
+  autonumber
+  actor Staff
+  participant UI as UI (React)
+  participant Cache as Local cache<br/>(mockStorage)
+  participant Outbox as Outbox<br/>(syncQueue)
+  participant Sync as SyncEngine
+  participant SB as Supabase<br/>(anon client)
+  participant PG as Postgres (RLS)
+
+  Note over Staff,PG: Sign-in and hydrate
+  Staff->>UI: sign in (username + password)
+  UI->>SB: signInWithPassword (synthetic email)
+  SB-->>UI: session (JWT, hospital from metadata)
+  UI->>SB: hydrateFromSupabase()
+  SB->>PG: SELECT * each table (RLS-scoped, paged 1000)
+  PG-->>SB: this hospital's rows only
+  SB-->>Cache: replaceDatabaseFromTables()
+
+  Note over Staff,PG: Local-first write (works offline)
+  Staff->>UI: edit record (e.g. vitals)
+  UI->>Cache: write (instant)
+  UI->>Outbox: enqueue OutboxChange
+  UI-->>Staff: UI updates immediately
+
+  Note over Outbox,PG: Background drain when online
+  Sync->>Outbox: drainOutbox()
+  loop each pending change
+    alt versioned table (optimistic concurrency)
+      Sync->>PG: update ... .eq('version', base)
+      alt 0 rows matched (stale version)
+        PG-->>Sync: conflict
+        Sync->>PG: refetch latest row
+        Sync->>UI: CONFLICT_EVENT (refresh from server)
+      else applied
+        PG-->>Sync: bumped version
+        Sync->>Outbox: remove change
+      end
+    else append-only clinical table
+      Sync->>PG: insert / upsert (last-write-wins)
+      PG-->>Sync: ok
+      Sync->>Outbox: remove change
+    end
+  end
+  Sync-->>UI: OUTBOX_EVENT (sync-status chip updates)

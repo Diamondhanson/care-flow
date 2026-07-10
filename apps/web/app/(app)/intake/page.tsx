@@ -117,6 +117,9 @@ export default function IntakePage() {
   }, []);
 
   const doctors = staff.filter((s) => s.role === "doctor");
+  // Only active departments are selectable for a new registration; the full list
+  // is kept for name lookups (e.g. a doctor still attached to an archived one).
+  const activeDepartments = departments.filter((d) => d.is_active);
   const deptName = (id: string | null) =>
     id ? (departments.find((d) => d.id === id)?.name ?? "—") : "—";
 
@@ -651,7 +654,7 @@ export default function IntakePage() {
               <Field label={t("intake.department")} htmlFor="department">
                 <Select
                   items={Object.fromEntries(
-                    departments.map((d) => [d.id, d.name]),
+                    activeDepartments.map((d) => [d.id, d.name]),
                   )}
                   value={departmentId}
                   onValueChange={(v) => setDepartmentId(v as string)}
@@ -660,7 +663,7 @@ export default function IntakePage() {
                     <SelectValue placeholder={t("intake.selectDepartment")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {departments.map((d) => (
+                    {activeDepartments.map((d) => (
                       <SelectItem key={d.id} value={d.id}>
                         {d.name}
                       </SelectItem>

@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { SyncEngine } from "@/components/pwa/sync-engine";
+import { NotificationsRealtime } from "@/components/pwa/notifications-realtime";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,6 +66,7 @@ export default function RootLayout({
         >
           <LocaleProvider>
             <AuthProvider>
+              <NotificationsRealtime />
               <RoleProvider>
                 <TooltipProvider>{children}</TooltipProvider>
               </RoleProvider>

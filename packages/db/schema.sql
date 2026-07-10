@@ -1367,6 +1367,101 @@ create policy "admin read audit" on audit_log
 --  Rows are written only by the SECURITY DEFINER audit_trigger function.)
 
 -- =============================================================================
+-- 9i. NOTIFICATIONS + WEB PUSH  (in-app bell + PWA push)
+-- =============================================================================
+-- notifications: one row per (recipient, event). The bell reads these; Supabase
+-- Realtime streams inserts to the recipient's open tab. The ACTING client writes
+-- rows addressed to OTHER staff, so insert is allowed for any active staff in
+-- the hospital, while select/update/delete are self-only. No `version` column —
+-- the sole update is stamping read_at, intentionally last-write-wins.
+--
+-- push_subscriptions: one row per browser+device that granted OS push
+-- permission; the `send-push` Edge Function reads them (service role) to fan out
+-- Web Push. Kept OUT of the offline cache/outbox — written directly, per-device,
+-- never clinical.
+create table if not exists notifications (
+  id                 uuid primary key default gen_random_uuid(),
+  hospital_id        uuid not null references hospitals(id) on delete cascade,
+  recipient_staff_id uuid not null references staff(id) on delete cascade,
+  actor_staff_id     uuid references staff(id) on delete set null,
+  actor_name         text,
+  type               text not null,
+  title              text not null,
+  body               text,
+  entity_type        text,
+  entity_id          uuid,
+  patient_id         uuid references patients(id) on delete set null,
+  patient_name       text,
+  link               text,
+  data               jsonb not null default '{}'::jsonb,
+  read_at            timestamptz,
+  created_at         timestamptz not null default now()
+);
+
+create table if not exists push_subscriptions (
+  id           uuid primary key default gen_random_uuid(),
+  hospital_id  uuid not null references hospitals(id) on delete cascade,
+  staff_id     uuid not null references staff(id) on delete cascade,
+  endpoint     text not null unique,
+  p256dh       text not null,
+  auth         text not null,
+  user_agent   text,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create index if not exists idx_notifications_recipient
+  on notifications(recipient_staff_id, created_at desc);
+create index if not exists idx_notifications_unread
+  on notifications(recipient_staff_id) where read_at is null;
+create index if not exists idx_notifications_hospital on notifications(hospital_id);
+create index if not exists idx_push_subscriptions_staff on push_subscriptions(staff_id);
+
+drop trigger if exists trg_push_subscriptions_updated_at on push_subscriptions;
+create trigger trg_push_subscriptions_updated_at before update on push_subscriptions
+  for each row execute function set_updated_at();
+
+alter table notifications      enable row level security;
+alter table push_subscriptions enable row level security;
+
+drop policy if exists "read own notifications" on notifications;
+create policy "read own notifications" on notifications
+  for select to authenticated
+  using (is_staff() and recipient_staff_id = current_staff_id());
+
+drop policy if exists "staff insert notifications" on notifications;
+create policy "staff insert notifications" on notifications
+  for insert to authenticated
+  with check (is_staff() and hospital_id = current_hospital_id());
+
+drop policy if exists "update own notifications" on notifications;
+create policy "update own notifications" on notifications
+  for update to authenticated
+  using (recipient_staff_id = current_staff_id())
+  with check (recipient_staff_id = current_staff_id());
+
+drop policy if exists "delete own notifications" on notifications;
+create policy "delete own notifications" on notifications
+  for delete to authenticated
+  using (recipient_staff_id = current_staff_id());
+
+drop policy if exists "manage own push subscriptions" on push_subscriptions;
+create policy "manage own push subscriptions" on push_subscriptions
+  for all to authenticated
+  using (is_staff() and staff_id = current_staff_id())
+  with check (is_staff() and staff_id = current_staff_id() and hospital_id = current_hospital_id());
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'notifications'
+  ) then
+    alter publication supabase_realtime add table notifications;
+  end if;
+end $$;
+
+-- =============================================================================
 -- 10. VERIFIED TENANT ONBOARDING (Phase 18.5)
 -- =============================================================================
 -- New model: the founding admin verifies their identity FIRST (Google sign-in or
