@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { PatientName } from "@/lib/patient-name";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -211,9 +212,11 @@ export default function ReconciliationPage() {
                       >
                         <ShieldAlert className="size-3.5" />
                       </span>
-                      <span className="truncate font-mono text-sm font-medium">
-                        {record.identifier}
-                      </span>
+                      <PatientName
+                        name={record.identifier}
+                        format={false}
+                        className="truncate font-mono text-sm"
+                      />
                       <span className="font-mono text-[11px] text-muted-foreground">
                         {record.mrn}
                       </span>

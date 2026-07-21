@@ -15,6 +15,8 @@ import type { LucideIcon } from "lucide-react";
 import { isValidPhoneNumber } from "react-phone-number-input";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +74,7 @@ const ROLE_GROUPS: readonly RoleGroup[] = [
 
 interface AttendingPatient {
   name: string;
+  isAnonymous: boolean;
   location: string | null;
 }
 
@@ -113,6 +116,7 @@ export default function StaffDirectoryPage() {
     for (const visit of getActiveVisits()) {
       if (!visit.attending_doctor_id) continue;
       const patient = getPatientById(visit.patient_id);
+      const isAnonymous = Boolean(patient?.is_emergency_anonymous);
       const name =
         patient?.is_emergency_anonymous && patient.anonymous_identifier
           ? patient.anonymous_identifier
@@ -123,7 +127,11 @@ export default function StaffDirectoryPage() {
         : visit.department_id
           ? (departments[visit.department_id] ?? null)
           : null;
-      (attending[visit.attending_doctor_id] ??= []).push({ name, location });
+      (attending[visit.attending_doctor_id] ??= []).push({
+        name,
+        isAnonymous,
+        location,
+      });
     }
     setData({ staff, departments, attending });
   }
@@ -238,7 +246,14 @@ export default function StaffDirectoryPage() {
                                   key={`${p.name}-${i}`}
                                   className="flex items-baseline justify-between gap-2 text-xs"
                                 >
-                                  <span className="truncate">{p.name}</span>
+                                  <PatientName
+                                    name={p.name}
+                                    format={!p.isAnonymous}
+                                    className={cn(
+                                      "truncate",
+                                      p.isAnonymous && "font-mono",
+                                    )}
+                                  />
                                   {p.location ? (
                                     <span className="shrink-0 font-mono text-muted-foreground">
                                       {p.location}

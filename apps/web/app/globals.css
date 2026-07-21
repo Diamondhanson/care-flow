@@ -63,6 +63,7 @@
   --color-triage-4: var(--triage-4);
   --color-triage-5: var(--triage-5);
   --color-triage-foreground: var(--triage-foreground);
+  --color-patient-name: var(--patient-name);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -156,6 +157,10 @@
   --triage-4: oklch(0.723 0.176 149.0);
   --triage-5: oklch(0.6 0.118 240.0);
   --triage-foreground: oklch(0.984 0.003 247.858);
+
+  /* Patient name — a distinct teal so a person's name is instantly pickable
+     out of surrounding clinical text. Deep enough for AA on the light canvas. */
+  --patient-name: oklch(0.52 0.09 200.0);
 }
 
 .dark {
@@ -218,6 +223,9 @@
   --triage-4: oklch(0.723 0.176 149.0);
   --triage-5: oklch(0.68 0.12 240.0);
   --triage-foreground: oklch(0.208 0.042 265.755);
+
+  /* Patient name — brighter teal that pops against the dark slate canvas. */
+  --patient-name: oklch(0.82 0.11 195.0);
 }
 
 @layer base {

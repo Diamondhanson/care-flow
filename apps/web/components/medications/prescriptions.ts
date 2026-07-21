@@ -13,6 +13,7 @@
 
 import type {
   MarStatus,
+  MealTiming,
   MedicationAdministration,
   Prescription,
   PrescriptionStatus,
@@ -85,13 +86,35 @@ export const FREQUENCY_OPTIONS: string[] = [
   "twice daily",
   "three times daily",
   "four times daily",
+  "morning and evening",
+  "morning, noon and night",
+  "every 2 hours",
+  "every 3 hours",
   "every 4 hours",
   "every 6 hours",
   "every 8 hours",
   "every 12 hours",
+  "every 24 hours",
+  "in the morning",
   "at night",
+  "before bed",
+  "weekly",
   "as required",
 ];
+
+/** Meal-timing choices for a prescription (dedicated `meal_timing` field). */
+export const MEAL_TIMING_OPTIONS: MealTiming[] = [
+  "with_meals",
+  "without_meals",
+  "neutral",
+];
+
+/** i18n keys — resolve with `t(MEAL_TIMING_LABEL[timing])`. */
+export const MEAL_TIMING_LABEL: Record<MealTiming, string> = {
+  with_meals: "mealTiming.withMeals",
+  without_meals: "mealTiming.withoutMeals",
+  neutral: "mealTiming.neutral",
+};
 
 // ---------------------------------------------------------------------------
 // Status predicate
@@ -168,6 +191,19 @@ export function parseFrequencyHours(frequency: string | null): number | null {
   if (/\b(qds|qid)\b/.test(f)) return 6;
   if (/\b(tds|tid)\b/.test(f)) return 8;
   if (/\b(bd|bid)\b/.test(f)) return 12;
+
+  // Named time-of-day schedules ("morning and evening", "morning, noon and
+  // night"). Decided before the once-daily fallback so multi-slot phrasings
+  // aren't collapsed to a single daily dose.
+  const hasMorning = /\b(morning|mane|breakfast)\b/.test(f);
+  const hasMidday = /\b(noon|midday|lunch|afternoon)\b/.test(f);
+  const hasEvening = /\b(evening|night|nocte|bedtime|before\s+bed)\b/.test(f);
+  if (hasMorning && hasMidday && hasEvening) return 8;
+  if (hasMorning && hasEvening) return 12;
+  if (hasMorning || hasEvening) return 24;
+
+  // Weekly.
+  if (/\b(weekly|once\s+a\s+week|per\s+week|every\s+week)\b/.test(f)) return 168;
 
   // Once-daily phrasings (Latin od/nocte/mane, plain daily, at night, nightly).
   if (

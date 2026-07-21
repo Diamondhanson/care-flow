@@ -50,6 +50,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { PatientName, formatPatientName } from "@/lib/patient-name";
+import {
   getAdmissionForVisit,
   getAllergiesForPatient,
   getBedById,
@@ -58,6 +67,7 @@ import {
   getCarePlanItemsForAdmission,
   getConsultationsForVisit,
   getDepartmentById,
+  getDepartments,
   getDiagnosesForVisit,
   getRosResponsesForVisit,
   getOrdersForVisit,
@@ -92,6 +102,7 @@ import {
   evaluateDischargeReadiness,
   reconcileAnonymousProfile,
   type Disposition,
+  type DispositionDetails,
 } from "@/services/mockStorage";
 import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
 import {
@@ -102,6 +113,8 @@ import {
 import { ResultAttachment } from "@/components/diagnostics/result-attachment";
 import {
   FREQUENCY_OPTIONS,
+  MEAL_TIMING_LABEL,
+  MEAL_TIMING_OPTIONS,
   PRESCRIPTION_STATUS_LABEL,
   PRESCRIPTION_STATUS_TOKEN,
   ROUTE_OPTIONS,
@@ -141,16 +154,19 @@ import type {
   CarePlanItem,
   ClinicalTerm,
   Consultation,
+  Department,
   Diagnosis,
   Order,
   OrderId,
   MarStatus,
+  MealTiming,
   MedicationAdministration,
   OrderType,
   Patient,
   Prescription,
   PrescriptionId,
   Result,
+  StaffId,
   StaffRole,
   Transfer,
   TreatmentRecord,
@@ -171,6 +187,23 @@ const DISPOSITIONS: {
 
 const NO_BED = "__none__";
 const NO_DOCTOR = "__none__";
+const NO_DEPT = "__none__";
+const NO_WARD = "__none__";
+
+/** Dispositions that open a details dialog before they are recorded. */
+type DispositionDialog = "admit" | "observation" | "refer";
+
+/** Common observation windows offered as a select (i18n label keys). */
+const OBS_DURATION_OPTIONS: { value: string; labelKey: string }[] = [
+  { value: "1 hour", labelKey: "drawer.obsDur1h" },
+  { value: "2 hours", labelKey: "drawer.obsDur2h" },
+  { value: "4 hours", labelKey: "drawer.obsDur4h" },
+  { value: "6 hours", labelKey: "drawer.obsDur6h" },
+  { value: "12 hours", labelKey: "drawer.obsDur12h" },
+  { value: "24 hours", labelKey: "drawer.obsDur24h" },
+  { value: "48 hours", labelKey: "drawer.obsDur48h" },
+  { value: "72 hours", labelKey: "drawer.obsDur72h" },
+];
 
 const CLEARANCE_FIELDS = [
   { key: "is_medical_cleared", labelKey: "drawer.clearanceMedical" },
@@ -289,6 +322,25 @@ export function PatientDrawer({
   // note for cause/circumstances. Exempt from the discharge clearance gates.
   const [confirmingDeath, setConfirmingDeath] = useState(false);
   const [deathNote, setDeathNote] = useState("");
+
+  // Disposition detail dialogs — admit (placement), observation, referral. Each
+  // opens a centered dialog to capture the structured details before recording.
+  const [dispoDialog, setDispoDialog] = useState<DispositionDialog | null>(null);
+  const [dispoError, setDispoError] = useState<string | null>(null);
+  // Admit placement.
+  const [admitDeptId, setAdmitDeptId] = useState<string>(NO_DEPT);
+  const [admitWardId, setAdmitWardId] = useState<string>(NO_WARD);
+  const [admitBedId, setAdmitBedId] = useState<string>(NO_BED);
+  const [admitDoctorId, setAdmitDoctorId] = useState<string>(NO_DOCTOR);
+  const [admitReason, setAdmitReason] = useState("");
+  // Observation.
+  const [obsReason, setObsReason] = useState("");
+  const [obsDuration, setObsDuration] = useState<string>("");
+  const [obsLocation, setObsLocation] = useState("");
+  // Referral.
+  const [referReason, setReferReason] = useState("");
+  const [referFacility, setReferFacility] = useState("");
+  const [referRecipient, setReferRecipient] = useState("");
 
   // SOAP consultation form
   const [subjective, setSubjective] = useState("");
@@ -488,6 +540,25 @@ export function PatientDrawer({
     : [];
   const hasBed = Boolean(admission?.bed_id);
 
+  // Admit dialog cascade: department → ward → free bed. Wards are scoped to the
+  // chosen department; beds to the chosen ward, showing only what's free.
+  const activeDepartments: Department[] = getDepartments().filter(
+    (d) => d.is_active,
+  );
+  const admitWards: Ward[] = wards.filter(
+    (w) =>
+      w.is_active &&
+      (admitDeptId === NO_DEPT || w.department_id === admitDeptId),
+  );
+  const admitFreeBeds: Bed[] =
+    admitWardId === NO_WARD
+      ? []
+      : beds
+          .filter((b) => b.ward_id === admitWardId && b.status === "free")
+          .sort((a, b) =>
+            a.label.localeCompare(b.label, undefined, { numeric: true }),
+          );
+
   function bedLabel(id: string | null): string {
     if (!id) return "—";
     const b = bedById.get(id);
@@ -497,6 +568,21 @@ export function PatientDrawer({
   function staffName(id: string | null): string {
     return id ? (staffById.get(id)?.full_name ?? "—") : "—";
   }
+
+  // Frequency + meal-timing quick-picks for the prescription editor. The current
+  // value is folded into the option list so a free-text frequency coming from a
+  // clinical-term pick still renders (and stays selectable) in the dropdown.
+  const freqOptions = (current: string | null | undefined): string[] =>
+    current && !FREQUENCY_OPTIONS.includes(current)
+      ? [current, ...FREQUENCY_OPTIONS]
+      : FREQUENCY_OPTIONS;
+  const freqItems = (
+    current: string | null | undefined,
+  ): Record<string, string> =>
+    Object.fromEntries(freqOptions(current).map((f) => [f, f]));
+  const mealTimingItems: Record<string, string> = Object.fromEntries(
+    MEAL_TIMING_OPTIONS.map((m) => [m, t(MEAL_TIMING_LABEL[m])]),
+  );
 
   function num(v: NumField): number | null {
     if (v.trim() === "") return null;
@@ -635,8 +721,87 @@ export function PatientDrawer({
   }
 
   function handleDisposition(disposition: Disposition) {
+    // Discharge home records immediately; admit / observation / referral each
+    // open a centered dialog to capture their structured details first.
+    if (
+      disposition === "admit" ||
+      disposition === "observation" ||
+      disposition === "refer"
+    ) {
+      openDispositionDialog(disposition);
+      return;
+    }
     recordDisposition(visit!.id, disposition, recorderId);
     refresh();
+  }
+
+  function openDispositionDialog(disposition: DispositionDialog) {
+    setDispoError(null);
+    if (disposition === "admit") {
+      // Seed from the visit's current department so the ward list is pre-scoped.
+      const dept = visit?.department_id ?? NO_DEPT;
+      setAdmitDeptId(dept);
+      setAdmitWardId(NO_WARD);
+      setAdmitBedId(NO_BED);
+      setAdmitDoctorId(visit?.attending_doctor_id ?? recorderId ?? NO_DOCTOR);
+      setAdmitReason(visit?.chief_complaint ?? "");
+    } else if (disposition === "observation") {
+      setObsReason("");
+      setObsDuration("");
+      setObsLocation("");
+    } else {
+      setReferReason("");
+      setReferFacility("");
+      setReferRecipient("");
+    }
+    setDispoDialog(disposition);
+  }
+
+  function submitDisposition(
+    disposition: DispositionDialog,
+    details: DispositionDetails,
+  ) {
+    recordDisposition(visit!.id, disposition, recorderId, details);
+    setDispoDialog(null);
+    refresh();
+  }
+
+  function handleSubmitAdmit() {
+    if (admitBedId === NO_BED) {
+      setDispoError(t("drawer.admitBedRequired"));
+      return;
+    }
+    submitDisposition("admit", {
+      ward_id: admitWardId === NO_WARD ? null : (admitWardId as Ward["id"]),
+      bed_id: admitBedId === NO_BED ? null : (admitBedId as Bed["id"]),
+      attending_doctor_id:
+        admitDoctorId === NO_DOCTOR ? null : (admitDoctorId as StaffId),
+      reason: admitReason,
+    });
+  }
+
+  function handleSubmitObservation() {
+    if (!obsReason.trim()) {
+      setDispoError(t("drawer.obsReasonRequired"));
+      return;
+    }
+    submitDisposition("observation", {
+      observation_reason: obsReason,
+      observation_duration: obsDuration || null,
+      observation_location: obsLocation,
+    });
+  }
+
+  function handleSubmitReferral() {
+    if (!referReason.trim() || !referFacility.trim()) {
+      setDispoError(t("drawer.referRequired"));
+      return;
+    }
+    submitDisposition("refer", {
+      referral_reason: referReason,
+      referral_facility: referFacility,
+      referral_recipient: referRecipient,
+    });
   }
 
   function handleRecordDeath() {
@@ -748,6 +913,7 @@ export function PatientDrawer({
   }
 
   return (
+    <>
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* ~45% of the viewport on desktop (capped only by the viewport itself);
           tablets get a fixed comfortable width, phones stay full-bleed. The
@@ -758,7 +924,10 @@ export function PatientDrawer({
             <SheetTitle
               className={patient.is_emergency_anonymous ? "font-mono text-sm" : ""}
             >
-              {displayName}
+              <PatientName
+                name={displayName}
+                format={!patient.is_emergency_anonymous}
+              />
             </SheetTitle>
             {patient.is_emergency_anonymous ? (
               <Badge
@@ -904,7 +1073,7 @@ export function PatientDrawer({
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Select
                   items={Object.fromEntries(
-                    verified.map((p) => [p.id, p.full_name]),
+                    verified.map((p) => [p.id, formatPatientName(p.full_name)]),
                   )}
                   value={reconcileTarget}
                   onValueChange={(v) => setReconcileTarget(v as string)}
@@ -915,7 +1084,7 @@ export function PatientDrawer({
                   <SelectContent>
                     {verified.map((p) => (
                       <SelectItem key={p.id} value={p.id}>
-                        {p.full_name}
+                        <PatientName name={p.full_name} />
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -1314,11 +1483,6 @@ export function PatientDrawer({
                     <option key={r} value={r} />
                   ))}
                 </datalist>
-                <datalist id="frequency-options">
-                  {FREQUENCY_OPTIONS.map((f) => (
-                    <option key={f} value={f} />
-                  ))}
-                </datalist>
 
                 {prescriptions.length > 0 ? (
                   <ul className="flex flex-col gap-2">
@@ -1388,18 +1552,28 @@ export function PatientDrawer({
                               placeholder={t("drawer.routePlaceholder")}
                               className="h-7 text-xs"
                             />
-                            <Input
-                              key={`freq:${p.frequency ?? ""}`}
-                              list="frequency-options"
-                              defaultValue={p.frequency ?? ""}
-                              onBlur={(e) =>
+                            <Select
+                              value={p.frequency ?? null}
+                              onValueChange={(v) =>
                                 handleUpdatePrescription(p.id, {
-                                  frequency: e.target.value,
+                                  frequency: (v as string) ?? null,
                                 })
                               }
-                              placeholder={t("drawer.frequencyPlaceholder")}
-                              className="h-7 text-xs"
-                            />
+                              items={freqItems(p.frequency)}
+                            >
+                              <SelectTrigger className="h-7 w-full text-xs">
+                                <SelectValue
+                                  placeholder={t("drawer.frequencyPlaceholder")}
+                                />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {freqOptions(p.frequency).map((f) => (
+                                  <SelectItem key={f} value={f}>
+                                    {f}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <Input
                               key={`dur:${p.duration ?? ""}`}
                               defaultValue={p.duration ?? ""}
@@ -1412,6 +1586,28 @@ export function PatientDrawer({
                               className="h-7 text-xs"
                             />
                           </div>
+                          <Select
+                            value={p.meal_timing ?? null}
+                            onValueChange={(v) =>
+                              handleUpdatePrescription(p.id, {
+                                meal_timing: v as MealTiming,
+                              })
+                            }
+                            items={mealTimingItems}
+                          >
+                            <SelectTrigger className="h-7 w-full text-xs">
+                              <SelectValue
+                                placeholder={t("drawer.mealTimingPlaceholder")}
+                              />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {MEAL_TIMING_OPTIONS.map((m) => (
+                                <SelectItem key={m} value={m}>
+                                  {t(MEAL_TIMING_LABEL[m])}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <Input
                             key={`instr:${p.instructions ?? ""}`}
                             defaultValue={p.instructions ?? ""}
@@ -2074,6 +2270,319 @@ export function PatientDrawer({
         </div>
       </SheetContent>
     </Sheet>
+
+    {/* ---- Admit dialog: department → ward → free bed → doctor + reason ---- */}
+    <Dialog
+      open={dispoDialog === "admit"}
+      onOpenChange={(o) => {
+        if (!o) setDispoDialog(null);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("drawer.admitDialogTitle")}</DialogTitle>
+          <DialogDescription>
+            {t("drawer.admitDialogDesc", {
+              name: formatPatientName(displayName),
+            })}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="admit-dept" className="text-xs">
+            {t("drawer.department")}
+          </Label>
+          <Select
+            items={{
+              [NO_DEPT]: t("drawer.anyDepartment"),
+              ...Object.fromEntries(activeDepartments.map((d) => [d.id, d.name])),
+            }}
+            value={admitDeptId}
+            onValueChange={(v) => {
+              setAdmitDeptId(v as string);
+              setAdmitWardId(NO_WARD);
+              setAdmitBedId(NO_BED);
+            }}
+          >
+            <SelectTrigger id="admit-dept" className="w-full">
+              <SelectValue placeholder={t("drawer.selectDepartment")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_DEPT}>{t("drawer.anyDepartment")}</SelectItem>
+              {activeDepartments.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="admit-ward" className="text-xs">
+            {t("drawer.ward")}
+          </Label>
+          <Select
+            items={Object.fromEntries(admitWards.map((w) => [w.id, w.name]))}
+            value={admitWardId === NO_WARD ? null : admitWardId}
+            onValueChange={(v) => {
+              setAdmitWardId(v as string);
+              setAdmitBedId(NO_BED);
+            }}
+          >
+            <SelectTrigger id="admit-ward" className="w-full">
+              <SelectValue placeholder={t("drawer.selectWard")} />
+            </SelectTrigger>
+            <SelectContent>
+              {admitWards.map((w) => (
+                <SelectItem key={w.id} value={w.id}>
+                  {w.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {admitWards.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              {t("drawer.noWardsForDept")}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="admit-bed" className="text-xs">
+            {t("drawer.bed")}
+          </Label>
+          <Select
+            items={Object.fromEntries(admitFreeBeds.map((b) => [b.id, b.label]))}
+            value={admitBedId === NO_BED ? null : admitBedId}
+            onValueChange={(v) => setAdmitBedId(v as string)}
+            disabled={admitWardId === NO_WARD}
+          >
+            <SelectTrigger id="admit-bed" className="w-full">
+              <SelectValue placeholder={t("drawer.selectBed")} />
+            </SelectTrigger>
+            <SelectContent>
+              {admitFreeBeds.map((b) => (
+                <SelectItem key={b.id} value={b.id}>
+                  {b.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {admitWardId !== NO_WARD && admitFreeBeds.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              {t("drawer.noFreeBeds")}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="admit-doctor" className="text-xs">
+            {t("drawer.attendingDoctor")}
+          </Label>
+          <Select
+            items={{
+              [NO_DOCTOR]: t("drawer.unassigned"),
+              ...Object.fromEntries(doctors.map((d) => [d.id, d.full_name])),
+            }}
+            value={admitDoctorId}
+            onValueChange={(v) => setAdmitDoctorId(v as string)}
+          >
+            <SelectTrigger id="admit-doctor" className="w-full">
+              <SelectValue placeholder={t("drawer.selectDoctor")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_DOCTOR}>{t("drawer.unassigned")}</SelectItem>
+              {doctors.map((d) => (
+                <SelectItem key={d.id} value={d.id}>
+                  {d.full_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="admit-reason" className="text-xs">
+            {t("drawer.admitReason")}
+          </Label>
+          <Textarea
+            id="admit-reason"
+            value={admitReason}
+            onChange={(e) => setAdmitReason(e.target.value)}
+            placeholder={t("drawer.admitReasonPlaceholder")}
+            rows={2}
+          />
+        </div>
+
+        {dispoError ? (
+          <p className="text-xs text-destructive">{dispoError}</p>
+        ) : null}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDispoDialog(null)}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleSubmitAdmit}>
+            <BedDouble className="size-4" />
+            {t("drawer.confirmAdmit")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* ---- Observation dialog: reason → duration → location ---- */}
+    <Dialog
+      open={dispoDialog === "observation"}
+      onOpenChange={(o) => {
+        if (!o) setDispoDialog(null);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("drawer.obsDialogTitle")}</DialogTitle>
+          <DialogDescription>
+            {t("drawer.obsDialogDesc", {
+              name: formatPatientName(displayName),
+            })}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="obs-reason" className="text-xs">
+            {t("drawer.obsReason")}
+          </Label>
+          <Textarea
+            id="obs-reason"
+            value={obsReason}
+            onChange={(e) => setObsReason(e.target.value)}
+            placeholder={t("drawer.obsReasonPlaceholder")}
+            rows={2}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="obs-duration" className="text-xs">
+            {t("drawer.obsDuration")}
+          </Label>
+          <Select
+            items={Object.fromEntries(
+              OBS_DURATION_OPTIONS.map((o) => [o.value, t(o.labelKey)]),
+            )}
+            value={obsDuration || null}
+            onValueChange={(v) => setObsDuration(v as string)}
+          >
+            <SelectTrigger id="obs-duration" className="w-full">
+              <SelectValue placeholder={t("drawer.obsDurationPlaceholder")} />
+            </SelectTrigger>
+            <SelectContent>
+              {OBS_DURATION_OPTIONS.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {t(o.labelKey)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="obs-location" className="text-xs">
+            {t("drawer.obsLocation")}
+          </Label>
+          <Input
+            id="obs-location"
+            value={obsLocation}
+            onChange={(e) => setObsLocation(e.target.value)}
+            placeholder={t("drawer.obsLocationPlaceholder")}
+          />
+        </div>
+
+        {dispoError ? (
+          <p className="text-xs text-destructive">{dispoError}</p>
+        ) : null}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDispoDialog(null)}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleSubmitObservation}>
+            <Eye className="size-4" />
+            {t("drawer.confirmObservation")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* ---- Referral dialog: reason → facility → recipient ---- */}
+    <Dialog
+      open={dispoDialog === "refer"}
+      onOpenChange={(o) => {
+        if (!o) setDispoDialog(null);
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("drawer.referDialogTitle")}</DialogTitle>
+          <DialogDescription>
+            {t("drawer.referDialogDesc", {
+              name: formatPatientName(displayName),
+            })}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="refer-facility" className="text-xs">
+            {t("drawer.referFacility")}
+          </Label>
+          <Input
+            id="refer-facility"
+            value={referFacility}
+            onChange={(e) => setReferFacility(e.target.value)}
+            placeholder={t("drawer.referFacilityPlaceholder")}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="refer-recipient" className="text-xs">
+            {t("drawer.referRecipient")}
+          </Label>
+          <Input
+            id="refer-recipient"
+            value={referRecipient}
+            onChange={(e) => setReferRecipient(e.target.value)}
+            placeholder={t("drawer.referRecipientPlaceholder")}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="refer-reason" className="text-xs">
+            {t("drawer.referReason")}
+          </Label>
+          <Textarea
+            id="refer-reason"
+            value={referReason}
+            onChange={(e) => setReferReason(e.target.value)}
+            placeholder={t("drawer.referReasonPlaceholder")}
+            rows={2}
+          />
+        </div>
+
+        {dispoError ? (
+          <p className="text-xs text-destructive">{dispoError}</p>
+        ) : null}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setDispoDialog(null)}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={handleSubmitReferral}>
+            <Send className="size-4" />
+            {t("drawer.confirmReferral")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
 

@@ -47,6 +47,7 @@ import type {
   HospitalId,
   MaritalStatus,
   MarStatus,
+  MealTiming,
   MedicationAdministration,
   MedicationAdministrationId,
   Notification,
@@ -1005,6 +1006,7 @@ export interface AddPrescriptionInput {
   route?: string | null;
   frequency?: string | null;
   duration?: string | null;
+  meal_timing?: MealTiming | null;
   instructions?: string | null;
 }
 
@@ -1681,6 +1683,7 @@ export interface InpatientCollabData {
   admissionId: string;
   visitId: string;
   patientName: string;
+  patientAnonymous: boolean;
   mrn: string;
   /** Bed label if assigned, else ward name, else null. */
   location: string | null;
@@ -1738,6 +1741,7 @@ export function getActiveInpatientCollabData(): InpatientCollabData[] {
         admissionId: admission.id,
         visitId: admission.visit_id,
         patientName: displayName,
+        patientAnonymous: Boolean(patient?.is_emergency_anonymous),
         mrn: patient?.mrn ?? "—",
         location: bed?.label ?? ward?.name ?? null,
         departmentName: department?.name ?? null,
@@ -2926,29 +2930,98 @@ const DISPOSITION_PLAN: Record<
  * created if one does not yet exist. The decision is logged as a treatment-record
  * note and the visit is moved to the corresponding care stage. Returns the visit.
  */
+/** Disposition-specific details captured by the doctor in the decision dialog. */
+export interface DispositionDetails {
+  // admit → placement
+  ward_id?: WardId | null;
+  bed_id?: BedId | null;
+  attending_doctor_id?: StaffId | null;
+  reason?: string | null;
+  // observation
+  observation_reason?: string | null;
+  observation_duration?: string | null;
+  observation_location?: string | null;
+  // referral
+  referral_reason?: string | null;
+  referral_facility?: string | null;
+  referral_recipient?: string | null;
+}
+
+const clean = (s?: string | null): string | null => s?.trim() || null;
+
 export function recordDisposition(
   visitId: VisitId,
   disposition: Disposition,
-  decidedById?: StaffId | null
+  decidedById?: StaffId | null,
+  details?: DispositionDetails
 ): Visit {
   const plan = DISPOSITION_PLAN[disposition];
   if (!plan) {
     throw new Error(`recordDisposition: unknown disposition "${disposition}"`);
   }
 
+  // Admit → create the admission with the chosen ward / bed / reason / doctor.
   if (plan.admit && !getAdmissionForVisit(visitId)) {
     createAdmissionForVisit(visitId, {
-      attending_doctor_id: decidedById ?? null,
+      attending_doctor_id:
+        details?.attending_doctor_id ?? decidedById ?? null,
+      ward_id: details?.ward_id ?? null,
+      bed_id: details?.bed_id ?? null,
+      reason: clean(details?.reason),
       stage: plan.stage,
     });
   }
 
+  // Observation / referral → persist details onto the visit's dedicated fields.
+  if (
+    (disposition === "observation" || disposition === "refer") &&
+    details
+  ) {
+    const db = loadDatabase();
+    const visit = db.visits.find((v) => v.id === visitId);
+    if (visit) {
+      if (disposition === "observation") {
+        visit.observation_reason = clean(details.observation_reason);
+        visit.observation_duration = clean(details.observation_duration);
+        visit.observation_location = clean(details.observation_location);
+      } else {
+        visit.referral_reason = clean(details.referral_reason);
+        visit.referral_facility = clean(details.referral_facility);
+        visit.referral_recipient = clean(details.referral_recipient);
+      }
+      visit.updated_at = nowISO();
+      persist(db);
+    }
+  }
+
   addTreatmentLog(visitId, {
     recorded_by_id: decidedById ?? null,
-    notes: plan.note,
+    notes: composeDispositionNote(disposition, plan.note, details),
   });
 
   return updateVisitStage(visitId, plan.stage);
+}
+
+/** Build an informative audit note from the disposition + captured details. */
+function composeDispositionNote(
+  disposition: Disposition,
+  baseNote: string,
+  details?: DispositionDetails
+): string {
+  if (!details) return baseNote;
+  const parts: string[] = [];
+  if (disposition === "observation") {
+    if (clean(details.observation_reason)) parts.push(`for ${details.observation_reason!.trim()}`);
+    if (clean(details.observation_duration)) parts.push(`duration ${details.observation_duration!.trim()}`);
+    if (clean(details.observation_location)) parts.push(`at ${details.observation_location!.trim()}`);
+  } else if (disposition === "refer") {
+    if (clean(details.referral_facility)) parts.push(`to ${details.referral_facility!.trim()}`);
+    if (clean(details.referral_recipient)) parts.push(`attn ${details.referral_recipient!.trim()}`);
+    if (clean(details.referral_reason)) parts.push(`reason: ${details.referral_reason!.trim()}`);
+  } else if (disposition === "admit") {
+    if (clean(details.reason)) parts.push(`reason: ${details.reason!.trim()}`);
+  }
+  return parts.length ? `${baseNote} — ${parts.join("; ")}` : baseNote;
 }
 
 /**
@@ -3208,6 +3281,7 @@ export function addPrescription(
     route: input.route?.trim() || null,
     frequency: input.frequency?.trim() || null,
     duration: input.duration?.trim() || null,
+    meal_timing: input.meal_timing ?? null,
     instructions: input.instructions?.trim() || null,
     status: "active",
     created_at: timestamp,
@@ -3274,6 +3348,7 @@ export interface UpdatePrescriptionInput {
   route?: string | null;
   frequency?: string | null;
   duration?: string | null;
+  meal_timing?: MealTiming | null;
   instructions?: string | null;
 }
 
@@ -3309,6 +3384,8 @@ export function updatePrescription(
     prescription.frequency = input.frequency?.trim() || null;
   if (input.duration !== undefined)
     prescription.duration = input.duration?.trim() || null;
+  if (input.meal_timing !== undefined)
+    prescription.meal_timing = input.meal_timing ?? null;
   if (input.instructions !== undefined)
     prescription.instructions = input.instructions?.trim() || null;
   prescription.updated_at = nowISO();

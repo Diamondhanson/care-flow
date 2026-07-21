@@ -7,6 +7,7 @@ import { ShieldAlert, CheckCircle2, ArrowRight } from "lucide-react";
 import { isValidPhoneNumber } from "react-phone-number-input";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PatientName } from "@/lib/patient-name";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { PhoneInput } from "@/components/ui/phone-input";
@@ -240,7 +241,11 @@ export default function IntakePage() {
               <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {result.isAnonymous ? t("intake.emergencyTag") : t("intake.patient")}
               </span>
-              <span className="font-mono text-sm">{result.displayName}</span>
+              <PatientName
+                name={result.displayName}
+                format={!result.isAnonymous}
+                className={result.isAnonymous ? "font-mono text-sm" : "text-sm"}
+              />
               {result.mrn ? (
                 <span className="font-mono text-xs text-muted-foreground">
                   {t("intake.patientIdTag")} {result.mrn}

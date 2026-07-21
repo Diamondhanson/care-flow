@@ -551,6 +551,13 @@ create table if not exists visits (
   triage_level        smallint check (triage_level is null or triage_level between 1 and 5),
   arrived_at          timestamptz not null default now(),
   closed_at           timestamptz,
+  -- Disposition details captured by the doctor (Phase 19.x).
+  observation_reason   text,             -- what the patient is observed for
+  observation_duration text,             -- how long, e.g. "6 hours"
+  observation_location text,             -- where, e.g. "Observation bay"
+  referral_reason      text,
+  referral_facility    text,             -- where the patient is referred to
+  referral_recipient   text,             -- to whom (optional)
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );
@@ -657,6 +664,8 @@ create table if not exists prescriptions (
   route            text,                -- e.g. "oral", "IV"
   frequency        text,                -- e.g. "every 8 hours"
   duration         text,                -- e.g. "5 days"
+  -- Timing relative to food: 'with_meals' | 'without_meals' | 'neutral'.
+  meal_timing      text check (meal_timing is null or meal_timing in ('with_meals','without_meals','neutral')),
   instructions     text,
   status           prescription_status not null default 'active',
   created_at       timestamptz not null default now(),
@@ -1681,6 +1690,25 @@ drop policy if exists "staff append own usage" on usage_events;
 create policy "staff append own usage" on usage_events
   for insert to authenticated
   with check (is_staff() and hospital_id = current_hospital_id());
+
+
+-- =============================================================================
+-- 13. Disposition details + prescription meal timing (idempotent, for existing DBs)
+-- -----------------------------------------------------------------------------
+-- The columns are also in the CREATE TABLE above (for fresh DBs); these ALTERs
+-- backfill an already-provisioned database. All nullable/additive.
+-- =============================================================================
+alter table visits add column if not exists observation_reason   text;
+alter table visits add column if not exists observation_duration text;
+alter table visits add column if not exists observation_location text;
+alter table visits add column if not exists referral_reason      text;
+alter table visits add column if not exists referral_facility    text;
+alter table visits add column if not exists referral_recipient   text;
+
+alter table prescriptions add column if not exists meal_timing text;
+alter table prescriptions drop constraint if exists chk_prescriptions_meal_timing;
+alter table prescriptions add constraint chk_prescriptions_meal_timing
+  check (meal_timing is null or meal_timing in ('with_meals','without_meals','neutral'));
 
 
 -- =============================================================================

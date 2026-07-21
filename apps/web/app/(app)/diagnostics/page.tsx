@@ -14,6 +14,7 @@ import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PatientName } from "@/lib/patient-name";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -167,13 +168,11 @@ export default function DiagnosticsPage() {
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                        <span
-                          className={
-                            isAnonymous ? "font-mono" : "font-medium text-foreground"
-                          }
-                        >
-                          {patientName}
-                        </span>
+                        <PatientName
+                          name={patientName}
+                          format={!isAnonymous}
+                          className={isAnonymous ? "font-mono" : undefined}
+                        />
                         <span className="font-mono">{mrn}</span>
                         {chiefComplaint ? <span>{chiefComplaint}</span> : null}
                         {orderedBy ? (

@@ -11,6 +11,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import { useT } from "@/components/locale-provider";
 import { useRole } from "@/components/role-provider";
 import type { BoardColumn } from "@/components/live-board/stages";
@@ -66,14 +67,14 @@ export function PatientCard({
       />
 
       <div className="flex items-start justify-between gap-2 pl-1.5">
-        <span
+        <PatientName
+          name={data.displayName}
+          format={!data.isAnonymous}
           className={cn(
-            "text-sm leading-tight font-medium",
+            "text-sm leading-tight",
             data.isAnonymous && "font-mono text-[13px]",
           )}
-        >
-          {data.displayName}
-        </span>
+        />
         <div className="flex shrink-0 items-center gap-1">
           {mounted && collabCount > 0 ? (
             <Badge

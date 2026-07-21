@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PatientName } from "@/lib/patient-name";
 import {
   Select,
   SelectContent,
@@ -188,7 +189,8 @@ export function ReconcileDialog({
                 <Link2 className="size-4 shrink-0 text-[var(--status-clearance)]" />
                 <span className="flex min-w-0 flex-col leading-tight">
                   <span className="truncate text-sm font-medium">
-                    {t("reconciliation.linkedTo")}: {linkedPatient.full_name}
+                    {t("reconciliation.linkedTo")}:{" "}
+                    <PatientName name={linkedPatient.full_name} />
                   </span>
                   <span className="truncate font-mono text-xs text-muted-foreground">
                     {linkedPatient.mrn || "—"}
@@ -225,9 +227,10 @@ export function ReconcileDialog({
                           className="flex w-full items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-left hover:bg-accent"
                         >
                           <span className="flex min-w-0 flex-col leading-tight">
-                            <span className="truncate text-sm">
-                              {p.full_name}
-                            </span>
+                            <PatientName
+                              name={p.full_name}
+                              className="truncate text-sm"
+                            />
                             <span className="truncate font-mono text-xs text-muted-foreground">
                               {p.mrn || "—"}
                               {p.phone ? ` · ${p.phone}` : ""}

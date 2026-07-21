@@ -27,6 +27,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import {
   buildPatientWorklist,
   openDoctorFlags,
@@ -62,18 +64,24 @@ function kindIcon(kind: WorklistEntry["kind"]) {
 
 function PatientHeader({
   name,
+  isAnonymous,
   mrn,
   location,
   department,
 }: {
   name: string;
+  isAnonymous: boolean;
   mrn: string;
   location: string | null;
   department: string | null;
 }) {
   return (
     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-      <span className="text-sm font-medium">{name}</span>
+      <PatientName
+        name={name}
+        format={!isAnonymous}
+        className={cn("text-sm", isAnonymous && "font-mono")}
+      />
       <span className="font-mono text-[11px] text-muted-foreground">{mrn}</span>
       <span className="ml-auto inline-flex items-center gap-2 text-[11px] text-muted-foreground">
         {location ? (
@@ -201,6 +209,7 @@ export default function WorklistPage() {
                   >
                     <PatientHeader
                       name={c.patientName}
+                      isAnonymous={c.patientAnonymous}
                       mrn={c.mrn}
                       location={c.location}
                       department={c.departmentName}
@@ -274,6 +283,7 @@ export default function WorklistPage() {
                   >
                     <PatientHeader
                       name={c.patientName}
+                      isAnonymous={c.patientAnonymous}
                       mrn={c.mrn}
                       location={c.location}
                       department={c.departmentName}

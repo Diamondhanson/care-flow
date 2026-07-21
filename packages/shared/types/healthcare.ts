@@ -667,6 +667,20 @@ export interface Visit {
   triage_level: TriageLevel | null;
   arrived_at: ISODateString;
   closed_at: ISODateString | null;
+  // Disposition details captured by the doctor (optional; set when the matching
+  // disposition is chosen). Observation → keep-under-watch; referral → sent out.
+  /** What the patient is being observed for. */
+  observation_reason?: string | null;
+  /** How long the observation should run, e.g. "6 hours". */
+  observation_duration?: string | null;
+  /** Where the observation takes place, e.g. "Observation bay", a ward name. */
+  observation_location?: string | null;
+  /** Why the patient is being referred. */
+  referral_reason?: string | null;
+  /** Facility the patient is referred to. */
+  referral_facility?: string | null;
+  /** Specific person/clinician the referral is addressed to (optional). */
+  referral_recipient?: string | null;
   created_at: ISODateString;
   updated_at: ISODateString;
   /** Optimistic-concurrency version (server-managed; absent until first sync). */
@@ -767,6 +781,8 @@ export interface Prescription {
   frequency: string | null;
   /** e.g. "5 days". */
   duration: string | null;
+  /** Timing relative to food. */
+  meal_timing?: MealTiming | null;
   instructions: string | null;
   status: PrescriptionStatus;
   created_at: ISODateString;
@@ -774,6 +790,9 @@ export interface Prescription {
   /** Optimistic-concurrency version (server-managed; absent until first sync). */
   version?: number;
 }
+
+/** How a medication is taken relative to food. */
+export type MealTiming = "with_meals" | "without_meals" | "neutral";
 
 /**
  * `medication_administrations` (MAR) — one row each time a nurse gives, holds,

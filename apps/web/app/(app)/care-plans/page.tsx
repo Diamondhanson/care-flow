@@ -43,6 +43,7 @@ import { useRole } from "@/components/role-provider";
 import { useT, type TFunction } from "@/components/locale-provider";
 import { formatDateTime } from "@/i18n/format";
 import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import type {
   CareNeedCategory,
   CarePlanEntry,
@@ -95,14 +96,11 @@ function PatientRow({
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span
-          className={cn(
-            "truncate text-sm",
-            isAnonymous ? "font-mono" : "font-medium",
-          )}
-        >
-          {patientName(patient, t)}
-        </span>
+        <PatientName
+          name={patientName(patient, t)}
+          format={!isAnonymous}
+          className={cn("truncate text-sm", isAnonymous && "font-mono")}
+        />
         {patient.activeNeeds > 0 ? (
           <Badge variant="secondary" className="shrink-0 tabular-nums">
             {t("carePlan.needsActive", { count: patient.activeNeeds })}
@@ -625,16 +623,16 @@ export default function CarePlansPage() {
           {selected ? (
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-0.5">
-                <span
+                <PatientName
+                  name={patientName(selected, t)}
+                  format={!selected.patient?.is_emergency_anonymous}
                   className={cn(
                     "text-lg",
                     selected.patient?.is_emergency_anonymous
                       ? "font-mono"
                       : "font-semibold",
                   )}
-                >
-                  {patientName(selected, t)}
-                </span>
+                />
                 <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
                   <BedDouble className="size-4" />
                   {unitLabel(selected)}

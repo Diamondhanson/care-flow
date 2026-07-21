@@ -57,6 +57,7 @@ import { useRole } from "@/components/role-provider";
 import { useT, type TFunction } from "@/components/locale-provider";
 import { formatDate, formatXaf } from "@/i18n/format";
 import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import type {
   BillableItem,
   Charge,
@@ -120,9 +121,11 @@ function VisitPickerRow({
       )}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className={cn("truncate text-sm", isAnon ? "font-mono" : "font-medium")}>
-          {patientDisplayName(row.patient, t)}
-        </span>
+        <PatientName
+          name={patientDisplayName(row.patient, t)}
+          format={!isAnon}
+          className={cn("truncate text-sm", isAnon && "font-mono")}
+        />
         <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
           {formatXaf(total, locale)}
         </span>
@@ -666,7 +669,23 @@ export default function BillingPage() {
                       selected.patient?.is_emergency_anonymous ? "font-mono" : "font-semibold",
                     )}
                   >
-                    {t("billing.billFor", { name: patientDisplayName(selected.patient, t) })}
+                    {t("billing.billFor", { name: "%NAME%" })
+                      .split("%NAME%")
+                      .flatMap((part, i) =>
+                        i === 0
+                          ? [part]
+                          : [
+                              <PatientName
+                                key={i}
+                                name={patientDisplayName(selected.patient, t)}
+                                format={
+                                  !selected.patient?.is_emergency_anonymous
+                                }
+                                className="font-[inherit]"
+                              />,
+                              part,
+                            ],
+                      )}
                   </span>
                   <span className="text-sm text-muted-foreground">
                     {t("billing.visitMeta", {

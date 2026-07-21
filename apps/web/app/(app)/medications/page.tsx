@@ -15,6 +15,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { PatientName } from "@/lib/patient-name";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -246,15 +247,11 @@ function WorklistCard({
                 <span className="text-xs text-muted-foreground">{detail}</span>
               ) : null}
               <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                <span
-                  className={
-                    row.isAnonymous
-                      ? "font-mono"
-                      : "font-medium text-foreground"
-                  }
-                >
-                  {row.patientName}
-                </span>
+                <PatientName
+                  name={row.patientName}
+                  format={!row.isAnonymous}
+                  className={row.isAnonymous ? "font-mono" : undefined}
+                />
                 <span className="font-mono">{row.mrn}</span>
                 <span>{row.unit}</span>
                 {row.prescribedBy ? (

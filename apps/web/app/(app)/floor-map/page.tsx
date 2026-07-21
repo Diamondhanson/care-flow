@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -73,6 +75,7 @@ function tokenColor(token: string): string {
 interface BedView {
   bed: Bed;
   occupantName: string | null;
+  occupantAnonymous: boolean;
 }
 
 interface WardView {
@@ -106,13 +109,21 @@ function load(): WardView[] {
       const beds = (bedsByWard.get(ward.id) ?? [])
         .slice()
         .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }))
-        .map((bed) => ({
-          bed,
-          occupantName: bed.current_admission_id
-            ? (patientsByAdmission.get(bed.current_admission_id)?.full_name ??
-              null)
-            : null,
-        }));
+        .map((bed) => {
+          const occupant = bed.current_admission_id
+            ? patientsByAdmission.get(bed.current_admission_id)
+            : undefined;
+          const occupantAnonymous = Boolean(occupant?.is_emergency_anonymous);
+          return {
+            bed,
+            occupantName: occupant
+              ? occupantAnonymous && occupant.anonymous_identifier
+                ? occupant.anonymous_identifier
+                : occupant.full_name
+              : null,
+            occupantAnonymous,
+          };
+        });
       return {
         ward,
         departmentName: ward.department_id
@@ -265,8 +276,13 @@ function WardCard({
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-            {beds.map(({ bed, occupantName }) => (
-              <BedTile key={bed.id} bed={bed} occupantName={occupantName} />
+            {beds.map(({ bed, occupantName, occupantAnonymous }) => (
+              <BedTile
+                key={bed.id}
+                bed={bed}
+                occupantName={occupantName}
+                occupantAnonymous={occupantAnonymous}
+              />
             ))}
           </div>
         )}
@@ -302,9 +318,11 @@ function TallyChip({
 function BedTile({
   bed,
   occupantName,
+  occupantAnonymous,
 }: {
   bed: Bed;
   occupantName: string | null;
+  occupantAnonymous: boolean;
 }) {
   const { t } = useT();
   const token = BED_STATUS_TOKEN[bed.status];
@@ -332,7 +350,15 @@ function BedTile({
       {isOccupied ? (
         <span className="flex items-center gap-1 truncate text-xs text-muted-foreground">
           <User className="size-3 shrink-0" />
-          {occupantName ?? t("floorMap.occupied")}
+          {occupantName ? (
+            <PatientName
+              name={occupantName}
+              format={!occupantAnonymous}
+              className={cn("truncate", occupantAnonymous && "font-mono")}
+            />
+          ) : (
+            t("floorMap.occupied")
+          )}
         </span>
       ) : (
         <span className="text-xs font-medium" style={{ color }}>
@@ -567,7 +593,7 @@ function WardFormSheet({
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-2">
-                    {liveBeds.map(({ bed, occupantName }) => {
+                    {liveBeds.map(({ bed, occupantName, occupantAnonymous }) => {
                       const occupied = bed.status === "occupied";
                       return (
                         <li
@@ -580,7 +606,18 @@ function WardFormSheet({
                             </span>
                             {occupied ? (
                               <span className="truncate text-xs text-muted-foreground">
-                                {occupantName ?? t("floorMap.occupied")}
+                                {occupantName ? (
+                                  <PatientName
+                                    name={occupantName}
+                                    format={!occupantAnonymous}
+                                    className={cn(
+                                      "truncate",
+                                      occupantAnonymous && "font-mono",
+                                    )}
+                                  />
+                                ) : (
+                                  t("floorMap.occupied")
+                                )}
                               </span>
                             ) : null}
                           </span>

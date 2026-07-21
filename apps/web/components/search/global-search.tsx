@@ -5,6 +5,7 @@ import { Dialog } from "@base-ui/react/dialog";
 import { Search, User, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { PatientName } from "@/lib/patient-name";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/components/locale-provider";
@@ -164,12 +165,16 @@ export function GlobalSearch() {
                             <User className="size-4" />
                           </span>
                           <span className="flex min-w-0 flex-1 flex-col leading-tight">
-                            <span className="truncate text-sm font-medium">
-                              {patient.is_emergency_anonymous &&
-                              patient.anonymous_identifier
-                                ? patient.anonymous_identifier
-                                : patient.full_name}
-                            </span>
+                            <PatientName
+                              name={
+                                patient.is_emergency_anonymous &&
+                                patient.anonymous_identifier
+                                  ? patient.anonymous_identifier
+                                  : patient.full_name
+                              }
+                              format={!patient.is_emergency_anonymous}
+                              className="truncate text-sm"
+                            />
                             <span className="truncate text-xs text-muted-foreground">
                               <span className="font-mono">{patient.mrn || "—"}</span>
                               {patient.phone ? ` · ${patient.phone}` : ""}
