@@ -501,6 +501,11 @@ export const en = {
     saveLog: "Save log entry",
     treatmentHistory: "Treatment history",
     noEntries: "No entries logged yet",
+    vitalsOutOfRange:
+      "{field} is out of the plausible range ({min}–{max}). Entry not saved — please check the value.",
+    historyTitle: "Visit history",
+    historyEmpty: "No visits on record for this patient.",
+    historyCurrent: "Current",
     emptyNote: "Empty note.",
     showMore: "More options",
     showLess: "Fewer options",

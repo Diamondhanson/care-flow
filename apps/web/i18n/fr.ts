@@ -498,6 +498,11 @@ export const fr = {
     saveLog: "Enregistrer l'entrée",
     treatmentHistory: "Historique de traitement",
     noEntries: "Aucune entrée consignée",
+    vitalsOutOfRange:
+      "{field} est hors de la plage plausible ({min}–{max}). Entrée non enregistrée — vérifiez la valeur.",
+    historyTitle: "Historique des visites",
+    historyEmpty: "Aucune visite au dossier pour ce patient.",
+    historyCurrent: "En cours",
     emptyNote: "Note vide.",
     showMore: "Plus d'options",
     showLess: "Moins d'options",

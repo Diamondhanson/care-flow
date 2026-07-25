@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
 import type { VisitId } from "@careflow/shared";
 import { PatientName } from "@/lib/patient-name";
@@ -112,17 +113,14 @@ export function PatientCard({
             </Badge>
           ) : null}
           {data.isAnonymous ? (
-            <Badge
-              variant="outline"
-              className="gap-1 border-transparent text-[10px] uppercase tracking-wide"
-              style={{
-                backgroundColor: `var(--status-${column.token})`,
-                color: `var(--status-${column.token}-foreground)`,
-              }}
+            <StatusBadge
+              tone={column.token}
+              variant="solid"
+              className="tracking-wide"
             >
               <ShieldAlert className="size-3" />
               {t("liveBoard.emergency")}
-            </Badge>
+            </StatusBadge>
           ) : null}
         </div>
       </div>
@@ -158,16 +156,15 @@ export function PatientCard({
       </div>
 
       {data.nextStepKey ? (
-        <span
-          className="ml-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
-          style={{
-            backgroundColor: `var(--status-${column.token})`,
-            color: `var(--status-${column.token}-foreground)`,
-          }}
+        <StatusBadge
+          tone={column.token}
+          variant="solid"
+          size="md"
+          className="ml-1.5"
         >
           <ArrowRight className="size-3" />
           {t(data.nextStepKey)}
-        </span>
+        </StatusBadge>
       ) : null}
     </button>
   );
