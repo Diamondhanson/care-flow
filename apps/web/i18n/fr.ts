@@ -1008,6 +1008,91 @@ export const fr = {
       "Enregistré sur cet appareil. {count} modifications seront synchronisées au retour d'Internet.",
     queuedOne: "Synchronisation d'1 modification…",
     queuedMany: "Synchronisation de {count} modifications…",
+    panelTitle: "État de la synchronisation",
+    panelIntro:
+      "Chaque modification est d'abord enregistrée sur cet appareil, puis envoyée aux dossiers de l'hôpital dès qu'Internet le permet.",
+    allSynced: "Tout est enregistré et synchronisé.",
+    groupWaiting: "En attente d'envoi",
+    groupRetrying: "Nouvelles tentatives en cours",
+    groupAttention: "Attention requise",
+    groupAttentionHint:
+      "Ces modifications échouent à chaque envoi. Montrez ceci à votre administrateur — les détails ci-dessous expliquent pourquoi.",
+    entryQueuedAt: "en file {time}",
+    entryAttempts: "{count} tentatives échouées",
+    opInsert: "Nouvel enregistrement",
+    opUpdate: "Modification",
+    opDelete: "Suppression",
+    syncNow: "Synchroniser maintenant",
+    syncing: "Synchronisation…",
+    offlineHint:
+      "Vous êtes hors ligne. Les modifications seront envoyées au retour d'Internet.",
+    groupConflicts: "Non enregistré — quelqu'un d'autre a modifié avant vous",
+    groupConflictsHint:
+      "Un collègue a modifié le même dossier avant que votre modification n'atteigne le serveur. Votre modification est conservée ici — examinez-la et réappliquez-la, ou supprimez-la si la sienne doit primer.",
+    conflictDetectedAt: "détecté {time}",
+    reapply: "Réappliquer ma modification",
+    retry: "Réessayer",
+    discard: "Supprimer",
+  },
+  notify: {
+    regionLabel: "Notifications",
+    dismiss: "Fermer",
+    storageFullTitle: "Le stockage de cet appareil est plein",
+    storageFullBody:
+      "Votre dernière modification n'a pas pu être enregistrée sur cet appareil. Libérez de l'espace ou contactez votre administrateur — d'ici là, le nouveau travail risque d'être perdu.",
+    storageWriteFailedTitle: "Enregistrement impossible sur cet appareil",
+    storageWriteFailedBody:
+      "Un problème a empêché l'enregistrement de votre dernière modification sur cet appareil. Réessayez ; si cela se répète, contactez votre administrateur.",
+    cacheResetTitle: "Les données locales ont été réinitialisées",
+    cacheResetBody:
+      "La copie des dossiers stockée sur cet appareil était illisible et a été remplacée par une copie fraîche du serveur.",
+    outboxWriteFailedTitle:
+      "Impossible de mettre votre modification en file de synchronisation",
+    outboxWriteFailedBody:
+      "Votre modification est enregistrée sur cet appareil mais n'a pas pu rejoindre la file de synchronisation. Elle pourrait ne pas atteindre les dossiers de l'hôpital — contactez votre administrateur.",
+    outboxCorruptTitle: "La file de synchronisation était illisible",
+    outboxCorruptBody:
+      "Les modifications en attente de synchronisation n'ont pas pu être lues et ont été mises de côté (une copie de sauvegarde est conservée sur cet appareil). Le travail récent non envoyé devra peut-être être ressaisi — contactez votre administrateur.",
+    conflictTitle: "Une modification n'a pas été enregistrée — quelqu'un d'autre a modifié avant",
+    conflictBody:
+      "Un collègue a modifié le même dossier avant que votre modification n'atteigne le serveur. Ouvrez le panneau de synchronisation (icône nuage, barre du haut) pour examiner et réappliquer votre modification.",
+    uploadQueuedTitle: "Fichier enregistré — envoi au retour d'Internet",
+    uploadQueuedBody:
+      "Le résultat a été enregistré. Le fichier joint est conservé sur cet appareil et sera envoyé automatiquement au retour d'Internet.",
+    uploadRetryTitle: "Un fichier est en attente d'envoi",
+    uploadRetryBody:
+      "Un fichier joint n'a pas encore pu être envoyé. Il reste enregistré sur cet appareil et sera envoyé automatiquement dès que la connexion le permettra.",
+    signOutPendingTitle: "Certaines modifications ne sont pas encore synchronisées",
+    signOutPendingBody:
+      "Vous êtes déconnecté, mais des modifications faites sur cet appareil n'ont pas encore pu être envoyées aux dossiers de l'hôpital. Elles restent enregistrées ici et seront envoyées après la prochaine connexion sur cet appareil.",
+  },
+  tableNames: {
+    hospitals: "Informations de l'hôpital",
+    departments: "Service",
+    wards: "Unité de soins",
+    beds: "Lit",
+    staff: "Membre du personnel",
+    patients: "Dossier patient",
+    allergies: "Allergie",
+    visits: "Visite",
+    consultations: "Consultation",
+    diagnoses: "Diagnostic",
+    orders: "Demande d'examen",
+    results: "Résultat d'examen",
+    prescriptions: "Ordonnance",
+    medication_administrations: "Médicament administré",
+    treatment_records: "Note de traitement",
+    admissions: "Hospitalisation",
+    transfers: "Transfert",
+    care_plan_items: "Tâche du plan de soins",
+    care_plan_entries: "Note du plan de soins",
+    billable_items: "Article du tarif",
+    charges: "Frais facturés",
+    clinical_terms: "Terme médical",
+    follow_up_tasks: "Tâche de suivi",
+    patient_history: "Antécédent médical",
+    ros_responses: "Réponse de la revue des systèmes",
+    notifications: "Notification",
   },
   visitReport: {
     button: "Compte rendu",

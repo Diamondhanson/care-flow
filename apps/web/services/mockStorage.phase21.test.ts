@@ -42,6 +42,7 @@ import {
   addConsultation,
   addPatientHistory,
   clearRosResponse,
+  resetDatabase,
   deletePatientHistory,
   getHistoryForPatient,
   getPatientById,
@@ -62,8 +63,11 @@ const brand = <T extends string>(v: string): T => v as T;
 
 
 beforeEach(() => {
-  // A fresh localStorage per test re-seeds the demo DB lazily on first access.
+  // A fresh store per test: the engine keeps the authoritative copy in memory
+  // (Stage 3), so clearing localStorage alone no longer re-seeds — reset the
+  // engine explicitly, then clear the legacy storage shim.
   memoryStorage.clear();
+  resetDatabase();
 });
 
 describe("patient history CRUD", () => {

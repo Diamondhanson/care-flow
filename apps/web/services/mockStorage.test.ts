@@ -564,6 +564,29 @@ describe("diffDatabases", () => {
     expect(changes[0].table).toBe("medication_administrations");
   });
 
+  it("orders deletes child-first so FK replays can't fail (Stage 2)", () => {
+    // Deleting a ward and its bed together: DB_COLLECTIONS lists wards before
+    // beds, but the *delete* for beds (child) must be emitted before wards
+    // (parent) or the server would reject the parent delete on the FK.
+    const pre = normalizeDatabase({
+      wards: [makeWard("w1")],
+      beds: [
+        {
+          id: "b1",
+          ward_id: "w1",
+        } as unknown as ReturnType<typeof normalizeDatabase>["beds"][number],
+      ],
+    });
+    const post = normalizeDatabase({});
+    const changes = diffDatabases(pre, post);
+    const deleteOrder = changes
+      .filter((c) => c.op === "delete")
+      .map((c) => c.table);
+    expect(deleteOrder.indexOf("beds")).toBeLessThan(
+      deleteOrder.indexOf("wards"),
+    );
+  });
+
   it("captures a multi-row, multi-table mutation as one change per row", () => {
     const pre = normalizeDatabase({
       patients: [makePatient({ id: "p1" })],

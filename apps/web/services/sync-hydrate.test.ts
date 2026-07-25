@@ -1,7 +1,10 @@
 /**
  * Regression test for the vitals-disappear bug: a hydrate (cache replace) must
- * NOT drop a local write that is still pending in the sync outbox. The fix
- * overlays the outbox on top of the server snapshot in replaceDatabaseFromTables.
+ * NOT drop a local write that is still pending in the sync outbox. In the
+ * current engine the overlay is a two-step hydrate flow (see
+ * supabaseData.hydrateFromSupabase): replaceDatabaseFromTables installs the
+ * server snapshot, then applyPendingChangesToCache re-applies the outbox on
+ * top. This test drives those two steps exactly as the hydrate does.
  */
 
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -13,6 +16,7 @@ import {
   addTreatmentLog,
   getTreatmentRecordsForVisit,
   replaceDatabaseFromTables,
+  applyPendingChangesToCache,
 } from "@/services/mockStorage";
 import { readOutbox } from "@/services/syncQueue";
 import type { HospitalId } from "@careflow/shared";
@@ -55,6 +59,7 @@ describe("hydrate does not clobber un-synced local writes", () => {
       hospitals: [{ id: "hosp_demo", name: "Demo Hospital" }],
       treatment_records: [], // server doesn't have the new vitals yet
     });
+    applyPendingChangesToCache(readOutbox());
 
     // The overlay re-applied the pending write → vitals survive.
     const after = getTreatmentRecordsForVisit(visit.id);
@@ -72,6 +77,7 @@ describe("hydrate does not clobber un-synced local writes", () => {
     );
     addTreatmentLog(visit.id, { recorded_by_id: null, temperature_c: 38.2 });
     replaceDatabaseFromTables({ hospitals: [{ id: "hosp_demo", name: "Demo" }] });
+    applyPendingChangesToCache(readOutbox());
     expect(getTreatmentRecordsForVisit(visit.id)).toHaveLength(1);
   });
 });

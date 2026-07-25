@@ -60,6 +60,9 @@ import {
   getVisits,
   getWards,
   markNoKnownAllergies,
+  cancelFollowUpTask,
+  completeFollowUpTask,
+  getFollowUpTasks,
   recordDeath,
   recordDisposition,
   recordMedicationAdministration,
@@ -311,6 +314,21 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
     expect(discharged.closed_at).not.toBeNull();
     // Visit drops off the live board.
     expect(getActiveVisits().some((v) => v.id === visit.id)).toBe(false);
+
+    // Discharge scheduled the post-discharge follow-up tasks (+2d call, +7d
+    // tele check-in) against the same visit, titled with the patient's name.
+    const tasks = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(tasks).toHaveLength(2);
+    expect(tasks.map((f) => f.kind).sort()).toEqual(["call", "tele_checkin"]);
+    for (const task of tasks) {
+      expect(task.status).toBe("pending");
+      expect(task.patient_id).toBe(patient.id);
+      expect(task.title).toContain("Awa Tabi");
+      const days =
+        (new Date(task.due_at).getTime() - new Date(task.created_at).getTime()) /
+        (24 * 3600_000);
+      expect(days).toBe(task.kind === "call" ? 2 : 7);
+    }
   });
 });
 
@@ -511,6 +529,67 @@ describe("DEATH — recorded at any stage, bypasses clearance gate", () => {
     const dead = recordDisposition(visit.id, "deceased", brand<StaffId>("staff_chen"));
     expect(dead.stage).toBe("deceased");
     expect(dead.status).toBe("closed");
+  });
+});
+
+// ===========================================================================
+// FOLLOW-UP — tasks scheduled at discharge, then worked from the task list.
+// ===========================================================================
+
+describe("FOLLOW-UP — post-discharge task scheduling and lifecycle", () => {
+  it("creates no follow-up tasks for a death", () => {
+    const { visit } = createNewVisit(
+      { full_name: "Paul Biyick", date_of_birth: "1952-02-02" },
+      { visit_type: "emergency" },
+    );
+    recordDeath(visit.id, brand<StaffId>("staff_chen"));
+    expect(getFollowUpTasks().filter((f) => f.visit_id === visit.id)).toHaveLength(0);
+  });
+
+  it("titles tasks with the anonymous identifier for an unidentified patient", () => {
+    const { patient, visit } = createNewVisit(
+      { full_name: "Unidentified", is_emergency_anonymous: true },
+      { visit_type: "emergency" },
+    );
+    // No admission → the discharge gate does not apply.
+    updateVisitStage(visit.id, "discharged");
+    const tasks = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(tasks).toHaveLength(2);
+    for (const task of tasks) {
+      expect(task.title).toContain(patient.anonymous_identifier!);
+    }
+  });
+
+  it("completes and cancels tasks, and sorts pending first by due date", () => {
+    const { visit } = createNewVisit(
+      { full_name: "Suivi Patient", date_of_birth: "1985-08-08" },
+      { visit_type: "outpatient" },
+    );
+    updateVisitStage(visit.id, "discharged");
+
+    const [call, checkin] = getFollowUpTasks().filter(
+      (f) => f.visit_id === visit.id,
+    );
+    // Pending list is due-date ascending: the +2d call before the +7d check-in.
+    expect(call.kind).toBe("call");
+    expect(checkin.kind).toBe("tele_checkin");
+
+    const done = completeFollowUpTask(call.id, brand<StaffId>("staff_patel"), "Recovering well");
+    expect(done.status).toBe("done");
+    expect(done.completed_by_id).toBe("staff_patel");
+    expect(done.completed_at).not.toBeNull();
+    expect(done.notes).toBe("Recovering well");
+
+    const cancelled = cancelFollowUpTask(checkin.id);
+    expect(cancelled.status).toBe("cancelled");
+
+    // Worked tasks sort behind any pending ones and keep their final states.
+    const mine = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(mine.map((f) => f.status).sort()).toEqual(["cancelled", "done"]);
+
+    // Unknown ids throw rather than failing silently.
+    expect(() => completeFollowUpTask("missing", null)).toThrow(/not found/i);
+    expect(() => cancelFollowUpTask("missing")).toThrow(/not found/i);
   });
 });
 

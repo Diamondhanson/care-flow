@@ -48,6 +48,7 @@ import {
   getHospitals,
   getStaffAccountById,
   getStaffAccountByUserId,
+  initLocalStore,
   setActiveHospitalId,
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
@@ -212,7 +213,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    getCurrentUser()
+    // Open the on-device store (IndexedDB) BEFORE resolving the session, so
+    // every later read hits fully-initialized data (Stage 3 storage engine).
+    initLocalStore()
+      .then(() => getCurrentUser())
       .then(async (user) => {
         if (!active) return;
         await resolveUser(user);

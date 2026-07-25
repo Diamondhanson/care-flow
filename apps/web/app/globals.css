@@ -55,6 +55,7 @@
   --color-status-clearance: var(--status-clearance);
   --color-status-clearance-foreground: var(--status-clearance-foreground);
   --color-status-warning: var(--status-warning);
+  --color-success: var(--success);
   --color-status-deceased: var(--status-deceased);
   --color-status-deceased-foreground: var(--status-deceased-foreground);
   --color-triage-1: var(--triage-1);
@@ -146,6 +147,8 @@
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
   --status-warning: oklch(0.705 0.16 70.0);
+  /* Positive confirmation (toasts, "all synced") — matches clearance green. */
+  --success: oklch(0.723 0.176 149.0);
   /* Deceased — a solemn, low-chroma slate; never alarmist red. */
   --status-deceased: oklch(0.37 0.02 265.0);
   --status-deceased-foreground: oklch(0.984 0.003 247.858);
@@ -212,6 +215,8 @@
   --status-clearance: oklch(0.723 0.176 149.0);
   --status-clearance-foreground: oklch(0.984 0.003 247.858);
   --status-warning: oklch(0.769 0.16 70.0);
+  /* Positive confirmation (toasts, "all synced") — matches clearance green. */
+  --success: oklch(0.745 0.176 149.0);
   /* Deceased — a solemn, low-chroma slate; never alarmist red. */
   --status-deceased: oklch(0.62 0.02 265.0);
   --status-deceased-foreground: oklch(0.208 0.042 265.755);
