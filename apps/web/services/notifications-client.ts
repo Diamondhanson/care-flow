@@ -16,9 +16,9 @@ import {
   NOTIFICATIONS_EVENT,
   getNotificationsForStaff,
   getUnreadNotificationCount,
+  subscribeCache,
   upsertRowFromServer,
 } from "@/services/mockStorage";
-import { OUTBOX_EVENT } from "@/services/syncQueue";
 import type { Notification, StaffId } from "@careflow/shared";
 
 // ---------------------------------------------------------------------------
@@ -29,9 +29,10 @@ let version = 0;
 
 /**
  * Subscribe to anything that can change this device's notifications: a local
- * mutation (OUTBOX_EVENT), a Realtime insert / read-state change
- * (NOTIFICATIONS_EVENT), and cross-tab writes (storage). Bumps a version
- * counter so getNotificationsVersion() returns a new value React can diff.
+ * mutation or cross-tab/remote write (the reactive cache, via subscribeCache)
+ * and a Realtime insert / read-state change (NOTIFICATIONS_EVENT). Bumps a
+ * version counter so getNotificationsVersion() returns a new value React can
+ * diff.
  */
 export function subscribeNotifications(onChange: () => void): () => void {
   if (typeof window === "undefined") return () => {};
@@ -40,12 +41,10 @@ export function subscribeNotifications(onChange: () => void): () => void {
     onChange();
   };
   window.addEventListener(NOTIFICATIONS_EVENT, handler);
-  window.addEventListener(OUTBOX_EVENT, handler);
-  window.addEventListener("storage", handler);
+  const unsubscribeCache = subscribeCache(handler);
   return () => {
     window.removeEventListener(NOTIFICATIONS_EVENT, handler);
-    window.removeEventListener(OUTBOX_EVENT, handler);
-    window.removeEventListener("storage", handler);
+    unsubscribeCache();
   };
 }
 

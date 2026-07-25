@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PatientName } from "@/lib/patient-name";
+import { useCacheVersion } from "@/lib/use-cache";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -296,6 +297,7 @@ function WorklistCard({
 export default function MedicationsPage() {
   const { actingStaff } = useRole();
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [rows, setRows] = useState<MarRow[] | null>(null);
   // `now` is captured per render-cycle so dose math is stable within a refresh.
   const [now, setNow] = useState(() => Date.now());
@@ -309,7 +311,7 @@ export default function MedicationsPage() {
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [t, cacheVersion]);
 
   // A pending held/refused/suspended action awaiting its required reason.
   const [reasonTarget, setReasonTarget] = useState<{

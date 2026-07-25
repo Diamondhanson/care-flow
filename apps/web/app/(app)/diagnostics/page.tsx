@@ -13,8 +13,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { PatientName } from "@/lib/patient-name";
+import { StatusBadge, type StatusTone } from "@/components/ui/status-badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,10 +42,11 @@ import {
 } from "@/components/diagnostics/orders";
 import { useRole } from "@/components/role-provider";
 import { useT, type TFunction } from "@/components/locale-provider";
-import {
-  uploadClinicalFile,
-  LAB_RESULTS_BUCKET,
-} from "@/lib/supabase/storage";
+import { LAB_RESULTS_BUCKET } from "@/lib/supabase/storage";
+import { uploadOrQueueClinicalFile } from "@/lib/supabase/upload-queue";
+import { notify } from "@/lib/notify";
+import { useCacheVersion } from "@/lib/use-cache";
+import { PatientName } from "@/lib/patient-name";
 import type { Order, OrderType } from "@careflow/shared";
 
 const TYPE_ICON: Record<OrderType, LucideIcon> = {
@@ -88,6 +88,7 @@ function load(t: TFunction): QueueRow[] {
 
 export default function DiagnosticsPage() {
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [rows, setRows] = useState<QueueRow[] | null>(null);
   const [active, setActive] = useState<Order | null>(null);
 
@@ -98,7 +99,7 @@ export default function DiagnosticsPage() {
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [t, cacheVersion]);
 
   const pending = rows?.length ?? null;
 
@@ -134,7 +135,9 @@ export default function DiagnosticsPage() {
         <div className="flex flex-col gap-3">
           {rows.map(({ order, patientName, mrn, isAnonymous, chiefComplaint, orderedBy }) => {
             const Icon = TYPE_ICON[order.order_type];
-            const token = ORDER_STATUS_TOKEN[order.status];
+            // Only open orders (requested/in_progress) reach this queue, so the
+            // token is never "muted" (cancelled) here.
+            const token = ORDER_STATUS_TOKEN[order.status] as StatusTone;
             return (
               <Card key={order.id}>
                 <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
@@ -153,16 +156,9 @@ export default function DiagnosticsPage() {
                     <div className="flex min-w-0 flex-col gap-0.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-medium">{order.description}</span>
-                        <Badge
-                          variant="outline"
-                          className="gap-1 border-transparent text-[10px] uppercase"
-                          style={{
-                            backgroundColor: `var(--status-${token})`,
-                            color: `var(--status-${token}-foreground)`,
-                          }}
-                        >
+                        <StatusBadge tone={token} variant="solid">
                           {t(ORDER_STATUS_LABEL[order.status])}
-                        </Badge>
+                        </StatusBadge>
                         <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
                           {t(ORDER_TYPE_LABEL[order.order_type])}
                         </span>
@@ -255,9 +251,10 @@ function ResultFormSheet({
     if (!order || uploading) return;
     let attachmentPath: string | null = null;
 
-    // Upload the attachment first (when present). Storage is online-only and
-    // RLS-scoped to the hospital prefix; if it fails we abort so the user can
-    // retry rather than recording a result that references a missing file.
+    // Upload the attachment first (when present). Storage is RLS-scoped to the
+    // hospital prefix. Offline-friendly (Stage 4): when the connection is down
+    // or the upload fails, the file is queued on this device and uploads
+    // automatically later — the result saves immediately with its final path.
     if (file) {
       if (!actingStaff?.hospital_id) {
         setUploadError(t("diagnostics.attachmentNoHospital"));
@@ -266,7 +263,7 @@ function ResultFormSheet({
       setUploading(true);
       setUploadError(null);
       try {
-        const { path } = await uploadClinicalFile({
+        const { path, queued } = await uploadOrQueueClinicalFile({
           bucket: LAB_RESULTS_BUCKET,
           hospitalId: actingStaff.hospital_id,
           segments: ["orders", order.id],
@@ -275,6 +272,13 @@ function ResultFormSheet({
           contentType: file.type || undefined,
         });
         attachmentPath = path;
+        if (queued) {
+          notify({
+            kind: "info",
+            titleKey: "notify.uploadQueuedTitle",
+            bodyKey: "notify.uploadQueuedBody",
+          });
+        }
       } catch (err) {
         setUploading(false);
         setUploadError(

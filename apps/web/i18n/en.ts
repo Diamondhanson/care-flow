@@ -35,6 +35,7 @@ export const en = {
     departments: "Departments",
     floorMap: "Floor Map",
     carePlans: "Nursing care plan",
+    followUps: "Follow-ups",
     billing: "Billing",
     reports: "Reports",
     staff: "Staff Directory",
@@ -520,6 +521,8 @@ export const en = {
       "Hospital-wide activity, occupancy, clinical and pharmacy metrics for the selected period. Export a full snapshot as PDF or Excel.",
     pdf: "PDF",
     excel: "Excel",
+    partialNotice:
+      "This period reaches beyond the records kept on this device. Connect to the internet to include the full history — figures shown may be incomplete.",
     startDate: "Start date",
     endDate: "End date",
     to: "to",
@@ -703,6 +706,25 @@ export const en = {
     members: "members",
     subtitle: "Clinical and administrative staff, grouped by role.",
     loading: "Loading directory…",
+    editTitle: "Edit staff member",
+    editDesc: "Update this team member's directory details.",
+    saving: "Saving…",
+    updateFailed: "Could not update the staff member.",
+    deactivate: "Deactivate",
+    reactivate: "Reactivate",
+    deactivatePrompt: "Deactivate this staff member?",
+    deactivateConfirm: "Deactivate",
+    resetPassword: "Reset password",
+    resetPasswordTitle: "Reset password",
+    resetPasswordDesc:
+      "Set a new sign-in password for {name}, then hand it to them directly.",
+    newPassword: "New password",
+    newPasswordPlaceholder: "At least 8 characters",
+    resetPasswordTooShort: "Password must be at least 8 characters.",
+    resetPasswordSuccess: "Password updated.",
+    resetNoSession: "Your session has expired — please sign in again.",
+    resetting: "Updating…",
+    resetConfirm: "Set password",
     groupDoctors: "Doctors",
     groupNursing: "Nursing",
     groupLaboratory: "Laboratory",
@@ -793,6 +815,11 @@ export const en = {
     total: "total",
     subtitle: "Manage the clinical and administrative units patients are routed to.",
     newDepartment: "New department",
+    archiveTitle: "Archive department",
+    archiveBody:
+      "Archive “{name}”? It will be hidden from routing and board filters. You can reactivate it at any time.",
+    archiveConfirm: "Archive",
+    updateFailed: "Could not update the department.",
     unroutedOne: "active visit not yet routed to a department.",
     unroutedOther: "active visits not yet routed to a department.",
     loading: "Loading departments…",
@@ -899,6 +926,7 @@ export const en = {
     dob: "Date of birth",
     dobUnknown: "Don't know the exact date? Enter age instead",
     useExactDob: "Enter exact date of birth instead",
+    dobFutureError: "Date of birth cannot be in the future.",
     approxAge: "Approximate age (years)",
     approxAgePlaceholder: "e.g. 45",
     phone: "Phone",
@@ -1547,8 +1575,52 @@ export const en = {
     footerNote: "CareFlow — the hospital's own operational record.",
   },
 
+  followUp: {
+    title: "Post-discharge follow-ups",
+    subtitle:
+      "Work the calls and check-ins scheduled automatically when a patient is discharged.",
+    loading: "Loading follow-ups…",
+    pendingCount: "pending",
+    // Sections
+    dueSection: "Due",
+    upcomingSection: "Upcoming",
+    doneSection: "Done",
+    // Kind labels
+    kindCall: "Phone call",
+    kindTeleCheckin: "Tele check-in",
+    kindSummaryDelivery: "Summary delivery",
+    // Row details
+    dueOn: "Due {date}",
+    overdue: "Overdue",
+    completedOn: "Completed {date}",
+    noPhone: "No phone on file",
+    // Actions
+    markDone: "Mark done",
+    cancelTask: "Cancel",
+    // Empty states
+    allClear: "No follow-ups pending",
+    allClearHint:
+      "New tasks are scheduled automatically each time a patient is discharged.",
+    noneUpcoming: "Nothing scheduled ahead.",
+    noneDone: "No completed follow-ups yet.",
+    // Errors (notify keys)
+    actionFailedTitle: "Could not update the follow-up task",
+    actionFailedBody:
+      "The change was not saved on this device. Try again; if it keeps happening, contact your administrator.",
+  },
+
+  offline: {
+    title: "You're offline",
+    body: "This page hasn't been cached yet. Pages you've already visited still work offline, and any changes you make are saved on this device and will sync once you're back online.",
+    backToBoard: "Back to the board",
+  },
+
   auth: {
     backHome: "Back to home",
+    backendMissing: {
+      title: "This copy of CareFlow is not connected to a server",
+      body: "Sign-in is unavailable because the server settings are missing. If you run this app, copy .env.example to .env.local and fill in the Supabase values, then restart. If you're a staff member, contact your administrator.",
+    },
     login: {
       title: "Sign in",
       subtitle: "Enter your username and password to continue.",

@@ -27,7 +27,6 @@ import {
   TriangleAlert,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PatientName } from "@/lib/patient-name";
@@ -46,7 +45,7 @@ import {
   resolveCarePlanItem,
   type InpatientCollabData,
 } from "@/services/mockStorage";
-import { OUTBOX_EVENT } from "@/services/syncQueue";
+import { useCacheVersion } from "@/lib/use-cache";
 
 const TEAL = "var(--status-diagnostics)";
 const AMBER = "var(--status-treatment)";
@@ -104,29 +103,27 @@ export default function WorklistPage() {
   const activeLocale = localeMounted ? locale : "en";
   const { mounted: roleMounted, actingRole, actingStaffId } = useRole();
 
+  const cacheVersion = useCacheVersion();
   const [tick, setTick] = useState(0);
   const [rows, setRows] = useState<InpatientCollabData[] | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRows(getActiveInpatientCollabData());
-  }, [tick]);
+  }, [tick, cacheVersion]);
 
   const refresh = () => setTick((x) => x + 1);
 
   // Keep the board current on its own, so it never goes stale while open:
   //  - every minute, so a dose ticking from "due" to "overdue" as time passes
-  //    surfaces without reopening the page;
-  //  - the instant anything is written — a mutation in this tab (OUTBOX_EVENT,
-  //    fired on every save) or a write from another tab ("storage").
+  //    surfaces without reopening the page (a wall-clock concern the reactive
+  //    cache can't see);
+  //  - the instant anything is written, via useCacheVersion above (covers this
+  //    tab's mutations, other tabs, and remote realtime changes).
   useEffect(() => {
-    const bump = () => setTick((x) => x + 1);
-    const interval = window.setInterval(bump, 60_000);
-    window.addEventListener(OUTBOX_EVENT, bump);
-    window.addEventListener("storage", bump);
+    const interval = window.setInterval(() => setTick((x) => x + 1), 60_000);
     return () => {
       window.clearInterval(interval);
-      window.removeEventListener(OUTBOX_EVENT, bump);
-      window.removeEventListener("storage", bump);
     };
   }, []);
 

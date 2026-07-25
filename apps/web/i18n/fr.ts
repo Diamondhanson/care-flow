@@ -32,6 +32,7 @@ export const fr = {
     departments: "Services",
     floorMap: "Plan des étages",
     carePlans: "Plan de soins infirmiers",
+    followUps: "Suivis post-sortie",
     billing: "Facturation",
     reports: "Rapports",
     staff: "Personnel",
@@ -517,6 +518,8 @@ export const fr = {
       "Activité, occupation et indicateurs cliniques et pharmaceutiques de tout l'hôpital pour la période sélectionnée. Exportez un instantané complet en PDF ou Excel.",
     pdf: "PDF",
     excel: "Excel",
+    partialNotice:
+      "Cette période dépasse les dossiers conservés sur cet appareil. Connectez-vous à Internet pour inclure l'historique complet — les chiffres affichés peuvent être incomplets.",
     startDate: "Date de début",
     endDate: "Date de fin",
     to: "à",
@@ -700,6 +703,25 @@ export const fr = {
     members: "membres",
     subtitle: "Personnel clinique et administratif, regroupé par rôle.",
     loading: "Chargement de l'annuaire…",
+    editTitle: "Modifier le membre du personnel",
+    editDesc: "Mettez à jour les informations d'annuaire de ce membre.",
+    saving: "Enregistrement…",
+    updateFailed: "Impossible de mettre à jour le membre du personnel.",
+    deactivate: "Désactiver",
+    reactivate: "Réactiver",
+    deactivatePrompt: "Désactiver ce membre du personnel ?",
+    deactivateConfirm: "Désactiver",
+    resetPassword: "Réinitialiser le mot de passe",
+    resetPasswordTitle: "Réinitialiser le mot de passe",
+    resetPasswordDesc:
+      "Définissez un nouveau mot de passe de connexion pour {name}, puis remettez-le-lui directement.",
+    newPassword: "Nouveau mot de passe",
+    newPasswordPlaceholder: "Au moins 8 caractères",
+    resetPasswordTooShort: "Le mot de passe doit comporter au moins 8 caractères.",
+    resetPasswordSuccess: "Mot de passe mis à jour.",
+    resetNoSession: "Votre session a expiré — veuillez vous reconnecter.",
+    resetting: "Mise à jour…",
+    resetConfirm: "Définir le mot de passe",
     groupDoctors: "Médecins",
     groupNursing: "Personnel infirmier",
     groupLaboratory: "Laboratoire",
@@ -790,6 +812,11 @@ export const fr = {
     total: "au total",
     subtitle: "Gérez les unités cliniques et administratives vers lesquelles les patients sont orientés.",
     newDepartment: "Nouveau service",
+    archiveTitle: "Archiver le service",
+    archiveBody:
+      "Archiver « {name} » ? Il sera masqué du routage et des filtres du tableau. Vous pourrez le réactiver à tout moment.",
+    archiveConfirm: "Archiver",
+    updateFailed: "Impossible de mettre à jour le service.",
     unroutedOne: "visite active pas encore rattachée à un service.",
     unroutedOther: "visites actives pas encore rattachées à un service.",
     loading: "Chargement des services…",
@@ -896,6 +923,7 @@ export const fr = {
     dob: "Date de naissance",
     dobUnknown: "Date exacte inconnue ? Saisir l'âge à la place",
     useExactDob: "Saisir la date de naissance exacte",
+    dobFutureError: "La date de naissance ne peut pas être dans le futur.",
     approxAge: "Âge approximatif (années)",
     approxAgePlaceholder: "ex. 45",
     phone: "Téléphone",
@@ -1542,8 +1570,52 @@ export const fr = {
     footerNote: "CareFlow — le dossier opérationnel propre à l'hôpital.",
   },
 
+  followUp: {
+    title: "Suivis post-sortie",
+    subtitle:
+      "Traitez les appels et contrôles programmés automatiquement à la sortie de chaque patient.",
+    loading: "Chargement des suivis…",
+    pendingCount: "en attente",
+    // Sections
+    dueSection: "À faire",
+    upcomingSection: "À venir",
+    doneSection: "Terminés",
+    // Kind labels
+    kindCall: "Appel téléphonique",
+    kindTeleCheckin: "Télé-contrôle",
+    kindSummaryDelivery: "Envoi du compte rendu",
+    // Row details
+    dueOn: "Échéance {date}",
+    overdue: "En retard",
+    completedOn: "Terminé {date}",
+    noPhone: "Aucun téléphone enregistré",
+    // Actions
+    markDone: "Marquer terminé",
+    cancelTask: "Annuler",
+    // Empty states
+    allClear: "Aucun suivi en attente",
+    allClearHint:
+      "De nouvelles tâches sont programmées automatiquement à chaque sortie de patient.",
+    noneUpcoming: "Rien de programmé à venir.",
+    noneDone: "Aucun suivi terminé pour l'instant.",
+    // Errors (notify keys)
+    actionFailedTitle: "Impossible de mettre à jour la tâche de suivi",
+    actionFailedBody:
+      "La modification n'a pas été enregistrée sur cet appareil. Réessayez ; si le problème persiste, contactez votre administrateur.",
+  },
+
+  offline: {
+    title: "Vous êtes hors ligne",
+    body: "Cette page n'a pas encore été mise en cache. Les pages déjà visitées fonctionnent toujours hors ligne, et toute modification est enregistrée sur cet appareil puis synchronisée dès que la connexion revient.",
+    backToBoard: "Retour au tableau",
+  },
+
   auth: {
     backHome: "Retour à l'accueil",
+    backendMissing: {
+      title: "Cette copie de CareFlow n'est pas connectée à un serveur",
+      body: "La connexion est indisponible car les paramètres du serveur sont manquants. Si vous exploitez cette application, copiez .env.example vers .env.local, renseignez les valeurs Supabase, puis redémarrez. Si vous êtes membre du personnel, contactez votre administrateur.",
+    },
     login: {
       title: "Connexion",
       subtitle: "Saisissez votre nom d'utilisateur et votre mot de passe.",

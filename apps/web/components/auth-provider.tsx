@@ -53,6 +53,7 @@ import {
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
 import { drainOutbox } from "@/services/syncQueue";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   setTelemetryContext,
   clearTelemetryContext,
@@ -70,6 +71,12 @@ import type {
 interface AuthContextValue {
   /** False until the client has hydrated + resolved the session. */
   mounted: boolean;
+  /**
+   * False when the Supabase env vars are missing (fresh/unconfigured checkout).
+   * The auth screens show a clear "not configured" notice instead of a generic
+   * sign-in failure, and no Supabase call is attempted.
+   */
+  backendConfigured: boolean;
   /** A fully-resolved staff identity (signed in AND belongs to a hospital). */
   isAuthenticated: boolean;
   /** Verified session but no hospital yet — should go to the onboarding step. */
@@ -212,6 +219,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Unconfigured checkout: skip every Supabase call (they would throw) and
+    // let the auth screens render the "backend not configured" notice.
+    if (!isSupabaseConfigured()) {
+      setMounted(true);
+      return;
+    }
     let active = true;
     // Open the on-device store (IndexedDB) BEFORE resolving the session, so
     // every later read hits fully-initialized data (Stage 3 storage engine).
@@ -220,6 +233,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .then(async (user) => {
         if (!active) return;
         await resolveUser(user);
+      })
+      .catch(() => {
+        // Session resolution failed (e.g. transient network/auth error). The
+        // user simply stays signed out; sign-in surfaces its own errors.
       })
       .finally(() => {
         if (active) setMounted(true);
@@ -294,6 +311,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       mounted,
+      backendConfigured: isSupabaseConfigured(),
       isAuthenticated: currentStaff !== null,
       needsOnboarding: authUser !== null && currentStaff === null,
       authUser,

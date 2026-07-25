@@ -14,6 +14,7 @@ import {
   LayoutDashboard,
   LayoutGrid,
   ListChecks,
+  PhoneCall,
   LogOut,
   Menu,
   Pill,
@@ -70,6 +71,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "nav.diagnostics", href: "/diagnostics", icon: FlaskConical },
   { title: "nav.medications", href: "/medications", icon: Pill },
   { title: "nav.carePlans", href: "/care-plans", icon: ClipboardList },
+  { title: "nav.followUps", href: "/follow-ups", icon: PhoneCall },
   { title: "nav.reconciliation", href: "/reconciliation", icon: GitMerge },
   { title: "nav.billing", href: "/billing", icon: Receipt },
   { title: "nav.departments", href: "/departments", icon: Building2 },
@@ -88,10 +90,26 @@ const NAV_ITEMS: NavItem[] = [
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
   receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation", "/billing"],
-  // Nurse: the board, the cross-ward worklist, medications, care plans, beds.
-  nurse: ["/dashboard", "/worklist", "/medications", "/care-plans", "/floor-map"],
-  // Doctor: the board, the "needs you" worklist, tests, prescribing, care plans.
-  doctor: ["/dashboard", "/worklist", "/diagnostics", "/medications", "/care-plans"],
+  // Nurse: the board, the cross-ward worklist, medications, care plans,
+  // post-discharge follow-ups, beds.
+  nurse: [
+    "/dashboard",
+    "/worklist",
+    "/medications",
+    "/care-plans",
+    "/follow-ups",
+    "/floor-map",
+  ],
+  // Doctor: the board, the "needs you" worklist, tests, prescribing, care
+  // plans, and the post-discharge follow-up worklist.
+  doctor: [
+    "/dashboard",
+    "/worklist",
+    "/diagnostics",
+    "/medications",
+    "/care-plans",
+    "/follow-ups",
+  ],
   // Pharmacist: medications and the tests that inform them.
   pharmacist: ["/dashboard", "/medications", "/diagnostics"],
   // Lab tech: the diagnostics queue.
