@@ -40,6 +40,7 @@ import {
   type DateRange,
   type Translate,
 } from "./reports";
+import type { MessageKey } from "@/i18n";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -282,7 +283,7 @@ function matchesFilters(row: PatientRegisterRow, f: RegisterFilters): boolean {
 // Outcome (Devenir / Future) — derived from the visit's terminal stage.
 // ---------------------------------------------------------------------------
 
-export function outcomeKey(row: PatientRegisterRow): string {
+export function outcomeKey(row: PatientRegisterRow): MessageKey {
   if (row.stage === "deceased") return "reports.register.outcome.deceased";
   if (row.status === "cancelled") return "reports.register.outcome.cancelled";
   if (row.stage === "discharged" || row.stage === "followed_up") {
@@ -303,7 +304,7 @@ export interface RegisterFmtCtx {
 export interface RegisterColumn {
   key: string;
   /** i18n key for the column header. */
-  headerKey: string;
+  headerKey: MessageKey;
   /** Right-align + monospace on screen; numeric formatting in sheets. */
   numeric?: boolean;
   /** Included in the (legible, landscape) PDF. Long free-text columns are excluded. */

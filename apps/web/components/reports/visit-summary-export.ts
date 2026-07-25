@@ -16,6 +16,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import type { Translate } from "./reports";
+import { msgKey } from "@/i18n";
 import { VISIT_TYPE_LABEL, CARE_STAGE_LABEL } from "./reports";
 import { ORDER_TYPE_LABEL, ORDER_STATUS_LABEL } from "@/components/diagnostics/orders";
 import {
@@ -269,10 +270,10 @@ function drawBackgroundSection(
       const detail = (h.detail ?? {}) as Record<string, unknown>;
       const extras = [
         typeof detail.relation === "string"
-          ? t(`background.relation.${detail.relation}`)
+          ? t(msgKey(`background.relation.${detail.relation}`))
           : null,
         typeof detail.alcohol === "string"
-          ? `${t("background.alcohol")}: ${t(`background.alcoholLevel.${detail.alcohol}`)}`
+          ? `${t("background.alcohol")}: ${t(msgKey(`background.alcoholLevel.${detail.alcohol}`))}`
           : null,
         typeof detail.tobacco_pack_years === "number"
           ? t("background.packYears", {

@@ -24,6 +24,11 @@ import {
   setActiveHospitalId,
 } from "@/services/mockStorage";
 import { readOutbox, type OutboxChange } from "@/services/syncQueue";
+import type { AdmissionId, HospitalId, StaffId } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 // A seeded inpatient admission + staff in the demo tenant.
 const ADM = "adm_idris";
@@ -53,16 +58,16 @@ beforeAll(() => {
 
 beforeEach(() => {
   resetDatabase();
-  setActiveHospitalId("hosp_demo");
+  setActiveHospitalId(brand<HospitalId>("hosp_demo"));
 });
 
 describe("care-collaboration writes are captured for Supabase sync", () => {
   it("queues a doctor instruction as an insert carrying the new columns", () => {
-    addCarePlanItem(ADM, {
+    addCarePlanItem(brand<AdmissionId>(ADM), {
       kind: "instruction",
       authored_role: "doctor",
       description: "Encourage oral fluids",
-      created_by_id: DR,
+      created_by_id: brand<StaffId>(DR),
     });
     const change = items().find((c) => payload(c).kind === "instruction");
     expect(change?.op).toBe("insert");
@@ -71,13 +76,13 @@ describe("care-collaboration writes are captured for Supabase sync", () => {
   });
 
   it("queues a monitoring order with its vitals anchor + cadence", () => {
-    addCarePlanItem(ADM, {
+    addCarePlanItem(brand<AdmissionId>(ADM), {
       kind: "monitoring",
       authored_role: "doctor",
       monitors: "vitals",
       frequency: "every 1 hour",
       description: "Vitals + GCS",
-      created_by_id: DR,
+      created_by_id: brand<StaffId>(DR),
     });
     const change = items().find((c) => payload(c).kind === "monitoring");
     expect(change?.op).toBe("insert");
@@ -86,10 +91,10 @@ describe("care-collaboration writes are captured for Supabase sync", () => {
   });
 
   it("queues a nurse→doctor flag as an insert with needs_doctor", () => {
-    addCarePlanEntry(ADM, {
+    addCarePlanEntry(brand<AdmissionId>(ADM), {
       note: "Wound edge looks red — please review.",
       needs_doctor: true,
-      recorded_by_id: NURSE,
+      recorded_by_id: brand<StaffId>(NURSE),
     });
     const change = entries().find((c) => payload(c).needs_doctor === true);
     expect(change?.op).toBe("insert");
@@ -97,12 +102,12 @@ describe("care-collaboration writes are captured for Supabase sync", () => {
   });
 
   it("captures the doctor acknowledgement as an UPDATE on the append-only entries table", () => {
-    const entry = addCarePlanEntry(ADM, {
+    const entry = addCarePlanEntry(brand<AdmissionId>(ADM), {
       note: "?DVT — new calf pain",
       needs_doctor: true,
-      recorded_by_id: NURSE,
+      recorded_by_id: brand<StaffId>(NURSE),
     });
-    acknowledgeCarePlanEntry(entry.id, DR);
+    acknowledgeCarePlanEntry(entry.id, brand<StaffId>(DR));
 
     // The append-only table still gets a generic row-level UPDATE in the outbox,
     // which pushChangeToServer uploads as a last-write-wins upsert.
@@ -115,11 +120,11 @@ describe("care-collaboration writes are captured for Supabase sync", () => {
   });
 
   it("captures marking an order done as a versioned UPDATE", () => {
-    const item = addCarePlanItem(ADM, {
+    const item = addCarePlanItem(brand<AdmissionId>(ADM), {
       kind: "instruction",
       authored_role: "doctor",
       description: "Daily weights",
-      created_by_id: DR,
+      created_by_id: brand<StaffId>(DR),
     });
     resolveCarePlanItem(item.id);
     const done = items().find(
@@ -152,7 +157,7 @@ describe("care-collaboration writes are captured for Supabase sync", () => {
         },
       ],
     });
-    const got = getCarePlanItemsForAdmission("adm_srv");
+    const got = getCarePlanItemsForAdmission(brand<AdmissionId>("adm_srv"));
     expect(got).toHaveLength(1);
     expect(got[0].kind).toBe("monitoring");
     expect(got[0].monitors).toBe("vitals");

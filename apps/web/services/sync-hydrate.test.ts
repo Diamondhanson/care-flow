@@ -15,6 +15,11 @@ import {
   replaceDatabaseFromTables,
 } from "@/services/mockStorage";
 import { readOutbox } from "@/services/syncQueue";
+import type { HospitalId } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 beforeAll(() => {
   const store = new Map<string, string>();
@@ -30,7 +35,7 @@ beforeAll(() => {
     },
   };
 });
-beforeEach(() => { resetDatabase(); setActiveHospitalId("hosp_demo"); });
+beforeEach(() => { resetDatabase(); setActiveHospitalId(brand<HospitalId>("hosp_demo")); });
 
 describe("hydrate does not clobber un-synced local writes", () => {
   it("preserves freshly-entered vitals when a hydrate snapshot lacks them", () => {

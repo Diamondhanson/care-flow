@@ -27,6 +27,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useT } from "@/components/locale-provider";
+import type { MessageKey } from "@/i18n";
 
 const STORAGE_KEY = "careflow_tour_seen";
 
@@ -35,8 +36,8 @@ export const OPEN_TOUR_EVENT = "careflow:open-tour";
 
 interface TourStep {
   icon: LucideIcon;
-  titleKey: string;
-  bodyKey: string;
+  titleKey: MessageKey;
+  bodyKey: MessageKey;
   /** Suffix of a `--status-{token}` accent for the step's icon chip. */
   token: "boarding" | "diagnostics" | "treatment" | "discharge";
 }

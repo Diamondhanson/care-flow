@@ -54,10 +54,11 @@ import { isValidEmail } from "@careflow/shared/validation/email";
 import { provisionStaffLogin } from "@/app/actions/auth";
 import { ResetDemo } from "@/components/demo/reset-demo";
 import type { Department, Staff, StaffRole } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 interface RoleGroup {
   role: StaffRole;
-  label: string;
+  label: MessageKey;
   /** Suffix of the `--status-{token}` CSS variable used as the section accent. */
   token: "boarding" | "diagnostics" | "treatment" | "discharge" | "clearance";
   icon: LucideIcon;
@@ -297,7 +298,7 @@ export default function StaffDirectoryPage() {
 }
 
 /** Role options for the add-staff select, in directory order. */
-const ROLE_OPTIONS: readonly { role: StaffRole; label: string }[] = ROLE_GROUPS.map(
+const ROLE_OPTIONS: readonly { role: StaffRole; label: MessageKey }[] = ROLE_GROUPS.map(
   (g) => ({ role: g.role, label: g.label }),
 );
 

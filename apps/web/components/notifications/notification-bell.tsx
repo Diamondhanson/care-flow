@@ -6,7 +6,7 @@ import { Bell, Check, BellRing } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useT } from "@/components/locale-provider";
+import { useT, type TFunction } from "@/components/locale-provider";
 import { useAuth } from "@/components/auth-provider";
 import {
   DropdownMenu,
@@ -234,7 +234,7 @@ export function NotificationBell() {
 /** Compact relative timestamp: "just now" · "5m ago" · "3h ago" · "2d ago". */
 function relativeTime(
   iso: string,
-  t: (key: string, params?: Record<string, string | number>) => string,
+  t: TFunction,
   locale: string,
 ): string {
   const then = new Date(iso).getTime();

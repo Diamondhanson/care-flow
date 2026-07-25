@@ -14,11 +14,18 @@ import {
 } from "@/components/medications/prescriptions";
 import { translate } from "@/i18n";
 import type {
+  HospitalId,
   MedicationAdministration,
+  MedicationAdministrationId,
   Prescription,
+  PrescriptionId,
+  Unbranded,
 } from "@careflow/shared";
 
-function rx(partial: Partial<Prescription>): Prescription {
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
+function rx(partial: Partial<Unbranded<Prescription>>): Prescription {
   return {
     id: "rx_x",
     hospital_id: "hosp_demo",
@@ -34,16 +41,16 @@ function rx(partial: Partial<Prescription>): Prescription {
     created_at: "2026-05-31T00:00:00.000Z",
     updated_at: "2026-05-31T00:00:00.000Z",
     ...partial,
-  };
+  } as Prescription;
 }
 
 function mar(
-  partial: Partial<MedicationAdministration>,
+  partial: Partial<Unbranded<MedicationAdministration>>,
 ): MedicationAdministration {
   return {
-    id: "mar_x",
-    hospital_id: "hosp_demo",
-    prescription_id: "rx_x",
+    id: brand<MedicationAdministrationId>("mar_x"),
+    hospital_id: brand<HospitalId>("hosp_demo"),
+    prescription_id: brand<PrescriptionId>("rx_x"),
     administered_by_id: null,
     scheduled_for: null,
     administered_at: null,
@@ -51,7 +58,7 @@ function mar(
     notes: null,
     created_at: "2026-05-31T00:00:00.000Z",
     ...partial,
-  };
+  } as MedicationAdministration;
 }
 
 describe("status label + token maps", () => {

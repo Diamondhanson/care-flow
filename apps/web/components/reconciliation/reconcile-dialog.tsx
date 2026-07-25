@@ -28,8 +28,9 @@ import {
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
 import type { Patient, Sex } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
-const SEX_OPTIONS: { value: Sex; labelKey: string }[] = [
+const SEX_OPTIONS: { value: Sex; labelKey: MessageKey }[] = [
   { value: "male", labelKey: "sex.male" },
   { value: "female", labelKey: "sex.female" },
   { value: "other", labelKey: "sex.other" },

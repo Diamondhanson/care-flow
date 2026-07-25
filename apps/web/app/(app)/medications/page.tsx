@@ -52,6 +52,8 @@ import type {
   MarStatus,
   MedicationAdministration,
   Prescription,
+  PrescriptionId,
+  VisitId,
 } from "@careflow/shared";
 
 const DOSE_STATE_TOKEN: Record<
@@ -101,7 +103,7 @@ interface Placement {
  * else (clinic, ED, observation without a bed) is ambulatory and grouped by
  * their department instead of a ward.
  */
-function placeVisit(visitId: string, t: TFunction): Placement {
+function placeVisit(visitId: VisitId, t: TFunction): Placement {
   const admission = getAdmissionForVisit(visitId);
   if (admission?.status === "active" && admission.bed_id) {
     const bed = getBedById(admission.bed_id);
@@ -191,7 +193,7 @@ function WorklistCard({
   row: MarRow;
   now: number;
   onRecord: (
-    prescriptionId: string,
+    prescriptionId: PrescriptionId,
     status: MarStatus,
     due: string | null,
   ) => void;
@@ -311,13 +313,13 @@ export default function MedicationsPage() {
 
   // A pending held/refused/suspended action awaiting its required reason.
   const [reasonTarget, setReasonTarget] = useState<{
-    prescriptionId: string;
+    prescriptionId: PrescriptionId;
     status: MarStatus;
     due: string | null;
   } | null>(null);
 
   function record(
-    prescriptionId: string,
+    prescriptionId: PrescriptionId,
     status: MarStatus,
     due: string | null,
     notes: string | null,
@@ -332,7 +334,7 @@ export default function MedicationsPage() {
   }
 
   function handleRecord(
-    prescriptionId: string,
+    prescriptionId: PrescriptionId,
     status: MarStatus,
     due: string | null,
   ) {

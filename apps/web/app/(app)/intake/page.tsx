@@ -35,12 +35,15 @@ import {
 import { useT } from "@/components/locale-provider";
 import type {
   Department,
+  DepartmentId,
   MaritalStatus,
   PatientHistoryType,
   Sex,
   Staff,
+  StaffId,
   TriageLevel,
 } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 interface SubmitResult {
   displayName: string;
@@ -48,7 +51,7 @@ interface SubmitResult {
   mrn: string;
 }
 
-const SEX_OPTIONS: { value: Sex; labelKey: string }[] = [
+const SEX_OPTIONS: { value: Sex; labelKey: MessageKey }[] = [
   { value: "male", labelKey: "sex.male" },
   { value: "female", labelKey: "sex.female" },
   { value: "other", labelKey: "sex.other" },
@@ -170,9 +173,10 @@ export default function IntakePage() {
       {
         visit_type: isEmergency ? "emergency" : "outpatient",
         stage: isEmergency ? "triage" : "registration",
-        department_id: departmentId || null,
-        registered_by_id: registeredById,
-        attending_doctor_id: attendingId || null,
+        // Select values are raw DOM strings; brand them at this boundary.
+        department_id: (departmentId || null) as DepartmentId | null,
+        registered_by_id: registeredById as StaffId,
+        attending_doctor_id: (attendingId || null) as StaffId | null,
         chief_complaint: reason.trim(),
         triage_level: triageLevel ? (Number(triageLevel) as TriageLevel) : null,
       },
@@ -184,7 +188,7 @@ export default function IntakePage() {
         addPatientHistory(patient.id, {
           type: entry.type,
           description: entry.description,
-          noted_by_id: registeredById || null,
+          noted_by_id: (registeredById || null) as StaffId | null,
         });
       }
     }

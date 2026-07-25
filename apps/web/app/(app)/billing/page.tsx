@@ -60,10 +60,13 @@ import { cn } from "@/lib/utils";
 import { PatientName } from "@/lib/patient-name";
 import type {
   BillableItem,
+  BillableItemId,
   Charge,
+  ChargeId,
   ChargeStatus,
   Patient,
   Visit,
+  VisitId,
 } from "@careflow/shared";
 
 /** A visit joined with its patient, for the picker + bill header. */
@@ -437,7 +440,7 @@ export default function BillingPage() {
 
   const [rows, setRows] = useState<VisitRow[] | null>(null);
   const [catalog, setCatalog] = useState<BillableItem[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<VisitId | null>(null);
   const [charges, setCharges] = useState<Charge[]>([]);
   const [search, setSearch] = useState("");
   const [chargeDialog, setChargeDialog] = useState(false);
@@ -456,7 +459,7 @@ export default function BillingPage() {
     setCatalog(getBillableItems());
   }
 
-  function refreshCharges(visitId: string | null) {
+  function refreshCharges(visitId: VisitId | null) {
     setCharges(visitId ? getChargesForVisit(visitId) : []);
   }
 
@@ -525,7 +528,8 @@ export default function BillingPage() {
   function handleAddCharge(input: { billableItemId: string | null; description: string; quantity: number; unitPrice: number }) {
     if (!selectedId) return;
     addManualCharge(selectedId, {
-      billable_item_id: input.billableItemId,
+      // The picker's value is a raw DOM string; brand it at this boundary.
+      billable_item_id: input.billableItemId as BillableItemId | null,
       description: input.description,
       quantity: input.quantity,
       unit_price: Number.isNaN(input.unitPrice) ? undefined : input.unitPrice,
@@ -551,12 +555,12 @@ export default function BillingPage() {
     reload();
   }
 
-  function handleStatus(chargeId: string, status: ChargeStatus) {
+  function handleStatus(chargeId: ChargeId, status: ChargeStatus) {
     setChargeStatus(chargeId, status);
     reload();
   }
 
-  function handleRemove(chargeId: string) {
+  function handleRemove(chargeId: ChargeId) {
     removeCharge(chargeId);
     reload();
   }

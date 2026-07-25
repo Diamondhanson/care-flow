@@ -54,10 +54,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { MessageKey } from "@/i18n";
 
 interface NavItem {
   /** i18n key — resolve with `t(item.title)`. */
-  title: string;
+  title: MessageKey;
   href: string;
   icon: LucideIcon;
 }

@@ -36,6 +36,7 @@ import { formatXaf } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import type {
   BillableItem,
+  BillableItemId,
   BillingCategory,
   BillingUnit,
 } from "@careflow/shared";
@@ -225,7 +226,8 @@ export default function BillingPricesPage() {
   function handleSave(d: DraftState) {
     const price = Math.max(0, Math.round(Number(d.unit_price) || 0));
     if (d.id) {
-      updateBillableItem(d.id, {
+      // The dialog draft holds the id as a raw string; brand it at this boundary.
+      updateBillableItem(d.id as BillableItemId, {
         category: d.category,
         name: d.name.trim(),
         unit: d.unit,

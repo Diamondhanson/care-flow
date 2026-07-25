@@ -20,6 +20,11 @@ import {
   DEFAULT_REGISTER_FILTERS,
   type PatientRegisterRow,
 } from "@/components/reports/register";
+import type { HospitalId } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 // In-memory localStorage polyfill — makes isBrowser() true so writes persist.
 beforeAll(() => {
@@ -40,7 +45,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   resetDatabase();
-  setActiveHospitalId("hosp_demo");
+  setActiveHospitalId(brand<HospitalId>("hosp_demo"));
 });
 
 const FULL_RANGE = () => presetRange("all", Date.now());

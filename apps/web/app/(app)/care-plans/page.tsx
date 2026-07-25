@@ -45,9 +45,12 @@ import { formatDateTime } from "@/i18n/format";
 import { cn } from "@/lib/utils";
 import { PatientName } from "@/lib/patient-name";
 import type {
+  AdmissionId,
   CareNeedCategory,
   CarePlanEntry,
   CarePlanItem,
+  CarePlanItemId,
+  StaffId,
 } from "@careflow/shared";
 
 /** The patient's display name, honoring the anonymous-emergency tag. */
@@ -65,9 +68,10 @@ function unitLabel(p: CarePlanPatient): string {
   return p.bed ? `${ward} · ${p.bed.label}` : ward;
 }
 
+// Accepts both branded ids (rows) and raw select strings.
 function staffName(id: string | null): string | null {
   if (!id) return null;
-  return getStaffById(id)?.full_name ?? null;
+  return getStaffById(id as StaffId)?.full_name ?? null;
 }
 
 /** Left-rail patient row. */
@@ -448,7 +452,7 @@ export default function CarePlansPage() {
   const activeLocale = mounted ? locale : "en";
 
   const [patients, setPatients] = useState<CarePlanPatient[] | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<AdmissionId | null>(null);
   const [ward, setWard] = useState<string>("all");
   const [items, setItems] = useState<CarePlanItem[]>([]);
   const [entries, setEntries] = useState<CarePlanEntry[]>([]);
@@ -457,7 +461,7 @@ export default function CarePlansPage() {
     setPatients(getAdmittedPatientsForCarePlan());
   }
 
-  function refreshDetail(admissionId: string | null) {
+  function refreshDetail(admissionId: AdmissionId | null) {
     if (!admissionId) {
       setItems([]);
       setEntries([]);
@@ -538,7 +542,7 @@ export default function CarePlansPage() {
     refreshPatients();
   }
 
-  function handleResolve(itemId: string) {
+  function handleResolve(itemId: CarePlanItemId) {
     resolveCarePlanItem(itemId);
     refreshDetail(selectedId);
     refreshPatients();
@@ -552,7 +556,8 @@ export default function CarePlansPage() {
     if (!selectedId) return;
     addCarePlanEntry(selectedId, {
       note: input.note,
-      care_plan_item_id: input.careItemId,
+      // The picker's value is a raw DOM string; brand it at this boundary.
+      care_plan_item_id: input.careItemId as CarePlanItemId | null,
       is_handover: input.isHandover,
       recorded_by_id: actingStaff?.id ?? null,
     });

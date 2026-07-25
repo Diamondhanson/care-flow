@@ -3,8 +3,37 @@
  * Kept free of React/DOM so it is directly unit-testable in a node environment.
  */
 
-import { en } from "./en";
+import { en, type Messages } from "./en";
 import { fr } from "./fr";
+
+/**
+ * Every valid dot-path to a string leaf of the message dictionary.
+ *
+ * Keys are mapped over `keyof T & (string | number)` (not `& string`) because
+ * the dictionary contains numeric literal keys (e.g. `liveBoard.triage` 1–5);
+ * intersecting those with `string` alone would silently drop them. `${K}`
+ * renders numeric keys in their string form, matching runtime dot-paths.
+ */
+type Paths<T> = {
+  [K in keyof T & (string | number)]: T[K] extends string
+    ? `${K}`
+    : T[K] extends object
+      ? `${K}.${Paths<T[K]>}`
+      : never;
+}[keyof T & (string | number)];
+
+/** Compile-time-checked translation key — a typo'd key is a type error. */
+export type MessageKey = Paths<Messages>;
+
+/**
+ * Boundary escape hatch for keys assembled from runtime data (e.g. audit-log
+ * table names coming off the wire). If the resulting key is wrong, `translate`
+ * falls back to displaying the raw key rather than crashing. Use sparingly —
+ * statically known keys must stay as literals so the compiler checks them.
+ */
+export function msgKey(key: string): MessageKey {
+  return key as MessageKey;
+}
 
 export type Locale = "en" | "fr";
 
@@ -44,7 +73,7 @@ function interpolate(template: string, params?: TParams): string {
  */
 export function translate(
   locale: Locale,
-  key: string,
+  key: MessageKey,
   params?: TParams,
 ): string {
   const raw =

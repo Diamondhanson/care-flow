@@ -19,7 +19,12 @@ import {
   countDue,
   doctorNeedsYouCount,
 } from "@/components/care-plans/collaboration";
-import type { MedicationAdministration } from "@careflow/shared";
+import type { DepartmentFilter } from "@/services/mockStorage";
+import type {
+  DepartmentId,
+  MedicationAdministration,
+  VisitId,
+} from "@careflow/shared";
 import {
   BOARD_COLUMNS,
   columnForStage,
@@ -38,7 +43,7 @@ function emptyColumns(): Columns {
   return Object.fromEntries(BOARD_COLUMNS.map((c) => [c.key, []]));
 }
 
-function locationLabel(visitId: string, departmentId: string | null): string | null {
+function locationLabel(visitId: VisitId, departmentId: DepartmentId | null): string | null {
   const admission = getAdmissionForVisit(visitId);
   if (admission?.bed_id) {
     return getBedById(admission.bed_id)?.label ?? null;
@@ -49,7 +54,7 @@ function locationLabel(visitId: string, departmentId: string | null): string | n
   return null;
 }
 
-function buildColumns(departmentId: string, t: TFunction): Columns {
+function buildColumns(departmentId: DepartmentFilter, t: TFunction): Columns {
   const columns = emptyColumns();
   for (const visit of getActiveVisitsForDepartment(departmentId)) {
     const column = columnForStage(visit.stage);
@@ -106,11 +111,11 @@ function buildColumns(departmentId: string, t: TFunction): Columns {
   return columns;
 }
 
-export function JourneyBoard({ departmentId }: { departmentId: string }) {
+export function JourneyBoard({ departmentId }: { departmentId: DepartmentFilter }) {
   const { t } = useT();
   const [columns, setColumns] = useState<Columns | null>(null);
   const [version, setVersion] = useState(0);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<VisitId | null>(null);
 
   useEffect(() => {
     setColumns(buildColumns(departmentId, t));

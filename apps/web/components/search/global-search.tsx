@@ -16,7 +16,7 @@ import {
 import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
 import { OPEN_VISIT_EVENT } from "@/services/visit-drawer";
-import type { Patient, Visit } from "@careflow/shared";
+import type { Patient, Visit, VisitId } from "@careflow/shared";
 
 interface ResultRow {
   patient: Patient;
@@ -27,7 +27,7 @@ export function GlobalSearch() {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [visitId, setVisitId] = useState<string | null>(null);
+  const [visitId, setVisitId] = useState<VisitId | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,7 +55,8 @@ export function GlobalSearch() {
     const onOpenVisit = (e: Event) => {
       const id = (e as CustomEvent<{ visitId?: string }>).detail?.visitId;
       if (!id) return;
-      setVisitId(id);
+      // Event payloads carry plain strings; brand at this boundary.
+      setVisitId(id as VisitId);
       setDrawerOpen(true);
     };
     window.addEventListener(OPEN_VISIT_EVENT, onOpenVisit);

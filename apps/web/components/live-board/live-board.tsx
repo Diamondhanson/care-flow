@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-import { ALL_DEPARTMENTS, getDepartments } from "@/services/mockStorage";
+import {
+  ALL_DEPARTMENTS,
+  getDepartments,
+  type DepartmentFilter,
+} from "@/services/mockStorage";
 import { StageCounts } from "@/components/live-board/stage-counts";
 import { JourneyBoard } from "@/components/live-board/journey-board";
 import type { Department } from "@careflow/shared";
 
 export function LiveBoard() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [departmentId, setDepartmentId] = useState<string>(ALL_DEPARTMENTS);
+  const [departmentId, setDepartmentId] = useState<DepartmentFilter>(ALL_DEPARTMENTS);
 
   useEffect(() => {
     setDepartments(getDepartments());

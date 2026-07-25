@@ -156,6 +156,7 @@ import type {
   Consultation,
   Department,
   Diagnosis,
+  BedId,
   Order,
   OrderId,
   MarStatus,
@@ -163,6 +164,7 @@ import type {
   MedicationAdministration,
   OrderType,
   Patient,
+  PatientId,
   Prescription,
   PrescriptionId,
   Result,
@@ -171,12 +173,14 @@ import type {
   Transfer,
   TreatmentRecord,
   Visit,
+  VisitId,
   Ward,
 } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 const DISPOSITIONS: {
   value: Disposition;
-  labelKey: string;
+  labelKey: MessageKey;
   icon: typeof Home;
 }[] = [
   { value: "discharge_home", labelKey: "drawer.dispositionDischargeHome", icon: Home },
@@ -194,7 +198,7 @@ const NO_WARD = "__none__";
 type DispositionDialog = "admit" | "observation" | "refer";
 
 /** Common observation windows offered as a select (i18n label keys). */
-const OBS_DURATION_OPTIONS: { value: string; labelKey: string }[] = [
+const OBS_DURATION_OPTIONS: { value: string; labelKey: MessageKey }[] = [
   { value: "1 hour", labelKey: "drawer.obsDur1h" },
   { value: "2 hours", labelKey: "drawer.obsDur2h" },
   { value: "4 hours", labelKey: "drawer.obsDur4h" },
@@ -215,7 +219,7 @@ type NumField = "" | string;
 
 /** Maps a VitalsSchema field name to its i18n label key, so a validation error
  *  can name the exact field that's out of range (e.g. GCS must be 3–15). */
-const VITALS_FIELD_LABEL_KEY: Record<string, string> = {
+const VITALS_FIELD_LABEL_KEY: Record<string, MessageKey> = {
   spo2: "drawer.vitalsSpo2",
   pulse: "drawer.vitalsPulse",
   bp_systolic: "drawer.vitalsSys",
@@ -280,7 +284,7 @@ export function PatientDrawer({
   onOpenChange,
   onMutate,
 }: {
-  visitId: string | null;
+  visitId: VisitId | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onMutate: () => void;
@@ -508,7 +512,7 @@ export function PatientDrawer({
   const target = nextStage(visit.stage, visit.visit_type);
   const readiness = admission
     ? evaluateDischargeReadiness(admission, patient)
-    : { ready: true, blockers: [] as string[] };
+    : { ready: true, blockers: [] as MessageKey[] };
   const advancingToDischarge = target === "discharged";
   const dischargeBlocked = advancingToDischarge && !readiness.ready;
   const isDeceased = visit.stage === "deceased";
@@ -559,14 +563,15 @@ export function PatientDrawer({
             a.label.localeCompare(b.label, undefined, { numeric: true }),
           );
 
+  // Accepts both branded ids (transfer rows) and raw select strings.
   function bedLabel(id: string | null): string {
     if (!id) return "—";
-    const b = bedById.get(id);
+    const b = bedById.get(id as BedId);
     if (!b) return "—";
     return `${wardById.get(b.ward_id)?.name ?? t("drawer.ward")} · ${b.label}`;
   }
   function staffName(id: string | null): string {
-    return id ? (staffById.get(id)?.full_name ?? "—") : "—";
+    return id ? (staffById.get(id as StaffId)?.full_name ?? "—") : "—";
   }
 
   // Frequency + meal-timing quick-picks for the prescription editor. The current
@@ -832,7 +837,8 @@ export function PatientDrawer({
 
   function handleReconcile() {
     if (!reconcileTarget) return;
-    reconcileAnonymousProfile(patient!.id, reconcileTarget);
+    // The select's value is a raw DOM string; brand it at this boundary.
+    reconcileAnonymousProfile(patient!.id, reconcileTarget as PatientId);
     onMutate();
     onOpenChange(false);
   }
@@ -850,13 +856,14 @@ export function PatientDrawer({
     }
     try {
       transferAdmission(admission.id, {
+        // Select values are raw DOM strings; brand them at this boundary.
         ...(bedChanged
-          ? { to_bed_id: transferBedId === NO_BED ? null : transferBedId }
+          ? { to_bed_id: transferBedId === NO_BED ? null : (transferBedId as BedId) }
           : {}),
         ...(doctorChanged
           ? {
               to_doctor_id:
-                transferDoctorId === NO_DOCTOR ? null : transferDoctorId,
+                transferDoctorId === NO_DOCTOR ? null : (transferDoctorId as StaffId),
             }
           : {}),
         reason: transferReason,

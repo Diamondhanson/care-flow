@@ -13,6 +13,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import type { CarePlanItemId, StaffId } from "@careflow/shared";
+
 import {
   Activity,
   BellRing,
@@ -244,7 +246,7 @@ export default function WorklistPage() {
                           variant="outline"
                           className="h-7 shrink-0 gap-1 px-2 text-[11px]"
                           onClick={() => {
-                            acknowledgeCarePlanEntry(f.id, actingStaffId);
+                            acknowledgeCarePlanEntry(f.id, actingStaffId as StaffId | null);
                             refresh();
                           }}
                         >
@@ -322,7 +324,7 @@ export default function WorklistPage() {
                               variant="ghost"
                               className="h-7 shrink-0 gap-1 px-2 text-[11px]"
                               onClick={() => {
-                                resolveCarePlanItem(w.refId);
+                                resolveCarePlanItem(w.refId as CarePlanItemId);
                                 refresh();
                               }}
                             >

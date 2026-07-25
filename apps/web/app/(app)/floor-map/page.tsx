@@ -55,8 +55,10 @@ import {
 import { useT } from "@/components/locale-provider";
 import type {
   Bed,
+  BedId,
   BedStatus,
   Department,
+  DepartmentId,
   Patient,
   Ward,
 } from "@careflow/shared";
@@ -409,7 +411,9 @@ function WardFormSheet({
   }, [ward, isNew]);
 
   function commitWardFields() {
-    const department_id = departmentId === NO_DEPARTMENT ? null : departmentId;
+    // The select's value is a raw DOM string; brand it at this boundary.
+    const department_id =
+      departmentId === NO_DEPARTMENT ? null : (departmentId as DepartmentId);
     if (isNew) {
       const count = Math.max(0, Number.parseInt(bedCount, 10) || 0);
       createWard({
@@ -452,7 +456,7 @@ function WardFormSheet({
     onChanged();
   }
 
-  function handleBedStatus(bedId: string, status: BedStatus) {
+  function handleBedStatus(bedId: BedId, status: BedStatus) {
     try {
       updateBed(bedId, { status });
       setError(null);
@@ -462,7 +466,7 @@ function WardFormSheet({
     }
   }
 
-  function handleRemoveBed(bedId: string) {
+  function handleRemoveBed(bedId: BedId) {
     try {
       removeBed(bedId);
       setError(null);

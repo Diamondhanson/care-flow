@@ -76,9 +76,15 @@ import type {
   StaffId,
   StaffRole,
   SubscriptionStatus,
+  AuthUserId,
+  DiagnosisId,
+  NotificationId,
   Transfer,
+  TransferId,
   TreatmentRecord,
+  TreatmentRecordId,
   TriageLevel,
+  Unbranded,
   Visit,
   VisitId,
   VisitType,
@@ -106,6 +112,7 @@ import {
   VitalsSchema,
 } from "@careflow/shared/validation/schemas";
 import { validateAnswerAgainstBank } from "@/lib/ros";
+import type { MessageKey } from "@/i18n";
 
 // Bumped v7 → v8: every domain row now carries a `hospital_id` (Phase 17
 // multi-tenancy). Older persisted shapes lack it, so a fresh key forces a clean
@@ -113,10 +120,16 @@ import { validateAnswerAgainstBank } from "@/lib/ros";
 const STORAGE_KEY = "careflow_db_v8";
 
 /** The demo tenant every seeded record belongs to (mirrors `hospitals` row). */
-export const DEMO_HOSPITAL_ID = "hosp_demo";
+export const DEMO_HOSPITAL_ID = "hosp_demo" as HospitalId;
 
-/** A seed/input row before its owning `hospital_id` is stamped on. */
-type Seed<T> = Omit<T, "hospital_id">;
+/**
+ * A seed/input row before its owning `hospital_id` is stamped on. Branded id
+ * fields are widened to plain `string` (`Unbranded`) so seed literals
+ * ("dept_emergency") type-check without hundreds of per-field casts; the
+ * caller's single `stamp(...) as T` cast at the end of `seedDatabaseObject`
+ * re-brands them.
+ */
+type Seed<T> = Unbranded<Omit<T, "hospital_id">>;
 
 interface Database {
   hospitals: Hospital[];
@@ -675,7 +688,7 @@ function queueNotifications(
     if (!rid || rid === actorId || seen.has(rid)) continue;
     seen.add(rid);
     db.notifications.push({
-      id: generateId(),
+      id: generateId() as NotificationId,
       hospital_id: tenantId(db),
       recipient_staff_id: rid,
       actor_staff_id: actorId,
@@ -685,7 +698,7 @@ function queueNotifications(
       body: spec.body ?? null,
       entity_type: spec.entityType ?? null,
       entity_id: spec.entityId ?? null,
-      patient_id: spec.patientId ?? null,
+      patient_id: (spec.patientId ?? null) as PatientId | null,
       patient_name: spec.patientName ?? null,
       link: spec.link ?? null,
       data: spec.data ?? {},
@@ -777,7 +790,7 @@ export function createHospital(input: CreateHospitalInput): Hospital {
   const db = loadDatabase();
   const timestamp = nowISO();
   const hospital: Hospital = {
-    id: generateId(),
+    id: generateId() as HospitalId,
     name: input.name.trim(),
     region: input.region?.trim() || null,
     contact_email: input.contact_email?.trim() || null,
@@ -1166,6 +1179,9 @@ export function isTerminalStage(stage: CareStage): boolean {
 /** Sentinel meaning "no filter" — the admin / all-departments view. */
 export const ALL_DEPARTMENTS = "all";
 
+/** A department scope: a concrete department id or the all-departments sentinel. */
+export type DepartmentFilter = DepartmentId | typeof ALL_DEPARTMENTS;
+
 /**
  * Narrow a list of visits to a single department. A `null`/`undefined` or the
  * {@link ALL_DEPARTMENTS} sentinel returns the list untouched (admin view).
@@ -1173,7 +1189,7 @@ export const ALL_DEPARTMENTS = "all";
  */
 export function filterVisitsByDepartment<T extends { department_id: DepartmentId | null }>(
   visits: T[],
-  departmentId: DepartmentId | null | undefined
+  departmentId: DepartmentFilter | null | undefined
 ): T[] {
   if (!departmentId || departmentId === ALL_DEPARTMENTS) return visits;
   return visits.filter((v) => v.department_id === departmentId);
@@ -1313,7 +1329,7 @@ export function setStaffUserId(id: StaffId, userId: string): void {
   const db = loadDatabase();
   const staff = db.staff.find((s) => s.id === id);
   if (!staff || staff.user_id === userId) return;
-  staff.user_id = userId;
+  staff.user_id = userId as AuthUserId;
   staff.updated_at = nowISO();
   persist(db);
 }
@@ -1443,7 +1459,7 @@ export function getActiveVisits(): Visit[] {
 
 /** Active visits routed to a given department (or all, for the admin view). */
 export function getActiveVisitsForDepartment(
-  departmentId: DepartmentId | null | undefined
+  departmentId: DepartmentFilter | null | undefined
 ): Visit[] {
   return filterVisitsByDepartment(getActiveVisits(), departmentId);
 }
@@ -1825,7 +1841,7 @@ export function createDepartment(input: CreateDepartmentInput): Department {
   const db = loadDatabase();
   const timestamp = nowISO();
   const department: Department = {
-    id: generateId(),
+    id: generateId() as DepartmentId,
     hospital_id: tenantId(db),
     name: input.name.trim(),
     code: input.code?.trim() || null,
@@ -1895,7 +1911,7 @@ function makeBed(
   hospitalId: HospitalId,
 ): Bed {
   return {
-    id: generateId(),
+    id: generateId() as BedId,
     hospital_id: hospitalId,
     ward_id: wardId,
     label,
@@ -1911,7 +1927,7 @@ export function createWard(input: CreateWardInput): Ward {
   const db = loadDatabase();
   const timestamp = nowISO();
   const ward: Ward = {
-    id: generateId(),
+    id: generateId() as WardId,
     hospital_id: tenantId(db),
     department_id: input.department_id ?? null,
     name: input.name.trim(),
@@ -2090,7 +2106,7 @@ export function transferAdmission(
   }
 
   const transfer: Transfer = {
-    id: generateId(),
+    id: generateId() as TransferId,
     hospital_id: admission.hospital_id,
     admission_id: admissionId,
     patient_id: admission.patient_id,
@@ -2155,7 +2171,7 @@ export function addCarePlanItem(
   }
   const timestamp = nowISO();
   const item: CarePlanItem = {
-    id: generateId(),
+    id: generateId() as CarePlanItemId,
     hospital_id: admission.hospital_id,
     admission_id: admissionId,
     patient_id: admission.patient_id,
@@ -2203,7 +2219,7 @@ export function addCarePlanEntry(
     throw new Error(`addCarePlanEntry: admission "${admissionId}" not found`);
   }
   const entry: CarePlanEntry = {
-    id: generateId(),
+    id: generateId() as CarePlanEntryId,
     hospital_id: admission.hospital_id,
     admission_id: admissionId,
     care_plan_item_id: input.care_plan_item_id ?? null,
@@ -2320,7 +2336,7 @@ export function createBillableItem(input: CreateBillableItemInput): BillableItem
   const db = loadDatabase();
   const timestamp = nowISO();
   const item: BillableItem = {
-    id: generateId(),
+    id: generateId() as BillableItemId,
     hospital_id: tenantId(db),
     category: input.category,
     name: input.name.trim(),
@@ -2419,15 +2435,15 @@ export function recalculateAutoCharges(visitId: VisitId): Charge[] {
         existing.quantity = line.quantity;
         existing.amount = amount;
         existing.description = line.description;
-        existing.billable_item_id = line.billable_item_id;
+        existing.billable_item_id = line.billable_item_id as BillableItemId | null;
         existing.updated_at = timestamp;
       }
     } else {
       db.charges.push({
-        id: generateId(),
+        id: generateId() as ChargeId,
         hospital_id: visit.hospital_id,
         visit_id: visitId,
-        billable_item_id: line.billable_item_id,
+        billable_item_id: line.billable_item_id as BillableItemId | null,
         source: line.source,
         source_ref_id: line.source_ref_id,
         description: line.description,
@@ -2472,7 +2488,7 @@ export function addManualCharge(visitId: VisitId, input: AddManualChargeInput): 
   const quantity = Math.max(1, Math.round(input.quantity ?? 1));
   const timestamp = nowISO();
   const charge: Charge = {
-    id: generateId(),
+    id: generateId() as ChargeId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     billable_item_id: catalogItem?.id ?? null,
@@ -2502,7 +2518,7 @@ export function addDiscount(visitId: VisitId, input: AddDiscountInput): Charge {
   const magnitude = Math.max(0, Math.round(Math.abs(input.amount)));
   const timestamp = nowISO();
   const charge: Charge = {
-    id: generateId(),
+    id: generateId() as ChargeId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     billable_item_id: null,
@@ -2615,7 +2631,7 @@ export function createNewVisit(
       );
 
   const patient: Patient = {
-    id: generateId(),
+    id: generateId() as PatientId,
     hospital_id: tenantId(db),
     mrn,
     full_name: patientData.full_name,
@@ -2637,7 +2653,7 @@ export function createNewVisit(
   };
 
   const visit: Visit = {
-    id: generateId(),
+    id: generateId() as VisitId,
     hospital_id: patient.hospital_id,
     patient_id: patient.id,
     visit_type: visitData.visit_type,
@@ -2700,7 +2716,7 @@ export function addTreatmentLog(
 
   const timestamp = nowISO();
   const record: TreatmentRecord = {
-    id: generateId(),
+    id: generateId() as TreatmentRecordId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     recorded_by_id: logData.recorded_by_id ?? null,
@@ -2778,7 +2794,7 @@ export function addConsultation(
 
   const timestamp = nowISO();
   const consultation: Consultation = {
-    id: generateId(),
+    id: generateId() as ConsultationId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     doctor_id: input.doctor_id ?? visit.attending_doctor_id ?? null,
@@ -2862,7 +2878,7 @@ export function addDiagnosis(
 
   const timestamp = nowISO();
   const diagnosis: Diagnosis = {
-    id: generateId(),
+    id: generateId() as DiagnosisId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     consultation_id: input.consultation_id ?? null,
@@ -3071,7 +3087,7 @@ export function addOrder(visitId: VisitId, input: AddOrderInput): Order {
 
   const timestamp = nowISO();
   const order: Order = {
-    id: generateId(),
+    id: generateId() as OrderId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     ordered_by_id: input.ordered_by_id ?? visit.attending_doctor_id ?? null,
@@ -3790,7 +3806,7 @@ export function createAdmissionForVisit(
 
   const timestamp = nowISO();
   const admission: Admission = {
-    id: generateId(),
+    id: generateId() as AdmissionId,
     hospital_id: visit.hospital_id,
     visit_id: visitId,
     patient_id: visit.patient_id,
@@ -3892,8 +3908,8 @@ export function updateAdmissionClearances(
 export function evaluateDischargeReadiness(
   admission: Admission,
   patient: Patient
-): { ready: boolean; blockers: string[] } {
-  const blockers: string[] = [];
+): { ready: boolean; blockers: MessageKey[] } {
+  const blockers: MessageKey[] = [];
   if (!admission.is_medical_cleared) blockers.push("drawer.blockerMedical");
   if (!admission.is_financial_cleared) blockers.push("drawer.blockerFinancial");
   if (!admission.is_pharmacy_ready) blockers.push("drawer.blockerPharmacy");
@@ -4404,7 +4420,7 @@ function seedDatabaseObject(): Database {
     "needs_doctor" | "acknowledged_by_id" | "acknowledged_at"
   > & {
     needs_doctor?: boolean;
-    acknowledged_by_id?: StaffId | null;
+    acknowledged_by_id?: string | null;
     acknowledged_at?: string | null;
   })[] = [
     // Samuel Idris — care log + a fresh handover for the evening shift.

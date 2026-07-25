@@ -57,7 +57,14 @@ import {
   clearTelemetryContext,
   emitUsage,
 } from "@/services/telemetry";
-import type { Hospital, Staff, StaffRole } from "@careflow/shared";
+import type {
+  AuthUserId,
+  Hospital,
+  HospitalId,
+  Staff,
+  StaffId,
+  StaffRole,
+} from "@careflow/shared";
 
 interface AuthContextValue {
   /** False until the client has hydrated + resolved the session. */
@@ -90,9 +97,10 @@ const nowISO = () => new Date().toISOString();
 /** Build a minimal Staff from auth metadata when the mock seed lacks the row. */
 function syntheticStaff(id: AuthIdentity): Staff {
   return {
-    id: id.mock_staff_id,
-    hospital_id: id.mock_hospital_id,
-    user_id: id.userId,
+    // Auth metadata carries plain strings; brand them at this boundary.
+    id: id.mock_staff_id as StaffId,
+    hospital_id: id.mock_hospital_id as HospitalId,
+    user_id: id.userId as AuthUserId,
     full_name: id.full_name,
     role: (id.role || "admin") as StaffRole,
     department_id: null,
@@ -107,7 +115,8 @@ function syntheticStaff(id: AuthIdentity): Staff {
 /** Build a minimal Hospital from auth metadata when the mock seed lacks it. */
 function syntheticHospital(id: AuthIdentity): Hospital {
   return {
-    id: id.mock_hospital_id,
+    // Auth metadata carries plain strings; brand them at this boundary.
+    id: id.mock_hospital_id as HospitalId,
     name: id.full_name ? `${id.username}'s hospital` : "Hospital",
     region: null,
     contact_email: null,
@@ -172,7 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const legacy = metaToIdentity(user); // non-null only for staff logins
     const staff =
       getStaffAccountByUserId(user.id) ??
-      (legacy ? getStaffAccountById(legacy.mock_staff_id) : undefined) ??
+      (legacy ? getStaffAccountById(legacy.mock_staff_id as StaffId) : undefined) ??
       (legacy ? syntheticStaff(legacy) : undefined);
 
     if (!staff) {
@@ -232,7 +241,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) {
         const staff =
           getStaffAccountByUserId(identity.userId) ??
-          getStaffAccountById(identity.mock_staff_id) ??
+          getStaffAccountById(identity.mock_staff_id as StaffId) ??
           syntheticStaff(identity);
         setCurrentStaff(staff);
         setCurrentHospital(
