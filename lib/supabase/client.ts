@@ -13,6 +13,18 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let client: SupabaseClient | null = null;
 
+/**
+ * Whether the Supabase env vars are present. Lets the app degrade to a clear
+ * "backend not configured" screen instead of throwing out of the first
+ * `getSupabaseClient()` call on a fresh, unconfigured checkout.
+ */
+export function isSupabaseConfigured(): boolean {
+  return (
+    !!process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
 /** The singleton browser client; persists the session to localStorage. */
 export function getSupabaseClient(): SupabaseClient {
   if (client) return client;

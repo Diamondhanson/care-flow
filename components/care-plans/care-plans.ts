@@ -28,6 +28,7 @@ import type {
   CarePlanEntry,
   CarePlanItem,
 } from "@/types/healthcare";
+import type { MessageKey } from "@/i18n";
 
 /**
  * Display order for the 14 care-need categories (Henderson's components, named
@@ -51,7 +52,7 @@ export const CARE_NEED_CATEGORIES: CareNeedCategory[] = [
 ];
 
 /** i18n keys — resolve with `t(CARE_NEED_CATEGORY_LABEL[category])`. */
-export const CARE_NEED_CATEGORY_LABEL: Record<CareNeedCategory, string> = {
+export const CARE_NEED_CATEGORY_LABEL: Record<CareNeedCategory, MessageKey> = {
   breathing: "carePlan.category.breathing",
   nutrition: "carePlan.category.nutrition",
   elimination: "carePlan.category.elimination",

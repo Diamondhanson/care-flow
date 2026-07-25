@@ -31,6 +31,7 @@ export const en = {
     diagnostics: "Tests & results",
     medications: "Medications",
     reconciliation: "Match emergency patient",
+    followUps: "Follow-ups",
     departments: "Departments",
     floorMap: "Floor Map",
     carePlans: "Care plans",
@@ -230,9 +231,7 @@ export const en = {
     allergiesNotAssessed: "Allergies not assessed",
     reconcileTitle: "Profile reconciliation",
     reconcileHint:
-      "Match this emergency record to a verified patient. Clinical logs are preserved and re-pointed to the merged profile.",
-    selectVerifiedPatient: "Select verified patient",
-    merge: "Merge",
+      "Give this emergency record its real identity, or merge it into an existing verified patient. Clinical logs are preserved either way.",
     doctorConsole: "Doctor console",
     priorRecord: "Prior record",
     primaryTag: "primary",
@@ -346,8 +345,13 @@ export const en = {
     notes: "Notes",
     notesPlaceholder: "Clinical observations",
     saveLog: "Save log entry",
+    vitalsOutOfRange:
+      "{field} is out of the plausible range ({min}–{max}). Entry not saved — please check the value.",
     treatmentHistory: "Treatment history",
     noEntries: "No entries logged yet",
+    historyTitle: "Visit history",
+    historyEmpty: "No visits on record for this patient.",
+    historyCurrent: "Current",
     emptyNote: "Empty note.",
     showMore: "More options",
     showLess: "Fewer options",
@@ -357,6 +361,8 @@ export const en = {
     unassigned: "Unassigned",
     unknown: "Unknown department",
     loading: "Loading reports…",
+    partialNotice:
+      "This period reaches beyond the records kept on this device. Connect to the internet to include the full history — figures shown may be incomplete.",
     title: "Operations & analytics",
     subtitle:
       "Hospital-wide activity, occupancy, clinical and pharmacy metrics for the selected period. Export a full snapshot as PDF or Excel.",
@@ -514,6 +520,26 @@ export const en = {
     usernameRequired: "A username is required.",
     passwordTooShort: "Password must be at least 6 characters.",
     noHospital: "No active hospital — please sign in again.",
+    // Edit / activate / password-reset (staff management)
+    editTitle: "Edit staff member",
+    editDesc: "Update this team member's directory details.",
+    saving: "Saving…",
+    updateFailed: "Could not update the staff member.",
+    deactivate: "Deactivate",
+    reactivate: "Reactivate",
+    deactivatePrompt: "Deactivate this staff member?",
+    deactivateConfirm: "Deactivate",
+    resetPassword: "Reset password",
+    resetPasswordTitle: "Reset password",
+    resetPasswordDesc:
+      "Set a new sign-in password for {name}, then hand it to them directly.",
+    newPassword: "New password",
+    newPasswordPlaceholder: "At least 8 characters",
+    resetPasswordTooShort: "Password must be at least 8 characters.",
+    resetPasswordSuccess: "Password updated.",
+    resetNoSession: "Your session has expired — please sign in again.",
+    resetting: "Updating…",
+    resetConfirm: "Set password",
   },
 
   reconciliation: {
@@ -561,6 +587,40 @@ export const en = {
     successMerged: "Merged into {name}.",
   },
 
+  followUp: {
+    title: "Post-discharge follow-ups",
+    subtitle:
+      "Work the calls and check-ins scheduled automatically when a patient is discharged.",
+    loading: "Loading follow-ups…",
+    pendingCount: "pending",
+    // Sections
+    dueSection: "Due",
+    upcomingSection: "Upcoming",
+    doneSection: "Done",
+    // Kind labels
+    kindCall: "Phone call",
+    kindTeleCheckin: "Tele check-in",
+    kindSummaryDelivery: "Summary delivery",
+    // Row details
+    dueOn: "Due {date}",
+    overdue: "Overdue",
+    completedOn: "Completed {date}",
+    noPhone: "No phone on file",
+    // Actions
+    markDone: "Mark done",
+    cancelTask: "Cancel",
+    // Empty states
+    allClear: "No follow-ups pending",
+    allClearHint:
+      "New tasks are scheduled automatically each time a patient is discharged.",
+    noneUpcoming: "Nothing scheduled ahead.",
+    noneDone: "No completed follow-ups yet.",
+    // Errors (notify keys)
+    actionFailedTitle: "Could not update the follow-up task",
+    actionFailedBody:
+      "The change was not saved on this device. Try again; if it keeps happening, contact your administrator.",
+  },
+
   departments: {
     title: "Departments",
     total: "total",
@@ -587,6 +647,11 @@ export const en = {
     activeHint: "Archived units are hidden from routing & board filters.",
     nameRequired: "A department name is required.",
     create: "Create department",
+    archiveTitle: "Archive department",
+    archiveBody:
+      "Archive “{name}”? It will be hidden from routing and board filters. You can reactivate it at any time.",
+    archiveConfirm: "Archive",
+    updateFailed: "Could not update the department.",
   },
 
   diagnostics: {
@@ -692,6 +757,7 @@ export const en = {
     reasonRequired: "A presenting reason is required.",
     nameRequired: "Patient name is required for a standard intake.",
     invalidPhone: "Enter a valid phone number for the selected country.",
+    dobFutureError: "Date of birth cannot be in the future.",
     registerEmergency: "Register emergency patient",
     register: "Register patient",
   },
@@ -753,6 +819,12 @@ export const en = {
     resultsCount: "{count} match",
     resultsCountPlural: "{count} matches",
   },
+  offline: {
+    title: "You're offline",
+    body: "This page hasn't been cached yet. Pages you've already visited still work offline, and any changes you make are saved on this device and will sync once you're back online.",
+    backToBoard: "Back to the board",
+  },
+
   demo: {
     title: "Demo controls",
     resetTitle: "Reset demo data",
@@ -770,6 +842,86 @@ export const en = {
       "Saved on this device. {count} changes will sync when the internet returns.",
     queuedOne: "Saving 1 change…",
     queuedMany: "Saving {count} changes…",
+    panelTitle: "Sync health",
+    panelIntro:
+      "Every change is saved on this device first, then sent to the hospital's records when the internet allows.",
+    allSynced: "Everything is saved and synced.",
+    groupWaiting: "Waiting to send",
+    groupRetrying: "Retrying",
+    groupAttention: "Needs attention",
+    groupAttentionHint:
+      "These changes keep failing to send. Show this to your administrator — the details below say why.",
+    entryQueuedAt: "queued {time}",
+    entryAttempts: "{count} failed attempts",
+    opInsert: "New record",
+    opUpdate: "Change",
+    opDelete: "Deletion",
+    syncNow: "Sync now",
+    syncing: "Syncing…",
+    offlineHint: "You're offline. Changes will send when the internet returns.",
+    groupConflicts: "Didn't save — someone else changed it first",
+    groupConflictsHint:
+      "A colleague changed the same record before your edit reached the server. Your edit was kept here — review and re-apply it, or discard it if theirs should stand.",
+    conflictDetectedAt: "detected {time}",
+    reapply: "Re-apply my change",
+    retry: "Retry",
+    discard: "Discard",
+  },
+  notify: {
+    regionLabel: "Notifications",
+    dismiss: "Dismiss",
+    storageFullTitle: "This device's storage is full",
+    storageFullBody:
+      "Your latest change could not be saved on this device. Free up space or contact your administrator — until then, new work may be lost.",
+    storageWriteFailedTitle: "Could not save on this device",
+    storageWriteFailedBody:
+      "Something prevented saving your latest change to this device. Try again; if it keeps happening, contact your administrator.",
+    cacheResetTitle: "Local data was reset",
+    cacheResetBody:
+      "The copy of the records stored on this device was unreadable and has been replaced with a fresh copy from the server.",
+    outboxWriteFailedTitle: "Could not queue your change for sync",
+    outboxWriteFailedBody:
+      "Your change was saved on this device but could not join the sync queue. It may not reach the hospital's records — contact your administrator.",
+    outboxCorruptTitle: "The sync queue was unreadable",
+    outboxCorruptBody:
+      "Changes waiting to sync could not be read and were set aside (a backup copy was kept on this device). Recent unsent work may need to be re-entered — contact your administrator.",
+    conflictTitle: "A change didn't save — someone else edited first",
+    conflictBody:
+      "A colleague changed the same record before your edit reached the server. Open the sync panel (cloud icon, top bar) to review and re-apply your change.",
+    uploadQueuedTitle: "File saved — will upload when online",
+    uploadQueuedBody:
+      "The result was recorded. Its attached file is saved on this device and will upload automatically when the internet returns.",
+    uploadRetryTitle: "A file is waiting to upload",
+    uploadRetryBody:
+      "An attached file couldn't be uploaded yet. It stays saved on this device and will upload automatically when the connection allows.",
+    signOutPendingTitle: "Some changes haven't synced yet",
+    signOutPendingBody:
+      "You're signed out, but changes made on this device couldn't be sent to the hospital's records yet. They stay saved here and will send after the next sign-in on this device.",
+  },
+  tableNames: {
+    hospitals: "Hospital details",
+    departments: "Department",
+    wards: "Ward",
+    beds: "Bed",
+    staff: "Staff member",
+    patients: "Patient record",
+    allergies: "Allergy",
+    visits: "Visit",
+    consultations: "Consultation",
+    diagnoses: "Diagnosis",
+    orders: "Test order",
+    results: "Test result",
+    prescriptions: "Prescription",
+    medication_administrations: "Medication given",
+    treatment_records: "Treatment note",
+    admissions: "Admission",
+    transfers: "Transfer",
+    care_plan_items: "Care plan task",
+    care_plan_entries: "Care plan note",
+    billable_items: "Price list item",
+    charges: "Billing charge",
+    clinical_terms: "Medical term",
+    follow_up_tasks: "Follow-up task",
   },
   visitReport: {
     button: "Patient report",
@@ -1251,6 +1403,10 @@ export const en = {
       subtitle: "Completing your secure sign-in. This only takes a moment.",
       error: "We couldn't complete sign-in. Please try again.",
       backToLogin: "Back to sign in",
+    },
+    backendMissing: {
+      title: "This copy of CareFlow is not connected to a server",
+      body: "Sign-in is unavailable because the server settings are missing. If you run this app, copy .env.example to .env.local and fill in the Supabase values, then restart. If you're a staff member, contact your administrator.",
     },
   },
 

@@ -29,6 +29,7 @@ import {
   type ReconcileTarget,
 } from "@/components/reconciliation/reconcile-dialog";
 import { useT, type TFunction } from "@/components/locale-provider";
+import { useCacheVersion } from "@/lib/use-cache";
 import type { Patient, Visit } from "@/types/healthcare";
 
 interface PendingRecord {
@@ -60,6 +61,7 @@ function relativeTime(iso: string, t: TFunction): string {
 
 export default function ReconciliationPage() {
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [data, setData] = useState<ReconciliationData | null>(null);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReconcileTarget | null>(null);
@@ -100,7 +102,7 @@ export default function ReconciliationPage() {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [cacheVersion]);
 
   function handleDone(message: string) {
     setSelected(null);

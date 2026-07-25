@@ -16,15 +16,16 @@ import {
 import {
   ALL_DEPARTMENTS,
   getActiveVisitsForDepartment,
+  type DepartmentFilter,
 } from "@/services/mockStorage";
 import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
 import { useT } from "@/components/locale-provider";
 import type { Department } from "@/types/healthcare";
 
 interface StageCountsProps {
-  departmentId: string;
+  departmentId: DepartmentFilter;
   departments: Department[];
-  onDepartmentChange: (value: string) => void;
+  onDepartmentChange: (value: DepartmentFilter) => void;
 }
 
 export function StageCounts({
@@ -82,7 +83,7 @@ export function StageCounts({
           <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground/70">
             {t("liveBoard.viewing")}
           </span>
-          <Select
+          <Select<DepartmentFilter>
             items={{
               [ALL_DEPARTMENTS]: t("liveBoard.allDepartments"),
               ...Object.fromEntries(
@@ -90,7 +91,7 @@ export function StageCounts({
               ),
             }}
             value={departmentId}
-            onValueChange={(v) => onDepartmentChange((v as string) ?? ALL_DEPARTMENTS)}
+            onValueChange={(v) => onDepartmentChange(v ?? ALL_DEPARTMENTS)}
           >
             <SelectTrigger className="w-full sm:w-56">
               <SelectValue />

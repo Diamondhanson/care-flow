@@ -36,10 +36,13 @@ import {
 import { useRole } from "@/components/role-provider";
 import { useT, type TFunction } from "@/components/locale-provider";
 import { formatDateTime } from "@/i18n/format";
+import { useCacheVersion } from "@/lib/use-cache";
 import type {
   MarStatus,
   MedicationAdministration,
   Prescription,
+  PrescriptionId,
+  VisitId,
 } from "@/types/healthcare";
 
 const DOSE_STATE_TOKEN: Record<
@@ -88,7 +91,7 @@ interface Placement {
  * else (clinic, ED, observation without a bed) is ambulatory and grouped by
  * their department instead of a ward.
  */
-function placeVisit(visitId: string, t: TFunction): Placement {
+function placeVisit(visitId: VisitId, t: TFunction): Placement {
   const admission = getAdmissionForVisit(visitId);
   if (admission?.status === "active" && admission.bed_id) {
     const bed = getBedById(admission.bed_id);
@@ -178,7 +181,7 @@ function WorklistCard({
   row: MarRow;
   now: number;
   onRecord: (
-    prescriptionId: string,
+    prescriptionId: PrescriptionId,
     status: MarStatus,
     due: string | null,
   ) => void;
@@ -285,6 +288,7 @@ function WorklistCard({
 export default function MedicationsPage() {
   const { actingStaff } = useRole();
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [rows, setRows] = useState<MarRow[] | null>(null);
   // `now` is captured per render-cycle so dose math is stable within a refresh.
   const [now, setNow] = useState(() => Date.now());
@@ -298,10 +302,10 @@ export default function MedicationsPage() {
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [t]);
+  }, [t, cacheVersion]);
 
   function handleRecord(
-    prescriptionId: string,
+    prescriptionId: PrescriptionId,
     status: MarStatus,
     due: string | null,
   ) {

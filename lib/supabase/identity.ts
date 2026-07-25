@@ -12,6 +12,8 @@
  * real (Phase 18b), switch this to encode the hospital id in the local part.
  */
 
+import type { HospitalId, StaffId } from "@/types/healthcare";
+
 /** Synthetic email domain. `.local` is never deliverable — intentional. */
 export const SYNTH_EMAIL_DOMAIN = "careflow.local";
 
@@ -37,7 +39,8 @@ export interface StaffAuthMetadata {
   role: string;
   /** Supabase hospitals.id (real UUID). */
   hospital_id: string;
-  /** Bridge to the mock data layer (Phase 18a only). */
-  mock_hospital_id: string;
-  mock_staff_id: string;
+  /** Bridge to the mock data layer (Phase 18a only). Branded here — the one
+   * place untyped `user_metadata` is narrowed into typed ids. */
+  mock_hospital_id: HospitalId;
+  mock_staff_id: StaffId;
 }

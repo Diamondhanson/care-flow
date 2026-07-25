@@ -19,6 +19,7 @@ import {
   synthEmail,
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
+import type { HospitalId, StaffId } from "@/types/healthcare";
 
 export interface ProvisionStaffLoginInput {
   username: string;
@@ -28,16 +29,59 @@ export interface ProvisionStaffLoginInput {
   /** Supabase hospitals.id (real UUID). */
   hospital_id: string;
   /** Mock-layer bridge ids (Phase 18a). */
-  mock_hospital_id: string;
-  mock_staff_id: string;
+  mock_hospital_id: HospitalId;
+  mock_staff_id: StaffId;
+  /**
+   * The caller's current Supabase access token (Stage 6). Sessions live in the
+   * browser's localStorage — not cookies — so the server can't read them
+   * itself; the client passes its JWT and we verify it here.
+   */
+  accessToken: string;
 }
 
 export type ProvisionResult =
   | { ok: true; userId: string }
   | { ok: false; error: string };
 
-/** Create a Supabase Auth login for a staff member. Idempotency is the caller's
- * concern; a duplicate username surfaces as a friendly error. */
+/**
+ * Verify the caller's JWT and require them to be an admin of `hospitalId`.
+ * Shared by the privileged staff actions (Stage 6 hardening — these actions
+ * are remotely invokable endpoints, so each must authenticate its caller).
+ */
+async function requireHospitalAdmin(
+  accessToken: string,
+  hospitalId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  if (!accessToken) return { ok: false, error: "Not authorized." };
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin.auth.getUser(accessToken);
+  if (error || !data?.user) {
+    return {
+      ok: false,
+      error: "Your session could not be verified — please sign in again.",
+    };
+  }
+  const caller = data.user;
+  const { data: callerRow } = await admin
+    .from("staff")
+    .select("role, hospital_id")
+    .eq("user_id", caller.id)
+    .maybeSingle();
+  const meta = caller.user_metadata as Partial<StaffAuthMetadata> | undefined;
+  const role = callerRow?.role ?? meta?.role;
+  const callerHospital = callerRow?.hospital_id ?? meta?.hospital_id;
+  if (role !== "admin" || !callerHospital || callerHospital !== hospitalId) {
+    return {
+      ok: false,
+      error: "Only administrators of this hospital can manage staff logins.",
+    };
+  }
+  return { ok: true };
+}
+
+/** Create a Supabase Auth login for a staff member. Admin-only (caller is
+ * verified from their access token). Idempotency is the caller's concern; a
+ * duplicate username surfaces as a friendly error. */
 export async function provisionStaffLogin(
   input: ProvisionStaffLoginInput,
 ): Promise<ProvisionResult> {
@@ -46,6 +90,12 @@ export async function provisionStaffLogin(
   if (!input.password || input.password.length < 6) {
     return { ok: false, error: "Password must be at least 6 characters." };
   }
+
+  // Stage 6: this used to be callable with no caller check at all — anyone who
+  // could reach the action endpoint could mint a login. Now the caller must be
+  // a signed-in admin of the hospital the login is being created for.
+  const auth = await requireHospitalAdmin(input.accessToken, input.hospital_id);
+  if (!auth.ok) return auth;
 
   const metadata: StaffAuthMetadata = {
     username,
@@ -70,6 +120,91 @@ export async function provisionStaffLogin(
     return { ok: false, error: msg };
   }
   return { ok: true, userId: data.user.id };
+}
+
+export interface ResetStaffPasswordInput {
+  /** Supabase Auth user id of the staff login whose password is being reset. */
+  userId: string;
+  /** The new password the admin is handing to the staff member. */
+  password: string;
+  /**
+   * The caller's current Supabase access token. Sessions live in the browser's
+   * localStorage (see lib/supabase/client.ts) — not cookies — so the server
+   * can't read them itself; the client passes its JWT and we verify it here.
+   */
+  accessToken: string;
+}
+
+export type ResetStaffPasswordResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * Reset a staff member's login password (admin-only). Unlike
+ * {@link provisionStaffLogin} — which has no caller check of its own — this
+ * action authenticates the caller from their access token and requires them to
+ * be an **admin of the same hospital** as the target staff member before
+ * touching the target's password.
+ */
+export async function resetStaffPassword(
+  input: ResetStaffPasswordInput,
+): Promise<ResetStaffPasswordResult> {
+  if (!input.password || input.password.length < 8) {
+    return { ok: false, error: "Password must be at least 8 characters." };
+  }
+  if (!input.userId || !input.accessToken) {
+    return { ok: false, error: "Not authorized." };
+  }
+
+  const admin = getSupabaseAdmin();
+
+  // 1. Authenticate the caller: validate the JWT and resolve its auth user.
+  const { data: callerData, error: callerError } = await admin.auth.getUser(
+    input.accessToken,
+  );
+  if (callerError || !callerData?.user) {
+    return { ok: false, error: "Your session could not be verified — please sign in again." };
+  }
+  const caller = callerData.user;
+
+  // 2. Authorize: the caller must be an admin. Prefer the DB staff row (source
+  //    of truth); fall back to the auth metadata bridge for legacy logins whose
+  //    staff row hasn't synced.
+  const { data: callerRow } = await admin
+    .from("staff")
+    .select("role, hospital_id")
+    .eq("user_id", caller.id)
+    .maybeSingle();
+  const callerMeta = caller.user_metadata as Partial<StaffAuthMetadata> | undefined;
+  const callerRole = callerRow?.role ?? callerMeta?.role;
+  const callerHospitalId = callerRow?.hospital_id ?? callerMeta?.hospital_id;
+  if (callerRole !== "admin" || !callerHospitalId) {
+    return { ok: false, error: "Only administrators can reset staff passwords." };
+  }
+
+  // 3. The target must belong to the caller's hospital. Resolve via the staff
+  //    row keyed on user_id, falling back to the target auth user's metadata.
+  const { data: targetRow } = await admin
+    .from("staff")
+    .select("hospital_id")
+    .eq("user_id", input.userId)
+    .maybeSingle();
+  let targetHospitalId: string | undefined = targetRow?.hospital_id;
+  if (!targetHospitalId) {
+    const { data: targetUser } = await admin.auth.admin.getUserById(input.userId);
+    const targetMeta = targetUser?.user?.user_metadata as
+      | Partial<StaffAuthMetadata>
+      | undefined;
+    targetHospitalId = targetMeta?.hospital_id ?? targetMeta?.mock_hospital_id;
+  }
+  if (!targetHospitalId || targetHospitalId !== callerHospitalId) {
+    return { ok: false, error: "This staff member does not belong to your hospital." };
+  }
+
+  // 4. All checks passed — set the new password.
+  const { error } = await admin.auth.admin.updateUserById(input.userId, {
+    password: input.password,
+  });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
 }
 
 // ===========================================================================
@@ -112,6 +247,16 @@ export type ProvisionHospitalResult =
 export async function provisionHospital(
   input: ProvisionHospitalInput,
 ): Promise<ProvisionHospitalResult> {
+  // Stage 6: this legacy path (retained as an integration-test helper — the
+  // public signup is the verified-onboarding RPC) is still a remotely
+  // invokable action endpoint, i.e. unauthenticated tenant creation. Disable
+  // it in production unless explicitly re-enabled.
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.ALLOW_LEGACY_PROVISIONING !== "1"
+  ) {
+    return { ok: false, error: "This signup path is disabled." };
+  }
   const name = input.name?.trim();
   const fullName = input.admin_full_name?.trim();
   const username = normalizeUsername(input.admin_username);
@@ -154,8 +299,9 @@ export async function provisionHospital(
     full_name: fullName,
     role: "admin",
     hospital_id: hospitalId,
-    mock_hospital_id: hospitalId,
-    mock_staff_id: staffId,
+    // Fresh UUIDs from the admin provisioning path; brand them here.
+    mock_hospital_id: hospitalId as HospitalId,
+    mock_staff_id: staffId as StaffId,
   };
   const { data: created, error: userError } =
     await admin.auth.admin.createUser({

@@ -16,9 +16,10 @@ import { translate } from "@/i18n";
 import type {
   MedicationAdministration,
   Prescription,
+  Unbranded,
 } from "@/types/healthcare";
 
-function rx(partial: Partial<Prescription>): Prescription {
+function rx(partial: Partial<Unbranded<Prescription>>): Prescription {
   return {
     id: "rx_x",
     hospital_id: "hosp_demo",
@@ -34,11 +35,11 @@ function rx(partial: Partial<Prescription>): Prescription {
     created_at: "2026-05-31T00:00:00.000Z",
     updated_at: "2026-05-31T00:00:00.000Z",
     ...partial,
-  };
+  } as Prescription;
 }
 
 function mar(
-  partial: Partial<MedicationAdministration>,
+  partial: Partial<Unbranded<MedicationAdministration>>,
 ): MedicationAdministration {
   return {
     id: "mar_x",
@@ -51,7 +52,7 @@ function mar(
     notes: null,
     created_at: "2026-05-31T00:00:00.000Z",
     ...partial,
-  };
+  } as MedicationAdministration;
 }
 
 describe("status label + token maps", () => {

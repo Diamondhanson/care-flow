@@ -30,18 +30,23 @@ import {
 import type {
   Admission,
   Allergy,
+  BedId,
   Consultation,
   Department,
   Diagnosis,
   MedicationAdministration,
   Order,
   Patient,
+  PatientId,
   Prescription,
   Result,
   Staff,
   TreatmentRecord,
   Transfer,
+  StaffId,
   Visit,
+  VisitId,
+  WardId,
 } from "@/types/healthcare";
 
 export interface OrderWithResults {
@@ -69,9 +74,9 @@ export interface VisitSummaryData {
   admission: Admission | null;
   transfers: Transfer[];
   /** Resolved display-name lookups so the renderer stays free of joins. */
-  staffName: (id: string | null | undefined) => string | null;
-  wardName: (id: string | null | undefined) => string | null;
-  bedName: (id: string | null | undefined) => string | null;
+  staffName: (id: StaffId | null | undefined) => string | null;
+  wardName: (id: WardId | null | undefined) => string | null;
+  bedName: (id: BedId | null | undefined) => string | null;
   /** Whole days between admission and discharge (or now, if still admitted). */
   lengthOfStayDays: number | null;
   generatedAtMs: number;
@@ -83,7 +88,7 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
  * Assemble the full record for one visit. Returns `null` if the visit (or its
  * patient) cannot be found — the caller should treat that as "nothing to print".
  */
-export function buildVisitSummary(visitId: string): VisitSummaryData | null {
+export function buildVisitSummary(visitId: VisitId): VisitSummaryData | null {
   const visit = getVisitById(visitId);
   if (!visit) return null;
   const patient = getPatientById(visit.patient_id);
@@ -96,11 +101,11 @@ function buildSummaryFromVisit(visit: Visit, patient: Patient): VisitSummaryData
   const wardById = new Map(getWards().map((w) => [w.id, w]));
   const bedById = new Map(getBeds().map((b) => [b.id, b]));
 
-  const staffName = (id: string | null | undefined) =>
+  const staffName = (id: StaffId | null | undefined) =>
     id ? (staffById.get(id)?.full_name ?? null) : null;
-  const wardName = (id: string | null | undefined) =>
+  const wardName = (id: WardId | null | undefined) =>
     id ? (wardById.get(id)?.name ?? null) : null;
-  const bedName = (id: string | null | undefined) =>
+  const bedName = (id: BedId | null | undefined) =>
     id ? (bedById.get(id)?.label ?? null) : null;
 
   const admission = getAdmissionForVisit(visit.id) ?? null;
@@ -182,7 +187,7 @@ export interface PatientHistoryData {
  * `null` if the patient cannot be found. A patient with no visits yields an
  * empty `visits` array (the renderer shows a "no visits" note).
  */
-export function buildPatientHistory(patientId: string): PatientHistoryData | null {
+export function buildPatientHistory(patientId: PatientId): PatientHistoryData | null {
   const patient = getPatientById(patientId);
   if (!patient) return null;
 

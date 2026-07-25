@@ -24,6 +24,7 @@ import {
 import { useAuth } from "@/components/auth-provider";
 import { getStaffForHospital } from "@/services/mockStorage";
 import type { Staff, StaffRole } from "@/types/healthcare";
+import type { MessageKey } from "@/i18n";
 
 interface RoleContextValue {
   /** False until the client has hydrated; guard role-specific UI with it. */
@@ -83,7 +84,7 @@ export function useRole(): RoleContextValue {
 }
 
 /** i18n message key for a staff role — resolve with `t(ROLE_LABEL[role])`. */
-export const ROLE_LABEL: Record<StaffRole, string> = {
+export const ROLE_LABEL: Record<StaffRole, MessageKey> = {
   doctor: "roles.doctor",
   nurse: "roles.nurse",
   admin: "roles.admin",

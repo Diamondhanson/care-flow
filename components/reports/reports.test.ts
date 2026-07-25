@@ -27,6 +27,7 @@ import type {
   Diagnosis,
   Patient,
   Result,
+  Unbranded,
   Visit,
   Ward,
 } from "@/types/healthcare";
@@ -43,7 +44,7 @@ function daysAgoIso(days: number, hour = 9): string {
   return new Date(Date.UTC(2026, 4, 31, hour) - days * DAY_MS).toISOString();
 }
 
-function makeVisit(overrides: Partial<Visit> = {}): Visit {
+function makeVisit(overrides: Partial<Unbranded<Visit>> = {}): Visit {
   return {
     id: "vis_1",
     hospital_id: "hosp_demo",
@@ -62,10 +63,10 @@ function makeVisit(overrides: Partial<Visit> = {}): Visit {
     created_at: daysAgoIso(1),
     updated_at: daysAgoIso(1),
     ...overrides,
-  };
+  } as Visit;
 }
 
-function makePatient(overrides: Partial<Patient> = {}): Patient {
+function makePatient(overrides: Partial<Unbranded<Patient>> = {}): Patient {
   return {
     id: "pat_1",
     hospital_id: "hosp_demo",
@@ -83,10 +84,10 @@ function makePatient(overrides: Partial<Patient> = {}): Patient {
     created_at: daysAgoIso(1),
     updated_at: daysAgoIso(1),
     ...overrides,
-  };
+  } as Patient;
 }
 
-function makeAdmission(overrides: Partial<Admission> = {}): Admission {
+function makeAdmission(overrides: Partial<Unbranded<Admission>> = {}): Admission {
   return {
     id: "adm_1",
     hospital_id: "hosp_demo",
@@ -105,7 +106,7 @@ function makeAdmission(overrides: Partial<Admission> = {}): Admission {
     discharged_at: daysAgoIso(2),
     updated_at: daysAgoIso(2),
     ...overrides,
-  };
+  } as Admission;
 }
 
 function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
@@ -118,7 +119,7 @@ function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
     current_admission_id: null,
     created_at: daysAgoIso(60),
     updated_at: daysAgoIso(60),
-  };
+  } as Bed;
 }
 
 function makeWard(id: string, name = id): Ward {
@@ -132,10 +133,10 @@ function makeWard(id: string, name = id): Ward {
     is_active: true,
     created_at: daysAgoIso(60),
     updated_at: daysAgoIso(60),
-  };
+  } as Ward;
 }
 
-function makeDiagnosis(overrides: Partial<Diagnosis> = {}): Diagnosis {
+function makeDiagnosis(overrides: Partial<Unbranded<Diagnosis>> = {}): Diagnosis {
   return {
     id: "dx_1",
     hospital_id: "hosp_demo",
@@ -147,7 +148,7 @@ function makeDiagnosis(overrides: Partial<Diagnosis> = {}): Diagnosis {
     is_primary: true,
     created_at: daysAgoIso(1),
     ...overrides,
-  };
+  } as Diagnosis;
 }
 
 // The range covering the whole fixture window.
@@ -294,10 +295,10 @@ describe("visitTypeMix", () => {
 
 describe("departmentThroughput", () => {
   it("resolves names, buckets unassigned, and sorts descending", () => {
-    const departments: Department[] = [
+    const departments = [
       { id: "dept_a", hospital_id: "hosp_demo", name: "Cardiology", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
       { id: "dept_b", hospital_id: "hosp_demo", name: "Surgery", code: null, description: null, is_active: true, created_at: "", updated_at: "" },
-    ];
+    ] as Department[];
     const visits = [
       makeVisit({ id: "1", department_id: "dept_a" }),
       makeVisit({ id: "2", department_id: "dept_a" }),
@@ -441,7 +442,7 @@ describe("abnormalRate", () => {
     const res = (id: string, is_abnormal: boolean): Result => ({
       id, hospital_id: "hosp_demo", order_id: "o", recorded_by_id: null, summary: null, value: null,
       reference_range: null, is_abnormal, attachment_path: null, recorded_at: daysAgoIso(1),
-    });
+    } as Result);
     const rate = abnormalRate([res("1", true), res("2", false), res("3", false), res("4", false)], RANGE);
     expect(rate).toMatchObject({ abnormal: 1, normal: 3, total: 4, pct: 25 });
   });

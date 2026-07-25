@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 
 import { buildVisitSummary, buildPatientHistory } from "./visit-summary";
+import type { PatientId, VisitId } from "@/types/healthcare";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
 
 // Exercised against the deterministic seed (each read re-seeds in the node test
 // env). vis_idris is a seeded inpatient surgical visit with an admission.
 
 describe("buildVisitSummary", () => {
   it("returns null for an unknown visit", () => {
-    expect(buildVisitSummary("vis_nope")).toBeNull();
+    expect(buildVisitSummary(brand<VisitId>("vis_nope"))).toBeNull();
   });
 
   it("assembles the full record for a seeded inpatient visit", () => {
-    const summary = buildVisitSummary("vis_idris");
+    const summary = buildVisitSummary(brand<VisitId>("vis_idris"));
     expect(summary).not.toBeNull();
     if (!summary) return;
 
@@ -25,7 +29,7 @@ describe("buildVisitSummary", () => {
   });
 
   it("resolves staff / ward / bed names and joins orders to results", () => {
-    const summary = buildVisitSummary("vis_idris");
+    const summary = buildVisitSummary(brand<VisitId>("vis_idris"));
     if (!summary) throw new Error("expected summary");
 
     // The attending doctor id resolves to a display name.
@@ -44,7 +48,7 @@ describe("buildVisitSummary", () => {
   });
 
   it("sorts diagnoses primary-first and vitals chronologically", () => {
-    const summary = buildVisitSummary("vis_idris");
+    const summary = buildVisitSummary(brand<VisitId>("vis_idris"));
     if (!summary) throw new Error("expected summary");
 
     if (summary.diagnoses.length > 1) {
@@ -63,11 +67,11 @@ describe("buildVisitSummary", () => {
 
 describe("buildPatientHistory", () => {
   it("returns null for an unknown patient", () => {
-    expect(buildPatientHistory("pat_nope")).toBeNull();
+    expect(buildPatientHistory(brand<PatientId>("pat_nope"))).toBeNull();
   });
 
   it("assembles every visit for a patient, oldest → newest", () => {
-    const history = buildPatientHistory("pat_idris");
+    const history = buildPatientHistory(brand<PatientId>("pat_idris"));
     expect(history).not.toBeNull();
     if (!history) return;
 

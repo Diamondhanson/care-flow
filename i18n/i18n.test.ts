@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { translate } from "./index";
+// msgKey: these tests exercise the deliberate raw-key fallback for unknown keys.
+import { msgKey, translate } from "./index";
 import { formatDate, formatDateTime, formatNumber, formatPercent } from "./format";
 
 describe("translate", () => {
@@ -33,12 +34,12 @@ describe("translate", () => {
   });
 
   it("falls back to the raw key when the key is unknown everywhere", () => {
-    expect(translate("en", "does.not.exist")).toBe("does.not.exist");
-    expect(translate("fr", "totally.bogus.key")).toBe("totally.bogus.key");
+    expect(translate("en", msgKey("does.not.exist"))).toBe("does.not.exist");
+    expect(translate("fr", msgKey("totally.bogus.key"))).toBe("totally.bogus.key");
   });
 
   it("returns the raw key untouched even with params when unknown", () => {
-    expect(translate("en", "no.such.key", { a: 1 })).toBe("no.such.key");
+    expect(translate("en", msgKey("no.such.key"), { a: 1 })).toBe("no.such.key");
   });
 });
 

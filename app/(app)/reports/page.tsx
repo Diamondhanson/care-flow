@@ -46,6 +46,13 @@ import {
 import { exportReportPdf, exportReportXlsx } from "@/components/reports/export";
 import { useT } from "@/components/locale-provider";
 import { formatDate } from "@/i18n/format";
+import { useCacheVersion } from "@/lib/use-cache";
+import {
+  fetchReportRows,
+  windowCutoffMs,
+  type ServerReportRows,
+} from "@/services/supabaseData";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 function loadReportData(): ReportData {
   return {
@@ -69,6 +76,7 @@ function isoDay(ms: number): string {
 export default function ReportsPage() {
   const { t, locale, mounted } = useT();
   const activeLocale = mounted ? locale : "en";
+  const cacheVersion = useCacheVersion();
   const [data, setData] = useState<ReportData | null>(null);
   const [nowMs, setNowMs] = useState(0);
   const [preset, setPreset] = useState<RangePreset>("90d");
@@ -82,7 +90,7 @@ export default function ReportsPage() {
     const monthAgo = now - 30 * 86_400_000;
     setCustomStart(isoDay(monthAgo));
     setCustomEnd(isoDay(now));
-  }, []);
+  }, [cacheVersion]);
 
   const range: DateRange = useMemo(() => {
     if (preset === "custom") {
@@ -95,10 +103,59 @@ export default function ReportsPage() {
     return presetRange(preset, nowMs);
   }, [preset, customStart, customEnd, nowMs]);
 
-  const report: FullReport | null = useMemo(
-    () => (data ? buildReport(data, range, nowMs) : null),
-    [data, range, nowMs],
-  );
+  // The device only holds the recent working set (Stage 4 windowed hydration).
+  // When the selected range reaches further back, fetch the older rows from the
+  // server while online — otherwise show the partial-data notice below.
+  const beyondWindow = nowMs > 0 && range.startMs < windowCutoffMs();
+  const [serverRows, setServerRows] = useState<ServerReportRows | null>(null);
+  useEffect(() => {
+    setServerRows(null);
+    if (!beyondWindow || !isSupabaseConfigured() || !navigator.onLine) return;
+    let cancelled = false;
+    fetchReportRows(
+      new Date(Math.max(range.startMs, 0)).toISOString(),
+      new Date(range.endMs).toISOString(),
+    )
+      .then((rows) => {
+        if (!cancelled) setServerRows(rows);
+      })
+      .catch(() => {
+        /* offline blip / transient — the partial-data notice stays visible */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [beyondWindow, range.startMs, range.endMs]);
+
+  const report: FullReport | null = useMemo(() => {
+    if (!data) return null;
+    if (!serverRows) return buildReport(data, range, nowMs);
+    // Merge server history under the local rows (local wins by id — it may
+    // carry fresher unsynced edits). Transient: computation only, not cached.
+    const mergeById = <T extends { id: string }>(
+      local: T[],
+      server: unknown[],
+    ): T[] => {
+      const seen = new Set(local.map((r) => r.id));
+      return [
+        ...local,
+        ...(server as T[]).filter((r) => r && !seen.has(r.id)),
+      ];
+    };
+    return buildReport(
+      {
+        ...data,
+        visits: mergeById(data.visits, serverRows.visits),
+        admissions: mergeById(data.admissions, serverRows.admissions),
+        diagnoses: mergeById(data.diagnoses, serverRows.diagnoses),
+        results: mergeById(data.results, serverRows.results),
+      },
+      range,
+      nowMs,
+    );
+  }, [data, range, nowMs, serverRows]);
+
+  const showPartialNotice = beyondWindow && serverRows === null;
 
   if (!report) {
     return (
@@ -147,6 +204,12 @@ export default function ReportsPage() {
           </Button>
         </div>
       </header>
+
+      {showPartialNotice ? (
+        <p className="rounded-md border border-status-warning/40 bg-status-warning/10 px-3 py-2 text-xs text-foreground">
+          {t("reports.partialNotice")}
+        </p>
+      ) : null}
 
       {/* Range selector */}
       <div className="flex flex-col gap-3 rounded-md border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">

@@ -19,13 +19,25 @@ import {
   uniquePatientId,
   updateVisitStage,
 } from "@/services/mockStorage";
-import type { Admission, Bed, Patient, Ward } from "@/types/healthcare";
+import type {
+  Admission,
+  Bed,
+  BedId,
+  DepartmentId,
+  Patient,
+  StaffId,
+  Unbranded,
+  Ward,
+} from "@/types/healthcare";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
 
 // ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
 
-function makeAdmission(overrides: Partial<Admission> = {}): Admission {
+function makeAdmission(overrides: Partial<Unbranded<Admission>> = {}): Admission {
   return {
     id: "adm_1",
     hospital_id: "hosp_demo",
@@ -44,10 +56,10 @@ function makeAdmission(overrides: Partial<Admission> = {}): Admission {
     discharged_at: null,
     updated_at: "2026-05-01T00:00:00.000Z",
     ...overrides,
-  };
+  } as Admission;
 }
 
-function makePatient(overrides: Partial<Patient> = {}): Patient {
+function makePatient(overrides: Partial<Unbranded<Patient>> = {}): Patient {
   return {
     id: "pat_1",
     hospital_id: "hosp_demo",
@@ -65,7 +77,7 @@ function makePatient(overrides: Partial<Patient> = {}): Patient {
     created_at: "2026-05-01T00:00:00.000Z",
     updated_at: "2026-05-01T00:00:00.000Z",
     ...overrides,
-  };
+  } as Patient;
 }
 
 function makeWard(id: string): Ward {
@@ -79,7 +91,7 @@ function makeWard(id: string): Ward {
     is_active: true,
     created_at: "2026-05-01T00:00:00.000Z",
     updated_at: "2026-05-01T00:00:00.000Z",
-  };
+  } as Ward;
 }
 
 function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
@@ -92,7 +104,7 @@ function makeBed(id: string, ward_id: string, status: Bed["status"]): Bed {
     current_admission_id: null,
     created_at: "2026-05-01T00:00:00.000Z",
     updated_at: "2026-05-01T00:00:00.000Z",
-  };
+  } as Bed;
 }
 
 // ---------------------------------------------------------------------------
@@ -268,20 +280,20 @@ describe("computeWardOccupancy", () => {
 // Department routing helpers
 // ---------------------------------------------------------------------------
 
-const VISITS: { id: string; department_id: string | null }[] = [
+const VISITS = [
   { id: "v1", department_id: "dept_a" },
   { id: "v2", department_id: "dept_a" },
   { id: "v3", department_id: "dept_b" },
   { id: "v4", department_id: null },
-];
+] as { id: string; department_id: DepartmentId | null }[];
 
 describe("filterVisitsByDepartment", () => {
   it("narrows to a single department", () => {
-    expect(filterVisitsByDepartment(VISITS, "dept_a").map((v) => v.id)).toEqual([
+    expect(filterVisitsByDepartment(VISITS, brand<DepartmentId>("dept_a")).map((v) => v.id)).toEqual([
       "v1",
       "v2",
     ]);
-    expect(filterVisitsByDepartment(VISITS, "dept_b").map((v) => v.id)).toEqual([
+    expect(filterVisitsByDepartment(VISITS, brand<DepartmentId>("dept_b")).map((v) => v.id)).toEqual([
       "v3",
     ]);
   });
@@ -293,7 +305,7 @@ describe("filterVisitsByDepartment", () => {
   });
 
   it("returns an empty list for a department with no visits", () => {
-    expect(filterVisitsByDepartment(VISITS, "dept_unknown")).toEqual([]);
+    expect(filterVisitsByDepartment(VISITS, brand<DepartmentId>("dept_unknown"))).toEqual([]);
   });
 });
 
@@ -319,8 +331,8 @@ describe("countVisitsByDepartment", () => {
 
 describe("transferAdmission", () => {
   it("moves an admission to a free bed and derives the ward from it", () => {
-    const { admission, transfer } = transferAdmission("adm_idris", {
-      to_bed_id: "bed_medb_09",
+    const { admission, transfer } = transferAdmission(brand("adm_idris"), {
+      to_bed_id: brand<BedId>("bed_medb_09"),
       reason: "Step-down from ICU",
     });
     expect(admission.bed_id).toBe("bed_medb_09");
@@ -333,8 +345,8 @@ describe("transferAdmission", () => {
   });
 
   it("changes the attending doctor while leaving the bed unchanged", () => {
-    const { admission, transfer } = transferAdmission("adm_idris", {
-      to_doctor_id: "staff_okafor",
+    const { admission, transfer } = transferAdmission(brand("adm_idris"), {
+      to_doctor_id: brand<StaffId>("staff_okafor"),
     });
     expect(admission.attending_doctor_id).toBe("staff_okafor");
     expect(transfer.from_doctor_id).toBe("staff_chen");
@@ -345,12 +357,12 @@ describe("transferAdmission", () => {
 
   it("refuses a bed already held by another admission", () => {
     expect(() =>
-      transferAdmission("adm_idris", { to_bed_id: "bed_medb_11" }),
+      transferAdmission(brand("adm_idris"), { to_bed_id: brand<BedId>("bed_medb_11") }),
     ).toThrow(/occupied/i);
   });
 
   it("throws for an unknown admission", () => {
-    expect(() => transferAdmission("nope", {})).toThrow();
+    expect(() => transferAdmission(brand("nope"), {})).toThrow();
   });
 });
 
@@ -363,7 +375,7 @@ describe("transferAdmission", () => {
 
 describe("recordDeath", () => {
   it("closes the visit as deceased even with clearances pending", () => {
-    const visit = recordDeath("vis_idris", "staff_chen", "Cardiac arrest");
+    const visit = recordDeath(brand("vis_idris"), brand<StaffId>("staff_chen"), "Cardiac arrest");
     expect(visit.stage).toBe("deceased");
     expect(visit.status).toBe("closed");
     expect(visit.closed_at).not.toBeNull();
@@ -371,15 +383,15 @@ describe("recordDeath", () => {
 
   it("bypasses the discharge clearance gate that blocks a discharge", () => {
     // A normal discharge of the same visit is blocked by pending clearances…
-    expect(() => updateVisitStage("vis_idris", "discharged")).toThrow(
+    expect(() => updateVisitStage(brand("vis_idris"), "discharged")).toThrow(
       /Cannot discharge/i,
     );
     // …but recording the death succeeds.
-    expect(() => recordDeath("vis_idris")).not.toThrow();
+    expect(() => recordDeath(brand("vis_idris"))).not.toThrow();
   });
 
   it("throws for an unknown visit", () => {
-    expect(() => recordDeath("nope")).toThrow();
+    expect(() => recordDeath(brand("nope"))).toThrow();
   });
 });
 
@@ -424,17 +436,17 @@ describe("searchPatients", () => {
 
 describe("getLatestVisitForPatient", () => {
   it("returns a visit for a seeded patient", () => {
-    const visit = getLatestVisitForPatient("pat_mensah");
+    const visit = getLatestVisitForPatient(brand("pat_mensah"));
     expect(visit).toBeDefined();
     expect(visit?.patient_id).toBe("pat_mensah");
   });
 
   it("returns undefined for an unknown patient", () => {
-    expect(getLatestVisitForPatient("pat_nonexistent")).toBeUndefined();
+    expect(getLatestVisitForPatient(brand("pat_nonexistent"))).toBeUndefined();
   });
 
   it("prefers an open visit when one exists", () => {
-    const visit = getLatestVisitForPatient("pat_mensah");
+    const visit = getLatestVisitForPatient(brand("pat_mensah"));
     // Seed keeps Grace Mensah's visit open on the board.
     if (visit) expect(["open", "closed"]).toContain(visit.status);
   });
@@ -442,7 +454,7 @@ describe("getLatestVisitForPatient", () => {
 
 describe("assignBedToAdmission", () => {
   it("assigns a free bed and derives the ward", () => {
-    const admission = assignBedToAdmission("adm_idris", "bed_er_1");
+    const admission = assignBedToAdmission(brand("adm_idris"), brand("bed_er_1"));
     expect(admission.bed_id).toBe("bed_er_1");
     expect(admission.ward_id).toBe("ward_er");
   });
@@ -560,6 +572,29 @@ describe("diffDatabases", () => {
       "wards:update:w1",
     ]);
   });
+
+  it("orders deletes child-first so FK replays can't fail (Stage 2)", () => {
+    // Deleting a ward and its bed together: DB_COLLECTIONS lists wards before
+    // beds, but the *delete* for beds (child) must be emitted before wards
+    // (parent) or the server would reject the parent delete on the FK.
+    const pre = normalizeDatabase({
+      wards: [makeWard("w1")],
+      beds: [
+        {
+          id: "b1",
+          ward_id: "w1",
+        } as unknown as ReturnType<typeof normalizeDatabase>["beds"][number],
+      ],
+    });
+    const post = normalizeDatabase({});
+    const changes = diffDatabases(pre, post);
+    const deleteOrder = changes
+      .filter((c) => c.op === "delete")
+      .map((c) => c.table);
+    expect(deleteOrder.indexOf("beds")).toBeLessThan(
+      deleteOrder.indexOf("wards"),
+    );
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -586,6 +621,7 @@ describe("SUPABASE_TABLES", () => {
         "treatment_records",
         "care_plan_items",
         "care_plan_entries",
+        "follow_up_tasks",
       ]),
     );
   });

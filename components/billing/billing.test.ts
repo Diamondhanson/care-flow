@@ -20,6 +20,7 @@ import type {
   Order,
   Prescription,
   Transfer,
+  Unbranded,
   Visit,
   Ward,
 } from "@/types/healthcare";
@@ -28,12 +29,15 @@ const DAY_MS = 86_400_000;
 const NOW = Date.UTC(2026, 5, 1, 12, 0, 0);
 
 /** Resolve the seed catalog into full BillableItem rows (tenant + timestamps). */
-const CATALOG: BillableItem[] = BILLING_CATALOG_SEED.map((it) => ({
-  ...it,
-  hospital_id: "hosp_demo",
-  created_at: new Date(0).toISOString(),
-  updated_at: new Date(0).toISOString(),
-}));
+const CATALOG: BillableItem[] = BILLING_CATALOG_SEED.map(
+  (it) =>
+    ({
+      ...it,
+      hospital_id: "hosp_demo",
+      created_at: new Date(0).toISOString(),
+      updated_at: new Date(0).toISOString(),
+    }) as BillableItem,
+);
 
 function isoDaysAgo(days: number): string {
   return new Date(NOW - days * DAY_MS).toISOString();
@@ -48,7 +52,7 @@ const WARDS: Ward[] = [
   ward("ward_mat", "Maternity"),
 ];
 
-const baseVisit: Visit = {
+const baseVisit = {
   id: "vis_x",
   hospital_id: "hosp_demo",
   patient_id: "pat_x",
@@ -65,7 +69,7 @@ const baseVisit: Visit = {
   closed_at: null,
   created_at: isoDaysAgo(5),
   updated_at: isoDaysAgo(5),
-};
+} as Visit;
 
 // ---------------------------------------------------------------------------
 // Catalog lookup
@@ -211,7 +215,7 @@ describe("computeAutoChargeLines", () => {
 // Bill summary
 // ---------------------------------------------------------------------------
 
-const charge = (over: Partial<Charge>): Charge =>
+const charge = (over: Partial<Unbranded<Charge>>): Charge =>
   ({
     id: "c", hospital_id: "hosp_demo", visit_id: "vis_x", billable_item_id: null,
     source: "manual", source_ref_id: null, description: "x", quantity: 1,

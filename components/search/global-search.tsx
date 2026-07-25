@@ -8,13 +8,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useT } from "@/components/locale-provider";
+import { useCacheVersion } from "@/lib/use-cache";
 import {
   searchPatients,
   getLatestVisitForPatient,
 } from "@/services/mockStorage";
+import { searchPatientsServer } from "@/services/supabaseData";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
 import { PatientDrawer } from "@/components/live-board/patient-drawer";
-import type { Patient, Visit } from "@/types/healthcare";
+import type { Patient, Visit, VisitId } from "@/types/healthcare";
 
 interface ResultRow {
   patient: Patient;
@@ -23,9 +26,10 @@ interface ResultRow {
 
 export function GlobalSearch() {
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [visitId, setVisitId] = useState<string | null>(null);
+  const [visitId, setVisitId] = useState<VisitId | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +50,22 @@ export function GlobalSearch() {
     if (!open) setQuery("");
   }, [open]);
 
+  // Server fallback (Stage 4): the device only holds the recent working set,
+  // so when online, also search the server — matches merge into the cache and
+  // surface through the memo below via cacheVersion (and stay available
+  // offline afterwards). Debounced; silent when offline/unconfigured.
+  useEffect(() => {
+    const trimmedQ = query.trim();
+    if (!open || trimmedQ.length < 2) return;
+    if (!isSupabaseConfigured() || !navigator.onLine) return;
+    const timer = setTimeout(() => {
+      void searchPatientsServer(trimmedQ).catch(() => {
+        /* offline blip or transient error — local results still show */
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query, open]);
+
   const results: ResultRow[] = useMemo(() => {
     const trimmed = query.trim();
     if (!trimmed) return [];
@@ -53,7 +73,8 @@ export function GlobalSearch() {
       patient,
       visit: getLatestVisitForPatient(patient.id),
     }));
-  }, [query]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, cacheVersion]);
 
   const trimmed = query.trim();
 
@@ -189,6 +210,8 @@ export function GlobalSearch() {
         visitId={visitId}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+        // No manual refresh needed: every screen (including whatever page is
+        // behind this dialog) re-renders reactively via useCacheVersion.
         onMutate={() => {}}
       />
     </>

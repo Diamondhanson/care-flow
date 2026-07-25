@@ -2,7 +2,13 @@
 
 A lightweight, high-signal **hospital operations platform** that tracks patients from admission through recovery follow-up. Instead of scattered files or cluttered enterprise grids, CareFlow mirrors the physical hospital floor as a **Live Status Board** — and now runs as a real, multi-hospital SaaS backed by Supabase.
 
-> **Status:** Real backend live. The app runs on **Supabase** (Postgres + Auth + Storage, with row-level security for tenant isolation) using a **local-first sync layer** — the UI reads and writes an in-browser cache that hydrates from, and syncs back to, the database.
+> **Status:** Real backend live, offline-first hardened (Stages 1–8, July 2026).
+> The app runs on **Supabase** (Postgres + Auth + Storage + Realtime, with
+> row-level security for tenant isolation) using a **local-first sync layer**:
+> the UI reads and writes an in-memory cache mirrored to **IndexedDB**, which
+> hydrates a ~12-month working set from the database, streams colleagues'
+> changes live, and syncs local edits back through a durable outbox with retry,
+> conflict review, and a user-visible sync health panel.
 
 ## What it does
 
@@ -18,7 +24,8 @@ CareFlow is organized around the journey of a patient through a hospital:
 - **Departments & Routing** (`/departments`) — route patients between departments.
 - **Patient Billing** (`/billing`) — a price catalog plus automatic charge accrual as care events happen.
 - **Reporting & Analytics** (`/reports`) — operational reports with export.
-- **Staff Directory** (`/staff`) — staff grouped by role; doctors show their currently-attending patients. Admins can create staff logins.
+- **Post-discharge Follow-ups** (`/follow-ups`) — every discharge creates real follow-up tasks (recovery call, 7-day check-in) that nurses work and mark done.
+- **Staff Directory** (`/staff`) — staff grouped by role; doctors show their currently-attending patients. Admins can create staff logins, edit/deactivate members, and reset passwords.
 - **Profile Reconciliation** (`/reconciliation`) — merge an unidentified emergency record into a verified patient profile while preserving all clinical logs.
 - **Discharge Verification** — a patient cannot reach "Followed Up" until all clearances pass *and* any anonymous emergency profile has been reconciled.
 
@@ -36,18 +43,32 @@ Every hospital's data is fully isolated from every other hospital's via Postgres
 ## Architecture
 
 ```
-[UI: Next.js + shadcn/ui]
+[UI: Next.js + shadcn/ui]  ←— re-renders reactively (useCacheVersion)
         │  reads/writes instantly
         ▼
-[Local-first cache (services/mockStorage.ts)]
-        │  hydrate on login ▲     ▼ sync queue (services/syncQueue.ts)
-        ▼                    │
-[Supabase: Postgres + Auth + Storage + RLS]
+[In-memory cache + IndexedDB mirror (services/db/*)]
+        │  windowed hydrate ▲   ▼ outbox w/ retry+conflicts   ▲ realtime stream
+        ▼                   │                                  │
+[Supabase: Postgres + Auth + Storage + Realtime + RLS]
 ```
 
-- **Supabase is the source of truth.** On sign-in, the app hydrates the current user's RLS-scoped rows into an in-browser cache; the UI reads/writes that cache for instant interactions, and a sync queue persists changes back to the database.
-- The data + auth layers live in `services/` (`supabaseData.ts`, `supabaseAuth.ts`, `syncQueue.ts`) and `lib/supabase/` (`client.ts` for the browser, `admin.ts` for server-only service-role tasks).
-- The full database definition — tables, RLS policies, and functions — is in **`supabase/schema.sql`**.
+- **Supabase is the source of truth; the device holds the working set.** On
+  sign-in the app hydrates the RLS-scoped *working set* (all open work + the
+  last ~12 months; older history loads on demand and stays cached). The UI
+  reads/writes an in-memory cache mirrored row-by-row to IndexedDB — fully
+  usable offline — while a durable outbox uploads changes with exponential
+  retry, a dead-letter "needs attention" queue, and reviewable conflicts
+  (notify + one-tap re-apply). Supabase Realtime streams colleagues' changes
+  into every signed-in device within seconds.
+- The data layer lives in `services/db/*` (barreled through
+  `services/mockStorage.ts`), with `services/supabaseData.ts` (windowed reads),
+  `services/syncQueue.ts` (outbox), `services/localDb.ts` (IndexedDB), and
+  `lib/supabase/` (`client.ts` browser, `admin.ts` server-only service-role).
+- The full database definition — tables, RLS policies, functions, realtime
+  publication — is in **`supabase/schema.sql`** (idempotent; re-run it to
+  upgrade). Incremental top-ups for live databases are in `supabase/snippets/`.
+- Going to production? Follow **`docs/PRODUCTION-CUTOVER.md`** — the manual
+  dashboard steps (Google OAuth, SMTP, hosted schema, cron) live there.
 
 ## Stack
 
@@ -81,13 +102,15 @@ psql "$DB" -f supabase/schema.sql   # tables, RLS policies, functions
 psql "$DB" -f supabase/seed.sql     # demo tenant: Douala General Hospital
 ```
 
-**4. Create `.env.local`** with the keys printed by `supabase status`:
+**4. Create `.env.local`** — copy `.env.example` and fill in the keys printed
+by `supabase status`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key from `supabase status`>
-SUPABASE_SERVICE_ROLE_KEY=<service_role key — server-only, never exposed to the browser>
+cp .env.example .env.local
 ```
+
+(Without these vars the app boots to a clear "not connected to a server"
+notice instead of crashing.)
 
 **5. Mint the demo staff logins**
 
@@ -109,7 +132,8 @@ Open [http://localhost:3000](http://localhost:3000) and sign in with the demo ac
 ## Testing
 
 ```bash
-npm test               # unit + component tests (Vitest)
+npm test               # unit tests incl. schema↔types enum parity (Vitest, node)
+npm run test:dom       # DOM/component tests (Vitest + Testing Library, jsdom)
 npm run test:rls          # tenant-isolation / RLS integration suite
 npm run test:onboarding   # verified-onboarding integration suite
 npm run test:storage      # file storage integration suite

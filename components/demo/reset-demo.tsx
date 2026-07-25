@@ -22,7 +22,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { resetDatabase } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
-import { clearOutbox, isSyncConfigured } from "@/services/syncQueue";
+import {
+  clearOutbox,
+  isSyncConfigured,
+  setDrainSuspended,
+} from "@/services/syncQueue";
 import { useT } from "@/components/locale-provider";
 
 export function ResetDemo() {
@@ -34,11 +38,19 @@ export function ResetDemo() {
     setResetting(true);
     try {
       if (isSyncConfigured()) {
-        // Re-pull server truth into the cache, then drop any local pending
-        // edits. hydrateFromSupabase replaces the cache atomically, so a fetch
-        // failure leaves the existing cache intact rather than emptying it.
-        await hydrateFromSupabase();
-        clearOutbox();
+        // Suspend the sync engine for the duration (Stage 2): a drain firing
+        // mid-reset would push the very local edits this reset is discarding.
+        // The queue is dropped FIRST so hydrate doesn't re-apply pending edits
+        // on top of the fresh snapshot (discarding them is the reset's point).
+        // hydrateFromSupabase replaces the cache atomically, so a fetch failure
+        // leaves the existing cache intact rather than emptying it.
+        setDrainSuspended(true);
+        try {
+          clearOutbox();
+          await hydrateFromSupabase();
+        } finally {
+          setDrainSuspended(false);
+        }
       } else {
         resetDatabase();
       }

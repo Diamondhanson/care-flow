@@ -15,6 +15,7 @@ import {
   LayoutGrid,
   LogOut,
   Menu,
+  PhoneCall,
   Pill,
   Receipt,
   Sparkles,
@@ -52,10 +53,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import type { MessageKey } from "@/i18n";
 
 interface NavItem {
   /** i18n key — resolve with `t(item.title)`. */
-  title: string;
+  title: MessageKey;
   href: string;
   icon: LucideIcon;
 }
@@ -67,6 +69,7 @@ const NAV_ITEMS: NavItem[] = [
   { title: "nav.medications", href: "/medications", icon: Pill },
   { title: "nav.carePlans", href: "/care-plans", icon: ClipboardList },
   { title: "nav.reconciliation", href: "/reconciliation", icon: GitMerge },
+  { title: "nav.followUps", href: "/follow-ups", icon: PhoneCall },
   { title: "nav.billing", href: "/billing", icon: Receipt },
   { title: "nav.departments", href: "/departments", icon: Building2 },
   { title: "nav.floorMap", href: "/floor-map", icon: LayoutGrid },
@@ -84,10 +87,11 @@ const NAV_ITEMS: NavItem[] = [
 const ROLE_NAV: Record<StaffRole, string[]> = {
   // Reception: register arrivals, find a bed, match an emergency record.
   receptionist: ["/dashboard", "/intake", "/floor-map", "/reconciliation", "/billing"],
-  // Nurse: the board, medications due, care plans, and bed/ward status.
-  nurse: ["/dashboard", "/medications", "/care-plans", "/floor-map"],
-  // Doctor: the board (their patients), tests & results, prescribing, care plans.
-  doctor: ["/dashboard", "/diagnostics", "/medications", "/care-plans"],
+  // Nurse: the board, medications due, care plans, follow-ups, bed/ward status.
+  nurse: ["/dashboard", "/medications", "/care-plans", "/follow-ups", "/floor-map"],
+  // Doctor: the board (their patients), tests & results, prescribing, care
+  // plans, and the post-discharge follow-up worklist.
+  doctor: ["/dashboard", "/diagnostics", "/medications", "/care-plans", "/follow-ups"],
   // Pharmacist: medications and the tests that inform them.
   pharmacist: ["/dashboard", "/medications", "/diagnostics"],
   // Lab tech: the diagnostics queue.

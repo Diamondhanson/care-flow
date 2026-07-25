@@ -14,6 +14,7 @@
 import type {
   Admission,
   BillableItem,
+  BillableItemId,
   BillingCategory,
   Charge,
   ChargeSource,
@@ -237,7 +238,7 @@ export interface AutoChargeLine {
   source: ChargeSource;
   /** Idempotency key — the originating record / segment. */
   source_ref_id: string;
-  billable_item_id: string | null;
+  billable_item_id: BillableItemId | null;
   description: string;
   quantity: number;
   unit_price: number;

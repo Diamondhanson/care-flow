@@ -7,193 +7,29 @@ import { ArrowLeft, Pencil, Plus, Tag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   createBillableItem,
   getBillableItems,
   updateBillableItem,
 } from "@/services/mockStorage";
 import { BILLING_CATEGORY_ORDER } from "@/components/billing/billing";
+import {
+  EMPTY_DRAFT,
+  ItemDialog,
+  type DraftState,
+} from "@/components/billing/price-item-dialog";
 import { useRole } from "@/components/role-provider";
-import { useT, type TFunction } from "@/components/locale-provider";
+import { useT } from "@/components/locale-provider";
 import { formatXaf } from "@/i18n/format";
+import { useCacheVersion } from "@/lib/use-cache";
 import { cn } from "@/lib/utils";
-import type {
-  BillableItem,
-  BillingCategory,
-  BillingUnit,
-} from "@/types/healthcare";
-
-const UNITS: BillingUnit[] = ["per_item", "per_night", "per_day"];
-
-interface DraftState {
-  id: string | null;
-  category: BillingCategory;
-  name: string;
-  unit: BillingUnit;
-  unit_price: string;
-  ref_code: string;
-  is_active: boolean;
-}
-
-const EMPTY_DRAFT: DraftState = {
-  id: null,
-  category: "consultation",
-  name: "",
-  unit: "per_item",
-  unit_price: "",
-  ref_code: "",
-  is_active: true,
-};
-
-function ItemDialog({
-  draft,
-  onClose,
-  onSave,
-  t,
-}: {
-  draft: DraftState | null;
-  onClose: () => void;
-  onSave: (draft: DraftState) => void;
-  t: TFunction;
-}) {
-  const [state, setState] = useState<DraftState>(EMPTY_DRAFT);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (draft) setState(draft);
-  }, [draft]);
-
-  const categoryItems = useMemo(() => {
-    const entries: Record<string, string> = {};
-    for (const c of BILLING_CATEGORY_ORDER) entries[c] = t(`billing.category.${c}`);
-    return entries;
-  }, [t]);
-
-  const unitItems = useMemo(() => {
-    const entries: Record<string, string> = {};
-    for (const u of UNITS) entries[u] = t(`billing.unit.${u}`);
-    return entries;
-  }, [t]);
-
-  const canSave = state.name.trim().length > 0 && Number(state.unit_price) >= 0;
-
-  return (
-    <Dialog open={draft !== null} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{state.id ? t("billing.editItem") : t("billing.newItem")}</DialogTitle>
-        </DialogHeader>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="item-name">{t("billing.fieldName")}</Label>
-            <Input
-              id="item-name"
-              value={state.name}
-              onChange={(e) => setState((s) => ({ ...s, name: e.target.value }))}
-              placeholder={t("billing.fieldNamePlaceholder")}
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="item-category">{t("billing.fieldCategory")}</Label>
-              <Select
-                items={categoryItems}
-                value={state.category}
-                onValueChange={(v) => setState((s) => ({ ...s, category: v as BillingCategory }))}
-              >
-                <SelectTrigger id="item-category" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {BILLING_CATEGORY_ORDER.map((c) => (
-                    <SelectItem key={c} value={c}>
-                      {t(`billing.category.${c}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="item-unit">{t("billing.fieldUnit")}</Label>
-              <Select
-                items={unitItems}
-                value={state.unit}
-                onValueChange={(v) => setState((s) => ({ ...s, unit: v as BillingUnit }))}
-              >
-                <SelectTrigger id="item-unit" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {UNITS.map((u) => (
-                    <SelectItem key={u} value={u}>
-                      {t(`billing.unit.${u}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="item-price">{t("billing.fieldUnitPrice")}</Label>
-            <Input
-              id="item-price"
-              type="number"
-              min={0}
-              value={state.unit_price}
-              onChange={(e) => setState((s) => ({ ...s, unit_price: e.target.value }))}
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="item-ref">{t("billing.fieldRefCode")}</Label>
-            <Input
-              id="item-ref"
-              value={state.ref_code}
-              onChange={(e) => setState((s) => ({ ...s, ref_code: e.target.value }))}
-              placeholder={t("billing.fieldRefCodePlaceholder")}
-            />
-          </div>
-          <label className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5">
-            <span className="text-sm font-medium">{t("billing.fieldActive")}</span>
-            <Switch
-              checked={state.is_active}
-              onCheckedChange={(v) => setState((s) => ({ ...s, is_active: v }))}
-            />
-          </label>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose}>
-            {t("billing.cancel")}
-          </Button>
-          <Button onClick={() => onSave(state)} disabled={!canSave}>
-            {t("billing.save")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+import type { BillableItem, BillingCategory } from "@/types/healthcare";
 
 export default function BillingPricesPage() {
   const { actingRole, mounted: roleMounted } = useRole();
   const { t, locale, mounted } = useT();
   const activeLocale = mounted ? locale : "en";
+  const cacheVersion = useCacheVersion();
 
   const [items, setItems] = useState<BillableItem[] | null>(null);
   const [draft, setDraft] = useState<DraftState | null>(null);
@@ -207,7 +43,7 @@ export default function BillingPricesPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
-  }, []);
+  }, [cacheVersion]);
 
   const grouped = useMemo(() => {
     const byCat = new Map<BillingCategory, BillableItem[]>();

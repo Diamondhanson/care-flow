@@ -7,6 +7,7 @@ import { RoleProvider } from "@/components/role-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
+import { Toaster } from "@/components/ui/toaster";
 import { SyncEngine } from "@/components/pwa/sync-engine";
 
 const geistSans = Geist({
@@ -69,6 +70,7 @@ export default function RootLayout({
                 <TooltipProvider>{children}</TooltipProvider>
               </RoleProvider>
             </AuthProvider>
+            <Toaster />
           </LocaleProvider>
           <ServiceWorkerRegister />
           <SyncEngine />

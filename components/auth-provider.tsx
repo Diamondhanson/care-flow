@@ -47,14 +47,24 @@ import {
   getHospitals,
   getStaffAccountById,
   getStaffAccountByUserId,
+  initLocalStore,
   setActiveHospitalId,
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
+import { drainOutbox } from "@/services/syncQueue";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { notify } from "@/lib/notify";
 import type { Hospital, Staff, StaffRole } from "@/types/healthcare";
 
 interface AuthContextValue {
   /** False until the client has hydrated + resolved the session. */
   mounted: boolean;
+  /**
+   * False when the Supabase env vars are missing (fresh/unconfigured checkout).
+   * The auth screens show a clear "not configured" notice instead of a generic
+   * sign-in failure, and no Supabase call is attempted.
+   */
+  backendConfigured: boolean;
   /** A fully-resolved staff identity (signed in AND belongs to a hospital). */
   isAuthenticated: boolean;
   /** Verified session but no hospital yet — should go to the onboarding step. */
@@ -172,11 +182,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Unconfigured checkout: skip every Supabase call (they would throw) and
+    // let the auth screens render the "backend not configured" notice.
+    if (!isSupabaseConfigured()) {
+      setMounted(true);
+      return;
+    }
     let active = true;
-    getCurrentUser()
+    // Open the on-device store (IndexedDB) BEFORE resolving the session, so
+    // every later read hits fully-initialized data (Stage 3).
+    initLocalStore()
+      .then(() => getCurrentUser())
       .then(async (user) => {
         if (!active) return;
         await resolveUser(user);
+      })
+      .catch(() => {
+        // Session resolution failed (e.g. transient network/auth error). The
+        // user simply stays signed out; sign-in surfaces its own errors.
       })
       .finally(() => {
         if (active) setMounted(true);
@@ -241,13 +264,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const signOut = useCallback(async () => {
+    // Privacy wipe (Stage 3): try to send any still-pending changes first, then
+    // clear the on-device patient data (resolveUser(null) → clearLocalCache).
+    // If some changes can't send (offline / failing), they stay queued so work
+    // isn't destroyed — and the user is told they remain on this device.
+    let remaining = 0;
+    try {
+      const result = await drainOutbox();
+      remaining = result.remaining;
+    } catch {
+      remaining = 1; // drain itself failed — assume something is still queued
+    }
     await signOutSupabase();
     await resolveUser(null);
+    if (remaining > 0) {
+      notify({
+        kind: "warning",
+        titleKey: "notify.signOutPendingTitle",
+        bodyKey: "notify.signOutPendingBody",
+      });
+    }
   }, [resolveUser]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       mounted,
+      backendConfigured: isSupabaseConfigured(),
       isAuthenticated: currentStaff !== null,
       needsOnboarding: authUser !== null && currentStaff === null,
       authUser,

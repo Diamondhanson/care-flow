@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { BackendNotice } from "@/components/auth/backend-notice";
 import { OwnerAuth } from "@/components/auth/owner-auth";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
@@ -52,6 +53,7 @@ export default function LoginPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col px-4 py-12 md:py-20">
+      <BackendNotice />
       <Card>
         <CardHeader>
           <CardTitle>{t("auth.login.title")}</CardTitle>

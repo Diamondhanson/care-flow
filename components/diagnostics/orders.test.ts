@@ -8,9 +8,9 @@ import {
   isOrderOpen,
 } from "@/components/diagnostics/orders";
 import { translate } from "@/i18n";
-import type { Result } from "@/types/healthcare";
+import type { Result, Unbranded } from "@/types/healthcare";
 
-function result(partial: Partial<Result>): Result {
+function result(partial: Partial<Unbranded<Result>>): Result {
   return {
     id: "res_x",
     hospital_id: "hosp_demo",
@@ -23,7 +23,7 @@ function result(partial: Partial<Result>): Result {
     attachment_path: null,
     recorded_at: "2026-05-31T00:00:00.000Z",
     ...partial,
-  };
+  } as Result;
 }
 
 describe("order label maps", () => {

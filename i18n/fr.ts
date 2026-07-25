@@ -28,6 +28,7 @@ export const fr = {
     diagnostics: "Tests & résultats",
     medications: "Médicaments",
     reconciliation: "Associer un patient d'urgence",
+    followUps: "Suivis post-sortie",
     departments: "Services",
     floorMap: "Plan des étages",
     carePlans: "Plans de soins",
@@ -227,9 +228,7 @@ export const fr = {
     allergiesNotAssessed: "Allergies non évaluées",
     reconcileTitle: "Réconciliation du profil",
     reconcileHint:
-      "Associez ce dossier d'urgence à un patient vérifié. Les enregistrements cliniques sont conservés et rattachés au profil fusionné.",
-    selectVerifiedPatient: "Sélectionner un patient vérifié",
-    merge: "Fusionner",
+      "Donnez à ce dossier d'urgence sa véritable identité, ou fusionnez-le avec un patient vérifié existant. Les enregistrements cliniques sont conservés dans les deux cas.",
     doctorConsole: "Console médecin",
     priorRecord: "Dossier antérieur",
     primaryTag: "principal",
@@ -343,8 +342,13 @@ export const fr = {
     notes: "Notes",
     notesPlaceholder: "Observations cliniques",
     saveLog: "Enregistrer l'entrée",
+    vitalsOutOfRange:
+      "{field} est hors de la plage plausible ({min}–{max}). Entrée non enregistrée — vérifiez la valeur.",
     treatmentHistory: "Historique de traitement",
     noEntries: "Aucune entrée consignée",
+    historyTitle: "Historique des visites",
+    historyEmpty: "Aucune visite au dossier pour ce patient.",
+    historyCurrent: "En cours",
     emptyNote: "Note vide.",
     showMore: "Plus d'options",
     showLess: "Moins d'options",
@@ -354,6 +358,8 @@ export const fr = {
     unassigned: "Non attribué",
     unknown: "Service inconnu",
     loading: "Chargement des rapports…",
+    partialNotice:
+      "Cette période dépasse les dossiers conservés sur cet appareil. Connectez-vous à Internet pour inclure l'historique complet — les chiffres affichés peuvent être incomplets.",
     title: "Activité & analyses",
     subtitle:
       "Activité, occupation et indicateurs cliniques et pharmaceutiques de tout l'hôpital pour la période sélectionnée. Exportez un instantané complet en PDF ou Excel.",
@@ -511,6 +517,26 @@ export const fr = {
     usernameRequired: "Un nom d'utilisateur est requis.",
     passwordTooShort: "Le mot de passe doit comporter au moins 6 caractères.",
     noHospital: "Aucun hôpital actif — veuillez vous reconnecter.",
+    // Modification / activation / réinitialisation du mot de passe
+    editTitle: "Modifier le membre du personnel",
+    editDesc: "Mettez à jour les informations d'annuaire de ce membre.",
+    saving: "Enregistrement…",
+    updateFailed: "Impossible de mettre à jour le membre du personnel.",
+    deactivate: "Désactiver",
+    reactivate: "Réactiver",
+    deactivatePrompt: "Désactiver ce membre du personnel ?",
+    deactivateConfirm: "Désactiver",
+    resetPassword: "Réinitialiser le mot de passe",
+    resetPasswordTitle: "Réinitialiser le mot de passe",
+    resetPasswordDesc:
+      "Définissez un nouveau mot de passe de connexion pour {name}, puis remettez-le-lui directement.",
+    newPassword: "Nouveau mot de passe",
+    newPasswordPlaceholder: "Au moins 8 caractères",
+    resetPasswordTooShort: "Le mot de passe doit comporter au moins 8 caractères.",
+    resetPasswordSuccess: "Mot de passe mis à jour.",
+    resetNoSession: "Votre session a expiré — veuillez vous reconnecter.",
+    resetting: "Mise à jour…",
+    resetConfirm: "Définir le mot de passe",
   },
 
   reconciliation: {
@@ -558,6 +584,40 @@ export const fr = {
     successMerged: "Fusionné avec {name}.",
   },
 
+  followUp: {
+    title: "Suivis post-sortie",
+    subtitle:
+      "Traitez les appels et contrôles programmés automatiquement à la sortie de chaque patient.",
+    loading: "Chargement des suivis…",
+    pendingCount: "en attente",
+    // Sections
+    dueSection: "À faire",
+    upcomingSection: "À venir",
+    doneSection: "Terminés",
+    // Kind labels
+    kindCall: "Appel téléphonique",
+    kindTeleCheckin: "Télé-contrôle",
+    kindSummaryDelivery: "Envoi du compte rendu",
+    // Row details
+    dueOn: "Échéance {date}",
+    overdue: "En retard",
+    completedOn: "Terminé {date}",
+    noPhone: "Aucun téléphone enregistré",
+    // Actions
+    markDone: "Marquer terminé",
+    cancelTask: "Annuler",
+    // Empty states
+    allClear: "Aucun suivi en attente",
+    allClearHint:
+      "De nouvelles tâches sont programmées automatiquement à chaque sortie de patient.",
+    noneUpcoming: "Rien de programmé à venir.",
+    noneDone: "Aucun suivi terminé pour l'instant.",
+    // Errors (notify keys)
+    actionFailedTitle: "Impossible de mettre à jour la tâche de suivi",
+    actionFailedBody:
+      "La modification n'a pas été enregistrée sur cet appareil. Réessayez ; si le problème persiste, contactez votre administrateur.",
+  },
+
   departments: {
     title: "Services",
     total: "au total",
@@ -584,6 +644,11 @@ export const fr = {
     activeHint: "Les unités archivées sont masquées du routage et des filtres du tableau.",
     nameRequired: "Le nom du service est requis.",
     create: "Créer le service",
+    archiveTitle: "Archiver le service",
+    archiveBody:
+      "Archiver « {name} » ? Il sera masqué du routage et des filtres du tableau. Vous pourrez le réactiver à tout moment.",
+    archiveConfirm: "Archiver",
+    updateFailed: "Impossible de mettre à jour le service.",
   },
 
   diagnostics: {
@@ -689,6 +754,7 @@ export const fr = {
     reasonRequired: "Un motif de consultation est requis.",
     nameRequired: "Le nom du patient est requis pour un enregistrement standard.",
     invalidPhone: "Saisissez un numéro de téléphone valide pour le pays sélectionné.",
+    dobFutureError: "La date de naissance ne peut pas être dans le futur.",
     registerEmergency: "Enregistrer le patient d'urgence",
     register: "Enregistrer le patient",
   },
@@ -750,6 +816,12 @@ export const fr = {
     resultsCount: "{count} résultat",
     resultsCountPlural: "{count} résultats",
   },
+  offline: {
+    title: "Vous êtes hors ligne",
+    body: "Cette page n'a pas encore été mise en cache. Les pages déjà visitées fonctionnent toujours hors ligne, et toute modification est enregistrée sur cet appareil puis synchronisée dès que la connexion revient.",
+    backToBoard: "Retour au tableau",
+  },
+
   demo: {
     title: "Démonstration",
     resetTitle: "Réinitialiser les données de démonstration",
@@ -768,6 +840,88 @@ export const fr = {
       "Enregistré sur cet appareil. {count} modifications seront synchronisées au retour d'Internet.",
     queuedOne: "Synchronisation d'1 modification…",
     queuedMany: "Synchronisation de {count} modifications…",
+    panelTitle: "État de la synchronisation",
+    panelIntro:
+      "Chaque modification est d'abord enregistrée sur cet appareil, puis envoyée aux dossiers de l'hôpital dès qu'Internet le permet.",
+    allSynced: "Tout est enregistré et synchronisé.",
+    groupWaiting: "En attente d'envoi",
+    groupRetrying: "Nouvelles tentatives en cours",
+    groupAttention: "Attention requise",
+    groupAttentionHint:
+      "Ces modifications échouent à chaque envoi. Montrez ceci à votre administrateur — les détails ci-dessous expliquent pourquoi.",
+    entryQueuedAt: "en file {time}",
+    entryAttempts: "{count} tentatives échouées",
+    opInsert: "Nouvel enregistrement",
+    opUpdate: "Modification",
+    opDelete: "Suppression",
+    syncNow: "Synchroniser maintenant",
+    syncing: "Synchronisation…",
+    offlineHint:
+      "Vous êtes hors ligne. Les modifications seront envoyées au retour d'Internet.",
+    groupConflicts: "Non enregistré — quelqu'un d'autre a modifié avant vous",
+    groupConflictsHint:
+      "Un collègue a modifié le même dossier avant que votre modification n'atteigne le serveur. Votre modification est conservée ici — examinez-la et réappliquez-la, ou supprimez-la si la sienne doit primer.",
+    conflictDetectedAt: "détecté {time}",
+    reapply: "Réappliquer ma modification",
+    retry: "Réessayer",
+    discard: "Supprimer",
+  },
+  notify: {
+    regionLabel: "Notifications",
+    dismiss: "Fermer",
+    storageFullTitle: "Le stockage de cet appareil est plein",
+    storageFullBody:
+      "Votre dernière modification n'a pas pu être enregistrée sur cet appareil. Libérez de l'espace ou contactez votre administrateur — d'ici là, le nouveau travail risque d'être perdu.",
+    storageWriteFailedTitle: "Enregistrement impossible sur cet appareil",
+    storageWriteFailedBody:
+      "Un problème a empêché l'enregistrement de votre dernière modification sur cet appareil. Réessayez ; si cela se répète, contactez votre administrateur.",
+    cacheResetTitle: "Les données locales ont été réinitialisées",
+    cacheResetBody:
+      "La copie des dossiers stockée sur cet appareil était illisible et a été remplacée par une copie fraîche du serveur.",
+    outboxWriteFailedTitle:
+      "Impossible de mettre votre modification en file de synchronisation",
+    outboxWriteFailedBody:
+      "Votre modification est enregistrée sur cet appareil mais n'a pas pu rejoindre la file de synchronisation. Elle pourrait ne pas atteindre les dossiers de l'hôpital — contactez votre administrateur.",
+    outboxCorruptTitle: "La file de synchronisation était illisible",
+    outboxCorruptBody:
+      "Les modifications en attente de synchronisation n'ont pas pu être lues et ont été mises de côté (une copie de sauvegarde est conservée sur cet appareil). Le travail récent non envoyé devra peut-être être ressaisi — contactez votre administrateur.",
+    conflictTitle: "Une modification n'a pas été enregistrée — quelqu'un d'autre a modifié avant",
+    conflictBody:
+      "Un collègue a modifié le même dossier avant que votre modification n'atteigne le serveur. Ouvrez le panneau de synchronisation (icône nuage, barre du haut) pour examiner et réappliquer votre modification.",
+    uploadQueuedTitle: "Fichier enregistré — envoi au retour d'Internet",
+    uploadQueuedBody:
+      "Le résultat a été enregistré. Le fichier joint est conservé sur cet appareil et sera envoyé automatiquement au retour d'Internet.",
+    uploadRetryTitle: "Un fichier est en attente d'envoi",
+    uploadRetryBody:
+      "Un fichier joint n'a pas encore pu être envoyé. Il reste enregistré sur cet appareil et sera envoyé automatiquement dès que la connexion le permettra.",
+    signOutPendingTitle: "Certaines modifications ne sont pas encore synchronisées",
+    signOutPendingBody:
+      "Vous êtes déconnecté, mais des modifications faites sur cet appareil n'ont pas encore pu être envoyées aux dossiers de l'hôpital. Elles restent enregistrées ici et seront envoyées après la prochaine connexion sur cet appareil.",
+  },
+  tableNames: {
+    hospitals: "Informations de l'hôpital",
+    departments: "Service",
+    wards: "Unité de soins",
+    beds: "Lit",
+    staff: "Membre du personnel",
+    patients: "Dossier patient",
+    allergies: "Allergie",
+    visits: "Visite",
+    consultations: "Consultation",
+    diagnoses: "Diagnostic",
+    orders: "Demande d'examen",
+    results: "Résultat d'examen",
+    prescriptions: "Ordonnance",
+    medication_administrations: "Médicament administré",
+    treatment_records: "Note de traitement",
+    admissions: "Hospitalisation",
+    transfers: "Transfert",
+    care_plan_items: "Tâche du plan de soins",
+    care_plan_entries: "Note du plan de soins",
+    billable_items: "Article du tarif",
+    charges: "Frais facturés",
+    clinical_terms: "Terme médical",
+    follow_up_tasks: "Tâche de suivi",
   },
   visitReport: {
     button: "Compte rendu",
@@ -1245,6 +1399,10 @@ export const fr = {
       subtitle: "Finalisation de votre connexion sécurisée. Un instant.",
       error: "Impossible de finaliser la connexion. Veuillez réessayer.",
       backToLogin: "Retour à la connexion",
+    },
+    backendMissing: {
+      title: "Cette copie de CareFlow n'est pas connectée à un serveur",
+      body: "La connexion est indisponible car les paramètres du serveur sont manquants. Si vous exploitez cette application, copiez .env.example vers .env.local, renseignez les valeurs Supabase, puis redémarrez. Si vous êtes membre du personnel, contactez votre administrateur.",
     },
   },
 

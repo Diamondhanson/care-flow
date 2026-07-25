@@ -25,7 +25,9 @@ import {
 import type {
   Admission,
   BillableItem,
+  BillableItemId,
   Consultation,
+  HospitalId,
   Order,
   Prescription,
   Transfer,
@@ -48,7 +50,8 @@ async function main() {
       "select id from hospitals order by created_at limit 1",
     );
     if (hosp.length === 0) throw new Error("No hospital in production DB.");
-    const hospitalId = hosp[0].id;
+    // Brand the tenant id at the pg-row boundary (rows arrive untyped).
+    const hospitalId = hosp[0].id as HospitalId;
 
     const { rows: staffRows } = await client.query<{ id: string }>(
       "select id from staff where hospital_id = $1 order by created_at limit 1",
@@ -71,7 +74,7 @@ async function main() {
     // ---- Build the catalog (fresh UUIDs; resolution is by ref_code) ----------
     const nowIso = new Date().toISOString();
     const catalog: BillableItem[] = BILLING_CATALOG_SEED.map((it) => ({
-      id: randomUUID(),
+      id: randomUUID() as BillableItemId,
       hospital_id: hospitalId,
       category: it.category,
       name: it.name,

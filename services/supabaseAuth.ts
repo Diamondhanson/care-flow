@@ -17,10 +17,11 @@ import {
   type StaffAuthMetadata,
 } from "@/lib/supabase/identity";
 import type { User } from "@supabase/supabase-js";
+import type { AuthUserId } from "@/types/healthcare";
 
 /** The resolved, signed-in identity (auth uid + the staff metadata). */
 export interface AuthIdentity extends StaffAuthMetadata {
-  userId: string;
+  userId: AuthUserId;
 }
 
 /** Pull a usable identity out of a Supabase user's metadata, or null. */
@@ -29,7 +30,8 @@ export function metaToIdentity(user: User | null | undefined): AuthIdentity | nu
   const m = (user.user_metadata ?? {}) as Partial<StaffAuthMetadata>;
   if (!m.mock_staff_id || !m.mock_hospital_id) return null;
   return {
-    userId: user.id,
+    // Supabase's user id is a plain string; brand it at this auth boundary.
+    userId: user.id as AuthUserId,
     username: m.username ?? "",
     full_name: m.full_name ?? "",
     role: m.role ?? "",

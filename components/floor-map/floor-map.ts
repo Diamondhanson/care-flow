@@ -6,9 +6,10 @@
  */
 
 import type { Bed, BedStatus } from "@/types/healthcare";
+import type { MessageKey } from "@/i18n";
 
 /** i18n keys — resolve with `t(BED_STATUS_LABEL[status])`. */
-export const BED_STATUS_LABEL: Record<BedStatus, string> = {
+export const BED_STATUS_LABEL: Record<BedStatus, MessageKey> = {
   free: "bedStatus.free",
   occupied: "bedStatus.occupied",
   reserved: "bedStatus.reserved",

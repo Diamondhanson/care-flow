@@ -36,6 +36,7 @@ import type { LucideIcon } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { useT } from "@/components/locale-provider";
 import { cn } from "@/lib/utils";
+import type { MessageKey } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Decorative product mockups — pure presentation, no real patient data.
@@ -44,7 +45,7 @@ import { cn } from "@/lib/utils";
 type StatusToken = "boarding" | "diagnostics" | "treatment" | "discharge";
 
 interface MockColumn {
-  labelKey: string;
+  labelKey: MessageKey;
   token: StatusToken;
   count: number;
   cards: { initials: string; triage: number }[];
@@ -153,7 +154,7 @@ function BoardMockup() {
   );
 }
 
-const MOCK_REPORT_ROWS = [
+const MOCK_REPORT_ROWS: { labelKey: MessageKey; value: string; pct: number; chart: number }[] = [
   { labelKey: "marketing.mockReportsAdmissions", value: "128", pct: 64, chart: 1 },
   { labelKey: "marketing.mockReportsOutpatients", value: "342", pct: 90, chart: 3 },
   { labelKey: "marketing.mockReportsOccupancy", value: "84%", pct: 84, chart: 4 },

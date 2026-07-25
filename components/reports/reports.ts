@@ -21,10 +21,10 @@ import type {
   VisitType,
   Ward,
 } from "@/types/healthcare";
-import { translate } from "@/i18n";
+import { translate, type MessageKey } from "@/i18n";
 
 /** Minimal translator shape (matches `useT().t`) used by the render/export layer. */
-export type Translate = (key: string, params?: Record<string, string | number>) => string;
+export type Translate = (key: MessageKey, params?: Record<string, string | number>) => string;
 
 /** Resolve a slice's display label: a localized `labelKey` wins over raw data. */
 export function sliceLabel(slice: CountSlice, t: Translate): string {
@@ -33,7 +33,7 @@ export function sliceLabel(slice: CountSlice, t: Translate): string {
 
 /** English label baked from the dictionary — kept so the screen/export have a
  *  sensible fallback and the pure tests can assert without a translator. */
-function en(key: string): string {
+function en(key: MessageKey): string {
   return translate("en", key);
 }
 
@@ -74,13 +74,13 @@ export function chartColor(index: number): string {
 // ---------------------------------------------------------------------------
 
 // i18n message keys — resolve with the active `t` (or `en()` for a fallback).
-export const VISIT_TYPE_LABEL: Record<VisitType, string> = {
+export const VISIT_TYPE_LABEL: Record<VisitType, MessageKey> = {
   outpatient: "visitType.outpatient",
   inpatient: "visitType.inpatient",
   emergency: "visitType.emergency",
 };
 
-export const CARE_STAGE_LABEL: Record<CareStage, string> = {
+export const CARE_STAGE_LABEL: Record<CareStage, MessageKey> = {
   registration: "stage.registration",
   triage: "stage.triage",
   consultation: "stage.consultation",
@@ -92,7 +92,7 @@ export const CARE_STAGE_LABEL: Record<CareStage, string> = {
   deceased: "stage.deceased",
 };
 
-const SEX_LABEL: Record<Sex, string> = {
+const SEX_LABEL: Record<Sex, MessageKey> = {
   male: "sex.male",
   female: "sex.female",
   other: "sex.other",
@@ -105,7 +105,7 @@ const SEX_LABEL: Record<Sex, string> = {
 
 export type RangePreset = "7d" | "30d" | "90d" | "all" | "custom";
 
-export const RANGE_PRESET_LABEL: Record<RangePreset, string> = {
+export const RANGE_PRESET_LABEL: Record<RangePreset, MessageKey> = {
   "7d": "rangePreset.7d",
   "30d": "rangePreset.30d",
   "90d": "rangePreset.90d",
@@ -155,7 +155,7 @@ export interface CountSlice {
   /** English fallback label (from the dictionary or raw data). */
   label: string;
   /** Optional i18n key; when set, the render/export layer localizes it. */
-  labelKey?: string;
+  labelKey?: MessageKey;
   value: number;
 }
 
@@ -321,11 +321,12 @@ export function departmentThroughput(
   departments: Department[],
   range: DateRange,
 ): CountSlice[] {
-  const name = new Map(departments.map((d) => [d.id, d.name]));
+  // Keyed by string: tally keys mix real department ids with "__none__".
+  const name = new Map<string, string>(departments.map((d) => [d.id, d.name]));
   const ranged = visits.filter((v) => inRange(v.arrived_at, range));
   const counts = tally(ranged, (v) => v.department_id ?? "__none__");
   return [...counts.entries()]
-    .map(([id, value]) => {
+    .map(([id, value]): CountSlice => {
       if (id === "__none__") {
         return { key: id, label: en("reports.unassigned"), labelKey: "reports.unassigned", value };
       }
@@ -370,7 +371,7 @@ export interface LosReport {
   count: number;
 }
 
-const LOS_BUCKETS: { key: string; labelKey: string; test: (d: number) => boolean }[] = [
+const LOS_BUCKETS: { key: string; labelKey: MessageKey; test: (d: number) => boolean }[] = [
   { key: "lt1", labelKey: "reports.los.lt1", test: (d) => d < 1 },
   { key: "1-2", labelKey: "reports.los.d1_2", test: (d) => d >= 1 && d < 3 },
   { key: "3-4", labelKey: "reports.los.d3_4", test: (d) => d >= 3 && d < 5 },

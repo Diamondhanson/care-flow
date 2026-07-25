@@ -1,14 +1,15 @@
 import type { OrderStatus, OrderType, Result } from "@/types/healthcare";
+import type { MessageKey } from "@/i18n";
 
 /** i18n key for a diagnostic order type — resolve with `t(ORDER_TYPE_LABEL[type])`. */
-export const ORDER_TYPE_LABEL: Record<OrderType, string> = {
+export const ORDER_TYPE_LABEL: Record<OrderType, MessageKey> = {
   lab: "orderType.lab",
   imaging: "orderType.imaging",
   procedure: "orderType.procedure",
 };
 
 /** i18n key for an order's lifecycle status. */
-export const ORDER_STATUS_LABEL: Record<OrderStatus, string> = {
+export const ORDER_STATUS_LABEL: Record<OrderStatus, MessageKey> = {
   requested: "orderStatus.requested",
   in_progress: "orderStatus.in_progress",
   completed: "orderStatus.completed",

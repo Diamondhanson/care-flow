@@ -22,6 +22,7 @@ import {
   LOCALES,
   translate,
   type Locale,
+  type MessageKey,
   type TParams,
 } from "@/i18n";
 
@@ -88,7 +89,7 @@ export function useLocale(): LocaleContextValue {
   return ctx;
 }
 
-export type TFunction = (key: string, params?: TParams) => string;
+export type TFunction = (key: MessageKey, params?: TParams) => string;
 
 /**
  * The bound translate function for the active locale. Resolves against
