@@ -44,8 +44,12 @@ import {
   resolveCarePlanItem,
 } from "@/services/mockStorage";
 import type {
+  AdmissionId,
   CarePlanEntry,
+  CarePlanEntryId,
   CarePlanItem,
+  CarePlanItemId,
+  StaffId,
   StaffRole,
 } from "@careflow/shared";
 
@@ -67,12 +71,12 @@ export function CareOrders({
   recorderId,
   onChange,
 }: {
-  admissionId: string;
+  admissionId: AdmissionId;
   items: CarePlanItem[];
   entries: CarePlanEntry[];
   latestVitalsAt: string | null;
   actingRole: StaffRole | null;
-  recorderId: string | null;
+  recorderId: StaffId | null;
   onChange: () => void;
 }) {
   const { t } = useT();
@@ -87,7 +91,7 @@ export function CareOrders({
   const [monitorFreq, setMonitorFreq] = useState("every 4 hours");
   const [flag, setFlag] = useState("");
 
-  const staffName = (id: string | null) =>
+  const staffName = (id: StaffId | null) =>
     id ? (getStaffById(id)?.full_name ?? "—") : "—";
 
   const active = items.filter((i) => i.status === "active");
@@ -146,12 +150,12 @@ export function CareOrders({
     onChange();
   };
 
-  const markDone = (id: string) => {
+  const markDone = (id: CarePlanItemId) => {
     resolveCarePlanItem(id);
     onChange();
   };
 
-  const acknowledge = (id: string) => {
+  const acknowledge = (id: CarePlanEntryId) => {
     acknowledgeCarePlanEntry(id, recorderId);
     onChange();
   };

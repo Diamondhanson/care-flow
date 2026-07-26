@@ -1,8 +1,8 @@
 /**
  * CareFlow core domain models (Phase 6 — Visit-Centric Refactor).
  *
- * These types mirror `supabase/schema.sql` exactly so that the eventual backend
- * cutover (Phase 13) is a drop-in swap: the mock service layer
+ * These types mirror `packages/db/schema.sql` exactly so that the eventual
+ * backend cutover (Phase 13) is a drop-in swap: the mock service layer
  * (`services/mockStorage.ts`) is replaced with `supabase-js` calls and the UI
  * contract — these types — is preserved.
  *
@@ -19,35 +19,62 @@
 
 // ---------------------------------------------------------------------------
 // Primary-key aliases — UUID strings, named per table for readability.
+//
+// Branded (nominal) so differently-typed ids cannot be mixed up: a `VisitId`
+// no longer type-checks where a `PatientId` is expected. The brand is a
+// phantom compile-time tag only — at runtime every id is still a plain
+// string (or number for `AuditLogId`), so no behavior changes anywhere.
+// Plain strings enter the branded world via an explicit cast at the boundary
+// where they are created (`generateId() as PatientId`) or hydrated (server
+// rows, seed literals).
 // ---------------------------------------------------------------------------
 
-export type HospitalId = string;
-export type DepartmentId = string;
-export type WardId = string;
-export type BedId = string;
-export type StaffId = string;
-export type PatientId = string;
-export type VisitId = string;
-export type ConsultationId = string;
-export type DiagnosisId = string;
-export type OrderId = string;
-export type ResultId = string;
-export type PrescriptionId = string;
-export type MedicationAdministrationId = string;
-export type TreatmentRecordId = string;
-export type AdmissionId = string;
-export type TransferId = string;
-export type AllergyId = string;
-export type PatientHistoryId = string;
-export type RosResponseId = string;
-export type CarePlanItemId = string;
-export type CarePlanEntryId = string;
-export type BillableItemId = string;
-export type ChargeId = string;
-export type AuditLogId = number;
+declare const __brand: unique symbol;
+export type Branded<T, B> = T & { readonly [__brand]: B };
+
+/** Widen one branded id back to its runtime primitive; leaves other types alone. */
+type Debrand<V> = V extends Branded<string, infer _B>
+  ? string
+  : V extends Branded<number, infer _B>
+    ? number
+    : V;
+
+/**
+ * `T` with every branded id field widened to its plain runtime type
+ * (distributes over unions, so `DepartmentId | null` widens to
+ * `string | null`; string-literal unions like `BedStatus` carry no brand and
+ * pass through unchanged). For fixture/seed literals: build rows with plain
+ * string ids, then re-brand with a single `as T` cast.
+ */
+export type Unbranded<T> = { [K in keyof T]: Debrand<T[K]> };
+
+export type HospitalId = Branded<string, "HospitalId">;
+export type DepartmentId = Branded<string, "DepartmentId">;
+export type WardId = Branded<string, "WardId">;
+export type BedId = Branded<string, "BedId">;
+export type StaffId = Branded<string, "StaffId">;
+export type PatientId = Branded<string, "PatientId">;
+export type VisitId = Branded<string, "VisitId">;
+export type ConsultationId = Branded<string, "ConsultationId">;
+export type DiagnosisId = Branded<string, "DiagnosisId">;
+export type OrderId = Branded<string, "OrderId">;
+export type ResultId = Branded<string, "ResultId">;
+export type PrescriptionId = Branded<string, "PrescriptionId">;
+export type MedicationAdministrationId = Branded<string, "MedicationAdministrationId">;
+export type TreatmentRecordId = Branded<string, "TreatmentRecordId">;
+export type AdmissionId = Branded<string, "AdmissionId">;
+export type TransferId = Branded<string, "TransferId">;
+export type AllergyId = Branded<string, "AllergyId">;
+export type PatientHistoryId = Branded<string, "PatientHistoryId">;
+export type RosResponseId = Branded<string, "RosResponseId">;
+export type CarePlanItemId = Branded<string, "CarePlanItemId">;
+export type CarePlanEntryId = Branded<string, "CarePlanEntryId">;
+export type BillableItemId = Branded<string, "BillableItemId">;
+export type ChargeId = Branded<string, "ChargeId">;
+export type AuditLogId = Branded<number, "AuditLogId">;
 
 /** Supabase `auth.users(id)` — the authenticated user a Staff row links to. */
-export type AuthUserId = string;
+export type AuthUserId = Branded<string, "AuthUserId">;
 
 /** ISO-8601 timestamp string (Postgres `timestamptz`), e.g. "2026-05-31T14:32:00.000Z". */
 export type ISODateString = string;
@@ -57,28 +84,37 @@ export type ISODate = string;
 
 // ---------------------------------------------------------------------------
 // Enumerated types (1:1 with the SQL `create type ... as enum` declarations).
+//
+// Each union is derived from an exported `as const` member array (identical
+// names + member order as the SQL) so `types/enum-parity.test.ts` can assert
+// the lists never drift from `packages/db/schema.sql`.
 // ---------------------------------------------------------------------------
 
 /**
  * `subscription_status` — a hospital tenant's account standing. `trial` on
  * signup, `active` once paying, `suspended` cuts off access (gating hook).
  */
-export type SubscriptionStatus = "trial" | "active" | "suspended";
+export const SUBSCRIPTION_STATUSES = ["trial", "active", "suspended"] as const;
+export type SubscriptionStatus = (typeof SUBSCRIPTION_STATUSES)[number];
 
 /** `staff_role` — expanded beyond clinical roles to cover the whole hospital. */
-export type StaffRole =
-  | "doctor"
-  | "nurse"
-  | "admin"
-  | "lab_tech"
-  | "pharmacist"
-  | "receptionist";
+export const STAFF_ROLES = [
+  "doctor",
+  "nurse",
+  "admin",
+  "lab_tech",
+  "pharmacist",
+  "receptionist",
+] as const;
+export type StaffRole = (typeof STAFF_ROLES)[number];
 
 /** `sex_type` */
-export type Sex = "male" | "female" | "other" | "unknown";
+export const SEXES = ["male", "female", "other", "unknown"] as const;
+export type Sex = (typeof SEXES)[number];
 
 /** `visit_type` — outpatient (sees a doctor and leaves) vs inpatient vs emergency. */
-export type VisitType = "outpatient" | "inpatient" | "emergency";
+export const VISIT_TYPES = ["outpatient", "inpatient", "emergency"] as const;
+export type VisitType = (typeof VISIT_TYPES)[number];
 
 /**
  * `triage_level` — emergency-severity acuity that orders the queue: who is seen
@@ -88,28 +124,32 @@ export type VisitType = "outpatient" | "inpatient" | "emergency";
 export type TriageLevel = 1 | 2 | 3 | 4 | 5;
 
 /** `visit_status` — lifecycle of a single encounter. */
-export type VisitStatus = "open" | "closed" | "cancelled";
+export const VISIT_STATUSES = ["open", "closed", "cancelled"] as const;
+export type VisitStatus = (typeof VISIT_STATUSES)[number];
 
 /**
  * `care_stage` — the care-journey stage that drives the live kanban board.
  * Replaces the old 4-value `AdmissionStage`; now models the full path from
  * registration through follow-up, including the outpatient short-circuit.
  */
-export type CareStage =
-  | "registration"
-  | "triage"
-  | "consultation"
-  | "diagnostics"
-  | "treatment"
-  | "discharge_planning"
-  | "discharged"
-  | "followed_up"
+export const CARE_STAGES = [
+  "registration",
+  "triage",
+  "consultation",
+  "diagnostics",
+  "treatment",
+  "discharge_planning",
+  "discharged",
+  "followed_up",
   // Terminal outcome: the patient died in care. Closes the visit (like a
   // discharge) but is counted separately from discharges in reporting.
-  | "deceased";
+  "deceased",
+] as const;
+export type CareStage = (typeof CARE_STAGES)[number];
 
 /** `order_type` — category of a recommended test. */
-export type OrderType = "lab" | "imaging" | "procedure";
+export const ORDER_TYPES = ["lab", "imaging", "procedure"] as const;
+export type OrderType = (typeof ORDER_TYPES)[number];
 
 // ---------------------------------------------------------------------------
 // Clinical term library (Phase 16.10) — autocomplete dictionary for clinical
@@ -117,7 +157,7 @@ export type OrderType = "lab" | "imaging" | "procedure";
 // layer (custom terms + usage counts) grows at runtime. Both share this shape.
 // ---------------------------------------------------------------------------
 
-/** The six clinical fields the term-autocomplete library serves. */
+/** The clinical fields the term-autocomplete library serves. */
 export type ClinicalTermCategory =
   | "subjective"
   | "examination"
@@ -171,29 +211,59 @@ export interface ClinicalTerm {
 /** The file shape pasted into `data/clinical-terms/<category>.json` — no `category`. */
 export type ClinicalTermSeed = Omit<ClinicalTerm, "category">;
 
+/**
+ * The synced, per-hospital learned layer of the term library (Stage 2 — mirrors
+ * the `clinical_terms` Postgres table). One row per learned term key holding
+ * both the optional doctor-added custom term (null for seed-library terms that
+ * only accrued usage) and its usage ranking stats. Replaces the old device-only
+ * localStorage blob, so custom vocabulary follows the hospital, not the device.
+ */
+export interface ClinicalTermRow {
+  id: string;
+  hospital_id: HospitalId;
+  /** Stable identity: category + normalized English label (see `termKey`). */
+  term_key: string;
+  category: ClinicalTermCategory;
+  /** The doctor-added custom term payload, or null for seed-term usage rows. */
+  custom_term: ClinicalTerm | null;
+  usage_count: number;
+  last_used_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /** `order_status` — lifecycle of an order until its result closes the loop. */
-export type OrderStatus = "requested" | "in_progress" | "completed" | "cancelled";
+export const ORDER_STATUSES = [
+  "requested",
+  "in_progress",
+  "completed",
+  "cancelled",
+] as const;
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 /**
  * `billing_category` — the kind of billable line item, used to group the price
  * catalog and to drive how a charge is computed (flat per-item vs time-based).
  */
-export type BillingCategory =
-  | "consultation"
-  | "lab_test"
-  | "imaging"
-  | "procedure"
-  | "medication"
-  | "bed_per_night"
-  | "nursing_per_day"
-  | "other";
+export const BILLING_CATEGORIES = [
+  "consultation",
+  "lab_test",
+  "imaging",
+  "procedure",
+  "medication",
+  "bed_per_night",
+  "nursing_per_day",
+  "other",
+] as const;
+export type BillingCategory = (typeof BILLING_CATEGORIES)[number];
 
 /**
  * `billing_unit` — how a billable item is quantified. `per_item` is a flat
  * one-off; `per_night`/`per_day` are time-based and computed at billing time
  * from the admission/transfers timeline.
  */
-export type BillingUnit = "per_item" | "per_night" | "per_day";
+export const BILLING_UNITS = ["per_item", "per_night", "per_day"] as const;
+export type BillingUnit = (typeof BILLING_UNITS)[number];
 
 /**
  * `charge_source` — provenance of a ledger charge. Auto-generated charges
@@ -201,113 +271,128 @@ export type BillingUnit = "per_item" | "per_night" | "per_day";
  * their originating clinical record via `Charge.source_ref_id`. `manual` and
  * `discount` rows are operator-entered and never reconciled away.
  */
-export type ChargeSource =
-  | "consultation"
-  | "order"
-  | "prescription"
-  | "bed"
-  | "nursing"
-  | "procedure"
-  | "manual"
-  | "discount";
+export const CHARGE_SOURCES = [
+  "consultation",
+  "order",
+  "prescription",
+  "bed",
+  "nursing",
+  "procedure",
+  "manual",
+  "discount",
+] as const;
+export type ChargeSource = (typeof CHARGE_SOURCES)[number];
 
 /** `charge_status` — settlement state of a single ledger line. */
-export type ChargeStatus = "pending" | "paid" | "waived";
+export const CHARGE_STATUSES = ["pending", "paid", "waived"] as const;
+export type ChargeStatus = (typeof CHARGE_STATUSES)[number];
 
 /** `bed_status` — drives live occupancy on the floor map. */
-export type BedStatus =
-  | "free"
-  | "occupied"
-  | "reserved"
-  | "cleaning"
-  | "maintenance";
+export const BED_STATUSES = [
+  "free",
+  "occupied",
+  "reserved",
+  "cleaning",
+  "maintenance",
+] as const;
+export type BedStatus = (typeof BED_STATUSES)[number];
 
 /** `admission_status` */
-export type AdmissionStatus = "active" | "discharged";
+export const ADMISSION_STATUSES = ["active", "discharged"] as const;
+export type AdmissionStatus = (typeof ADMISSION_STATUSES)[number];
 
 /** `prescription_status` */
-export type PrescriptionStatus = "active" | "completed" | "discontinued";
+export const PRESCRIPTION_STATUSES = ["active", "completed", "discontinued"] as const;
+export type PrescriptionStatus = (typeof PRESCRIPTION_STATUSES)[number];
 
 /**
  * `mar_status` — Medication Administration Record: what actually happened at the
  * bedside for a single scheduled dose.
  */
-export type MarStatus =
-  | "given"
-  | "held"
-  | "refused"
-  | "missed"
-  | "suspended";
+export const MAR_STATUSES = ["given", "held", "refused", "missed", "suspended"] as const;
+export type MarStatus = (typeof MAR_STATUSES)[number];
 
 /** `allergy_category` — what kind of substance the patient reacts to. */
-export type AllergyCategory = "drug" | "food" | "environmental" | "other";
+export const ALLERGY_CATEGORIES = ["drug", "food", "environmental", "other"] as const;
+export type AllergyCategory = (typeof ALLERGY_CATEGORIES)[number];
 
 /**
  * `allergy_severity` — clinical seriousness, worst-first when displayed.
  * `life_threatening` covers anaphylaxis and must never be buried in a list.
  */
-export type AllergySeverity =
-  | "mild"
-  | "moderate"
-  | "severe"
-  | "life_threatening";
+export const ALLERGY_SEVERITIES = [
+  "mild",
+  "moderate",
+  "severe",
+  "life_threatening",
+] as const;
+export type AllergySeverity = (typeof ALLERGY_SEVERITIES)[number];
 
 /**
  * `body_system` — the Review-of-Systems axis (Phase 21). Mirrors the `system`
  * tags in the clinical-term library so a subjective term routes to its module.
  */
-export type BodySystem =
-  | "general"
-  | "cardiac"
-  | "respiratory"
-  | "gi"
-  | "gu"
-  | "neuro"
-  | "ent"
-  | "eyes"
-  | "skin"
-  | "musculoskeletal"
-  | "psych"
-  | "obstetric_gynae";
+export const BODY_SYSTEMS = [
+  "general",
+  "cardiac",
+  "respiratory",
+  "gi",
+  "gu",
+  "neuro",
+  "ent",
+  "eyes",
+  "skin",
+  "musculoskeletal",
+  "psych",
+  "obstetric_gynae",
+] as const;
+export type BodySystem = (typeof BODY_SYSTEMS)[number];
 
 /**
  * `ros_answer_type` — how a bank question is answered; drives which selectable
  * control the UI renders and how `answer_value` is stored.
  */
-export type RosAnswerType =
-  | "boolean"
-  | "single_select"
-  | "multi_select"
-  | "scale"
-  | "duration"
-  | "numeric"
-  | "date"
-  | "text";
+export const ROS_ANSWER_TYPES = [
+  "boolean",
+  "single_select",
+  "multi_select",
+  "scale",
+  "duration",
+  "numeric",
+  "date",
+  "text",
+] as const;
+export type RosAnswerType = (typeof ROS_ANSWER_TYPES)[number];
 
 /**
  * `ros_question_kind` — lets one system module carry symptom questions AND the
  * pertinent history/genetics questions for that system.
  */
-export type RosQuestionKind = "symptom" | "history" | "genetic";
+export const ROS_QUESTION_KINDS = ["symptom", "history", "genetic"] as const;
+export type RosQuestionKind = (typeof ROS_QUESTION_KINDS)[number];
 
 /** `patient_history_type` — the kind of clinical-background record. */
-export type PatientHistoryType =
-  | "past_medical"
-  | "past_surgical"
-  | "family"
-  | "social"
-  | "obstetric_gynae"
-  | "medication"
-  | "immunization";
+export const PATIENT_HISTORY_TYPES = [
+  "past_medical",
+  "past_surgical",
+  "family",
+  "social",
+  "obstetric_gynae",
+  "medication",
+  "immunization",
+] as const;
+export type PatientHistoryType = (typeof PATIENT_HISTORY_TYPES)[number];
 
 /** `marital_status` — demographic context. */
-export type MaritalStatus =
-  | "single"
-  | "married"
-  | "partnered"
-  | "divorced"
-  | "widowed"
-  | "unknown";
+export const MARITAL_STATUSES = [
+  "single",
+  "married",
+  "partnered",
+  "divorced",
+  "widowed",
+  "unknown",
+] as const;
+export type MaritalStatus = (typeof MARITAL_STATUSES)[number];
 
 /**
  * `care_need_category` — the kind of basic nursing care an admitted patient
@@ -315,24 +400,27 @@ export type MaritalStatus =
  * (named practically for everyday use). Drives the quick-pick on the care-plan
  * page so categories are chosen, not typed.
  */
-export type CareNeedCategory =
-  | "breathing"
-  | "nutrition"
-  | "elimination"
-  | "mobility_positioning"
-  | "sleep_rest"
-  | "hygiene"
-  | "temperature"
-  | "dressing"
-  | "safety"
-  | "communication_emotional"
-  | "pain_comfort"
-  | "spiritual"
-  | "wound_skin_care"
-  | "other";
+export const CARE_NEED_CATEGORIES = [
+  "breathing",
+  "nutrition",
+  "elimination",
+  "mobility_positioning",
+  "sleep_rest",
+  "hygiene",
+  "temperature",
+  "dressing",
+  "safety",
+  "communication_emotional",
+  "pain_comfort",
+  "spiritual",
+  "wound_skin_care",
+  "other",
+] as const;
+export type CareNeedCategory = (typeof CARE_NEED_CATEGORIES)[number];
 
 /** `care_plan_item_status` — an active need vs one that has been resolved. */
-export type CarePlanItemStatus = "active" | "resolved";
+export const CARE_PLAN_ITEM_STATUSES = ["active", "resolved"] as const;
+export type CarePlanItemStatus = (typeof CARE_PLAN_ITEM_STATUSES)[number];
 
 /**
  * `care_item_kind` (Phase 20 — doctor↔nurse shared care list). One shared list on
@@ -342,7 +430,22 @@ export type CarePlanItemStatus = "active" | "resolved";
  *  - `monitoring`    — a recurring doctor order ("vitals every 1h"); its `frequency`
  *                      drives a due/overdue cue via the same parser the MAR uses.
  */
-export type CareItemKind = "nursing_need" | "instruction" | "monitoring";
+export const CARE_ITEM_KINDS = ["nursing_need", "instruction", "monitoring"] as const;
+export type CareItemKind = (typeof CARE_ITEM_KINDS)[number];
+
+/**
+ * `usage_event_type` — the kinds of usage-telemetry event the hospital app
+ * emits into `usage_events` (Phase 19.1). Metadata-only; never PHI.
+ */
+export const USAGE_EVENT_TYPES = [
+  "login",
+  "patient_registered",
+  "visit_opened",
+  "record_created",
+  "sync_failed",
+  "feature_used",
+] as const;
+export type UsageEventType = (typeof USAGE_EVENT_TYPES)[number];
 
 // ---------------------------------------------------------------------------
 // 4·0 Tenant / account (multi-tenancy — Phase 17)
@@ -791,8 +894,13 @@ export interface Prescription {
   version?: number;
 }
 
-/** How a medication is taken relative to food. */
-export type MealTiming = "with_meals" | "without_meals" | "neutral";
+/**
+ * How a medication is taken relative to food. Not a Postgres enum:
+ * `prescriptions.meal_timing` is `text` with a `check (meal_timing in (…))`
+ * constraint, which the parity test parses and verifies against this array.
+ */
+export const MEAL_TIMINGS = ["with_meals", "without_meals", "neutral"] as const;
+export type MealTiming = (typeof MEAL_TIMINGS)[number];
 
 /**
  * `medication_administrations` (MAR) — one row each time a nurse gives, holds,
@@ -1083,17 +1191,66 @@ export interface AuditLog {
 }
 
 // ---------------------------------------------------------------------------
-// 4i. Notifications + Web Push
+// 4i. Post-discharge follow-up
 // ---------------------------------------------------------------------------
 
-export type NotificationId = string;
+/**
+ * `kind` — the flavour of follow-up contact a task represents. Not a Postgres
+ * enum: `follow_up_tasks.kind` is `text` with a `check (kind in (...))`
+ * constraint, which the parity test also parses and verifies.
+ */
+export const FOLLOW_UP_KINDS = ["call", "tele_checkin", "summary_delivery"] as const;
+export type FollowUpKind = (typeof FOLLOW_UP_KINDS)[number];
+
+/**
+ * `status` — lifecycle of a follow-up task from scheduling to closure. Like
+ * `kind`, a text-with-check column (not a Postgres enum) — see the parity test.
+ */
+export const FOLLOW_UP_STATUSES = ["pending", "done", "cancelled"] as const;
+export type FollowUpStatus = (typeof FOLLOW_UP_STATUSES)[number];
+
+/**
+ * `follow_up_tasks` — the post-discharge worklist. Two tasks are scheduled
+ * automatically when a visit reaches a terminal discharge stage (a recovery
+ * call at +2 days and a tele check-in at +7 days); staff work the list from
+ * the Follow-ups screen. `title` is patient-facing display data assembled at
+ * creation time (not an i18n key).
+ */
+export interface FollowUpTask {
+  id: string;
+  hospital_id: HospitalId;
+  patient_id: PatientId;
+  /** The discharge visit that scheduled this task, when known. */
+  visit_id: VisitId | null;
+  kind: FollowUpKind;
+  /** Plain-language description shown on the worklist, e.g. "Call Awa Tabi — …". */
+  title: string;
+  /** When the contact is due. */
+  due_at: ISODateString;
+  status: FollowUpStatus;
+  completed_at: ISODateString | null;
+  completed_by_id: StaffId | null;
+  notes: string | null;
+  created_by_id: StaffId | null;
+  created_at: ISODateString;
+  updated_at: ISODateString;
+  /** Optimistic-concurrency version (server-managed; absent until first sync). */
+  version?: number;
+}
+
+// ---------------------------------------------------------------------------
+// 4j. Notifications + Web Push
+// ---------------------------------------------------------------------------
+
+export type NotificationId = Branded<string, "NotificationId">;
 
 /**
  * Machine key for a notification event. The bell localises copy from this key +
  * {@link Notification.data}; `title`/`body` on the row are English fallbacks
  * used by Web Push (built server-side, no i18n) and when a locale template is
  * missing. Add a new member here, an i18n template, and a producer to grow the
- * catalogue.
+ * catalogue. (`notifications.type` is free `text` in SQL — no enum/check to
+ * mirror, so this stays a plain union.)
  */
 export type NotificationType =
   | "consultation.created" // doctor wrote a SOAP note → nurses

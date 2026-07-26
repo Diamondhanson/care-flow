@@ -25,7 +25,9 @@ import {
 import type {
   Admission,
   BillableItem,
+  BillableItemId,
   Consultation,
+  HospitalId,
   Order,
   Prescription,
   Transfer,
@@ -71,8 +73,9 @@ async function main() {
     // ---- Build the catalog (fresh UUIDs; resolution is by ref_code) ----------
     const nowIso = new Date().toISOString();
     const catalog: BillableItem[] = BILLING_CATALOG_SEED.map((it) => ({
-      id: randomUUID(),
-      hospital_id: hospitalId,
+      // Fresh UUIDs / CLI-arg tenant id are plain strings; brand at this boundary.
+      id: randomUUID() as BillableItemId,
+      hospital_id: hospitalId as HospitalId,
       category: it.category,
       name: it.name,
       unit: it.unit,

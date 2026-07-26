@@ -21,6 +21,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { notify } from "@/lib/notify";
 
 const OUTBOX_KEY = "careflow_outbox_v1";
 
@@ -55,6 +56,13 @@ const VERSIONED_TABLES: ReadonlySet<string> = new Set([
   "admissions",
   "allergies",
   "care_plan_items",
+  // Stage 2 fix: these two carry `version` + bump trigger in schema.sql but
+  // were missing here, so billing edits were silently last-write-wins.
+  "billable_items",
+  "charges",
+  // Stage 5: follow-up tasks are updated (marked done) so they're versioned.
+  "follow_up_tasks",
+  // Phase 21: background record + ROS rows are edited in place, so versioned.
   "patient_history",
   "ros_responses",
 ]);
@@ -92,9 +100,41 @@ export interface OutboxChange {
    */
   payload: Record<string, unknown>;
   enqueued_at: string;
-  /** How many upload attempts have failed so far (drives retry/backoff later). */
+  /** How many upload attempts have failed so far (drives retry backoff). */
   attempts: number;
   last_error: string | null;
+  /** When the last failed attempt happened (drives the backoff window). */
+  last_attempt_at?: string | null;
+}
+
+/**
+ * Retry policy (Stage 2): failed changes retry with exponential backoff, and
+ * after {@link MAX_ATTEMPTS} they stop retrying automatically — they move to the
+ * "needs attention" group in the sync panel, where an admin can retry or
+ * discard them. This keeps one poisoned change (e.g. a permissions rejection)
+ * from clogging the queue forever.
+ */
+export const MAX_ATTEMPTS = 8;
+
+/** Backoff delay before retry N+1: 5s, 10s, 20s … capped at 10 minutes. */
+export function backoffMs(attempts: number): number {
+  return Math.min(5_000 * 2 ** Math.max(0, attempts - 1), 600_000);
+}
+
+/**
+ * Is this change eligible for an upload attempt right now? Pure, so it is
+ * unit-testable: dead-lettered changes (attempts >= MAX_ATTEMPTS) never are;
+ * failed ones wait out their backoff window; fresh ones always are.
+ */
+export function isEligible(
+  change: OutboxChange,
+  nowMs: number = Date.now(),
+): boolean {
+  if (change.attempts >= MAX_ATTEMPTS) return false;
+  if (change.attempts === 0 || !change.last_attempt_at) return true;
+  const last = Date.parse(change.last_attempt_at);
+  if (Number.isNaN(last)) return true;
+  return nowMs - last >= backoffMs(change.attempts);
 }
 
 /** A change as produced by the diff layer, before it becomes a queue entry. */
@@ -172,10 +212,23 @@ export function removeFromQueue(
 export function markFailed(
   queue: OutboxChange[],
   id: string,
-  error: string
+  error: string,
+  timestamp: string = nowISO()
 ): OutboxChange[] {
   return queue.map((c) =>
-    c.id === id ? { ...c, attempts: c.attempts + 1, last_error: error } : c
+    c.id === id
+      ? { ...c, attempts: c.attempts + 1, last_error: error, last_attempt_at: timestamp }
+      : c
+  );
+}
+
+/** Reset a change's failure bookkeeping so it retries immediately (panel action). */
+export function resetAttempts(
+  queue: OutboxChange[],
+  id: string
+): OutboxChange[] {
+  return queue.map((c) =>
+    c.id === id ? { ...c, attempts: 0, last_error: null, last_attempt_at: null } : c
   );
 }
 
@@ -195,6 +248,28 @@ export function applyServerVersion(
   return queue.map((c) =>
     c.table === table && c.row_id === rowId && c.op !== "delete"
       ? { ...c, payload: { ...c.payload, version } }
+      : c
+  );
+}
+
+/**
+ * Record a conflict re-base on a queue entry: counts an attempt (toward the
+ * MAX_CONFLICT_RETRIES cap) but deliberately leaves `last_attempt_at` unset so
+ * {@link isEligible} lets the re-based change push again immediately — a
+ * re-based retry is expected to succeed, not to wait out a failure backoff.
+ */
+export function markRebased(
+  queue: OutboxChange[],
+  id: string
+): OutboxChange[] {
+  return queue.map((c) =>
+    c.id === id
+      ? {
+          ...c,
+          attempts: c.attempts + 1,
+          last_error: "version conflict — rebased, retrying",
+          last_attempt_at: null,
+        }
       : c
   );
 }
@@ -232,7 +307,15 @@ export function reconcileOutboxAfterDrain(
 // Persisted outbox (browser only)
 // ---------------------------------------------------------------------------
 
-/** Read the persisted outbox. Returns `[]` on the server or if empty/corrupt. */
+/** Where a corrupt outbox payload is preserved for inspection (Stage 2). */
+const OUTBOX_BACKUP_KEY = "careflow_outbox_corrupt_backup";
+
+/**
+ * Read the persisted outbox. Returns `[]` on the server or if empty. A corrupt
+ * payload used to be silently discarded — losing every pending offline change
+ * with no trace. Now the raw payload is preserved under a backup key and the
+ * user is warned before the queue resets.
+ */
 export function readOutbox(): OutboxChange[] {
   if (!isBrowser()) return [];
   const raw = window.localStorage.getItem(OUTBOX_KEY);
@@ -241,6 +324,20 @@ export function readOutbox(): OutboxChange[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as OutboxChange[]) : [];
   } catch {
+    try {
+      window.localStorage.setItem(OUTBOX_BACKUP_KEY, raw);
+      window.localStorage.removeItem(OUTBOX_KEY);
+    } catch {
+      /* preserving the backup is best-effort */
+    }
+    notify(
+      {
+        kind: "error",
+        titleKey: "notify.outboxCorruptTitle",
+        bodyKey: "notify.outboxCorruptBody",
+      },
+      { dedupeKey: "outbox-corrupt" },
+    );
     return [];
   }
 }
@@ -254,7 +351,21 @@ export function readOutbox(): OutboxChange[] {
  */
 function writeOutbox(queue: OutboxChange[], opts: { emit?: boolean } = {}): void {
   if (!isBrowser()) return;
-  window.localStorage.setItem(OUTBOX_KEY, JSON.stringify(queue));
+  // Guarded write (Stage 1): losing an outbox write means queued changes may
+  // never reach the server — that must never happen silently.
+  try {
+    window.localStorage.setItem(OUTBOX_KEY, JSON.stringify(queue));
+  } catch (err) {
+    notify(
+      {
+        kind: "error",
+        titleKey: "notify.outboxWriteFailedTitle",
+        bodyKey: "notify.outboxWriteFailedBody",
+      },
+      { dedupeKey: "outbox-write-failed" },
+    );
+    throw err;
+  }
   if (opts.emit ?? true) emitChanged();
 }
 
@@ -269,11 +380,97 @@ export function pendingCount(): number {
   return readOutbox().length;
 }
 
+/**
+ * Does a row have a queued, not-yet-uploaded local edit? Used by the merge
+ * paths (realtime / on-demand history) to avoid visually reverting the user's
+ * own pending work with a server echo.
+ */
+export function hasPendingChange(table: string, rowId: string): boolean {
+  return readOutbox().some((c) => c.table === table && c.row_id === rowId);
+}
+
 /** Empty the outbox (used on a full DB reset — there is nothing to sync). */
 export function clearOutbox(): void {
   if (!isBrowser()) return;
   window.localStorage.removeItem(OUTBOX_KEY);
   emitChanged();
+}
+
+/** Panel action: retry a stuck ("needs attention") change immediately. */
+export function retryChange(id: string): void {
+  if (!isBrowser()) return;
+  writeOutbox(resetAttempts(readOutbox(), id));
+}
+
+/** Panel action: permanently discard a stuck change (admin decision). */
+export function discardChange(id: string): void {
+  if (!isBrowser()) return;
+  writeOutbox(removeFromQueue(readOutbox(), [id]));
+}
+
+// ---------------------------------------------------------------------------
+// Conflict record (Stage 2) — when a queued edit loses an optimistic-concurrency
+// race, the losing payload is no longer silently thrown away. It is kept here so
+// the user can review what didn't save and re-apply it in one tap from the sync
+// panel. Persisted separately from the outbox (it is not pending upload).
+// ---------------------------------------------------------------------------
+
+const CONFLICTS_KEY = "careflow_conflicts_v1";
+
+/** A queued edit that lost a version race; kept for review/re-apply. */
+export interface ConflictRecord {
+  id: string;
+  table: string;
+  row_id: string;
+  /** The losing edit's full intended row (what the user tried to save). */
+  payload: Record<string, unknown>;
+  detected_at: string;
+}
+
+export function readConflicts(): ConflictRecord[] {
+  if (!isBrowser()) return [];
+  const raw = window.localStorage.getItem(CONFLICTS_KEY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as ConflictRecord[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeConflicts(records: ConflictRecord[]): void {
+  if (!isBrowser()) return;
+  try {
+    window.localStorage.setItem(CONFLICTS_KEY, JSON.stringify(records));
+  } catch {
+    /* best-effort — the toast already warned the user about the conflict */
+  }
+  emitConflict();
+}
+
+function recordConflict(change: OutboxChange): void {
+  const record: ConflictRecord = {
+    id: generateId(),
+    table: change.table,
+    row_id: change.row_id,
+    payload: change.payload,
+    detected_at: nowISO(),
+  };
+  writeConflicts([...readConflicts(), record]);
+  notify(
+    {
+      kind: "warning",
+      titleKey: "notify.conflictTitle",
+      bodyKey: "notify.conflictBody",
+    },
+    { dedupeKey: `conflict:${change.table}:${change.row_id}`, dedupeMs: 5_000 },
+  );
+}
+
+/** Remove a reviewed conflict (after re-apply, or an explicit discard). */
+export function discardConflict(id: string): void {
+  writeConflicts(readConflicts().filter((c) => c.id !== id));
 }
 
 // ===========================================================================
@@ -355,8 +552,9 @@ export async function pushChangeToServer(
   }
 
   // Insert, or an update on a row not yet server-synced (no base to guard on):
-  // upsert by primary key. On a versioned table, capture the resulting version
-  // so the cache + later queued edits pick up a real base to guard on next time.
+  // upsert by primary key (or the table's business key — see UPSERT_ON_CONFLICT).
+  // On a versioned table, capture the resulting version so the cache + later
+  // queued edits pick up a real base to guard on next time.
   const onConflict = UPSERT_ON_CONFLICT[change.table];
   const upsertOptions = onConflict ? { onConflict } : undefined;
 
@@ -387,7 +585,7 @@ export async function pushChangeToServer(
 /** Max times a conflicting change is re-based + retried before we give up and
  *  converge on the server. A re-based change usually lands on the next push, so
  *  this only bites a row a genuine second device keeps moving. */
-const MAX_CONFLICT_RETRIES = 3;
+export const MAX_CONFLICT_RETRIES = 3;
 
 export interface SyncHooks {
   /**
@@ -409,7 +607,8 @@ export interface SyncHooks {
   /**
    * Called when a stale write is GIVEN UP ON (after the retry cap). Should
    * refetch the live row from the server and re-sync the cache to it — the last
-   * resort where the server wins and the local edit is dropped.
+   * resort where the server wins, and the losing edit is preserved as a
+   * reviewable {@link ConflictRecord} rather than silently discarded.
    */
   onConflict?: (table: string, rowId: string) => void | Promise<void>;
 }
@@ -444,10 +643,21 @@ export interface DrainResult {
  * `false` this is a safe no-op that leaves every change queued, so it can be
  * called freely on startup / when the network returns without side effects.
  */
+/**
+ * While true, {@link drainOutbox} is a no-op. Used by flows that must not race
+ * the engine — e.g. the demo reset, which discards local edits and must prevent
+ * a drain from pushing them to the server mid-reset.
+ */
+let drainSuspended = false;
+
+export function setDrainSuspended(suspended: boolean): void {
+  drainSuspended = suspended;
+}
+
 export async function drainOutbox(): Promise<DrainResult> {
   const queue = readOutbox();
 
-  if (!isSyncConfigured()) {
+  if (!isSyncConfigured() || drainSuspended) {
     return { skipped: true, uploaded: 0, failed: 0, conflicts: 0, remaining: queue.length };
   }
 
@@ -458,14 +668,18 @@ export async function drainOutbox(): Promise<DrainResult> {
   let failed = 0;
 
   for (const change of queue) {
+    // Retry policy: skip dead-lettered changes and ones still inside their
+    // backoff window. They stay queued; the sync panel surfaces them.
+    if (!isEligible(change)) continue;
     try {
       const outcome = await pushChangeToServer(change);
       if (outcome.status === "conflict") {
-        // The row's version moved under us. Rather than silently discarding the
-        // user's edit (which reverts their change in the UI — e.g. an emergency
-        // reconciliation snapping back to the anonymous record), re-base it onto
-        // the server's CURRENT version and retry: the local actor wins. Capped so
-        // a row a second device keeps moving eventually converges on the server.
+        // The row's version moved under us. Rather than immediately discarding
+        // the user's edit (which reverts their change in the UI — e.g. an
+        // emergency reconciliation snapping back to the anonymous record),
+        // re-base it onto the server's CURRENT version and retry: the local
+        // actor wins the common case. Capped at MAX_CONFLICT_RETRIES so a row a
+        // second device keeps moving eventually converges on the server.
         const current = working.find((c) => c.id === change.id);
         let rebased = false;
         if ((current?.attempts ?? 0) < MAX_CONFLICT_RETRIES) {
@@ -488,20 +702,18 @@ export async function drainOutbox(): Promise<DrainResult> {
               change.row_id,
               serverVersion,
             );
-            working = markFailed(
-              working,
-              change.id,
-              "version conflict — rebased, retrying",
-            );
+            working = markRebased(working, change.id);
             syncHooks.onVersionApplied?.(change.table, change.row_id, serverVersion);
             rebasedAny = true;
             rebased = true;
           }
         }
         if (!rebased) {
-          // Give up after the retry cap: refetch the winning row and drop the
-          // stale change (the historical server-wins behaviour, last resort).
+          // Give up after the retry cap: keep the losing edit as a reviewable
+          // conflict record (Stage 2 — no silent loss), refetch the winning
+          // state into the cache, then drop the stale change from the queue.
           conflictedIds.push(change.id);
+          recordConflict(change);
           try {
             await syncHooks.onConflict?.(change.table, change.row_id);
           } catch {
@@ -533,6 +745,7 @@ export async function drainOutbox(): Promise<DrainResult> {
   }
 
   const resolvedIds = [...uploadedIds, ...conflictedIds];
+  working = removeFromQueue(working, resolvedIds);
   // Re-read the LIVE queue and reconcile by id rather than overwriting with our
   // pre-drain snapshot: a mutation may have enqueued changes during the awaits
   // above, and clobbering them here is silent data loss (see
@@ -544,17 +757,16 @@ export async function drainOutbox(): Promise<DrainResult> {
   // arrived mid-drain (so it gets a drain pass). A pass that only failed (e.g.
   // offline) with no new work must NOT wake the engine, or it would re-drain in
   // a tight loop while offline.
-  const grewMidDrain = reconciled.length > working.length - resolvedIds.length;
+  const grewMidDrain = reconciled.length > working.length;
   writeOutbox(reconciled, {
     emit: resolvedIds.length > 0 || rebasedAny || grewMidDrain,
   });
-  if (conflictedIds.length > 0) emitConflict();
 
   return {
     skipped: false,
     uploaded: uploadedIds.length,
     failed,
     conflicts: conflictedIds.length,
-    remaining: working.length,
+    remaining: reconciled.length,
   };
 }

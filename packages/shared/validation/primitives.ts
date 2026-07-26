@@ -33,6 +33,18 @@ export const zReqLine = (max: number) =>
     .refine((v) => v.trim().length > 0, "This field is required.")
     .refine(noControlChars, "Control characters are not allowed.");
 
+/**
+ * Required single-line text with a field-specific "required" message, so the
+ * user (and tests) see "Hospital name is required." instead of the generic
+ * "This field is required." when the field is blank.
+ */
+export const zReqLineNamed = (max: number, requiredMsg: string) =>
+  z
+    .string()
+    .max(max, `Too long (max ${max} characters).`)
+    .refine((v) => v.trim().length > 0, requiredMsg)
+    .refine(noControlChars, "Control characters are not allowed.");
+
 /** Optional single-line text (string | null | undefined): capped, no control chars. */
 export const zOptLine = (max: number) =>
   z

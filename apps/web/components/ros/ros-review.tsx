@@ -30,6 +30,8 @@ import type {
   RosQuestion,
   RosResponse,
   Sex,
+  StaffId,
+  VisitId,
 } from "@careflow/shared";
 import { getAllSystems, getSystemModule } from "@/lib/ros";
 import { systemsForComplaint } from "@/lib/ros/routing";
@@ -66,10 +68,10 @@ export function RosReview({
   recorderId,
   readOnly = false,
 }: {
-  visitId: string;
+  visitId: VisitId;
   chiefComplaint: string | null;
   patientSex: Sex;
-  recorderId: string | null;
+  recorderId: StaffId | null;
   readOnly?: boolean;
 }) {
   const { t } = useT();

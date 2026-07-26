@@ -10,15 +10,18 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
 import { cn } from "@/lib/utils";
+import type { VisitId } from "@careflow/shared";
 import { PatientName } from "@/lib/patient-name";
 import { useT } from "@/components/locale-provider";
 import { useRole } from "@/components/role-provider";
 import type { BoardColumn } from "@/components/live-board/stages";
 import type { TriageLevel } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 export interface PatientCardData {
-  visitId: string;
+  visitId: VisitId;
   mrn: string;
   displayName: string;
   isAnonymous: boolean;
@@ -30,7 +33,7 @@ export interface PatientCardData {
   /** Emergency-severity acuity (1 = critical … 5 = non-urgent); null until triaged. */
   triage: TriageLevel | null;
   /** i18n key for the "next step" nudge, or null at the final stage. */
-  nextStepKey: string | null;
+  nextStepKey: MessageKey | null;
   /** Phase 20 — items the nurse currently owes this patient (due meds/monitoring/instructions). */
   dueCount: number;
   /** Phase 20 — things needing the doctor (open nurse flags + concerning vitals). */
@@ -44,7 +47,7 @@ export function PatientCard({
 }: {
   data: PatientCardData;
   column: BoardColumn;
-  onSelect?: (visitId: string) => void;
+  onSelect?: (visitId: VisitId) => void;
 }) {
   const { t } = useT();
   const { mounted, actingRole } = useRole();
@@ -110,17 +113,14 @@ export function PatientCard({
             </Badge>
           ) : null}
           {data.isAnonymous ? (
-            <Badge
-              variant="outline"
-              className="gap-1 border-transparent text-[10px] uppercase tracking-wide"
-              style={{
-                backgroundColor: `var(--status-${column.token})`,
-                color: `var(--status-${column.token}-foreground)`,
-              }}
+            <StatusBadge
+              tone={column.token}
+              variant="solid"
+              className="tracking-wide"
             >
               <ShieldAlert className="size-3" />
               {t("liveBoard.emergency")}
-            </Badge>
+            </StatusBadge>
           ) : null}
         </div>
       </div>
@@ -156,16 +156,15 @@ export function PatientCard({
       </div>
 
       {data.nextStepKey ? (
-        <span
-          className="ml-1.5 inline-flex w-fit items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium"
-          style={{
-            backgroundColor: `var(--status-${column.token})`,
-            color: `var(--status-${column.token}-foreground)`,
-          }}
+        <StatusBadge
+          tone={column.token}
+          variant="solid"
+          size="md"
+          className="ml-1.5"
         >
           <ArrowRight className="size-3" />
           {t(data.nextStepKey)}
-        </span>
+        </StatusBadge>
       ) : null}
     </button>
   );

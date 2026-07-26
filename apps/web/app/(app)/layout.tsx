@@ -1,5 +1,6 @@
 import { RequireAuth } from "@/components/auth/require-auth";
 import { AppShell } from "@/components/layout/app-shell";
+import { RealtimeEngine } from "@/components/pwa/realtime-engine";
 
 /**
  * Layout for the authenticated dashboard. Everything under `(app)` is gated by
@@ -12,6 +13,7 @@ export default function AppGroupLayout({
 }) {
   return (
     <RequireAuth>
+      <RealtimeEngine />
       <AppShell>{children}</AppShell>
     </RequireAuth>
   );

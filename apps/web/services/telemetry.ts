@@ -15,15 +15,11 @@
  * Browser-only: guarded so importing it in node tests / RSC is a safe no-op.
  */
 
+import type { UsageEventType } from "@careflow/shared";
+
 import { getSupabaseClient } from "@/lib/supabase/client";
 
-export type UsageEventType =
-  | "login"
-  | "patient_registered"
-  | "visit_opened"
-  | "record_created"
-  | "sync_failed"
-  | "feature_used";
+export type { UsageEventType };
 
 /** Primitive-only payload — the telemetry-not-PHI guardrail at the type level. */
 export type UsageMetadata = Record<string, string | number | boolean>;

@@ -15,25 +15,38 @@ import {
 import type {
   Admission,
   BillableItem,
+  BillableItemId,
   Charge,
+  ChargeId,
   Consultation,
+  HospitalId,
   Order,
+  PatientId,
   Prescription,
   Transfer,
   Visit,
+  VisitId,
   Ward,
 } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 const DAY_MS = 86_400_000;
 const NOW = Date.UTC(2026, 5, 1, 12, 0, 0);
 
 /** Resolve the seed catalog into full BillableItem rows (tenant + timestamps). */
-const CATALOG: BillableItem[] = BILLING_CATALOG_SEED.map((it) => ({
-  ...it,
-  hospital_id: "hosp_demo",
-  created_at: new Date(0).toISOString(),
-  updated_at: new Date(0).toISOString(),
-}));
+const CATALOG: BillableItem[] = BILLING_CATALOG_SEED.map(
+  (it) =>
+    ({
+      ...it,
+      hospital_id: "hosp_demo",
+      created_at: new Date(0).toISOString(),
+      updated_at: new Date(0).toISOString(),
+      // Seed literals carry plain-string ids; one re-branding cast per row.
+    }) as BillableItem,
+);
 
 function isoDaysAgo(days: number): string {
   return new Date(NOW - days * DAY_MS).toISOString();
@@ -49,9 +62,9 @@ const WARDS: Ward[] = [
 ];
 
 const baseVisit: Visit = {
-  id: "vis_x",
-  hospital_id: "hosp_demo",
-  patient_id: "pat_x",
+  id: brand<VisitId>("vis_x"),
+  hospital_id: brand<HospitalId>("hosp_demo"),
+  patient_id: brand<PatientId>("pat_x"),
   visit_type: "inpatient",
   status: "open",
   stage: "treatment",
@@ -222,9 +235,9 @@ const charge = (over: Partial<Charge>): Charge =>
 describe("summarizeBill", () => {
   it("groups items, subtracts discounts, and computes the grand total", () => {
     const charges: Charge[] = [
-      charge({ id: "a", source: "consultation", billable_item_id: "bil_consult_general", amount: 5_000 }),
-      charge({ id: "b", source: "bed", amount: 20_000 }),
-      charge({ id: "c", source: "discount", amount: -2_000 }),
+      charge({ id: brand<ChargeId>("a"), source: "consultation", billable_item_id: brand<BillableItemId>("bil_consult_general"), amount: 5_000 }),
+      charge({ id: brand<ChargeId>("b"), source: "bed", amount: 20_000 }),
+      charge({ id: brand<ChargeId>("c"), source: "discount", amount: -2_000 }),
     ];
     const s = summarizeBill(charges, CATALOG);
     expect(s.itemsSubtotal).toBe(25_000);
@@ -236,8 +249,8 @@ describe("summarizeBill", () => {
 
   it("never goes below zero and flags full settlement", () => {
     const charges: Charge[] = [
-      charge({ id: "a", source: "consultation", amount: 1_000, status: "paid" }),
-      charge({ id: "b", source: "discount", amount: -5_000, status: "waived" }),
+      charge({ id: brand<ChargeId>("a"), source: "consultation", amount: 1_000, status: "paid" }),
+      charge({ id: brand<ChargeId>("b"), source: "discount", amount: -5_000, status: "waived" }),
     ];
     const s = summarizeBill(charges, CATALOG);
     expect(s.grandTotal).toBe(0);

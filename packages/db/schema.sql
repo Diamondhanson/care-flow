@@ -263,6 +263,11 @@ as $$
   select id from public.staff where user_id = auth.uid() limit 1;
 $$;
 
+-- Stage 6 perf: prefer the JWT claim (stamped into app_metadata by the optional
+-- custom-access-token hook — see the production cutover notes) and fall back to
+-- the staff-row lookup, so the function works with or without the hook. Claims
+-- refresh with the token (~1h); is_staff()'s live is_active check still gates
+-- deactivated accounts immediately.
 create or replace function current_staff_role()
 returns staff_role
 language sql
@@ -270,7 +275,10 @@ stable
 security definer
 set search_path = public
 as $$
-  select role from public.staff where user_id = auth.uid() limit 1;
+  select coalesce(
+    nullif(auth.jwt() -> 'app_metadata' ->> 'staff_role', '')::staff_role,
+    (select role from public.staff where user_id = auth.uid() limit 1)
+  );
 $$;
 
 create or replace function is_staff()
@@ -288,7 +296,7 @@ $$;
 
 -- ---- 3b-bis. Resolve the hospital (tenant) of the currently logged-in user ---
 -- The make-or-break of multi-tenancy: every RLS policy ANDs in
--- `hospital_id = current_hospital_id()` so Hospital A can never read or write
+-- `hospital_id = (select current_hospital_id())` so Hospital A can never read or write
 -- Hospital B's rows. Resolved from the user's own staff row.
 create or replace function current_hospital_id()
 returns uuid
@@ -297,7 +305,30 @@ stable
 security definer
 set search_path = public
 as $$
-  select hospital_id from public.staff where user_id = auth.uid() limit 1;
+  select coalesce(
+    nullif(auth.jwt() -> 'app_metadata' ->> 'hospital_id', '')::uuid,
+    (select hospital_id from public.staff where user_id = auth.uid() limit 1)
+  );
+$$;
+
+-- ---- 3b-ter. Subscription gate (Stage 6) ------------------------------------
+-- True while the caller's hospital is allowed to WRITE (trial or active).
+-- Suspension blocks writes at the database (via enforce_active_subscription,
+-- section 6a-quater) while reads keep working — a hospital's records stay
+-- viewable.
+create or replace function is_hospital_active()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce(
+    (select subscription_status in ('trial','active')
+       from public.hospitals
+      where id = (select current_hospital_id())),
+    false
+  );
 $$;
 
 -- ---- 3c. Generic audit trigger ---------------------------------------------
@@ -856,7 +887,50 @@ create table if not exists charges (
   updated_at       timestamptz not null default now()
 );
 
--- ---- 4i. Audit log ----------------------------------------------------------
+-- ---- 4i. Learned clinical terms (Stage 2) ----------------------------------
+-- The per-hospital learned layer of the clinical-term autocomplete: one row per
+-- learned term key holding the optional doctor-added custom term (jsonb; null
+-- for seed-library terms that only accrued usage) and its usage ranking stats.
+-- Non-versioned by design: usage counts tolerate approximate concurrent
+-- increments, and rows are otherwise append/attach-only.
+
+create table if not exists clinical_terms (
+  id           uuid primary key default gen_random_uuid(),
+  hospital_id  uuid not null references hospitals(id) on delete cascade,
+  -- Stable identity: category + normalized English label (app-computed).
+  term_key     text not null,
+  category     text not null,
+  custom_term  jsonb,
+  usage_count  integer not null default 0,
+  last_used_at timestamptz,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now(),
+  unique (hospital_id, term_key)
+);
+
+-- ---- 4i-bis. Post-discharge follow-up tasks (Stage 5) ----------------------
+-- The real replacement for the old pretend "SMS sent" follow-up stubs: each
+-- discharge creates concrete tasks ("call patient X on day 7") that nurses see,
+-- complete, and that sync like every other record.
+
+create table if not exists follow_up_tasks (
+  id              uuid primary key default gen_random_uuid(),
+  hospital_id     uuid not null references hospitals(id) on delete cascade,
+  patient_id      uuid not null references patients(id) on delete cascade,
+  visit_id        uuid references visits(id) on delete set null,
+  kind            text not null check (kind in ('call','tele_checkin','summary_delivery')),
+  title           text not null,
+  due_at          timestamptz not null,
+  status          text not null default 'pending' check (status in ('pending','done','cancelled')),
+  completed_at    timestamptz,
+  completed_by_id uuid references staff(id) on delete set null,
+  notes           text,
+  created_by_id   uuid references staff(id) on delete set null,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+-- ---- 4j. Audit log ----------------------------------------------------------
 
 create table if not exists audit_log (
   id               bigint generated always as identity primary key,
@@ -904,6 +978,10 @@ create index if not exists idx_charges_visit          on charges(visit_id);
 create index if not exists idx_charges_item           on charges(billable_item_id);
 create index if not exists idx_charges_source         on charges(source, source_ref_id);
 create index if not exists idx_allergies_patient      on allergies(patient_id);
+create index if not exists idx_clinical_terms_hospital on clinical_terms(hospital_id);
+create index if not exists idx_follow_up_hospital      on follow_up_tasks(hospital_id);
+create index if not exists idx_follow_up_status_due    on follow_up_tasks(status, due_at);
+create index if not exists idx_follow_up_patient       on follow_up_tasks(patient_id);
 create index if not exists idx_patient_history_patient on patient_history(patient_id);
 create index if not exists idx_patient_history_type    on patient_history(type);
 create index if not exists idx_ros_responses_visit     on ros_responses(visit_id);
@@ -954,7 +1032,7 @@ begin
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
     'care_plan_items','billable_items','charges',
-    'patient_history','ros_responses'
+    'patient_history','ros_responses','clinical_terms','follow_up_tasks'
   ]
   loop
     execute format('drop trigger if exists trg_%I_updated_at on %I;', t, t);
@@ -976,7 +1054,7 @@ begin
     'hospitals','departments','wards','beds','staff','patients','visits',
     'consultations','orders','prescriptions','admissions','allergies',
     'care_plan_items','billable_items','charges',
-    'patient_history','ros_responses'
+    'patient_history','ros_responses','follow_up_tasks'
   ]
   loop
     execute format(
@@ -985,6 +1063,86 @@ begin
     execute format(
       'create trigger trg_%I_version before update on %I
          for each row execute function bump_version();', t, t);
+  end loop;
+end $$;
+
+-- ---- 6a-ter. Realtime publication (Stage 4) --------------------------------
+-- Stream row changes to signed-in clients so colleagues see each other's work
+-- live. RLS still applies to delivered events. Idempotent: tables already in
+-- the publication are skipped, and stacks without the publication are skipped.
+-- (`notifications` joins the publication in section 9i, unchanged.)
+do $$
+declare t text;
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    foreach t in array array[
+      'hospitals','departments','wards','beds','staff','patients','visits',
+      'consultations','diagnoses','orders','results','prescriptions',
+      'medication_administrations','treatment_records','admissions','transfers',
+      'allergies','care_plan_items','care_plan_entries','billable_items',
+      'charges','clinical_terms','follow_up_tasks',
+      'patient_history','ros_responses'
+    ]
+    loop
+      if not exists (
+        select 1 from pg_publication_tables
+         where pubname = 'supabase_realtime'
+           and schemaname = 'public'
+           and tablename = t
+      ) then
+        execute format('alter publication supabase_realtime add table %I;', t);
+      end if;
+    end loop;
+  end if;
+end $$;
+
+-- ---- 6a-quater. Subscription write-gate (Stage 6) --------------------------
+-- A suspended hospital keeps READ access to its records (humane for a
+-- hospital) but can no longer WRITE. Enforced with one trigger on every domain
+-- table rather than editing every RLS policy: it fires regardless of which
+-- policy allowed the write. Service-role / server contexts (auth.uid() is
+-- null) bypass it, so provisioning and un-suspension always work.
+create or replace function enforce_active_subscription()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null then
+    return coalesce(new, old);
+  end if;
+  if not is_hospital_active() then
+    raise exception 'hospital subscription is suspended — writes are disabled'
+      using errcode = 'P0001';
+  end if;
+  return coalesce(new, old);
+end;
+$$;
+
+-- Attached to every domain table. `notifications` gets the same trigger in
+-- section 9i, right after its table is created (it does not exist yet at this
+-- point in the file). Deliberately NOT attached to
+-- push_subscriptions / usage_events / platform_admins / audit_log: device
+-- registrations, owner telemetry and the audit trail must keep flowing even
+-- while a tenant is suspended.
+do $$
+declare t text;
+begin
+  foreach t in array array[
+    'departments','wards','beds','staff','patients','visits',
+    'consultations','diagnoses','orders','results','prescriptions',
+    'medication_administrations','treatment_records','admissions','transfers',
+    'allergies','care_plan_items','care_plan_entries','billable_items',
+    'charges','clinical_terms','follow_up_tasks',
+    'patient_history','ros_responses'
+  ]
+  loop
+    execute format('drop trigger if exists trg_%I_subscription on %I;', t, t);
+    execute format(
+      'create trigger trg_%I_subscription
+         before insert or update or delete on %I
+         for each row execute function enforce_active_subscription();', t, t);
   end loop;
 end $$;
 
@@ -997,7 +1155,7 @@ begin
     'prescriptions','medication_administrations','treatment_records',
     'admissions','transfers','beds','wards','departments','staff','allergies',
     'care_plan_items','care_plan_entries','billable_items','charges',
-    'patient_history','ros_responses'
+    'patient_history','ros_responses','follow_up_tasks'
   ]
   loop
     execute format('drop trigger if exists trg_%I_audit on %I;', t, t);
@@ -1044,6 +1202,29 @@ drop trigger if exists trg_admissions_bed_sync on admissions;
 create trigger trg_admissions_bed_sync
   after insert or update on admissions
   for each row execute function sync_bed_occupancy();
+
+-- ---- 6e. Audit-log retention (Stage 6) --------------------------------------
+-- The audit log grows unbounded across every tenant. This prune function keeps
+-- it in check; schedule it (e.g. monthly) with pg_cron on the hosted project:
+--   select cron.schedule('prune-audit-log', '0 3 1 * *',
+--                        $$select prune_audit_log(24)$$);
+-- Only callable from privileged contexts — EXECUTE is revoked from clients.
+create or replace function prune_audit_log(retain_months integer default 24)
+returns bigint
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare deleted bigint;
+begin
+  delete from audit_log
+   where changed_at < now() - make_interval(months => greatest(retain_months, 1));
+  get diagnostics deleted = row_count;
+  return deleted;
+end;
+$$;
+
+revoke execute on function prune_audit_log(integer) from public, anon, authenticated;
 
 
 -- =============================================================================
@@ -1137,7 +1318,7 @@ create policy "staff read clinical files"
   using (
     bucket_id in ('lab-results','patient-documents')
     and is_staff()
-    and (storage.foldername(name))[1] = current_hospital_id()::text
+    and (storage.foldername(name))[1] = (select current_hospital_id())::text
   );
 
 drop policy if exists "staff write clinical files" on storage.objects;
@@ -1146,7 +1327,7 @@ create policy "staff write clinical files"
   with check (
     bucket_id in ('lab-results','patient-documents')
     and is_staff()
-    and (storage.foldername(name))[1] = current_hospital_id()::text
+    and (storage.foldername(name))[1] = (select current_hospital_id())::text
   );
 
 drop policy if exists "staff update clinical files" on storage.objects;
@@ -1155,7 +1336,7 @@ create policy "staff update clinical files"
   using (
     bucket_id in ('lab-results','patient-documents')
     and is_staff()
-    and (storage.foldername(name))[1] = current_hospital_id()::text
+    and (storage.foldername(name))[1] = (select current_hospital_id())::text
   );
 
 
@@ -1183,7 +1364,7 @@ begin
     'medication_administrations','treatment_records','admissions','transfers',
     'allergies','care_plan_items','care_plan_entries',
     'billable_items','charges','audit_log',
-    'patient_history','ros_responses'
+    'patient_history','ros_responses','clinical_terms','follow_up_tasks'
   ]
   loop
     execute format('alter table %I enable row level security;', t);
@@ -1198,13 +1379,13 @@ end $$;
 drop policy if exists "staff read own hospital" on hospitals;
 create policy "staff read own hospital" on hospitals
   for select to authenticated
-  using (id = current_hospital_id());
+  using (id = (select current_hospital_id()));
 
 drop policy if exists "admin update own hospital" on hospitals;
 create policy "admin update own hospital" on hospitals
   for update to authenticated
-  using (id = current_hospital_id() and current_staff_role() = 'admin')
-  with check (id = current_hospital_id() and current_staff_role() = 'admin');
+  using (id = (select current_hospital_id()) and (select current_staff_role()) = 'admin')
+  with check (id = (select current_hospital_id()) and (select current_staff_role()) = 'admin');
 
 -- ---- 9a. Universal read for active staff ------------------------------------
 do $$
@@ -1215,14 +1396,14 @@ begin
     'consultations','diagnoses','orders','results','prescriptions',
     'medication_administrations','treatment_records','admissions','transfers',
     'allergies','care_plan_items','care_plan_entries','billable_items','charges',
-    'patient_history','ros_responses'
+    'patient_history','ros_responses','clinical_terms','follow_up_tasks'
   ]
   loop
     execute format('drop policy if exists "read for staff" on %I;', t);
     execute format(
       'create policy "read for staff" on %I
          for select to authenticated
-         using (is_staff() and hospital_id = current_hospital_id());', t);
+         using ((select is_staff()) and hospital_id = (select current_hospital_id()));', t);
   end loop;
 end $$;
 
@@ -1235,8 +1416,8 @@ begin
     execute format(
       'create policy "admin write" on %I
          for all to authenticated
-         using (current_staff_role() = ''admin'' and hospital_id = current_hospital_id())
-         with check (current_staff_role() = ''admin'' and hospital_id = current_hospital_id());', t);
+         using ((select current_staff_role()) = ''admin'' and hospital_id = (select current_hospital_id()))
+         with check ((select current_staff_role()) = ''admin'' and hospital_id = (select current_hospital_id()));', t);
   end loop;
 end $$;
 
@@ -1244,18 +1425,18 @@ end $$;
 drop policy if exists "front desk write patients" on patients;
 create policy "front desk write patients" on patients
   for all to authenticated
-  using (current_staff_role() in ('receptionist','nurse','admin','doctor')
-         and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('receptionist','nurse','admin','doctor')
-              and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('receptionist','nurse','admin','doctor')
+         and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('receptionist','nurse','admin','doctor')
+              and hospital_id = (select current_hospital_id()));
 
 drop policy if exists "front desk write visits" on visits;
 create policy "front desk write visits" on visits
   for all to authenticated
-  using (current_staff_role() in ('receptionist','nurse','admin','doctor')
-         and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('receptionist','nurse','admin','doctor')
-              and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('receptionist','nurse','admin','doctor')
+         and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('receptionist','nurse','admin','doctor')
+              and hospital_id = (select current_hospital_id()));
 
 -- ---- 9d. Doctors: consultations, diagnoses, orders, prescriptions, admit ----
 do $$
@@ -1266,8 +1447,8 @@ begin
     execute format(
       'create policy "doctor write" on %I
          for all to authenticated
-         using (current_staff_role() in (''doctor'',''admin'') and hospital_id = current_hospital_id())
-         with check (current_staff_role() in (''doctor'',''admin'') and hospital_id = current_hospital_id());', t);
+         using ((select current_staff_role()) in (''doctor'',''admin'') and hospital_id = (select current_hospital_id()))
+         with check ((select current_staff_role()) in (''doctor'',''admin'') and hospital_id = (select current_hospital_id()));', t);
   end loop;
 end $$;
 
@@ -1275,14 +1456,14 @@ end $$;
 drop policy if exists "nurse write vitals" on treatment_records;
 create policy "nurse write vitals" on treatment_records
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 drop policy if exists "nurse write mar" on medication_administrations;
 create policy "nurse write mar" on medication_administrations
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- The nursing care plan is authored at the bedside by nurses (doctors/admin may
 -- also write). Items can be updated (e.g. resolved); the log is append-only by
@@ -1290,14 +1471,14 @@ create policy "nurse write mar" on medication_administrations
 drop policy if exists "nurse write care plan items" on care_plan_items;
 create policy "nurse write care plan items" on care_plan_items
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 drop policy if exists "nurse write care plan entries" on care_plan_entries;
 create policy "nurse write care plan entries" on care_plan_entries
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- Billing & invoicing (Phase 16.9). The price catalog and the charge ledger are
 -- maintained by the front office: admins and receptionists only. (All staff can
@@ -1306,72 +1487,90 @@ create policy "nurse write care plan entries" on care_plan_entries
 drop policy if exists "billing write items" on billable_items;
 create policy "billing write items" on billable_items
   for all to authenticated
-  using (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('admin','receptionist') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('admin','receptionist') and hospital_id = (select current_hospital_id()));
 
 drop policy if exists "billing write charges" on charges;
 create policy "billing write charges" on charges
   for all to authenticated
-  using (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('admin','receptionist') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('admin','receptionist') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('admin','receptionist') and hospital_id = (select current_hospital_id()));
 
 -- Allergies are safety-critical and recorded at the point of care by either a
 -- nurse (intake) or a doctor (consultation).
 drop policy if exists "clinical write allergies" on allergies;
 create policy "clinical write allergies" on allergies
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- Clinical background: recorded/updated by clinicians (nurse at intake, doctor
 -- in consult) — Phase 21.
 drop policy if exists "clinical write patient history" on patient_history;
 create policy "clinical write patient history" on patient_history
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- Review of Systems: authored by the doctor during the consultation — Phase 21.
 drop policy if exists "doctor write ros" on ros_responses;
 create policy "doctor write ros" on ros_responses
   for all to authenticated
-  using (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- Nurses may update admission stage/clearances (advance the board).
 drop policy if exists "nurse update admissions" on admissions;
 create policy "nurse update admissions" on admissions
   for update to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- Bed/ward/doctor moves are logged by the clinician making the move.
 drop policy if exists "clinical write transfers" on transfers;
 create policy "clinical write transfers" on transfers
   for all to authenticated
-  using (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('nurse','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
+
+-- Post-discharge follow-up worklist: worked by nurses (doctors/admin may also
+-- write) — Stage 5.
+drop policy if exists "clinical write follow ups" on follow_up_tasks;
+create policy "clinical write follow ups" on follow_up_tasks
+  for all to authenticated
+  using ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin') and hospital_id = (select current_hospital_id()));
+
+-- The learned clinical-term layer (custom terms + usage ranking) is written by
+-- everyone who uses the autocomplete at the point of care.
+drop policy if exists "clinical write terms" on clinical_terms;
+create policy "clinical write terms" on clinical_terms
+  for all to authenticated
+  using ((select current_staff_role()) in ('doctor','nurse','pharmacist','lab_tech','admin')
+         and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('doctor','nurse','pharmacist','lab_tech','admin')
+              and hospital_id = (select current_hospital_id()));
 
 -- ---- 9f. Lab techs: enter results ------------------------------------------
 drop policy if exists "lab write results" on results;
 create policy "lab write results" on results
   for all to authenticated
-  using (current_staff_role() in ('lab_tech','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('lab_tech','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('lab_tech','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('lab_tech','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- ---- 9g. Pharmacists: update prescription status ---------------------------
 drop policy if exists "pharmacist update prescriptions" on prescriptions;
 create policy "pharmacist update prescriptions" on prescriptions
   for update to authenticated
-  using (current_staff_role() in ('pharmacist','doctor','admin') and hospital_id = current_hospital_id())
-  with check (current_staff_role() in ('pharmacist','doctor','admin') and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) in ('pharmacist','doctor','admin') and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('pharmacist','doctor','admin') and hospital_id = (select current_hospital_id()));
 
 -- ---- 9h. Audit log: readable by admin only (and only their own hospital's),
 --          never writable from the client ----------------------------------
 drop policy if exists "admin read audit" on audit_log;
 create policy "admin read audit" on audit_log
   for select to authenticated
-  using (current_staff_role() = 'admin' and hospital_id = current_hospital_id());
+  using ((select current_staff_role()) = 'admin' and hospital_id = (select current_hospital_id()));
 -- (No INSERT/UPDATE/DELETE policy => clients cannot tamper with the audit log.
 --  Rows are written only by the SECURITY DEFINER audit_trigger function.)
 
@@ -1430,35 +1629,44 @@ drop trigger if exists trg_push_subscriptions_updated_at on push_subscriptions;
 create trigger trg_push_subscriptions_updated_at before update on push_subscriptions
   for each row execute function set_updated_at();
 
+-- Subscription write-gate (section 6a-quater) — a suspended hospital stops
+-- fanning out events too. Attached here because the table is created after
+-- the shared attach loop runs. NOT attached to push_subscriptions (device
+-- registrations must survive suspension).
+drop trigger if exists trg_notifications_subscription on notifications;
+create trigger trg_notifications_subscription
+  before insert or update or delete on notifications
+  for each row execute function enforce_active_subscription();
+
 alter table notifications      enable row level security;
 alter table push_subscriptions enable row level security;
 
 drop policy if exists "read own notifications" on notifications;
 create policy "read own notifications" on notifications
   for select to authenticated
-  using (is_staff() and recipient_staff_id = current_staff_id());
+  using ((select is_staff()) and recipient_staff_id = (select current_staff_id()));
 
 drop policy if exists "staff insert notifications" on notifications;
 create policy "staff insert notifications" on notifications
   for insert to authenticated
-  with check (is_staff() and hospital_id = current_hospital_id());
+  with check ((select is_staff()) and hospital_id = (select current_hospital_id()));
 
 drop policy if exists "update own notifications" on notifications;
 create policy "update own notifications" on notifications
   for update to authenticated
-  using (recipient_staff_id = current_staff_id())
-  with check (recipient_staff_id = current_staff_id());
+  using (recipient_staff_id = (select current_staff_id()))
+  with check (recipient_staff_id = (select current_staff_id()));
 
 drop policy if exists "delete own notifications" on notifications;
 create policy "delete own notifications" on notifications
   for delete to authenticated
-  using (recipient_staff_id = current_staff_id());
+  using (recipient_staff_id = (select current_staff_id()));
 
 drop policy if exists "manage own push subscriptions" on push_subscriptions;
 create policy "manage own push subscriptions" on push_subscriptions
   for all to authenticated
-  using (is_staff() and staff_id = current_staff_id())
-  with check (is_staff() and staff_id = current_staff_id() and hospital_id = current_hospital_id());
+  using ((select is_staff()) and staff_id = (select current_staff_id()))
+  with check ((select is_staff()) and staff_id = (select current_staff_id()) and hospital_id = (select current_hospital_id()));
 
 do $$
 begin
@@ -1689,7 +1897,7 @@ alter table usage_events enable row level security;
 drop policy if exists "staff append own usage" on usage_events;
 create policy "staff append own usage" on usage_events
   for insert to authenticated
-  with check (is_staff() and hospital_id = current_hospital_id());
+  with check ((select is_staff()) and hospital_id = (select current_hospital_id()));
 
 
 -- =============================================================================

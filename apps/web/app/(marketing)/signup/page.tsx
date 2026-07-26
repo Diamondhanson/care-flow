@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OwnerAuth } from "@/components/auth/owner-auth";
+import { BackendNotice } from "@/components/auth/backend-notice";
 import { useAuth } from "@/components/auth-provider";
 import { useT } from "@/components/locale-provider";
 
@@ -43,6 +44,7 @@ export default function SignupPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-col px-4 py-12 md:py-16">
+      <BackendNotice />
       <Card>
         <CardHeader>
           <CardTitle>{t("auth.signup.title")}</CardTitle>

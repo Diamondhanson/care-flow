@@ -20,11 +20,12 @@ import {
 import { BOARD_COLUMNS, columnForStage } from "@/components/live-board/stages";
 import { useT } from "@/components/locale-provider";
 import type { Department } from "@careflow/shared";
+import type { DepartmentFilter } from "@/services/mockStorage";
 
 interface StageCountsProps {
-  departmentId: string;
+  departmentId: DepartmentFilter;
   departments: Department[];
-  onDepartmentChange: (value: string) => void;
+  onDepartmentChange: (value: DepartmentFilter) => void;
 }
 
 export function StageCounts({
@@ -83,14 +84,15 @@ export function StageCounts({
             {t("liveBoard.viewing")}
           </span>
           <Select
+            // Widen the literal key type: entries mix the sentinel + dept ids.
             items={{
               [ALL_DEPARTMENTS]: t("liveBoard.allDepartments"),
               ...Object.fromEntries(
                 activeDepartments.map((d) => [d.id, d.name]),
               ),
-            }}
-            value={departmentId}
-            onValueChange={(v) => onDepartmentChange((v as string) ?? ALL_DEPARTMENTS)}
+            } as Record<string, string>}
+            value={departmentId as string}
+            onValueChange={(v) => onDepartmentChange((v as DepartmentFilter) ?? ALL_DEPARTMENTS)}
           >
             <SelectTrigger className="w-full sm:w-56">
               <SelectValue />

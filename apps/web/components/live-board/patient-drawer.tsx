@@ -1,31 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
-  Activity,
   ShieldAlert,
-  ClipboardList,
   Stethoscope,
-  Merge,
-  ArrowRight,
-  CheckCircle2,
-  Lock,
-  FileText,
-  FlaskConical,
-  AlertTriangle,
-  Plus,
-  Home,
-  BedDouble,
-  Eye,
-  Send,
-  Pill,
-  ArrowLeftRight,
   ChevronDown,
   FileDown,
-  HeartHandshake,
-  HeartOff,
-  Trash2,
-  X,
 } from "lucide-react";
 
 import {
@@ -35,204 +15,53 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { PatientName } from "@/lib/patient-name";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { PatientName, formatPatientName } from "@/lib/patient-name";
-import {
-  getAdmissionForVisit,
-  getAllergiesForPatient,
-  getBedById,
-  getBeds,
-  getCarePlanEntriesForAdmission,
-  getCarePlanItemsForAdmission,
-  getConsultationsForVisit,
-  getDepartmentById,
-  getDepartments,
-  getDiagnosesForVisit,
-  getRosResponsesForVisit,
-  getOrdersForVisit,
-  getResultsForVisit,
-  getPatientById,
-  getPatients,
-  getPrescriptionsForVisit,
-  getMedicationAdministrationsForPrescription,
   getStaff,
   getStaffById,
-  getTransfersForAdmission,
-  getTreatmentRecordsForVisit,
-  getVisitById,
-  getWards,
-  addConsultation,
-  addDiagnosis,
-  addOrder,
-  addPrescription,
-  updateOrder,
-  updatePrescription,
-  deleteOrder,
-  deletePrescription,
-  type AddPrescriptionInput,
-  type UpdateOrderInput,
-  type UpdatePrescriptionInput,
-  addTreatmentLog,
-  recordDisposition,
-  recordDeath,
-  transferAdmission,
   updateAdmissionClearances,
-  updateVisitStage,
-  evaluateDischargeReadiness,
-  reconcileAnonymousProfile,
-  type Disposition,
-  type DispositionDetails,
 } from "@/services/mockStorage";
-import { nextStage, stageLabel, tokenForStage } from "@/components/live-board/stages";
 import {
-  ORDER_STATUS_LABEL,
-  ORDER_STATUS_TOKEN,
-  ORDER_TYPE_LABEL,
-} from "@/components/diagnostics/orders";
-import { ResultAttachment } from "@/components/diagnostics/result-attachment";
+  usePatientDrawerData,
+  useFormReset,
+} from "@/components/live-board/drawer/use-drawer-data";
+import { ConsultationForm } from "@/components/live-board/drawer/consultation-form";
+import { DiagnosisForm } from "@/components/live-board/drawer/diagnosis-form";
+import { OrdersPanel } from "@/components/live-board/drawer/orders-panel";
+import { PrescriptionsPanel } from "@/components/live-board/drawer/prescriptions-panel";
+import { VitalsForm } from "@/components/live-board/drawer/vitals-form";
+import { TransferForm } from "@/components/live-board/drawer/transfer-form";
 import {
-  FREQUENCY_OPTIONS,
-  MEAL_TIMING_LABEL,
-  MEAL_TIMING_OPTIONS,
-  PRESCRIPTION_STATUS_LABEL,
-  PRESCRIPTION_STATUS_TOKEN,
-  ROUTE_OPTIONS,
-} from "@/components/medications/prescriptions";
+  CareStageSection,
+  DispositionGrid,
+} from "@/components/live-board/drawer/discharge-panel";
+import { AllergiesPanel } from "@/components/live-board/drawer/allergies-panel";
+import { ReconcileSection } from "@/components/live-board/drawer/reconcile-section";
 import {
-  TermAutocomplete,
-  TermChips,
-} from "@/components/clinical-terms/term-autocomplete";
-import { displayTerm } from "@/lib/clinical-terms/search";
-import {
-  ALLERGY_CATEGORY_LABEL,
-  ALLERGY_SEVERITY_LABEL,
-  ALLERGY_SEVERITY_TOKEN,
-  allergyDisplayState,
-  highestSeverity,
-  sortAllergiesBySeverity,
-} from "@/components/allergies/allergies";
-import { CareOrders } from "@/components/care-plans/care-orders";
-import { VitalsTrend } from "@/components/care-plans/vitals-trend";
+  TreatmentHistorySection,
+  PastVisitsSection,
+} from "@/components/live-board/drawer/history-section";
 import { BackgroundPanel } from "@/components/patient/background-panel";
-import { RosReview } from "@/components/ros/ros-review";
-import { compileRosNarrative } from "@/lib/ros/compile";
-import { cn } from "@/lib/utils";
-import { useRole } from "@/components/role-provider";
-import { useT, useLocale } from "@/components/locale-provider";
-import { formatDateTime } from "@/i18n/format";
-import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
+import { CareOrders } from "@/components/care-plans/care-orders";
 import {
   buildVisitSummary,
   buildPatientHistory,
 } from "@/components/reports/visit-summary";
-import type {
-  Admission,
-  Allergy,
-  Bed,
-  CarePlanEntry,
-  CarePlanItem,
-  ClinicalTerm,
-  Consultation,
-  Department,
-  Diagnosis,
-  Order,
-  OrderId,
-  MarStatus,
-  MealTiming,
-  MedicationAdministration,
-  OrderType,
-  Patient,
-  Prescription,
-  PrescriptionId,
-  Result,
-  StaffId,
-  StaffRole,
-  Transfer,
-  TreatmentRecord,
-  Visit,
-  Ward,
-} from "@careflow/shared";
-
-const DISPOSITIONS: {
-  value: Disposition;
-  labelKey: string;
-  icon: typeof Home;
-}[] = [
-  { value: "discharge_home", labelKey: "drawer.dispositionDischargeHome", icon: Home },
-  { value: "admit", labelKey: "drawer.dispositionAdmit", icon: BedDouble },
-  { value: "observation", labelKey: "drawer.dispositionObservation", icon: Eye },
-  { value: "refer", labelKey: "drawer.dispositionRefer", icon: Send },
-];
-
-const NO_BED = "__none__";
-const NO_DOCTOR = "__none__";
-const NO_DEPT = "__none__";
-const NO_WARD = "__none__";
-
-/** Dispositions that open a details dialog before they are recorded. */
-type DispositionDialog = "admit" | "observation" | "refer";
-
-/** Common observation windows offered as a select (i18n label keys). */
-const OBS_DURATION_OPTIONS: { value: string; labelKey: string }[] = [
-  { value: "1 hour", labelKey: "drawer.obsDur1h" },
-  { value: "2 hours", labelKey: "drawer.obsDur2h" },
-  { value: "4 hours", labelKey: "drawer.obsDur4h" },
-  { value: "6 hours", labelKey: "drawer.obsDur6h" },
-  { value: "12 hours", labelKey: "drawer.obsDur12h" },
-  { value: "24 hours", labelKey: "drawer.obsDur24h" },
-  { value: "48 hours", labelKey: "drawer.obsDur48h" },
-  { value: "72 hours", labelKey: "drawer.obsDur72h" },
-];
+import { VISIT_TYPE_LABEL } from "@/components/reports/reports";
+import { cn } from "@/lib/utils";
+import { useRole } from "@/components/role-provider";
+import { useT, useLocale } from "@/components/locale-provider";
+import type { StaffRole, VisitId } from "@careflow/shared";
 
 const CLEARANCE_FIELDS = [
   { key: "is_medical_cleared", labelKey: "drawer.clearanceMedical" },
   { key: "is_financial_cleared", labelKey: "drawer.clearanceFinancial" },
   { key: "is_pharmacy_ready", labelKey: "drawer.clearancePharmacy" },
 ] as const;
-
-type NumField = "" | string;
-
-/** Maps a VitalsSchema field name to its i18n label key, so a validation error
- *  can name the exact field that's out of range (e.g. GCS must be 3–15). */
-const VITALS_FIELD_LABEL_KEY: Record<string, string> = {
-  spo2: "drawer.vitalsSpo2",
-  pulse: "drawer.vitalsPulse",
-  bp_systolic: "drawer.vitalsSys",
-  bp_diastolic: "drawer.vitalsDia",
-  temperature_c: "drawer.vitalsTemp",
-  weight_kg: "drawer.vitalsWeight",
-  gcs_score: "drawer.vitalsGcs",
-};
-
-/** Dot colour for a MAR status in the doctor's read-only administration log. */
-const MAR_STATUS_COLOR: Record<MarStatus, string> = {
-  given: "var(--status-clearance)",
-  held: "var(--status-boarding)",
-  refused: "var(--status-treatment)",
-  suspended: "var(--status-discharge)",
-  missed: "var(--muted-foreground)",
-};
 
 /**
  * Phase 14 — role-led drawer. Each collapsible section has a stable key. The
@@ -251,7 +80,8 @@ type SectionKey =
   | "careStage"
   | "vitals"
   | "carePlan"
-  | "history";
+  | "history"
+  | "pastVisits";
 
 /** Natural top-to-bottom order used for admins and for the "More" group. */
 const SECTION_ORDER: Record<SectionKey, number> = {
@@ -263,6 +93,7 @@ const SECTION_ORDER: Record<SectionKey, number> = {
   vitals: 6,
   carePlan: 7,
   history: 8,
+  pastVisits: 9,
 };
 
 const PRIMARY_BY_ROLE: Partial<Record<StaffRole, SectionKey[]>> = {
@@ -274,13 +105,19 @@ const PRIMARY_BY_ROLE: Partial<Record<StaffRole, SectionKey[]>> = {
   receptionist: ["reconcile", "placement", "careStage"],
 };
 
+/**
+ * Orchestrator for the patient drawer. Loads the shared data snapshot
+ * (`usePatientDrawerData`), owns the Sheet chrome, the role-based section
+ * ordering, and the "More" expander; each section component owns its own form
+ * state so typing in one field no longer re-renders the whole drawer.
+ */
 export function PatientDrawer({
   visitId,
   open,
   onOpenChange,
   onMutate,
 }: {
-  visitId: string | null;
+  visitId: VisitId | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onMutate: () => void;
@@ -290,100 +127,16 @@ export function PatientDrawer({
   const { mounted, locale } = useLocale();
   const activeLocale = mounted ? locale : "en";
 
-  const [tick, setTick] = useState(0);
-  const [visit, setVisit] = useState<Visit | null>(null);
-  const [admission, setAdmission] = useState<Admission | null>(null);
-  const [patient, setPatient] = useState<Patient | null>(null);
-  const [records, setRecords] = useState<TreatmentRecord[]>([]);
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
-  const [verified, setVerified] = useState<Patient[]>([]);
-  const [allergies, setAllergies] = useState<Allergy[]>([]);
-  const [location, setLocation] = useState<string | null>(null);
+  const { data, refresh, resetKey } = usePatientDrawerData(
+    open,
+    visitId,
+    onMutate,
+  );
 
-  // Placement & transfers (inpatient admissions)
-  const [wards, setWards] = useState<Ward[]>([]);
-  const [beds, setBeds] = useState<Bed[]>([]);
-  const [transfers, setTransfers] = useState<Transfer[]>([]);
-
-  // Read-only nursing care-plan summary (inpatient admissions only)
-  const [carePlanItems, setCarePlanItems] = useState<CarePlanItem[]>([]);
-  const [carePlanEntries, setCarePlanEntries] = useState<CarePlanEntry[]>([]);
-  const [transferBedId, setTransferBedId] = useState<string>(NO_BED);
-  const [transferDoctorId, setTransferDoctorId] = useState<string>(NO_DOCTOR);
-  const [transferReason, setTransferReason] = useState("");
-  const [transferError, setTransferError] = useState<string | null>(null);
-  // Plain-language confirmation of the last completed move ("Moved to … · …").
-  const [transferDone, setTransferDone] = useState<string | null>(null);
-  // Discharge is a closing action, so it's gated behind an explicit confirm step
-  // that states the outcome before the visit drops off the board.
-  const [confirmingDischarge, setConfirmingDischarge] = useState(false);
-  // Recording a death is a closing action too — confirm-gated, with an optional
-  // note for cause/circumstances. Exempt from the discharge clearance gates.
-  const [confirmingDeath, setConfirmingDeath] = useState(false);
-  const [deathNote, setDeathNote] = useState("");
-
-  // Disposition detail dialogs — admit (placement), observation, referral. Each
-  // opens a centered dialog to capture the structured details before recording.
-  const [dispoDialog, setDispoDialog] = useState<DispositionDialog | null>(null);
-  const [dispoError, setDispoError] = useState<string | null>(null);
-  // Admit placement.
-  const [admitDeptId, setAdmitDeptId] = useState<string>(NO_DEPT);
-  const [admitWardId, setAdmitWardId] = useState<string>(NO_WARD);
-  const [admitBedId, setAdmitBedId] = useState<string>(NO_BED);
-  const [admitDoctorId, setAdmitDoctorId] = useState<string>(NO_DOCTOR);
-  const [admitReason, setAdmitReason] = useState("");
-  // Observation.
-  const [obsReason, setObsReason] = useState("");
-  const [obsDuration, setObsDuration] = useState<string>("");
-  const [obsLocation, setObsLocation] = useState("");
-  // Referral.
-  const [referReason, setReferReason] = useState("");
-  const [referFacility, setReferFacility] = useState("");
-  const [referRecipient, setReferRecipient] = useState("");
-
-  // SOAP consultation form
-  const [subjective, setSubjective] = useState("");
-  const [examination, setExamination] = useState("");
-  const [assessment, setAssessment] = useState("");
-  const [plan, setPlan] = useState("");
-
-  // Structured diagnosis form
-  const [dxCode, setDxCode] = useState("");
-  const [dxDescription, setDxDescription] = useState("");
-  const [dxPrimary, setDxPrimary] = useState(false);
-
-  // Diagnostic orders + their results. Tests are instant-added from the term
-  // picker below the list, then refined inline on each row.
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [results, setResults] = useState<Result[]>([]);
-  const [orderDraft, setOrderDraft] = useState("");
-
-  // Prescriptions — instant-added from the drug picker, refined inline per row.
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
-  // Medication-administration (MAR) log per prescription, so the doctor sees what
-  // the nurse did with each dose (given / held / refused / suspended + reason).
-  const [medAdmins, setMedAdmins] = useState<
-    Record<string, MedicationAdministration[]>
-  >({});
-  const [rxDraft, setRxDraft] = useState("");
-
-  // Vitals / GCS / notes form
-  const [spo2, setSpo2] = useState<NumField>("");
-  const [sys, setSys] = useState<NumField>("");
-  const [dia, setDia] = useState<NumField>("");
-  const [pulse, setPulse] = useState<NumField>("");
-  const [temp, setTemp] = useState<NumField>("");
-  const [weight, setWeight] = useState<NumField>("");
-  const [gcs, setGcs] = useState<NumField>("");
-  const [notes, setNotes] = useState("");
-  const [logError, setLogError] = useState<string | null>(null);
-  // A two-step confirm for deleting a mistaken order / prescription.
-  const [pendingDelete, setPendingDelete] = useState<
-    { kind: "order" | "rx"; id: string } | null
-  >(null);
-  const [reconcileTarget, setReconcileTarget] = useState("");
   const [showMore, setShowMore] = useState(false);
+  // Collapse the "More" group on drawer open / after each data refresh, like
+  // the previous monolithic load effect did.
+  useFormReset(resetKey, () => setShowMore(false));
 
   // The acting staff member records the entry; fall back to a doctor so logging
   // still works before the role context has hydrated.
@@ -411,90 +164,16 @@ export function PatientDrawer({
   const secCls = (k: SectionKey, base: string) =>
     cn(base, collapsible && !isLead(k) && !showMore && "hidden");
 
-  useEffect(() => {
-    if (!open || !visitId) return;
-    const v = getVisitById(visitId);
-    if (!v) return;
-    const adm = getAdmissionForVisit(visitId) ?? null;
-    setVisit(v);
-    setAdmission(adm);
-    setPatient(getPatientById(v.patient_id) ?? null);
-    setRecords(getTreatmentRecordsForVisit(visitId));
-    setConsultations(getConsultationsForVisit(visitId));
-    setDiagnoses(getDiagnosesForVisit(visitId));
-    setOrders(getOrdersForVisit(visitId));
-    setResults(getResultsForVisit(visitId));
-    const visitRx = getPrescriptionsForVisit(visitId);
-    setPrescriptions(visitRx);
-    setMedAdmins(
-      Object.fromEntries(
-        visitRx.map((p) => [
-          p.id,
-          getMedicationAdministrationsForPrescription(p.id),
-        ]),
-      ),
-    );
-    setAllergies(getAllergiesForPatient(v.patient_id));
-    setWards(getWards());
-    setBeds(getBeds());
-    setTransfers(adm ? getTransfersForAdmission(adm.id) : []);
-    setCarePlanItems(adm ? getCarePlanItemsForAdmission(adm.id) : []);
-    setCarePlanEntries(adm ? getCarePlanEntriesForAdmission(adm.id) : []);
-    setTransferBedId(adm?.bed_id ?? NO_BED);
-    setTransferDoctorId(adm?.attending_doctor_id ?? NO_DOCTOR);
-    setTransferReason("");
-    setTransferError(null);
-    setVerified(
-      getPatients().filter(
-        (p) => !p.is_emergency_anonymous && p.id !== v.patient_id,
-      ),
-    );
-    setLocation(
-      adm?.bed_id
-        ? (getBedById(adm.bed_id)?.label ?? null)
-        : v.department_id
-          ? (getDepartmentById(v.department_id)?.name ?? null)
-          : null,
-    );
-    // Reset the log entry form on open / after a save.
-    setSpo2("");
-    setSys("");
-    setDia("");
-    setPulse("");
-    setTemp("");
-    setGcs("");
-    setNotes("");
-    setLogError(null);
-    setPendingDelete(null);
-    setReconcileTarget("");
-    setShowMore(false);
-    // Reset the doctor consultation forms too.
-    setSubjective("");
-    setExamination("");
-    setAssessment("");
-    setPlan("");
-    setDxCode("");
-    setDxDescription("");
-    setDxPrimary(false);
-    setOrderDraft("");
-    setRxDraft("");
-  }, [open, visitId, tick]);
-
-  // The transfer confirmation and the discharge confirm step are tied to the
-  // open patient, not to each data refresh — clearing them on every `tick` would
-  // wipe the confirmation the instant a transfer's refresh fires.
-  useEffect(() => {
-    setTransferDone(null);
-    setConfirmingDischarge(false);
-  }, [open, visitId]);
-
-  if (!visit || !patient) {
+  if (!data || !data.patient) {
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent className="sm:max-w-xl! lg:w-[45vw]! lg:max-w-none!" />
       </Sheet>
     );
   }
+
+  const patient = data.patient;
+  const { visit, admission } = data;
 
   const displayName =
     patient.is_emergency_anonymous && patient.anonymous_identifier
@@ -504,416 +183,37 @@ export function PatientDrawer({
     ? (getStaffById(visit.attending_doctor_id)?.full_name ?? null)
     : null;
 
-  const currentToken = tokenForStage(visit.stage);
-  const target = nextStage(visit.stage, visit.visit_type);
-  const readiness = admission
-    ? evaluateDischargeReadiness(admission, patient)
-    : { ready: true, blockers: [] as string[] };
-  const advancingToDischarge = target === "discharged";
-  const dischargeBlocked = advancingToDischarge && !readiness.ready;
-  const isDeceased = visit.stage === "deceased";
-  // A death can be recorded from any active stage (incl. on arrival), but not
-  // once the visit has already closed (discharged / followed-up / deceased).
-  const canRecordDeath = visit.status === "open" && !isDeceased;
-
-  const sortedAllergies = sortAllergiesBySeverity(allergies);
-  const allergyState = allergyDisplayState(
-    patient.no_known_allergies,
-    allergies.length,
-  );
-  const worstAllergy = highestSeverity(allergies);
-  const drugAllergies = sortedAllergies.filter((a) => a.category === "drug");
-
-  // Placement & transfers — lookup maps + selectable options.
-  const wardById = new Map(wards.map((w) => [w.id, w]));
-  const bedById = new Map(beds.map((b) => [b.id, b]));
-  const doctors = getStaff().filter((s) => s.role === "doctor" && s.is_active);
-  const staffById = new Map(getStaff().map((s) => [s.id, s]));
-  const assignableBeds = admission
-    ? beds
-        .filter((b) => b.status === "free" || b.id === admission.bed_id)
-        .map((b) => ({
-          bed: b,
-          label: `${wardById.get(b.ward_id)?.name ?? t("drawer.ward")} · ${b.label}`,
-        }))
-        .sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true }))
-    : [];
-  const hasBed = Boolean(admission?.bed_id);
-
-  // Admit dialog cascade: department → ward → free bed. Wards are scoped to the
-  // chosen department; beds to the chosen ward, showing only what's free.
-  const activeDepartments: Department[] = getDepartments().filter(
-    (d) => d.is_active,
-  );
-  const admitWards: Ward[] = wards.filter(
-    (w) =>
-      w.is_active &&
-      (admitDeptId === NO_DEPT || w.department_id === admitDeptId),
-  );
-  const admitFreeBeds: Bed[] =
-    admitWardId === NO_WARD
-      ? []
-      : beds
-          .filter((b) => b.ward_id === admitWardId && b.status === "free")
-          .sort((a, b) =>
-            a.label.localeCompare(b.label, undefined, { numeric: true }),
-          );
-
-  function bedLabel(id: string | null): string {
-    if (!id) return "—";
-    const b = bedById.get(id);
-    if (!b) return "—";
-    return `${wardById.get(b.ward_id)?.name ?? t("drawer.ward")} · ${b.label}`;
-  }
-  function staffName(id: string | null): string {
-    return id ? (staffById.get(id)?.full_name ?? "—") : "—";
-  }
-
-  // Frequency + meal-timing quick-picks for the prescription editor. The current
-  // value is folded into the option list so a free-text frequency coming from a
-  // clinical-term pick still renders (and stays selectable) in the dropdown.
-  const freqOptions = (current: string | null | undefined): string[] =>
-    current && !FREQUENCY_OPTIONS.includes(current)
-      ? [current, ...FREQUENCY_OPTIONS]
-      : FREQUENCY_OPTIONS;
-  const freqItems = (
-    current: string | null | undefined,
-  ): Record<string, string> =>
-    Object.fromEntries(freqOptions(current).map((f) => [f, f]));
-  const mealTimingItems: Record<string, string> = Object.fromEntries(
-    MEAL_TIMING_OPTIONS.map((m) => [m, t(MEAL_TIMING_LABEL[m])]),
-  );
-
-  function num(v: NumField): number | null {
-    if (v.trim() === "") return null;
-    const n = Number(v);
-    return Number.isFinite(n) ? n : null;
-  }
-
-  function refresh() {
-    setTick((t) => t + 1);
-    onMutate();
-  }
-
-  function handleLog() {
-    const fields = {
-      spo2: num(spo2),
-      bp_systolic: num(sys),
-      bp_diastolic: num(dia),
-      pulse: num(pulse),
-      temperature_c: num(temp),
-      weight_kg: num(weight),
-      gcs_score: num(gcs),
-    };
-    const hasVitals = Object.values(fields).some((v) => v !== null);
-    if (!hasVitals && !notes.trim()) {
-      return;
-    }
-    // Surface a validation failure instead of silently dropping the entry: a
-    // thrown error here (e.g. an out-of-range value) must never lose the nurse's
-    // observation without telling them.
-    try {
-      addTreatmentLog(visit!.id, {
-        recorded_by_id: recorderId,
-        ...fields,
-        notes: notes.trim() || null,
-      });
-      setLogError(null);
-      refresh();
-    } catch (err) {
-      // Name the offending field(s) (e.g. GCS out of its 3–15 range) so the
-      // nurse knows exactly what to fix, rather than a generic "check values".
-      const issues = (err as { issues?: { path: (string | number)[] }[] }).issues;
-      const labels = issues
-        ? Array.from(
-            new Set(
-              issues
-                .map((i) => VITALS_FIELD_LABEL_KEY[String(i.path[0])])
-                .filter(Boolean),
-            ),
-          ).map((k) => t(k))
-        : [];
-      setLogError(
-        labels.length
-          ? t("drawer.vitalsInvalidFields", { fields: labels.join(", ") })
-          : t("drawer.vitalsInvalid"),
-      );
-    }
-  }
-
-  function handleSaveConsultation() {
-    // Structured ROS answers are recorded per tap (Phase 21); saving links
-    // them to this consultation and stores the compiled narrative beside the
-    // SOAP note. A pure-ROS encounter (no free text) is still saveable.
-    const rosRows = getRosResponsesForVisit(visit!.id);
-    if (
-      !subjective.trim() &&
-      !examination.trim() &&
-      !assessment.trim() &&
-      !plan.trim() &&
-      rosRows.length === 0
-    ) {
-      return;
-    }
-    addConsultation(visit!.id, {
-      doctor_id: recorderId,
-      subjective,
-      examination,
-      assessment,
-      plan,
-      ros_summary:
-        rosRows.length > 0 ? compileRosNarrative(rosRows, activeLocale) : null,
-    });
-    refresh();
-  }
-
-  function handleAddDiagnosis() {
-    if (!dxDescription.trim()) return;
-    addDiagnosis(visit!.id, {
-      diagnosed_by_id: recorderId,
-      icd10_code: dxCode,
-      description: dxDescription,
-      is_primary: dxPrimary,
-    });
-    refresh();
-  }
-
-  function handleAddOrder(description: string, orderType: OrderType) {
-    const label = description.trim();
-    if (!label) return;
-    addOrder(visit!.id, {
-      ordered_by_id: recorderId,
-      order_type: orderType,
-      description: label,
-    });
-    refresh();
-  }
-
-  function handleUpdateOrder(orderId: OrderId, input: UpdateOrderInput) {
-    updateOrder(orderId, input);
-    refresh();
-  }
-
-  function handleDeleteOrder(orderId: OrderId) {
-    deleteOrder(orderId);
-    setPendingDelete(null);
-    refresh();
-  }
-
-  function handleAddPrescription(input: Omit<AddPrescriptionInput, "prescribed_by_id">) {
-    if (!input.drug_name.trim()) return;
-    addPrescription(visit!.id, { prescribed_by_id: recorderId, ...input });
-    refresh();
-  }
-
-  function handleUpdatePrescription(
-    prescriptionId: PrescriptionId,
-    input: UpdatePrescriptionInput,
-  ) {
-    updatePrescription(prescriptionId, input);
-    refresh();
-  }
-
-  function handleDeletePrescription(prescriptionId: PrescriptionId) {
-    deletePrescription(prescriptionId);
-    setPendingDelete(null);
-    refresh();
-  }
-
-  function handleDisposition(disposition: Disposition) {
-    // Discharge home records immediately; admit / observation / referral each
-    // open a centered dialog to capture their structured details first.
-    if (
-      disposition === "admit" ||
-      disposition === "observation" ||
-      disposition === "refer"
-    ) {
-      openDispositionDialog(disposition);
-      return;
-    }
-    recordDisposition(visit!.id, disposition, recorderId);
-    refresh();
-  }
-
-  function openDispositionDialog(disposition: DispositionDialog) {
-    setDispoError(null);
-    if (disposition === "admit") {
-      // Seed from the visit's current department so the ward list is pre-scoped.
-      const dept = visit?.department_id ?? NO_DEPT;
-      setAdmitDeptId(dept);
-      setAdmitWardId(NO_WARD);
-      setAdmitBedId(NO_BED);
-      setAdmitDoctorId(visit?.attending_doctor_id ?? recorderId ?? NO_DOCTOR);
-      setAdmitReason(visit?.chief_complaint ?? "");
-    } else if (disposition === "observation") {
-      setObsReason("");
-      setObsDuration("");
-      setObsLocation("");
-    } else {
-      setReferReason("");
-      setReferFacility("");
-      setReferRecipient("");
-    }
-    setDispoDialog(disposition);
-  }
-
-  function submitDisposition(
-    disposition: DispositionDialog,
-    details: DispositionDetails,
-  ) {
-    recordDisposition(visit!.id, disposition, recorderId, details);
-    setDispoDialog(null);
-    refresh();
-  }
-
-  function handleSubmitAdmit() {
-    if (admitBedId === NO_BED) {
-      setDispoError(t("drawer.admitBedRequired"));
-      return;
-    }
-    submitDisposition("admit", {
-      ward_id: admitWardId === NO_WARD ? null : (admitWardId as Ward["id"]),
-      bed_id: admitBedId === NO_BED ? null : (admitBedId as Bed["id"]),
-      attending_doctor_id:
-        admitDoctorId === NO_DOCTOR ? null : (admitDoctorId as StaffId),
-      reason: admitReason,
-    });
-  }
-
-  function handleSubmitObservation() {
-    if (!obsReason.trim()) {
-      setDispoError(t("drawer.obsReasonRequired"));
-      return;
-    }
-    submitDisposition("observation", {
-      observation_reason: obsReason,
-      observation_duration: obsDuration || null,
-      observation_location: obsLocation,
-    });
-  }
-
-  function handleSubmitReferral() {
-    if (!referReason.trim() || !referFacility.trim()) {
-      setDispoError(t("drawer.referRequired"));
-      return;
-    }
-    submitDisposition("refer", {
-      referral_reason: referReason,
-      referral_facility: referFacility,
-      referral_recipient: referRecipient,
-    });
-  }
-
-  function handleRecordDeath() {
-    recordDeath(visit!.id, recorderId, deathNote.trim() || null);
-    // The visit closes and drops off the active board, like a discharge.
-    onMutate();
-    onOpenChange(false);
-  }
-
   function toggleClearance(key: (typeof CLEARANCE_FIELDS)[number]["key"]) {
     if (!admission) return;
     updateAdmissionClearances(admission.id, { [key]: !admission[key] });
     refresh();
   }
 
-  function handleAdvance() {
-    if (!target) return;
-    if (advancingToDischarge && !readiness.ready) return;
-    updateVisitStage(visit!.id, target);
-    if (advancingToDischarge) {
-      // Discharged — the visit closes and drops off the active board.
-      onMutate();
-      onOpenChange(false);
-    } else {
-      refresh();
-    }
-  }
-
-  function handleReconcile() {
-    if (!reconcileTarget) return;
-    reconcileAnonymousProfile(patient!.id, reconcileTarget);
+  /** A closing action (discharge/death) — refresh the board and shut the drawer. */
+  function handleVisitClosed() {
     onMutate();
     onOpenChange(false);
   }
 
-  function handleTransfer() {
-    if (!admission) return;
-    setTransferError(null);
-    const currentBed = admission.bed_id ?? NO_BED;
-    const currentDoctor = admission.attending_doctor_id ?? NO_DOCTOR;
-    const bedChanged = transferBedId !== currentBed;
-    const doctorChanged = transferDoctorId !== currentDoctor;
-    if (!bedChanged && !doctorChanged) {
-      setTransferError(t("drawer.transferNoChange"));
-      return;
-    }
-    try {
-      transferAdmission(admission.id, {
-        ...(bedChanged
-          ? { to_bed_id: transferBedId === NO_BED ? null : transferBedId }
-          : {}),
-        ...(doctorChanged
-          ? {
-              to_doctor_id:
-                transferDoctorId === NO_DOCTOR ? null : transferDoctorId,
-            }
-          : {}),
-        reason: transferReason,
-        transferred_by_id: recorderId,
-      });
-      // Plain-language confirmation that names the new placement / doctor.
-      const parts: string[] = [];
-      if (bedChanged) {
-        parts.push(
-          transferBedId === NO_BED
-            ? t("drawer.transferDoneNoBed")
-            : t("drawer.transferDoneBed", {
-                placement: bedLabel(transferBedId),
-              }),
-        );
-      }
-      if (doctorChanged) {
-        parts.push(
-          transferDoctorId === NO_DOCTOR
-            ? t("drawer.transferDoneNoDoctor")
-            : t("drawer.transferDoneDoctor", {
-                doctor: staffName(transferDoctorId),
-              }),
-        );
-      }
-      setTransferDone(parts.join(" "));
-      setTransferReason("");
-      refresh();
-    } catch (e) {
-      setTransferError(
-        e instanceof Error ? e.message : t("drawer.transferFailed"),
-      );
-    }
-  }
-
   async function handleDownloadReport() {
-    if (!visit) return;
-    const data = buildVisitSummary(visit.id);
-    if (!data) return;
+    const summary = buildVisitSummary(visit.id);
+    if (!summary) return;
     const { exportVisitSummaryPdf } = await import(
       "@/components/reports/visit-summary-export"
     );
-    exportVisitSummaryPdf(data, t, activeLocale);
+    exportVisitSummaryPdf(summary, t, activeLocale);
   }
 
   async function handleDownloadHistory() {
-    if (!patient) return;
-    const data = buildPatientHistory(patient.id);
-    if (!data) return;
+    const history = buildPatientHistory(patient.id);
+    if (!history) return;
     const { exportPatientHistoryPdf } = await import(
       "@/components/reports/visit-summary-export"
     );
-    exportPatientHistoryPdf(data, t, activeLocale);
+    exportPatientHistoryPdf(history, t, activeLocale);
   }
 
   return (
-    <>
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* ~45% of the viewport on desktop (capped only by the viewport itself);
           tablets get a fixed comfortable width, phones stay full-bleed. The
@@ -930,17 +230,10 @@ export function PatientDrawer({
               />
             </SheetTitle>
             {patient.is_emergency_anonymous ? (
-              <Badge
-                variant="outline"
-                className="gap-1 border-transparent text-[10px] uppercase"
-                style={{
-                  backgroundColor: "var(--status-treatment)",
-                  color: "var(--status-treatment-foreground)",
-                }}
-              >
+              <StatusBadge tone="treatment" variant="solid" className="gap-1">
                 <ShieldAlert className="size-3" />
                 {t("drawer.emergency")}
-              </Badge>
+              </StatusBadge>
             ) : null}
           </div>
           <SheetDescription className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
@@ -948,8 +241,12 @@ export function PatientDrawer({
           </SheetDescription>
           <div className="flex flex-wrap gap-x-3 gap-y-1 pt-1 text-[11px] text-muted-foreground">
             <span className="font-mono">{patient.mrn || "—"}</span>
-            <span className="uppercase tracking-wide">{t(VISIT_TYPE_LABEL[visit.visit_type])}</span>
-            {location ? <span className="font-mono">{location}</span> : null}
+            <span className="uppercase tracking-wide">
+              {t(VISIT_TYPE_LABEL[visit.visit_type])}
+            </span>
+            {data.location ? (
+              <span className="font-mono">{data.location}</span>
+            ) : null}
             {doctorName ? (
               <span className="inline-flex items-center gap-1">
                 <Stethoscope className="size-3" />
@@ -981,64 +278,10 @@ export function PatientDrawer({
 
         <div className="flex flex-col gap-6 p-4">
           {/* Allergy safety banner — always visible, pinned to the top */}
-          <div style={{ order: -10 }}>
-          {allergyState === "has-allergies" ? (
-            <section
-              className="flex flex-col gap-2 rounded-md border p-3"
-              style={{
-                borderColor: `var(--status-${worstAllergy ? ALLERGY_SEVERITY_TOKEN[worstAllergy] : "treatment"})`,
-                backgroundColor: "color-mix(in oklab, var(--status-treatment) 8%, transparent)",
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <AlertTriangle
-                  className="size-4"
-                  style={{ color: "var(--status-treatment)" }}
-                />
-                <h3 className="text-sm font-semibold">
-                  {t("drawer.allergiesCount", { count: allergies.length })}
-                </h3>
-              </div>
-              <ul className="flex flex-col gap-1.5">
-                {sortedAllergies.map((a) => (
-                  <li
-                    key={a.id}
-                    className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs"
-                  >
-                    <Badge
-                      variant="outline"
-                      className="border-transparent text-[10px] uppercase"
-                      style={{
-                        backgroundColor: `var(--status-${ALLERGY_SEVERITY_TOKEN[a.severity]})`,
-                        color: `var(--status-${ALLERGY_SEVERITY_TOKEN[a.severity]}-foreground)`,
-                      }}
-                    >
-                      {t(ALLERGY_SEVERITY_LABEL[a.severity])}
-                    </Badge>
-                    <span className="font-medium">{a.substance}</span>
-                    <span className="text-muted-foreground">
-                      {t(ALLERGY_CATEGORY_LABEL[a.category])}
-                      {a.reaction ? ` · ${a.reaction}` : ""}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : allergyState === "none" ? (
-            <section className="flex items-center gap-2 rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-              <CheckCircle2
-                className="size-4"
-                style={{ color: "var(--status-clearance)" }}
-              />
-              {t("drawer.noKnownAllergies")}
-            </section>
-          ) : (
-            <section className="flex items-center gap-2 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-              <AlertTriangle className="size-4" />
-              {t("drawer.allergiesNotAssessed")}
-            </section>
-          )}
-          </div>
+          <AllergiesPanel
+            allergies={data.allergies}
+            noKnownAllergies={patient.no_known_allergies}
+          />
 
           {/* Background — demographics + patient-level history (Phase 21).
               For doctors it lives inside the SOAP flow (after Subjective,
@@ -1056,48 +299,18 @@ export function PatientDrawer({
 
           {/* Reconciliation — anonymous patients only */}
           {patient.is_emergency_anonymous ? (
-            <section
+            <ReconcileSection
+              key={`reconcile-${visit.id}`}
+              patient={patient}
+              displayName={displayName}
+              verified={data.verified}
+              onDone={refresh}
               className={secCls(
                 "reconcile",
                 "flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3",
               )}
               style={secStyle("reconcile")}
-            >
-              <div className="flex items-center gap-2">
-                <Merge className="size-4" style={{ color: "var(--status-treatment)" }} />
-                <h3 className="text-sm font-medium">{t("drawer.reconcileTitle")}</h3>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("drawer.reconcileHint")}
-              </p>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Select
-                  items={Object.fromEntries(
-                    verified.map((p) => [p.id, formatPatientName(p.full_name)]),
-                  )}
-                  value={reconcileTarget}
-                  onValueChange={(v) => setReconcileTarget(v as string)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={t("drawer.selectVerifiedPatient")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {verified.map((p) => (
-                      <SelectItem key={p.id} value={p.id}>
-                        <PatientName name={p.full_name} />
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handleReconcile}
-                  disabled={!reconcileTarget}
-                  className="shrink-0"
-                >
-                  {t("drawer.merge")}
-                </Button>
-              </div>
-            </section>
+            />
           ) : null}
 
           {/* Doctor consultation console — doctor role only */}
@@ -1116,630 +329,65 @@ export function PatientDrawer({
                 </h3>
               </div>
 
-              {/* Prior clinical record */}
-              {diagnoses.length > 0 || consultations.length > 0 ? (
-                <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("drawer.priorRecord")}
-                  </span>
-                  {diagnoses.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
-                      {diagnoses.map((d) => (
-                        <Badge
-                          key={d.id}
-                          variant={d.is_primary ? "default" : "outline"}
-                          className="gap-1 text-[11px]"
-                        >
-                          {d.icd10_code ? (
-                            <span className="font-mono">{d.icd10_code}</span>
-                          ) : null}
-                          {d.description}
-                          {d.is_primary ? (
-                            <span className="opacity-70">· {t("drawer.primaryTag")}</span>
-                          ) : null}
-                        </Badge>
-                      ))}
-                    </div>
-                  ) : null}
-                  {consultations.length > 0 ? (
-                    <ConsultationNote consultation={consultations[0]} />
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      {t("drawer.noConsultationNote")}
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  {t("drawer.noPriorRecord")}
-                </p>
-              )}
-
-              {/* Vitals trend — the doctor sees how the nurse's observations are
-                  changing over time, with out-of-range values highlighted. */}
-              <VitalsTrend records={records} />
-
-              {/* SOAP note entry. On the wide drawer the note fills a two-column
-                  grid: S and the ROS block span full width (they carry the most
-                  content), examination/assessment pair up, plan closes full
-                  width — top-to-bottom still reads S → ROS → O → A → P. */}
-              <div className="grid gap-3 lg:grid-cols-2">
-                <div className="flex items-center gap-2 lg:col-span-2">
-                  <FileText className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{t("drawer.newConsultation")}</span>
-                </div>
-                <div className="lg:col-span-2">
-                  <TermChips
-                    category="subjective"
-                    label={t("drawer.subjective")}
-                    id="soap-s"
-                    value={subjective}
-                    onValueChange={setSubjective}
-                    placeholder={t("drawer.subjectivePlaceholder")}
-                  />
-                </div>
-                {/* Patient background between S and the ROS — the clinical
-                    reading order: what they report, who they are, then the
-                    systems review. */}
-                <div className="lg:col-span-2">
-                  <BackgroundPanel
-                    patient={patient}
-                    recorderId={recorderId}
-                    canWrite
-                  />
-                </div>
-                {/* Structured Review of Systems (Phase 21) — complaint-driven,
-                    tap-first; every answer persists immediately. */}
-                <div className="lg:col-span-2">
-                  <RosReview
-                    visitId={visit.id}
-                    chiefComplaint={visit.chief_complaint}
-                    patientSex={patient.sex}
-                    recorderId={recorderId}
-                  />
-                </div>
-                <TermChips
-                  category="examination"
-                  label={t("drawer.examination")}
-                  id="soap-o"
-                  value={examination}
-                  onValueChange={setExamination}
-                  placeholder={t("drawer.examinationPlaceholder")}
-                />
-                <TermChips
-                  category="assessment"
-                  label={t("drawer.assessment")}
-                  id="soap-a"
-                  value={assessment}
-                  onValueChange={setAssessment}
-                  placeholder={t("drawer.assessmentPlaceholder")}
-                />
-                <div className="lg:col-span-2">
-                  <TermChips
-                    category="plan"
-                    label={t("drawer.plan")}
-                    id="soap-p"
-                    value={plan}
-                    onValueChange={setPlan}
-                    placeholder={t("drawer.planPlaceholder")}
-                  />
-                </div>
-                <Button
-                  onClick={handleSaveConsultation}
-                  className="self-end justify-self-end lg:col-span-2"
-                >
-                  {t("drawer.saveConsultation")}
-                </Button>
-              </div>
+              <ConsultationForm
+                key={`soap-${visit.id}`}
+                visit={visit}
+                patient={patient}
+                recorderId={recorderId}
+                diagnoses={data.diagnoses}
+                consultations={data.consultations}
+                records={data.records}
+                resetKey={resetKey}
+                onSaved={refresh}
+              />
 
               <Separator />
 
-              {/* Structured diagnosis entry */}
-              <div className="flex flex-col gap-3">
-                <span className="text-sm font-medium">{t("drawer.addDiagnosis")}</span>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="dx-desc" className="text-xs">
-                    {t("drawer.description")}
-                  </Label>
-                  <TermAutocomplete
-                    id="dx-desc"
-                    category="assessment"
-                    value={dxDescription}
-                    onChange={setDxDescription}
-                    onSelectTerm={(term: ClinicalTerm) => {
-                      if (term.icd10) setDxCode(term.icd10);
-                    }}
-                    placeholder={t("drawer.diagnosisDescPlaceholder")}
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="dx-code" className="text-xs">
-                    {t("drawer.icd10Code")}
-                  </Label>
-                  <Input
-                    id="dx-code"
-                    value={dxCode}
-                    onChange={(e) => setDxCode(e.target.value)}
-                    placeholder={t("drawer.icd10Placeholder")}
-                    className="font-mono"
-                  />
-                </div>
-                <label className="flex min-h-[44px] cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3">
-                  <span className="text-sm">{t("drawer.primaryDiagnosis")}</span>
-                  <Switch checked={dxPrimary} onCheckedChange={setDxPrimary} />
-                </label>
-                <Button
-                  variant="outline"
-                  onClick={handleAddDiagnosis}
-                  disabled={!dxDescription.trim()}
-                  className="self-end"
-                >
-                  <Plus className="size-4" />
-                  {t("drawer.addDiagnosis")}
-                </Button>
-              </div>
+              <DiagnosisForm
+                key={`dx-${visit.id}`}
+                visitId={visit.id}
+                recorderId={recorderId}
+                resetKey={resetKey}
+                onSaved={refresh}
+              />
 
               <Separator />
 
-              {/* Diagnostic orders & results */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <FlaskConical className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{t("drawer.ordersResults")}</span>
-                </div>
-
-                {orders.length > 0 ? (
-                  <ul className="flex flex-col gap-2">
-                    {orders.map((o) => {
-                      const orderResults = results.filter(
-                        (r) => r.order_id === o.id,
-                      );
-                      const token = ORDER_STATUS_TOKEN[o.status];
-                      return (
-                        <li
-                          key={o.id}
-                          className="flex flex-col gap-2 rounded-md border border-border bg-muted/40 p-3"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex min-w-0 flex-col gap-1.5">
-                              <span className="text-sm font-medium">
-                                {o.description}
-                              </span>
-                              <Select
-                                items={Object.fromEntries(
-                                  (Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map(
-                                    (ot) => [ot, t(ORDER_TYPE_LABEL[ot])],
-                                  ),
-                                )}
-                                value={o.order_type}
-                                onValueChange={(v) =>
-                                  handleUpdateOrder(o.id, {
-                                    order_type: v as OrderType,
-                                  })
-                                }
-                              >
-                                <SelectTrigger
-                                  aria-label={t("drawer.testType")}
-                                  className="h-7 w-fit gap-1 text-[11px] uppercase tracking-wide"
-                                >
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {(Object.keys(ORDER_TYPE_LABEL) as OrderType[]).map(
-                                    (ot) => (
-                                      <SelectItem key={ot} value={ot}>
-                                        {t(ORDER_TYPE_LABEL[ot])}
-                                      </SelectItem>
-                                    ),
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div className="flex shrink-0 items-center gap-1.5">
-                              <Badge
-                                variant="outline"
-                                className="gap-1 border-transparent text-[10px] uppercase"
-                                style={
-                                  token === "muted"
-                                    ? undefined
-                                    : {
-                                        backgroundColor: `var(--status-${token})`,
-                                        color: `var(--status-${token}-foreground)`,
-                                      }
-                                }
-                              >
-                                {t(ORDER_STATUS_LABEL[o.status])}
-                              </Badge>
-                              <DeleteControl
-                                armed={
-                                  pendingDelete?.kind === "order" &&
-                                  pendingDelete.id === o.id
-                                }
-                                onArm={() =>
-                                  setPendingDelete({ kind: "order", id: o.id })
-                                }
-                                onCancel={() => setPendingDelete(null)}
-                                onConfirm={() => handleDeleteOrder(o.id)}
-                                label={t("drawer.deleteOrder")}
-                                confirmLabel={t("drawer.confirmDelete")}
-                                cancelLabel={t("drawer.cancelDelete")}
-                              />
-                            </div>
-                          </div>
-
-                          {orderResults.map((r) => (
-                            <div
-                              key={r.id}
-                              className="flex flex-col gap-1 rounded-md border border-border bg-background p-2.5"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="font-mono text-sm">
-                                  {r.value ?? "—"}
-                                  {r.reference_range ? (
-                                    <span className="ml-1.5 text-xs text-muted-foreground">
-                                      {t("drawer.refRange", { range: r.reference_range })}
-                                    </span>
-                                  ) : null}
-                                </span>
-                                {r.is_abnormal ? (
-                                  <Badge
-                                    variant="outline"
-                                    className="shrink-0 gap-1 border-transparent text-[10px] uppercase"
-                                    style={{
-                                      backgroundColor: "var(--status-treatment)",
-                                      color:
-                                        "var(--status-treatment-foreground)",
-                                    }}
-                                  >
-                                    <AlertTriangle className="size-3" />
-                                    {t("drawer.abnormal")}
-                                  </Badge>
-                                ) : null}
-                              </div>
-                              {r.summary ? (
-                                <p className="text-xs text-muted-foreground">
-                                  {r.summary}
-                                </p>
-                              ) : null}
-                              {r.attachment_path ? (
-                                <ResultAttachment path={r.attachment_path} />
-                              ) : null}
-                            </div>
-                          ))}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <p className="text-xs text-muted-foreground">
-                    {t("drawer.noOrders")}
-                  </p>
-                )}
-
-                {/* Add a test — instant-adds to the list above on pick. */}
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="order-desc" className="text-xs">
-                    {t("drawer.test")}
-                  </Label>
-                  <TermAutocomplete
-                    id="order-desc"
-                    category="investigations"
-                    value={orderDraft}
-                    onChange={setOrderDraft}
-                    clearOnSelect
-                    onSelectTerm={(term: ClinicalTerm) => {
-                      handleAddOrder(
-                        displayTerm(term, activeLocale),
-                        term.order_type ?? "lab",
-                      );
-                    }}
-                    onCommit={(label) => handleAddOrder(label, "lab")}
-                    placeholder={t("drawer.testPlaceholder")}
-                  />
-                </div>
-              </div>
+              <OrdersPanel
+                key={`orders-${visit.id}`}
+                visitId={visit.id}
+                recorderId={recorderId}
+                orders={data.orders}
+                results={data.results}
+                resetKey={resetKey}
+                onMutated={refresh}
+              />
 
               <Separator />
 
-              {/* Prescriptions */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2">
-                  <Pill className="size-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{t("drawer.prescriptions")}</span>
-                </div>
-
-                {drugAllergies.length > 0 ? (
-                  <div
-                    className="flex items-start gap-2 rounded-md border p-2.5 text-xs"
-                    style={{
-                      borderColor: "var(--status-treatment)",
-                      backgroundColor:
-                        "color-mix(in oklab, var(--status-treatment) 8%, transparent)",
-                    }}
-                  >
-                    <AlertTriangle
-                      className="mt-0.5 size-3.5 shrink-0"
-                      style={{ color: "var(--status-treatment)" }}
-                    />
-                    <span>
-                      <span className="font-medium">{t("drawer.drugAllergiesLabel")}</span>{" "}
-                      {drugAllergies
-                        .map(
-                          (a) =>
-                            `${a.substance} (${t(ALLERGY_SEVERITY_LABEL[a.severity]).toLowerCase()})`,
-                        )
-                        .join(", ")}
-                      . {t("drawer.reviewBeforePrescribing")}
-                    </span>
-                  </div>
-                ) : allergyState === "unassessed" ? (
-                  <p className="text-xs text-muted-foreground">
-                    {t("drawer.allergiesNotAssessedRx")}
-                  </p>
-                ) : null}
-
-                <datalist id="route-options">
-                  {ROUTE_OPTIONS.map((r) => (
-                    <option key={r} value={r} />
-                  ))}
-                </datalist>
-
-                {prescriptions.length > 0 ? (
-                  <ul className="flex flex-col gap-2">
-                    {prescriptions.map((p) => {
-                      const token = PRESCRIPTION_STATUS_TOKEN[p.status];
-                      return (
-                        <li
-                          key={p.id}
-                          className="flex flex-col gap-2 rounded-md border border-border bg-muted/40 p-3"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <span className="text-sm font-medium">
-                              {p.drug_name}
-                            </span>
-                            <div className="flex shrink-0 items-center gap-1.5">
-                              <Badge
-                                variant="outline"
-                                className="gap-1 border-transparent text-[10px] uppercase"
-                                style={
-                                  token === "muted"
-                                    ? undefined
-                                    : {
-                                        backgroundColor: `var(--status-${token})`,
-                                        color: `var(--status-${token}-foreground)`,
-                                      }
-                                }
-                              >
-                                {t(PRESCRIPTION_STATUS_LABEL[p.status])}
-                              </Badge>
-                              <DeleteControl
-                                armed={
-                                  pendingDelete?.kind === "rx" &&
-                                  pendingDelete.id === p.id
-                                }
-                                onArm={() =>
-                                  setPendingDelete({ kind: "rx", id: p.id })
-                                }
-                                onCancel={() => setPendingDelete(null)}
-                                onConfirm={() => handleDeletePrescription(p.id)}
-                                label={t("drawer.deletePrescription")}
-                                confirmLabel={t("drawer.confirmDelete")}
-                                cancelLabel={t("drawer.cancelDelete")}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <Input
-                              key={`dose:${p.dose ?? ""}`}
-                              defaultValue={p.dose ?? ""}
-                              onBlur={(e) =>
-                                handleUpdatePrescription(p.id, {
-                                  dose: e.target.value,
-                                })
-                              }
-                              placeholder={t("drawer.dosePlaceholder")}
-                              className="h-7 font-mono text-xs"
-                            />
-                            <Input
-                              key={`route:${p.route ?? ""}`}
-                              list="route-options"
-                              defaultValue={p.route ?? ""}
-                              onBlur={(e) =>
-                                handleUpdatePrescription(p.id, {
-                                  route: e.target.value,
-                                })
-                              }
-                              placeholder={t("drawer.routePlaceholder")}
-                              className="h-7 text-xs"
-                            />
-                            <Select
-                              value={p.frequency ?? null}
-                              onValueChange={(v) =>
-                                handleUpdatePrescription(p.id, {
-                                  frequency: (v as string) ?? null,
-                                })
-                              }
-                              items={freqItems(p.frequency)}
-                            >
-                              <SelectTrigger className="h-7 w-full text-xs">
-                                <SelectValue
-                                  placeholder={t("drawer.frequencyPlaceholder")}
-                                />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {freqOptions(p.frequency).map((f) => (
-                                  <SelectItem key={f} value={f}>
-                                    {f}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <Input
-                              key={`dur:${p.duration ?? ""}`}
-                              defaultValue={p.duration ?? ""}
-                              onBlur={(e) =>
-                                handleUpdatePrescription(p.id, {
-                                  duration: e.target.value,
-                                })
-                              }
-                              placeholder={t("drawer.durationPlaceholder")}
-                              className="h-7 text-xs"
-                            />
-                          </div>
-                          <Select
-                            value={p.meal_timing ?? null}
-                            onValueChange={(v) =>
-                              handleUpdatePrescription(p.id, {
-                                meal_timing: v as MealTiming,
-                              })
-                            }
-                            items={mealTimingItems}
-                          >
-                            <SelectTrigger className="h-7 w-full text-xs">
-                              <SelectValue
-                                placeholder={t("drawer.mealTimingPlaceholder")}
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {MEAL_TIMING_OPTIONS.map((m) => (
-                                <SelectItem key={m} value={m}>
-                                  {t(MEAL_TIMING_LABEL[m])}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <Input
-                            key={`instr:${p.instructions ?? ""}`}
-                            defaultValue={p.instructions ?? ""}
-                            onBlur={(e) =>
-                              handleUpdatePrescription(p.id, {
-                                instructions: e.target.value,
-                              })
-                            }
-                            placeholder={t("drawer.instructionsPlaceholder")}
-                            className="h-7 text-xs"
-                          />
-
-                          {/* MAR log — read-only; what the nurse did with each
-                              dose (given / held / refused / suspended + reason). */}
-                          {(medAdmins[p.id]?.length ?? 0) > 0 ? (
-                            <div className="flex flex-col gap-1 rounded-md border border-border bg-background p-2">
-                              <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                {t("drawer.marLog")}
-                              </span>
-                              {[...(medAdmins[p.id] ?? [])]
-                                .sort((a, b) =>
-                                  (
-                                    b.administered_at ??
-                                    b.scheduled_for ??
-                                    b.created_at
-                                  ).localeCompare(
-                                    a.administered_at ??
-                                      a.scheduled_for ??
-                                      a.created_at,
-                                  ),
-                                )
-                                .slice(0, 5)
-                                .map((m) => (
-                                  <div
-                                    key={m.id}
-                                    className="flex items-start justify-between gap-2 text-[11px]"
-                                  >
-                                    <span className="flex min-w-0 items-start gap-1.5">
-                                      <span
-                                        aria-hidden
-                                        className="mt-1 size-1.5 shrink-0 rounded-full"
-                                        style={{
-                                          backgroundColor: MAR_STATUS_COLOR[m.status],
-                                        }}
-                                      />
-                                      <span className="min-w-0">
-                                        <span className="font-medium">
-                                          {t(`marStatus.${m.status}`)}
-                                        </span>
-                                        {m.notes ? (
-                                          <span className="text-muted-foreground">
-                                            {" — "}
-                                            {m.notes}
-                                          </span>
-                                        ) : null}
-                                      </span>
-                                    </span>
-                                    <span className="shrink-0 font-mono text-[10px] text-muted-foreground">
-                                      {formatDateTime(
-                                        m.administered_at ??
-                                          m.scheduled_for ??
-                                          m.created_at,
-                                        activeLocale,
-                                        { dateStyle: "short", timeStyle: "short" },
-                                      )}
-                                    </span>
-                                  </div>
-                                ))}
-                            </div>
-                          ) : null}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : (
-                  <p className="text-xs text-muted-foreground">
-                    {t("drawer.noPrescriptions")}
-                  </p>
-                )}
-
-                {/* New prescription — instant add on select */}
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="rx-drug" className="text-xs">
-                    {t("drawer.drug")}
-                  </Label>
-                  <TermAutocomplete
-                    id="rx-drug"
-                    category="medication"
-                    value={rxDraft}
-                    onChange={setRxDraft}
-                    clearOnSelect
-                    onSelectTerm={(term: ClinicalTerm) =>
-                      handleAddPrescription({
-                        drug_name: displayTerm(term, activeLocale),
-                        dose: term.dose,
-                        route: term.route,
-                        frequency: term.frequency,
-                      })
-                    }
-                    onCommit={(label) =>
-                      handleAddPrescription({ drug_name: label })
-                    }
-                    placeholder={t("drawer.drugPlaceholder")}
-                  />
-                </div>
-              </div>
+              <PrescriptionsPanel
+                key={`rx-${visit.id}`}
+                visitId={visit.id}
+                recorderId={recorderId}
+                prescriptions={data.prescriptions}
+                medAdmins={data.medAdmins}
+                allergies={data.allergies}
+                noKnownAllergies={patient.no_known_allergies}
+                resetKey={resetKey}
+                onMutated={refresh}
+              />
 
               <Separator />
 
-              {/* Disposition decision */}
-              <div className="flex flex-col gap-3">
-                <span className="text-sm font-medium">{t("drawer.disposition")}</span>
-                <p className="text-xs text-muted-foreground">
-                  {t("drawer.dispositionHint")}
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  {DISPOSITIONS.map((d) => {
-                    const Icon = d.icon;
-                    return (
-                      <Button
-                        key={d.value}
-                        variant="outline"
-                        onClick={() => handleDisposition(d.value)}
-                        className="justify-start"
-                      >
-                        <Icon className="size-4" />
-                        {t(d.labelKey)}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
+              <DispositionGrid
+                key={`dispo-${visit.id}`}
+                visit={visit}
+                displayName={displayName}
+                wards={data.wards}
+                beds={data.beds}
+                recorderId={recorderId}
+                onMutated={refresh}
+              />
             </section>
           ) : null}
 
@@ -1771,421 +419,46 @@ export function PatientDrawer({
 
           {/* Placement & transfers — inpatient admissions only */}
           {admission ? (
-            <section
+            <TransferForm
+              key={`transfer-${visit.id}`}
+              admission={admission}
+              transfers={data.transfers}
+              wards={data.wards}
+              beds={data.beds}
+              recorderId={recorderId}
+              resetKey={resetKey}
+              onMutated={refresh}
               className={secCls("placement", "flex flex-col gap-3")}
               style={secStyle("placement")}
-            >
-              <div className="flex items-center gap-2">
-                <ArrowLeftRight className="size-4 text-muted-foreground" />
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                  {t("drawer.placementTransfers")}
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 rounded-md border border-border px-3 py-2.5 text-sm">
-                <div className="flex flex-col">
-                  <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    {t("drawer.ward")}
-                  </span>
-                  <span>
-                    {admission.ward_id
-                      ? (wardById.get(admission.ward_id)?.name ?? "—")
-                      : "—"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    {t("drawer.bed")}
-                  </span>
-                  <span className="font-mono">
-                    {admission.bed_id
-                      ? (bedById.get(admission.bed_id)?.label ?? "—")
-                      : t("drawer.unassigned")}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="transfer-bed" className="text-xs">
-                  {t("drawer.bed")}
-                </Label>
-                <Select
-                  items={{
-                    [NO_BED]: t("drawer.noBed"),
-                    ...Object.fromEntries(
-                      assignableBeds.map((o) => [o.bed.id, o.label]),
-                    ),
-                  }}
-                  value={transferBedId}
-                  onValueChange={(v) => setTransferBedId(v as string)}
-                >
-                  <SelectTrigger id="transfer-bed" className="w-full">
-                    <SelectValue placeholder={t("drawer.selectBed")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_BED}>{t("drawer.noBed")}</SelectItem>
-                    {assignableBeds.map((o) => (
-                      <SelectItem key={o.bed.id} value={o.bed.id}>
-                        {o.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="transfer-doctor" className="text-xs">
-                  {t("drawer.attendingDoctor")}
-                </Label>
-                <Select
-                  items={{
-                    [NO_DOCTOR]: t("drawer.unassigned"),
-                    ...Object.fromEntries(
-                      doctors.map((d) => [d.id, d.full_name]),
-                    ),
-                  }}
-                  value={transferDoctorId}
-                  onValueChange={(v) => setTransferDoctorId(v as string)}
-                >
-                  <SelectTrigger id="transfer-doctor" className="w-full">
-                    <SelectValue placeholder={t("drawer.selectDoctor")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NO_DOCTOR}>{t("drawer.unassigned")}</SelectItem>
-                    {doctors.map((d) => (
-                      <SelectItem key={d.id} value={d.id}>
-                        {d.full_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="transfer-reason" className="text-xs">
-                  {t("drawer.reason")}
-                </Label>
-                <Input
-                  id="transfer-reason"
-                  value={transferReason}
-                  onChange={(e) => setTransferReason(e.target.value)}
-                  placeholder={t("drawer.reasonPlaceholder")}
-                />
-              </div>
-
-              {transferError ? (
-                <p className="text-xs text-destructive">{transferError}</p>
-              ) : null}
-
-              {transferDone ? (
-                <p
-                  className="flex items-start gap-1.5 text-xs"
-                  style={{ color: "var(--status-clearance)" }}
-                >
-                  <CheckCircle2 className="mt-0.5 size-3.5 shrink-0" />
-                  <span>{transferDone}</span>
-                </p>
-              ) : null}
-
-              <Button
-                onClick={() => {
-                  setTransferDone(null);
-                  handleTransfer();
-                }}
-                className="self-end"
-              >
-                <ArrowLeftRight className="size-4" />
-                {hasBed ? t("drawer.recordTransfer") : t("drawer.assignBed")}
-              </Button>
-
-              {transfers.length > 0 ? (
-                <div className="flex flex-col gap-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                    {t("drawer.transferHistory")}
-                  </span>
-                  <ul className="flex flex-col gap-2">
-                    {transfers.map((tr) => {
-                      const lines: string[] = [];
-                      if (tr.from_bed_id !== tr.to_bed_id) {
-                        lines.push(
-                          t("drawer.bedMove", {
-                            from: bedLabel(tr.from_bed_id),
-                            to: bedLabel(tr.to_bed_id),
-                          }),
-                        );
-                      }
-                      if (tr.from_doctor_id !== tr.to_doctor_id) {
-                        lines.push(
-                          t("drawer.doctorMove", {
-                            from: staffName(tr.from_doctor_id),
-                            to: staffName(tr.to_doctor_id),
-                          }),
-                        );
-                      }
-                      return (
-                        <li
-                          key={tr.id}
-                          className="flex flex-col gap-1 rounded-md border border-border p-3 text-xs"
-                        >
-                          <span className="font-mono text-muted-foreground">
-                            {formatDateTime(tr.created_at, activeLocale)}
-                          </span>
-                          {lines.map((l) => (
-                            <span key={l}>{l}</span>
-                          ))}
-                          {tr.reason ? (
-                            <span className="text-muted-foreground">
-                              {tr.reason}
-                            </span>
-                          ) : null}
-                          {tr.transferred_by_id ? (
-                            <span className="text-muted-foreground">
-                              {t("drawer.byStaff", {
-                                name: staffName(tr.transferred_by_id),
-                              })}
-                            </span>
-                          ) : null}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-            </section>
+            />
           ) : null}
 
           {/* Care stage progression — Phase 5 verification gate */}
-          <section
+          <CareStageSection
+            key={`stage-${visit.id}`}
+            visit={visit}
+            admission={admission}
+            patient={patient}
+            displayName={displayName}
+            recorderId={recorderId}
+            onMutated={refresh}
+            onClosed={handleVisitClosed}
             className={secCls("careStage", "flex flex-col gap-3")}
             style={secStyle("careStage")}
-          >
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              {t("drawer.careStage")}
-            </h3>
-            <div className="flex items-center gap-2 rounded-md border border-border px-3 py-2.5">
-              <span
-                aria-hidden
-                className="size-2 rounded-full"
-                style={{
-                  backgroundColor: isDeceased
-                    ? "var(--status-deceased)"
-                    : `var(--status-${currentToken})`,
-                }}
-              />
-              <span className="text-sm font-medium">{t(stageLabel(visit.stage))}</span>
-            </div>
-
-            {isDeceased ? (
-              <div
-                className="flex items-center gap-2 rounded-md border px-3 py-2.5 text-sm"
-                style={{
-                  borderColor: "var(--status-deceased)",
-                  backgroundColor:
-                    "color-mix(in oklab, var(--status-deceased) 12%, transparent)",
-                }}
-              >
-                <HeartOff
-                  className="size-4 shrink-0"
-                  style={{ color: "var(--status-deceased)" }}
-                />
-                <span>
-                  {visit.closed_at
-                    ? t("drawer.deceasedRecordedOn", {
-                        date: formatDateTime(visit.closed_at, activeLocale),
-                      })
-                    : t("drawer.deceasedRecorded")}
-                </span>
-              </div>
-            ) : target === null ? (
-              <div className="flex items-center gap-2 rounded-md border border-border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground">
-                <CheckCircle2
-                  className="size-4 shrink-0"
-                  style={{ color: "var(--status-clearance)" }}
-                />
-                {t("drawer.journeyComplete")}
-              </div>
-            ) : (
-              <>
-                {dischargeBlocked ? (
-                  <div
-                    className="flex flex-col gap-2 rounded-md border p-3 text-xs"
-                    style={{
-                      borderColor: "var(--status-treatment)",
-                      backgroundColor: "color-mix(in oklab, var(--status-treatment) 12%, transparent)",
-                    }}
-                  >
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <ShieldAlert
-                        className="size-4 shrink-0"
-                        style={{ color: "var(--status-treatment)" }}
-                      />
-                      {t("drawer.dischargeBlocked")}
-                    </div>
-                    <ul className="flex flex-col gap-1 text-muted-foreground">
-                      {readiness.blockers.map((b) => (
-                        <li key={b} className="flex items-start gap-1.5">
-                          <Lock className="mt-0.5 size-3 shrink-0" />
-                          <span>{t(b)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                {advancingToDischarge && confirmingDischarge && !dischargeBlocked ? (
-                  <div className="flex flex-col gap-3 rounded-md border border-border bg-muted/40 p-3">
-                    <p className="text-sm text-muted-foreground">
-                      {t("drawer.dischargeConfirmBody", { name: displayName })}
-                    </p>
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setConfirmingDischarge(false)}
-                      >
-                        {t("common.cancel")}
-                      </Button>
-                      <Button size="sm" onClick={handleAdvance}>
-                        <CheckCircle2 className="size-4" />
-                        {t("drawer.dischargeConfirm")}
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={
-                      advancingToDischarge
-                        ? () => setConfirmingDischarge(true)
-                        : handleAdvance
-                    }
-                    disabled={dischargeBlocked}
-                    className="self-end"
-                  >
-                    {advancingToDischarge ? (
-                      <>{t("drawer.dischargeFollowUp")}</>
-                    ) : (
-                      <>{t("drawer.advanceTo", { stage: t(stageLabel(target)) })}</>
-                    )}
-                    {dischargeBlocked ? (
-                      <Lock className="size-4" />
-                    ) : (
-                      <ArrowRight className="size-4" />
-                    )}
-                  </Button>
-                )}
-              </>
-            )}
-
-            {/* Record death — confirm-gated terminal outcome, available at any
-                active stage; bypasses the discharge clearance gate. */}
-            {canRecordDeath ? (
-              confirmingDeath ? (
-                <div
-                  className="flex flex-col gap-3 rounded-md border p-3"
-                  style={{
-                    borderColor: "var(--status-deceased)",
-                    backgroundColor:
-                      "color-mix(in oklab, var(--status-deceased) 10%, transparent)",
-                  }}
-                >
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <HeartOff
-                      className="size-4 shrink-0"
-                      style={{ color: "var(--status-deceased)" }}
-                    />
-                    {t("drawer.recordDeathConfirmTitle")}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    {t("drawer.recordDeathConfirmBody", { name: displayName })}
-                  </p>
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="death-note">
-                      {t("drawer.recordDeathNote")}
-                    </Label>
-                    <Textarea
-                      id="death-note"
-                      value={deathNote}
-                      onChange={(e) => setDeathNote(e.target.value)}
-                      placeholder={t("drawer.recordDeathNotePlaceholder")}
-                    />
-                  </div>
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setConfirmingDeath(false);
-                        setDeathNote("");
-                      }}
-                    >
-                      {t("common.cancel")}
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={handleRecordDeath}
-                      style={{
-                        backgroundColor: "var(--status-deceased)",
-                        color: "var(--status-deceased-foreground)",
-                      }}
-                    >
-                      <HeartOff className="size-4" />
-                      {t("drawer.recordDeathConfirm")}
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setConfirmingDeath(true)}
-                  className="self-end text-muted-foreground hover:text-foreground"
-                >
-                  <HeartOff className="size-4" />
-                  {t("drawer.recordDeath")}
-                </Button>
-              )
-            ) : null}
-          </section>
+          />
 
           {/* Vitals + GCS log entry */}
-          <section
+          <VitalsForm
+            key={`vitals-${visit.id}`}
+            visitId={visit.id}
+            recorderId={recorderId}
+            resetKey={resetKey}
+            onSaved={refresh}
             className={secCls("vitals", "flex flex-col gap-3")}
             style={secStyle("vitals")}
-          >
-            <div className="flex items-center gap-2">
-              <Activity className="size-4 text-muted-foreground" />
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                {t("drawer.logVitals")}
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <FieldNum label={t("drawer.vitalsSpo2")} id="spo2" value={spo2} onChange={setSpo2} />
-              <FieldNum label={t("drawer.vitalsPulse")} id="pulse" value={pulse} onChange={setPulse} />
-              <FieldNum label={t("drawer.vitalsSys")} id="sys" value={sys} onChange={setSys} />
-              <FieldNum label={t("drawer.vitalsDia")} id="dia" value={dia} onChange={setDia} />
-              <FieldNum label={t("drawer.vitalsTemp")} id="temp" value={temp} onChange={setTemp} step="0.1" />
-              <FieldNum label={t("drawer.vitalsWeight")} id="weight" value={weight} onChange={setWeight} step="0.1" />
-              <FieldNum label={t("drawer.vitalsGcs")} id="gcs" value={gcs} onChange={setGcs} />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="notes">{t("drawer.notes")}</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder={t("drawer.notesPlaceholder")}
-              />
-            </div>
-            {logError ? (
-              <p role="alert" className="text-sm text-destructive">
-                {logError}
-              </p>
-            ) : null}
-            <Button onClick={handleLog} className="self-end">
-              {t("drawer.saveLog")}
-            </Button>
-          </section>
+          />
 
-          {/* Nursing care plan — read-only summary (inpatient only) */}
+          {/* Nursing care plan — interactive care orders (inpatient only) */}
           {admission ? (
             <section
               className={secCls("carePlan", "flex flex-col gap-3")}
@@ -2193,59 +466,33 @@ export function PatientDrawer({
             >
               <CareOrders
                 admissionId={admission.id}
-                items={carePlanItems}
-                entries={carePlanEntries}
-                latestVitalsAt={records[0]?.recorded_at ?? null}
+                items={data.carePlanItems}
+                entries={data.carePlanEntries}
+                latestVitalsAt={data.records[0]?.recorded_at ?? null}
                 actingRole={actingRole}
                 recorderId={recorderId}
-                onChange={() => {
-                  setTick((x) => x + 1);
-                  onMutate();
-                }}
+                onChange={refresh}
               />
             </section>
           ) : null}
 
           {/* History */}
-          <section
+          <TreatmentHistorySection
+            records={data.records}
             className={secCls("history", "flex flex-col gap-3")}
             style={secStyle("history")}
-          >
-            <div className="flex items-center gap-2">
-              <ClipboardList className="size-4 text-muted-foreground" />
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                {t("drawer.treatmentHistory")}
-              </h3>
-              <span className="ml-auto font-mono text-xs text-muted-foreground">
-                {records.length}
-              </span>
-            </div>
-            {records.length === 0 ? (
-              <p className="py-4 text-center text-xs text-muted-foreground">
-                {t("drawer.noEntries")}
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {records.map((r) => (
-                  <li
-                    key={r.id}
-                    className="flex flex-col gap-1 rounded-md border border-border p-3 text-xs"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono text-muted-foreground">
-                        {formatDateTime(r.recorded_at, activeLocale)}
-                      </span>
-                      {r.gcs_score !== null ? (
-                        <span className="font-mono">GCS {r.gcs_score}</span>
-                      ) : null}
-                    </div>
-                    <VitalsLine record={r} />
-                    {r.notes ? <span>{r.notes}</span> : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          />
+
+          {/* Cross-visit timeline — every visit on this patient's record,
+              most recent first. Older visits beyond the offline cache window
+              are backfilled from the server when online. */}
+          <PastVisitsSection
+            patientId={patient.id}
+            currentVisitId={visit.id}
+            patientVisits={data.patientVisits}
+            className={secCls("pastVisits", "flex flex-col gap-3")}
+            style={secStyle("pastVisits")}
+          />
 
           {/* Single "More" expander holding every non-lead section for the
               acting role. Sits between the lead sections (order 0–2) and the
@@ -2270,451 +517,5 @@ export function PatientDrawer({
         </div>
       </SheetContent>
     </Sheet>
-
-    {/* ---- Admit dialog: department → ward → free bed → doctor + reason ---- */}
-    <Dialog
-      open={dispoDialog === "admit"}
-      onOpenChange={(o) => {
-        if (!o) setDispoDialog(null);
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("drawer.admitDialogTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("drawer.admitDialogDesc", {
-              name: formatPatientName(displayName),
-            })}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="admit-dept" className="text-xs">
-            {t("drawer.department")}
-          </Label>
-          <Select
-            items={{
-              [NO_DEPT]: t("drawer.anyDepartment"),
-              ...Object.fromEntries(activeDepartments.map((d) => [d.id, d.name])),
-            }}
-            value={admitDeptId}
-            onValueChange={(v) => {
-              setAdmitDeptId(v as string);
-              setAdmitWardId(NO_WARD);
-              setAdmitBedId(NO_BED);
-            }}
-          >
-            <SelectTrigger id="admit-dept" className="w-full">
-              <SelectValue placeholder={t("drawer.selectDepartment")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_DEPT}>{t("drawer.anyDepartment")}</SelectItem>
-              {activeDepartments.map((d) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="admit-ward" className="text-xs">
-            {t("drawer.ward")}
-          </Label>
-          <Select
-            items={Object.fromEntries(admitWards.map((w) => [w.id, w.name]))}
-            value={admitWardId === NO_WARD ? null : admitWardId}
-            onValueChange={(v) => {
-              setAdmitWardId(v as string);
-              setAdmitBedId(NO_BED);
-            }}
-          >
-            <SelectTrigger id="admit-ward" className="w-full">
-              <SelectValue placeholder={t("drawer.selectWard")} />
-            </SelectTrigger>
-            <SelectContent>
-              {admitWards.map((w) => (
-                <SelectItem key={w.id} value={w.id}>
-                  {w.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {admitWards.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t("drawer.noWardsForDept")}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="admit-bed" className="text-xs">
-            {t("drawer.bed")}
-          </Label>
-          <Select
-            items={Object.fromEntries(admitFreeBeds.map((b) => [b.id, b.label]))}
-            value={admitBedId === NO_BED ? null : admitBedId}
-            onValueChange={(v) => setAdmitBedId(v as string)}
-            disabled={admitWardId === NO_WARD}
-          >
-            <SelectTrigger id="admit-bed" className="w-full">
-              <SelectValue placeholder={t("drawer.selectBed")} />
-            </SelectTrigger>
-            <SelectContent>
-              {admitFreeBeds.map((b) => (
-                <SelectItem key={b.id} value={b.id}>
-                  {b.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {admitWardId !== NO_WARD && admitFreeBeds.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              {t("drawer.noFreeBeds")}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="admit-doctor" className="text-xs">
-            {t("drawer.attendingDoctor")}
-          </Label>
-          <Select
-            items={{
-              [NO_DOCTOR]: t("drawer.unassigned"),
-              ...Object.fromEntries(doctors.map((d) => [d.id, d.full_name])),
-            }}
-            value={admitDoctorId}
-            onValueChange={(v) => setAdmitDoctorId(v as string)}
-          >
-            <SelectTrigger id="admit-doctor" className="w-full">
-              <SelectValue placeholder={t("drawer.selectDoctor")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_DOCTOR}>{t("drawer.unassigned")}</SelectItem>
-              {doctors.map((d) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.full_name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="admit-reason" className="text-xs">
-            {t("drawer.admitReason")}
-          </Label>
-          <Textarea
-            id="admit-reason"
-            value={admitReason}
-            onChange={(e) => setAdmitReason(e.target.value)}
-            placeholder={t("drawer.admitReasonPlaceholder")}
-            rows={2}
-          />
-        </div>
-
-        {dispoError ? (
-          <p className="text-xs text-destructive">{dispoError}</p>
-        ) : null}
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setDispoDialog(null)}>
-            {t("common.cancel")}
-          </Button>
-          <Button onClick={handleSubmitAdmit}>
-            <BedDouble className="size-4" />
-            {t("drawer.confirmAdmit")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
-    {/* ---- Observation dialog: reason → duration → location ---- */}
-    <Dialog
-      open={dispoDialog === "observation"}
-      onOpenChange={(o) => {
-        if (!o) setDispoDialog(null);
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("drawer.obsDialogTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("drawer.obsDialogDesc", {
-              name: formatPatientName(displayName),
-            })}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="obs-reason" className="text-xs">
-            {t("drawer.obsReason")}
-          </Label>
-          <Textarea
-            id="obs-reason"
-            value={obsReason}
-            onChange={(e) => setObsReason(e.target.value)}
-            placeholder={t("drawer.obsReasonPlaceholder")}
-            rows={2}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="obs-duration" className="text-xs">
-            {t("drawer.obsDuration")}
-          </Label>
-          <Select
-            items={Object.fromEntries(
-              OBS_DURATION_OPTIONS.map((o) => [o.value, t(o.labelKey)]),
-            )}
-            value={obsDuration || null}
-            onValueChange={(v) => setObsDuration(v as string)}
-          >
-            <SelectTrigger id="obs-duration" className="w-full">
-              <SelectValue placeholder={t("drawer.obsDurationPlaceholder")} />
-            </SelectTrigger>
-            <SelectContent>
-              {OBS_DURATION_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {t(o.labelKey)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="obs-location" className="text-xs">
-            {t("drawer.obsLocation")}
-          </Label>
-          <Input
-            id="obs-location"
-            value={obsLocation}
-            onChange={(e) => setObsLocation(e.target.value)}
-            placeholder={t("drawer.obsLocationPlaceholder")}
-          />
-        </div>
-
-        {dispoError ? (
-          <p className="text-xs text-destructive">{dispoError}</p>
-        ) : null}
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setDispoDialog(null)}>
-            {t("common.cancel")}
-          </Button>
-          <Button onClick={handleSubmitObservation}>
-            <Eye className="size-4" />
-            {t("drawer.confirmObservation")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-
-    {/* ---- Referral dialog: reason → facility → recipient ---- */}
-    <Dialog
-      open={dispoDialog === "refer"}
-      onOpenChange={(o) => {
-        if (!o) setDispoDialog(null);
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t("drawer.referDialogTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("drawer.referDialogDesc", {
-              name: formatPatientName(displayName),
-            })}
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="refer-facility" className="text-xs">
-            {t("drawer.referFacility")}
-          </Label>
-          <Input
-            id="refer-facility"
-            value={referFacility}
-            onChange={(e) => setReferFacility(e.target.value)}
-            placeholder={t("drawer.referFacilityPlaceholder")}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="refer-recipient" className="text-xs">
-            {t("drawer.referRecipient")}
-          </Label>
-          <Input
-            id="refer-recipient"
-            value={referRecipient}
-            onChange={(e) => setReferRecipient(e.target.value)}
-            placeholder={t("drawer.referRecipientPlaceholder")}
-          />
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="refer-reason" className="text-xs">
-            {t("drawer.referReason")}
-          </Label>
-          <Textarea
-            id="refer-reason"
-            value={referReason}
-            onChange={(e) => setReferReason(e.target.value)}
-            placeholder={t("drawer.referReasonPlaceholder")}
-            rows={2}
-          />
-        </div>
-
-        {dispoError ? (
-          <p className="text-xs text-destructive">{dispoError}</p>
-        ) : null}
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setDispoDialog(null)}>
-            {t("common.cancel")}
-          </Button>
-          <Button onClick={handleSubmitReferral}>
-            <Send className="size-4" />
-            {t("drawer.confirmReferral")}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-    </>
   );
-}
-
-/** A trash button that arms a two-step confirm in place (no modal), so a single
- *  mis-click can't delete a mistaken order / prescription. */
-function DeleteControl({
-  armed,
-  onArm,
-  onCancel,
-  onConfirm,
-  label,
-  confirmLabel,
-  cancelLabel,
-}: {
-  armed: boolean;
-  onArm: () => void;
-  onCancel: () => void;
-  onConfirm: () => void;
-  label: string;
-  confirmLabel: string;
-  cancelLabel: string;
-}) {
-  if (armed) {
-    return (
-      <span className="flex shrink-0 items-center gap-1">
-        <Button
-          variant="destructive"
-          size="sm"
-          className="h-7 px-2 text-xs"
-          onClick={onConfirm}
-        >
-          {confirmLabel}
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="size-7"
-          onClick={onCancel}
-          aria-label={cancelLabel}
-        >
-          <X className="size-3.5" />
-        </Button>
-      </span>
-    );
-  }
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
-      onClick={onArm}
-      aria-label={label}
-    >
-      <Trash2 className="size-3.5" />
-    </Button>
-  );
-}
-
-function FieldNum({
-  label,
-  id,
-  value,
-  onChange,
-  step,
-}: {
-  label: string;
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  step?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id} className="text-xs">
-        {label}
-      </Label>
-      <Input
-        id={id}
-        type="number"
-        inputMode="decimal"
-        step={step}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="font-mono"
-      />
-    </div>
-  );
-}
-
-
-function ConsultationNote({ consultation }: { consultation: Consultation }) {
-  const { t, locale, mounted } = useT();
-  const activeLocale = mounted ? locale : "en";
-  const rows: { label: string; value: string | null }[] = [
-    { label: "S", value: consultation.subjective },
-    // Compiled Review-of-Systems narrative (Phase 21); rows hydrated from a
-    // pre-Phase-21 hosted schema may lack the field entirely.
-    { label: "ROS", value: consultation.ros_summary ?? null },
-    { label: "O", value: consultation.examination },
-    { label: "A", value: consultation.assessment },
-    { label: "P", value: consultation.plan },
-  ].filter((r) => r.value);
-
-  return (
-    <div className="flex flex-col gap-1.5 text-xs">
-      <span className="font-mono text-[11px] text-muted-foreground">
-        {formatDateTime(consultation.created_at, activeLocale)}
-      </span>
-      {rows.length === 0 ? (
-        <span className="text-muted-foreground">{t("drawer.emptyNote")}</span>
-      ) : (
-        rows.map((r) => (
-          <div key={r.label} className="flex gap-2">
-            <span className="font-mono font-semibold text-muted-foreground">
-              {r.label}
-            </span>
-            <span>{r.value}</span>
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
-
-function VitalsLine({ record }: { record: TreatmentRecord }) {
-  const parts: string[] = [];
-  if (record.spo2 !== null) parts.push(`SpO₂ ${record.spo2}%`);
-  if (record.bp_systolic !== null && record.bp_diastolic !== null)
-    parts.push(`BP ${record.bp_systolic}/${record.bp_diastolic}`);
-  if (record.pulse !== null) parts.push(`HR ${record.pulse}`);
-  if (record.temperature_c !== null) parts.push(`${record.temperature_c}°C`);
-  if (record.weight_kg != null) parts.push(`${record.weight_kg} kg`);
-  if (parts.length === 0) return null;
-  return <span className="font-mono text-muted-foreground">{parts.join(" · ")}</span>;
 }

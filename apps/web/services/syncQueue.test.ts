@@ -3,12 +3,17 @@ import { describe, expect, it } from "vitest";
 import {
   appendToQueue,
   applyServerVersion,
+  backoffMs,
   drainOutbox,
+  isEligible,
   isSyncConfigured,
   markFailed,
+  markRebased,
+  MAX_ATTEMPTS,
   pushChangeToServer,
   reconcileOutboxAfterDrain,
   removeFromQueue,
+  resetAttempts,
   type NewChange,
   type OutboxChange,
 } from "@/services/syncQueue";
@@ -271,5 +276,73 @@ describe("pushChangeToServer upsert conflict targets", () => {
     );
     expect(captured).toHaveLength(1);
     expect(captured[0].options).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Retry policy (Stage 2) — exponential backoff, dead-letter, panel reset.
+// ---------------------------------------------------------------------------
+
+describe("retry policy", () => {
+  const T0 = Date.parse("2026-05-01T00:00:00.000Z");
+
+  it("fresh changes are always eligible", () => {
+    expect(isEligible(entry(), T0)).toBe(true);
+  });
+
+  it("a failed change waits out its exponential backoff window", () => {
+    const failed = entry({
+      attempts: 1,
+      last_attempt_at: "2026-05-01T00:00:00.000Z",
+    });
+    expect(isEligible(failed, T0 + 1_000)).toBe(false);
+    expect(isEligible(failed, T0 + backoffMs(1))).toBe(true);
+  });
+
+  it("backoff doubles per attempt and caps at 10 minutes", () => {
+    expect(backoffMs(1)).toBe(5_000);
+    expect(backoffMs(2)).toBe(10_000);
+    expect(backoffMs(3)).toBe(20_000);
+    expect(backoffMs(20)).toBe(600_000);
+  });
+
+  it("a change at MAX_ATTEMPTS is dead-lettered (never auto-retried)", () => {
+    const stuck = entry({
+      attempts: MAX_ATTEMPTS,
+      last_attempt_at: "2026-05-01T00:00:00.000Z",
+    });
+    expect(isEligible(stuck, T0 + 86_400_000)).toBe(false);
+  });
+
+  it("resetAttempts clears the failure bookkeeping so it retries immediately", () => {
+    const queue = [
+      entry({
+        id: "a",
+        attempts: MAX_ATTEMPTS,
+        last_error: "boom",
+        last_attempt_at: "2026-05-01T00:00:00.000Z",
+      }),
+    ];
+    const next = resetAttempts(queue, "a");
+    expect(next[0]).toMatchObject({ attempts: 0, last_error: null, last_attempt_at: null });
+    expect(isEligible(next[0], T0)).toBe(true);
+  });
+
+  it("markFailed stamps the attempt time that drives the backoff", () => {
+    const next = markFailed([entry({ id: "a" })], "a", "boom", "2026-05-01T00:01:00.000Z");
+    expect(next[0]).toMatchObject({
+      attempts: 1,
+      last_error: "boom",
+      last_attempt_at: "2026-05-01T00:01:00.000Z",
+    });
+  });
+
+  it("markRebased counts a conflict retry but stays immediately eligible", () => {
+    // The local-wins re-base path must not sit out a failure backoff — the
+    // re-based change is expected to land on the very next push.
+    const next = markRebased([entry({ id: "a" })], "a");
+    expect(next[0].attempts).toBe(1);
+    expect(next[0].last_attempt_at).toBeNull();
+    expect(isEligible(next[0], T0)).toBe(true);
   });
 });

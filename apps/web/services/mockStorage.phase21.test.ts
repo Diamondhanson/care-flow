@@ -42,6 +42,7 @@ import {
   addConsultation,
   addPatientHistory,
   clearRosResponse,
+  resetDatabase,
   deletePatientHistory,
   getHistoryForPatient,
   getPatientById,
@@ -51,24 +52,36 @@ import {
   upsertRosResponse,
 } from "@/services/mockStorage";
 import { compileRosNarrative } from "@/lib/ros/compile";
+import type {
+  PatientId,
+  StaffId,
+  VisitId,
+} from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 beforeEach(() => {
-  // A fresh localStorage per test re-seeds the demo DB lazily on first access.
+  // A fresh store per test: the engine keeps the authoritative copy in memory
+  // (Stage 3), so clearing localStorage alone no longer re-seeds — reset the
+  // engine explicitly, then clear the legacy storage shim.
   memoryStorage.clear();
+  resetDatabase();
 });
 
 describe("patient history CRUD", () => {
   it("adds, reads, updates and deletes a background record", () => {
-    const added = addPatientHistory("pat_bello", {
+    const added = addPatientHistory(brand<PatientId>("pat_bello"), {
       type: "past_medical",
       description: "Asthma",
       onset: "childhood",
       is_active: true,
-      noted_by_id: "staff_okafor",
+      noted_by_id: brand<StaffId>("staff_okafor"),
     });
     expect(added.patient_id).toBe("pat_bello");
     expect(added.hospital_id).toBe("hosp_demo");
-    expect(getHistoryForPatient("pat_bello").map((h) => h.id)).toContain(
+    expect(getHistoryForPatient(brand<PatientId>("pat_bello")).map((h) => h.id)).toContain(
       added.id,
     );
 
@@ -81,22 +94,22 @@ describe("patient history CRUD", () => {
     expect(updated.onset).toBe("childhood"); // untouched fields survive
 
     deletePatientHistory(added.id);
-    expect(getHistoryForPatient("pat_bello").map((h) => h.id)).not.toContain(
+    expect(getHistoryForPatient(brand<PatientId>("pat_bello")).map((h) => h.id)).not.toContain(
       added.id,
     );
   });
 
   it("orders history by type group, then recency", () => {
-    const social = addPatientHistory("pat_bello", {
+    const social = addPatientHistory(brand<PatientId>("pat_bello"), {
       type: "social",
       description: "Non-smoker",
       detail: { alcohol: "occasional" },
     });
-    const medical = addPatientHistory("pat_bello", {
+    const medical = addPatientHistory(brand<PatientId>("pat_bello"), {
       type: "past_medical",
       description: "Hypertension",
     });
-    const list = getHistoryForPatient("pat_bello");
+    const list = getHistoryForPatient(brand<PatientId>("pat_bello"));
     const medicalIdx = list.findIndex((h) => h.id === medical.id);
     const socialIdx = list.findIndex((h) => h.id === social.id);
     expect(medicalIdx).toBeGreaterThanOrEqual(0);
@@ -106,14 +119,14 @@ describe("patient history CRUD", () => {
 
   it("rejects a detail payload that does not match the type's shape", () => {
     expect(() =>
-      addPatientHistory("pat_bello", {
+      addPatientHistory(brand<PatientId>("pat_bello"), {
         type: "social",
         description: "Smoker",
         detail: { injected: "<script>" }, // unknown key for social
       }),
     ).toThrow();
     expect(() =>
-      addPatientHistory("pat_bello", {
+      addPatientHistory(brand<PatientId>("pat_bello"), {
         type: "past_medical",
         description: "Diabetes",
         detail: { anything: true }, // past_medical carries no detail
@@ -123,14 +136,14 @@ describe("patient history CRUD", () => {
 
   it("throws for an unknown patient", () => {
     expect(() =>
-      addPatientHistory("nope", { type: "family", description: "X" }),
+      addPatientHistory(brand<PatientId>("nope"), { type: "family", description: "X" }),
     ).toThrow(/not found/);
   });
 });
 
 describe("updatePatientDemographics", () => {
   it("review-and-updates occupation, marital status and emergency contact", () => {
-    const updated = updatePatientDemographics("pat_anon_gamma", {
+    const updated = updatePatientDemographics(brand<PatientId>("pat_anon_gamma"), {
       occupation: "Farmer",
       marital_status: "married",
       emergency_contact_name: "Ama K.",
@@ -138,12 +151,12 @@ describe("updatePatientDemographics", () => {
     });
     expect(updated.occupation).toBe("Farmer");
     expect(updated.marital_status).toBe("married");
-    expect(getPatientById("pat_anon_gamma")?.emergency_contact_name).toBe("Ama K.");
+    expect(getPatientById(brand<PatientId>("pat_anon_gamma"))?.emergency_contact_name).toBe("Ama K.");
   });
 
   it("only touches the provided fields; empty strings clear to null", () => {
-    updatePatientDemographics("pat_owusu", { occupation: "Retired teacher" });
-    const partial = updatePatientDemographics("pat_owusu", { occupation: "" });
+    updatePatientDemographics(brand<PatientId>("pat_owusu"), { occupation: "Retired teacher" });
+    const partial = updatePatientDemographics(brand<PatientId>("pat_owusu"), { occupation: "" });
     expect(partial.occupation).toBeNull();
     // marital_status untouched by either call
     expect(partial.marital_status).toBe("widowed");
@@ -151,10 +164,10 @@ describe("updatePatientDemographics", () => {
 
   it("rejects oversized input and unknown patients", () => {
     expect(() =>
-      updatePatientDemographics("pat_owusu", { occupation: "x".repeat(200) }),
+      updatePatientDemographics(brand<PatientId>("pat_owusu"), { occupation: "x".repeat(200) }),
     ).toThrow();
     expect(() =>
-      updatePatientDemographics("nope", { occupation: "Farmer" }),
+      updatePatientDemographics(brand<PatientId>("nope"), { occupation: "Farmer" }),
     ).toThrow(/not found/);
   });
 });
@@ -167,21 +180,21 @@ describe("upsertRosResponse / clearRosResponse", () => {
     question_text: "Chest pain?",
     answer_type: "boolean" as const,
     answer_label: "Yes",
-    recorded_by_id: "staff_okafor",
+    recorded_by_id: brand<StaffId>("staff_okafor"),
   };
 
   it("re-answering updates the row in place — never a duplicate", () => {
-    const first = upsertRosResponse("vis_mensah", {
+    const first = upsertRosResponse(brand<VisitId>("vis_mensah"), {
       ...chestPain,
       answer_value: true,
     });
-    const second = upsertRosResponse("vis_mensah", {
+    const second = upsertRosResponse(brand<VisitId>("vis_mensah"), {
       ...chestPain,
       answer_value: false,
       answer_label: "No",
     });
     expect(second.id).toBe(first.id);
-    const rows = getRosResponsesForVisit("vis_mensah").filter(
+    const rows = getRosResponsesForVisit(brand<VisitId>("vis_mensah")).filter(
       (r) => r.question_key === "cardiac.chest_pain",
     );
     expect(rows).toHaveLength(1);
@@ -190,19 +203,19 @@ describe("upsertRosResponse / clearRosResponse", () => {
   });
 
   it("clearing deletes the row; absence = not asked", () => {
-    upsertRosResponse("vis_mensah", { ...chestPain, answer_value: true });
-    clearRosResponse("vis_mensah", "cardiac.chest_pain");
+    upsertRosResponse(brand<VisitId>("vis_mensah"), { ...chestPain, answer_value: true });
+    clearRosResponse(brand<VisitId>("vis_mensah"), "cardiac.chest_pain");
     expect(
-      getRosResponsesForVisit("vis_mensah").find(
+      getRosResponsesForVisit(brand<VisitId>("vis_mensah")).find(
         (r) => r.question_key === "cardiac.chest_pain",
       ),
     ).toBeUndefined();
     // Clearing an absent answer is a no-op, not an error.
-    clearRosResponse("vis_mensah", "cardiac.chest_pain");
+    clearRosResponse(brand<VisitId>("vis_mensah"), "cardiac.chest_pain");
   });
 
   it("stores a follow-up answer with its selected option", () => {
-    const row = upsertRosResponse("vis_mensah", {
+    const row = upsertRosResponse(brand<VisitId>("vis_mensah"), {
       system: "cardiac",
       question_key: "cardiac.chest_pain.character",
       kind: "symptom",
@@ -216,20 +229,20 @@ describe("upsertRosResponse / clearRosResponse", () => {
 
   it("rejects unknown bank keys and mismatched answer shapes", () => {
     expect(() =>
-      upsertRosResponse("vis_mensah", {
+      upsertRosResponse(brand<VisitId>("vis_mensah"), {
         ...chestPain,
         question_key: "cardiac.not_a_question",
         answer_value: true,
       }),
     ).toThrow(/Unknown/);
     expect(() =>
-      upsertRosResponse("vis_mensah", {
+      upsertRosResponse(brand<VisitId>("vis_mensah"), {
         ...chestPain,
         answer_value: "yes please" as unknown as boolean, // boolean question
       }),
     ).toThrow();
     expect(() =>
-      upsertRosResponse("vis_mensah", {
+      upsertRosResponse(brand<VisitId>("vis_mensah"), {
         ...chestPain,
         question_key: "cardiac.chest_pain.character",
         answer_type: "single_select",
@@ -241,14 +254,14 @@ describe("upsertRosResponse / clearRosResponse", () => {
 
   it("throws for an unknown visit", () => {
     expect(() =>
-      upsertRosResponse("nope", { ...chestPain, answer_value: true }),
+      upsertRosResponse(brand<VisitId>("nope"), { ...chestPain, answer_value: true }),
     ).toThrow(/not found/);
   });
 });
 
 describe("addConsultation with ROS", () => {
   it("stores ros_summary and adopts the visit's unlinked ROS rows", () => {
-    const row = upsertRosResponse("vis_bello", {
+    const row = upsertRosResponse(brand<VisitId>("vis_bello"), {
       system: "respiratory",
       question_key: "respiratory.cough",
       kind: "symptom",
@@ -259,22 +272,22 @@ describe("addConsultation with ROS", () => {
     });
     expect(row.consultation_id).toBeNull();
 
-    const consultation = addConsultation("vis_bello", {
-      doctor_id: "staff_okafor",
+    const consultation = addConsultation(brand<VisitId>("vis_bello"), {
+      doctor_id: brand<StaffId>("staff_okafor"),
       assessment: "Resolving pneumonia.",
       ros_summary: "Respiratory: Denies cough.",
     });
     expect(consultation.ros_summary).toBe("Respiratory: Denies cough.");
 
-    const linked = getRosResponsesForVisit("vis_bello").find(
+    const linked = getRosResponsesForVisit(brand<VisitId>("vis_bello")).find(
       (r) => r.id === row.id,
     );
     expect(linked?.consultation_id).toBe(consultation.id);
   });
 
   it("leaves ros_summary null when not supplied", () => {
-    const consultation = addConsultation("vis_bello", {
-      doctor_id: "staff_okafor",
+    const consultation = addConsultation(brand<VisitId>("vis_bello"), {
+      doctor_id: brand<StaffId>("staff_okafor"),
       assessment: "Plain note.",
     });
     expect(consultation.ros_summary).toBeNull();
@@ -283,7 +296,7 @@ describe("addConsultation with ROS", () => {
 
 describe("seeded demo ROS (Mensah's chest-pain encounter)", () => {
   it("ships a partial ROS whose narrative compiles in EN and FR", () => {
-    const rows = getRosResponsesForVisit("vis_mensah");
+    const rows = getRosResponsesForVisit(brand<VisitId>("vis_mensah"));
     expect(rows.length).toBeGreaterThanOrEqual(8);
 
     const en = compileRosNarrative(rows, "en");
@@ -301,7 +314,7 @@ describe("seeded demo ROS (Mensah's chest-pain encounter)", () => {
   });
 
   it("seeds Owusu's background for the drawer demo", () => {
-    const history = getHistoryForPatient("pat_owusu");
+    const history = getHistoryForPatient(brand<PatientId>("pat_owusu"));
     expect(history.length).toBeGreaterThanOrEqual(4);
     expect(history.some((h) => h.type === "past_medical" && /diabetes/i.test(h.description))).toBe(true);
     expect(history.some((h) => h.type === "family")).toBe(true);

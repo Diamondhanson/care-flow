@@ -17,6 +17,7 @@ import type {
   Patient,
   PatientHistory,
   PatientHistoryType,
+  StaffId,
 } from "@careflow/shared";
 import {
   addPatientHistory,
@@ -27,7 +28,8 @@ import {
   updatePatientHistory,
   type AddPatientHistoryInput,
 } from "@/services/mockStorage";
-import { useT } from "@/components/locale-provider";
+import { useT, type TFunction } from "@/components/locale-provider";
+import { msgKey } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,8 +42,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { MessageKey } from "@/i18n";
 
-export const HISTORY_TYPE_LABEL: Record<PatientHistoryType, string> = {
+export const HISTORY_TYPE_LABEL: Record<PatientHistoryType, MessageKey> = {
   past_medical: "historyType.past_medical",
   past_surgical: "historyType.past_surgical",
   family: "historyType.family",
@@ -51,7 +54,7 @@ export const HISTORY_TYPE_LABEL: Record<PatientHistoryType, string> = {
   immunization: "historyType.immunization",
 };
 
-export const MARITAL_STATUS_LABEL: Record<MaritalStatus, string> = {
+export const MARITAL_STATUS_LABEL: Record<MaritalStatus, MessageKey> = {
   single: "maritalStatus.single",
   married: "maritalStatus.married",
   partnered: "maritalStatus.partnered",
@@ -170,7 +173,7 @@ export function BackgroundPanel({
   canWrite,
 }: {
   patient: Patient;
-  recorderId: string | null;
+  recorderId: StaffId | null;
   canWrite: boolean;
 }) {
   const { t } = useT();
@@ -553,17 +556,19 @@ function DemographicItem({
 /** "onset · structured detail" summary line after the description. */
 function historyMeta(
   h: PatientHistory,
-  t: (key: string, params?: Record<string, string>) => string,
+  t: TFunction,
 ): string {
   const parts: string[] = [];
   const detail = (h.detail ?? {}) as Record<string, unknown>;
   if (typeof detail.relation === "string") {
-    parts.push(t(`background.relation.${detail.relation}`));
+    // Key assembled from runtime data — msgKey() boundary (falls back to raw key).
+    parts.push(t(msgKey(`background.relation.${detail.relation}`)));
   }
   if (h.onset) parts.push(h.onset);
   if (typeof detail.alcohol === "string") {
     parts.push(
-      `${t("background.alcohol")}: ${t(`background.alcoholLevel.${detail.alcohol}`)}`,
+      // Key assembled from runtime data — msgKey() boundary.
+      `${t("background.alcohol")}: ${t(msgKey(`background.alcoholLevel.${detail.alcohol}`))}`,
     );
   }
   if (typeof detail.tobacco_pack_years === "number") {

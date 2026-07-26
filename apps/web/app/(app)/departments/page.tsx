@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Building2, Pencil, Plus, Users } from "lucide-react";
+import { Archive, Building2, Pencil, Plus, Users } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,14 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
   ALL_DEPARTMENTS,
   createDepartment,
   getActiveVisitCountsByDepartment,
@@ -28,6 +36,8 @@ import {
   updateDepartment,
 } from "@/services/mockStorage";
 import { useT } from "@/components/locale-provider";
+import { useCacheVersion } from "@/lib/use-cache";
+import { notify } from "@/lib/notify";
 import type { Department } from "@careflow/shared";
 
 interface DirectoryRow {
@@ -53,8 +63,11 @@ function load(): DirectoryRow[] {
 
 export default function DepartmentsPage() {
   const { t } = useT();
+  const cacheVersion = useCacheVersion();
   const [rows, setRows] = useState<DirectoryRow[] | null>(null);
   const [editing, setEditing] = useState<Department | "new" | null>(null);
+  /** Department awaiting an explicit archive confirmation. */
+  const [confirmingArchive, setConfirmingArchive] = useState<Department | null>(null);
 
   function refresh() {
     setRows(load());
@@ -62,14 +75,28 @@ export default function DepartmentsPage() {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [cacheVersion]);
 
   const total = rows?.length ?? null;
   const unrouted = rows ? (getActiveVisitCountsByDepartment()[ALL_DEPARTMENTS] ?? 0) : 0;
 
-  function handleToggleActive(department: Department, next: boolean) {
-    setDepartmentActive(department.id, next);
+  function applyActive(department: Department, next: boolean) {
+    try {
+      setDepartmentActive(department.id, next);
+    } catch {
+      notify({ kind: "error", titleKey: "departments.updateFailed" });
+    }
+    setConfirmingArchive(null);
     refresh();
+  }
+
+  function handleToggleActive(department: Department, next: boolean) {
+    if (!next) {
+      // Archiving hides the unit from routing — make it an explicit choice.
+      setConfirmingArchive(department);
+      return;
+    }
+    applyActive(department, true);
   }
 
   return (
@@ -181,6 +208,38 @@ export default function DepartmentsPage() {
           refresh();
         }}
       />
+
+      <Dialog
+        open={confirmingArchive !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmingArchive(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("departments.archiveTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("departments.archiveBody", {
+                name: confirmingArchive?.name ?? "",
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmingArchive(null)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmingArchive) applyActive(confirmingArchive, false);
+              }}
+            >
+              <Archive className="size-4" />
+              {t("departments.archiveConfirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

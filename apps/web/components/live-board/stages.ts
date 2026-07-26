@@ -1,4 +1,5 @@
 import type { CareStage, VisitType } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 /**
  * The live board groups the active `care_stage` values into four scannable
@@ -13,7 +14,7 @@ import type { CareStage, VisitType } from "@careflow/shared";
 export interface BoardColumn {
   key: string;
   /** i18n message key — resolve with `t(column.label)`. */
-  label: string;
+  label: MessageKey;
   /** Suffix of the `--status-{token}` CSS variable in globals.css. */
   token: "boarding" | "diagnostics" | "treatment" | "discharge";
   /** The `care_stage` values that belong in this column. */
@@ -72,7 +73,7 @@ export function nextStage(stage: CareStage, visitType: VisitType): CareStage | n
   return order[idx + 1];
 }
 
-const STAGE_LABELS: Record<CareStage, string> = {
+const STAGE_LABELS: Record<CareStage, MessageKey> = {
   registration: "stage.registration",
   triage: "stage.triage",
   consultation: "stage.consultation",
@@ -85,7 +86,7 @@ const STAGE_LABELS: Record<CareStage, string> = {
 };
 
 /** i18n message key for a care stage — resolve with `t(stageLabel(stage))`. */
-export function stageLabel(stage: CareStage): string {
+export function stageLabel(stage: CareStage): MessageKey {
   return STAGE_LABELS[stage];
 }
 
@@ -97,7 +98,7 @@ export function stageLabel(stage: CareStage): string {
 // the outpatient short-circuit. Terminal stages have no next step → null.
 // ---------------------------------------------------------------------------
 
-const NEXT_STEP_LABELS: Record<CareStage, string> = {
+const NEXT_STEP_LABELS: Record<CareStage, MessageKey> = {
   registration: "nextStep.registration",
   triage: "nextStep.triage",
   consultation: "nextStep.consultation",
@@ -119,7 +120,7 @@ const NEXT_STEP_LABELS: Record<CareStage, string> = {
 export function nextStepLabel(
   stage: CareStage,
   visitType: VisitType,
-): string | null {
+): MessageKey | null {
   const next = nextStage(stage, visitType);
   return next ? NEXT_STEP_LABELS[next] : null;
 }

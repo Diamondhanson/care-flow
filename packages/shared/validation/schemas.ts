@@ -34,6 +34,7 @@ import {
   zPassword,
   zPatientHistoryType,
   zReqLine,
+  zReqLineNamed,
   zRosAnswerType,
   zRosQuestionKind,
   zSex,
@@ -61,11 +62,11 @@ export const ProvisionStaffLoginSchema = z.object({
 });
 
 export const ProvisionHospitalSchema = z.object({
-  name: zReqLine(200),
+  name: zReqLineNamed(200, "Hospital name is required."),
   region: zOptLine(120),
   contact_email: zOptEmail,
   contact_phone: zOptPhone,
-  admin_full_name: zReqLine(120),
+  admin_full_name: zReqLineNamed(120, "Admin name is required."),
   admin_username: zUsername,
   admin_password: zPassword,
   admin_email: zOptEmail,

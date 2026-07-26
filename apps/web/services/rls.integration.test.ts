@@ -63,6 +63,25 @@ async function inRolledBackTx(fn: () => Promise<void>): Promise<void> {
 }
 
 /** Assume the `authenticated` role with the given auth user id (auth.uid()). */
+/**
+ * Assert a statement is rejected, inside a SAVEPOINT. Any Postgres error
+ * poisons the enclosing transaction ("current transaction is aborted…"), so
+ * an expected RLS rejection must be rolled back to a savepoint or every later
+ * statement in the same rolled-back-transaction test fails spuriously.
+ */
+async function expectQueryReject(
+  sql: string,
+  params: unknown[],
+  matcher: RegExp,
+): Promise<void> {
+  await client.query("savepoint expected_reject");
+  try {
+    await expect(client.query(sql, params)).rejects.toThrow(matcher);
+  } finally {
+    await client.query("rollback to savepoint expected_reject").catch(() => {});
+  }
+}
+
 async function actAs(userId: string): Promise<void> {
   await client.query("reset role");
   await client.query("select set_config('request.jwt.claims', $1, true)", [
@@ -310,21 +329,19 @@ describe("patient_history / ros_responses policies (Phase 21)", () => {
       expect(ros.rows).toHaveLength(0);
 
       // WITH CHECK stops writes stamped to the other tenant.
-      await expect(
-        client.query(
-          `insert into public.patient_history (hospital_id, patient_id, type, description)
-           values ($1, $2, 'family', 'smuggled')`,
-          [hospitalB, patientB],
-        ),
-      ).rejects.toThrow(/row-level security/i);
-      await expect(
-        client.query(
-          `insert into public.ros_responses
-             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
-           values ($1, $2, 'cardiac', 'cardiac.palpitations', 'Palpitations?', 'boolean', 'false'::jsonb, 'No')`,
-          [hospitalB, visitB],
-        ),
-      ).rejects.toThrow(/row-level security/i);
+      await expectQueryReject(
+        `insert into public.patient_history (hospital_id, patient_id, type, description)
+         values ($1, $2, 'family', 'smuggled')`,
+        [hospitalB, patientB],
+        /row-level security/i,
+      );
+      await expectQueryReject(
+        `insert into public.ros_responses
+           (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+         values ($1, $2, 'cardiac', 'cardiac.palpitations', 'Palpitations?', 'boolean', 'false'::jsonb, 'No')`,
+        [hospitalB, visitB],
+        /row-level security/i,
+      );
     });
   });
 
@@ -344,14 +361,13 @@ describe("patient_history / ros_responses policies (Phase 21)", () => {
          values ($1, $2, 'social', 'Non-smoker')`,
         [hospital, patient],
       );
-      await expect(
-        client.query(
-          `insert into public.ros_responses
-             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
-           values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'true'::jsonb, 'Yes')`,
-          [hospital, visit],
-        ),
-      ).rejects.toThrow(/row-level security/i);
+      await expectQueryReject(
+        `insert into public.ros_responses
+           (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+         values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'true'::jsonb, 'Yes')`,
+        [hospital, visit],
+        /row-level security/i,
+      );
 
       await actAs(doctorUser);
       await client.query(
@@ -362,14 +378,13 @@ describe("patient_history / ros_responses policies (Phase 21)", () => {
       );
 
       // Re-answering in place respects unique (visit_id, question_key).
-      await expect(
-        client.query(
-          `insert into public.ros_responses
-             (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
-           values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'false'::jsonb, 'No')`,
-          [hospital, visit],
-        ),
-      ).rejects.toThrow(/duplicate key|unique/i);
+      await expectQueryReject(
+        `insert into public.ros_responses
+           (hospital_id, visit_id, system, question_key, question_text, answer_type, answer_value, answer_label)
+         values ($1, $2, 'cardiac', 'cardiac.chest_pain', 'Chest pain?', 'boolean', 'false'::jsonb, 'No')`,
+        [hospital, visit],
+        /duplicate key|unique/i,
+      );
 
       // All staff (the nurse) can read what the doctor charted.
       await actAs(nurseUser);

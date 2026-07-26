@@ -48,20 +48,35 @@ import {
   getHospitals,
   getStaffAccountById,
   getStaffAccountByUserId,
+  initLocalStore,
   setActiveHospitalId,
 } from "@/services/mockStorage";
 import { hydrateFromSupabase } from "@/services/supabaseData";
 import { drainOutbox } from "@/services/syncQueue";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   setTelemetryContext,
   clearTelemetryContext,
   emitUsage,
 } from "@/services/telemetry";
-import type { Hospital, Staff, StaffRole } from "@careflow/shared";
+import type {
+  AuthUserId,
+  Hospital,
+  HospitalId,
+  Staff,
+  StaffId,
+  StaffRole,
+} from "@careflow/shared";
 
 interface AuthContextValue {
   /** False until the client has hydrated + resolved the session. */
   mounted: boolean;
+  /**
+   * False when the Supabase env vars are missing (fresh/unconfigured checkout).
+   * The auth screens show a clear "not configured" notice instead of a generic
+   * sign-in failure, and no Supabase call is attempted.
+   */
+  backendConfigured: boolean;
   /** A fully-resolved staff identity (signed in AND belongs to a hospital). */
   isAuthenticated: boolean;
   /** Verified session but no hospital yet — should go to the onboarding step. */
@@ -90,9 +105,10 @@ const nowISO = () => new Date().toISOString();
 /** Build a minimal Staff from auth metadata when the mock seed lacks the row. */
 function syntheticStaff(id: AuthIdentity): Staff {
   return {
-    id: id.mock_staff_id,
-    hospital_id: id.mock_hospital_id,
-    user_id: id.userId,
+    // Auth metadata carries plain strings; brand them at this boundary.
+    id: id.mock_staff_id as StaffId,
+    hospital_id: id.mock_hospital_id as HospitalId,
+    user_id: id.userId as AuthUserId,
     full_name: id.full_name,
     role: (id.role || "admin") as StaffRole,
     department_id: null,
@@ -107,7 +123,8 @@ function syntheticStaff(id: AuthIdentity): Staff {
 /** Build a minimal Hospital from auth metadata when the mock seed lacks it. */
 function syntheticHospital(id: AuthIdentity): Hospital {
   return {
-    id: id.mock_hospital_id,
+    // Auth metadata carries plain strings; brand them at this boundary.
+    id: id.mock_hospital_id as HospitalId,
     name: id.full_name ? `${id.username}'s hospital` : "Hospital",
     region: null,
     contact_email: null,
@@ -172,7 +189,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const legacy = metaToIdentity(user); // non-null only for staff logins
     const staff =
       getStaffAccountByUserId(user.id) ??
-      (legacy ? getStaffAccountById(legacy.mock_staff_id) : undefined) ??
+      (legacy ? getStaffAccountById(legacy.mock_staff_id as StaffId) : undefined) ??
       (legacy ? syntheticStaff(legacy) : undefined);
 
     if (!staff) {
@@ -202,11 +219,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // Unconfigured checkout: skip every Supabase call (they would throw) and
+    // let the auth screens render the "backend not configured" notice.
+    if (!isSupabaseConfigured()) {
+      setMounted(true);
+      return;
+    }
     let active = true;
-    getCurrentUser()
+    // Open the on-device store (IndexedDB) BEFORE resolving the session, so
+    // every later read hits fully-initialized data (Stage 3 storage engine).
+    initLocalStore()
+      .then(() => getCurrentUser())
       .then(async (user) => {
         if (!active) return;
         await resolveUser(user);
+      })
+      .catch(() => {
+        // Session resolution failed (e.g. transient network/auth error). The
+        // user simply stays signed out; sign-in surfaces its own errors.
       })
       .finally(() => {
         if (active) setMounted(true);
@@ -232,7 +262,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!user) {
         const staff =
           getStaffAccountByUserId(identity.userId) ??
-          getStaffAccountById(identity.mock_staff_id) ??
+          getStaffAccountById(identity.mock_staff_id as StaffId) ??
           syntheticStaff(identity);
         setCurrentStaff(staff);
         setCurrentHospital(
@@ -281,6 +311,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       mounted,
+      backendConfigured: isSupabaseConfigured(),
       isAuthenticated: currentStaff !== null,
       needsOnboarding: authUser !== null && currentStaff === null,
       authUser,

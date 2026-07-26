@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import type { RosResponse } from "@careflow/shared";
+import type {
+  RosResponse,
+  Unbranded,
+} from "@careflow/shared";
 
 import { compileRosNarrative } from "./compile";
 
 let n = 0;
-function response(overrides: Partial<RosResponse>): RosResponse {
+function response(overrides: Partial<Unbranded<RosResponse>>): RosResponse {
   n += 1;
   return {
     id: `ros_${n}`,
@@ -24,7 +27,7 @@ function response(overrides: Partial<RosResponse>): RosResponse {
     created_at: "2026-07-01T10:00:00.000Z",
     updated_at: "2026-07-01T10:00:00.000Z",
     ...overrides,
-  };
+  } as RosResponse;
 }
 
 describe("compileRosNarrative", () => {

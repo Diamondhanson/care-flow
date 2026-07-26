@@ -12,15 +12,24 @@ import {
 import type {
   CarePlanEntry,
   CarePlanItem,
+  HospitalId,
   MedicationAdministration,
+  MedicationAdministrationId,
   Prescription,
+  PrescriptionId,
+  StaffId,
   TreatmentRecord,
+  Unbranded,
 } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 const NOW = Date.parse("2026-06-29T12:00:00.000Z");
 const hoursAgo = (h: number) => new Date(NOW - h * 3_600_000).toISOString();
 
-function item(p: Partial<CarePlanItem> = {}): CarePlanItem {
+function item(p: Partial<Unbranded<CarePlanItem>> = {}): CarePlanItem {
   return {
     id: "cpi_1",
     hospital_id: "h1",
@@ -38,10 +47,10 @@ function item(p: Partial<CarePlanItem> = {}): CarePlanItem {
     created_at: hoursAgo(24),
     updated_at: hoursAgo(24),
     ...p,
-  };
+  } as CarePlanItem;
 }
 
-function rx(p: Partial<Prescription> = {}): Prescription {
+function rx(p: Partial<Unbranded<Prescription>> = {}): Prescription {
   return {
     id: "rx_1",
     hospital_id: "h1",
@@ -57,15 +66,15 @@ function rx(p: Partial<Prescription> = {}): Prescription {
     created_at: hoursAgo(24),
     updated_at: hoursAgo(24),
     ...p,
-  };
+  } as Prescription;
 }
 
 function admin(givenAt: string): MedicationAdministration {
   return {
-    id: "ma_" + givenAt,
-    hospital_id: "h1",
-    prescription_id: "rx_1",
-    administered_by_id: "nurse",
+    id: brand<MedicationAdministrationId>("ma_" + givenAt),
+    hospital_id: brand<HospitalId>("h1"),
+    prescription_id: brand<PrescriptionId>("rx_1"),
+    administered_by_id: brand<StaffId>("nurse"),
     scheduled_for: null,
     administered_at: givenAt,
     status: "given",
@@ -74,7 +83,7 @@ function admin(givenAt: string): MedicationAdministration {
   };
 }
 
-function vitals(p: Partial<TreatmentRecord> = {}): TreatmentRecord {
+function vitals(p: Partial<Unbranded<TreatmentRecord>> = {}): TreatmentRecord {
   return {
     id: "trec_1",
     hospital_id: "h1",
@@ -90,10 +99,10 @@ function vitals(p: Partial<TreatmentRecord> = {}): TreatmentRecord {
     notes: null,
     recorded_at: hoursAgo(1),
     ...p,
-  };
+  } as TreatmentRecord;
 }
 
-function entry(p: Partial<CarePlanEntry> = {}): CarePlanEntry {
+function entry(p: Partial<Unbranded<CarePlanEntry>> = {}): CarePlanEntry {
   return {
     id: "cpe_1",
     hospital_id: "h1",
@@ -107,10 +116,10 @@ function entry(p: Partial<CarePlanEntry> = {}): CarePlanEntry {
     recorded_by_id: "nurse",
     recorded_at: hoursAgo(2),
     ...p,
-  };
+  } as CarePlanEntry;
 }
 
-const baseInput = (p: Partial<PatientCareInput> = {}): PatientCareInput => ({
+const baseInput = (p: Partial<Unbranded<PatientCareInput>> = {}): PatientCareInput => ({
   prescriptions: [],
   administrationsByRx: {},
   items: [],

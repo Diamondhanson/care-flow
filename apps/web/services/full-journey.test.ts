@@ -60,6 +60,9 @@ import {
   getVisits,
   getWards,
   markNoKnownAllergies,
+  cancelFollowUpTask,
+  completeFollowUpTask,
+  getFollowUpTasks,
   recordDeath,
   recordDisposition,
   recordMedicationAdministration,
@@ -79,6 +82,11 @@ import {
 } from "@/services/mockStorage";
 import { computeKpis, outcomeDistribution, presetRange } from "@/components/reports/reports";
 import { summarizeBill } from "@/components/billing/billing";
+import type { HospitalId, StaffId } from "@careflow/shared";
+
+/** Test sugar: brand a seeded string id at a typed call boundary. */
+const brand = <T extends string>(v: string): T => v as T;
+
 
 // ---------------------------------------------------------------------------
 // In-memory localStorage polyfill — makes isBrowser() true so writes persist.
@@ -102,7 +110,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   resetDatabase();
-  setActiveHospitalId("hosp_demo");
+  setActiveHospitalId(brand<HospitalId>("hosp_demo"));
 });
 
 const FULL_RANGE = () => presetRange("all", Date.now());
@@ -215,7 +223,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
       {
         visit_type: "outpatient",
         chief_complaint: "Fever and headache for 3 days",
-        registered_by_id: "staff_reception",
+        registered_by_id: brand<StaffId>("staff_reception"),
       },
     );
     expect(patient.mrn).toMatch(/910702AT - B/);
@@ -224,7 +232,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
 
     // NURSE — record vitals, then triage and route to the doctor.
     const vitals = addTreatmentLog(visit.id, {
-      recorded_by_id: "staff_nurse",
+      recorded_by_id: brand<StaffId>("staff_nurse"),
       temperature_c: 39.1,
       pulse: 104,
       spo2: 97,
@@ -238,7 +246,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
 
     // DOCTOR — consultation note + diagnosis.
     const consult = addConsultation(visit.id, {
-      doctor_id: "staff_chen",
+      doctor_id: brand<StaffId>("staff_chen"),
       subjective: "3-day fever, frontal headache",
       examination: "T 39.1, mild neck stiffness absent",
       assessment: "Suspected malaria",
@@ -247,7 +255,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
     expect(getConsultationsForVisit(visit.id).map((c) => c.id)).toContain(consult.id);
     const dx = addDiagnosis(visit.id, {
       consultation_id: consult.id,
-      diagnosed_by_id: "staff_chen",
+      diagnosed_by_id: brand<StaffId>("staff_chen"),
       description: "Uncomplicated malaria",
       icd10_code: "B54",
       is_primary: true,
@@ -256,7 +264,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
 
     // DOCTOR — order a lab test. Ordering nudges the visit into diagnostics.
     const order = addOrder(visit.id, {
-      ordered_by_id: "staff_chen",
+      ordered_by_id: brand<StaffId>("staff_chen"),
       order_type: "lab",
       description: "Malaria rapid diagnostic test (MRDT)",
     });
@@ -266,7 +274,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
     // LAB TECH — pick up the order, record an abnormal result, close the loop.
     updateOrderStatus(order.id, "in_progress");
     const result = addResult(order.id, {
-      recorded_by_id: "staff_lab",
+      recorded_by_id: brand<StaffId>("staff_lab"),
       summary: "MRDT positive for P. falciparum",
       value: "Positive",
       is_abnormal: true,
@@ -280,7 +288,7 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
 
     // DOCTOR — prescribe.
     const rx = addPrescription(visit.id, {
-      prescribed_by_id: "staff_chen",
+      prescribed_by_id: brand<StaffId>("staff_chen"),
       drug_name: "Artemether/Lumefantrine",
       dose: "80/480 mg",
       route: "PO",
@@ -291,13 +299,13 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
 
     // PHARMACIST / NURSE — administer the first dose (MAR).
     const mar = recordMedicationAdministration(rx.id, {
-      administered_by_id: "staff_pharm",
+      administered_by_id: brand<StaffId>("staff_pharm"),
       status: "given",
     });
     expect(mar.status).toBe("given");
 
     // DOCTOR — disposition: discharge home (outpatient, no admission).
-    recordDisposition(visit.id, "discharge_home", "staff_chen");
+    recordDisposition(visit.id, "discharge_home", brand<StaffId>("staff_chen"));
     expect(getVisitById(visit.id)?.stage).toBe("discharge_planning");
 
     // No admission was created for an outpatient → discharge is ungated.
@@ -306,6 +314,21 @@ describe("OUTPATIENT JOURNEY — registration through discharge", () => {
     expect(discharged.closed_at).not.toBeNull();
     // Visit drops off the live board.
     expect(getActiveVisits().some((v) => v.id === visit.id)).toBe(false);
+
+    // Discharge scheduled the post-discharge follow-up tasks (+2d call, +7d
+    // tele check-in) against the same visit, titled with the patient's name.
+    const tasks = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(tasks).toHaveLength(2);
+    expect(tasks.map((f) => f.kind).sort()).toEqual(["call", "tele_checkin"]);
+    for (const task of tasks) {
+      expect(task.status).toBe("pending");
+      expect(task.patient_id).toBe(patient.id);
+      expect(task.title).toContain("Awa Tabi");
+      const days =
+        (new Date(task.due_at).getTime() - new Date(task.created_at).getTime()) /
+        (24 * 3600_000);
+      expect(days).toBe(task.kind === "call" ? 2 : 7);
+    }
   });
 });
 
@@ -317,11 +340,11 @@ describe("INPATIENT JOURNEY — admission, clearances, discharge gate", () => {
   it("admits, manages on the floor, and gates discharge on clearances", () => {
     const { visit } = createNewVisit(
       { full_name: "Kofi Mensah", date_of_birth: "1975-03-10", sex: "male" },
-      { visit_type: "inpatient", chief_complaint: "Chest pain", attending_doctor_id: "staff_chen" },
+      { visit_type: "inpatient", chief_complaint: "Chest pain", attending_doctor_id: brand<StaffId>("staff_chen") },
     );
 
     // DOCTOR — admit. recordDisposition("admit") creates the admission.
-    recordDisposition(visit.id, "admit", "staff_chen");
+    recordDisposition(visit.id, "admit", brand<StaffId>("staff_chen"));
     const admission = getAdmissionForVisit(visit.id)!;
     expect(admission).toBeTruthy();
     expect(admission.status).toBe("active");
@@ -337,14 +360,14 @@ describe("INPATIENT JOURNEY — admission, clearances, discharge gate", () => {
     const item = addCarePlanItem(admission.id, {
       category: "mobility_positioning",
       description: "Assist to chair BID",
-      created_by_id: "staff_nurse",
+      created_by_id: brand<StaffId>("staff_nurse"),
     });
     expect(getCarePlanItemsForAdmission(admission.id).map((i) => i.id)).toContain(item.id);
     const entry = addCarePlanEntry(admission.id, {
       note: "Tolerated sitting; vitals stable",
       care_plan_item_id: item.id,
       is_handover: true,
-      recorded_by_id: "staff_nurse",
+      recorded_by_id: brand<StaffId>("staff_nurse"),
     });
     expect(getCarePlanEntriesForAdmission(admission.id).map((e) => e.id)).toContain(entry.id);
 
@@ -353,7 +376,7 @@ describe("INPATIENT JOURNEY — admission, clearances, discharge gate", () => {
     const { admission: moved } = transferAdmission(admission.id, {
       to_bed_id: otherBed.id,
       reason: "Step-down",
-      transferred_by_id: "staff_nurse",
+      transferred_by_id: brand<StaffId>("staff_nurse"),
     });
     expect(moved.bed_id).toBe(otherBed.id);
     expect(getBedById(targetBed.id)?.status).toBe("free"); // old bed released
@@ -463,7 +486,7 @@ describe("ALLERGIES — record, mark NKA, remove", () => {
       category: "drug",
       severity: "severe",
       reaction: "Anaphylaxis",
-      noted_by_id: "staff_nurse",
+      noted_by_id: brand<StaffId>("staff_nurse"),
     });
     expect(getAllergiesForPatient(patient.id).map((a) => a.id)).toContain(allergy.id);
     removeAllergy(allergy.id);
@@ -490,9 +513,9 @@ describe("DEATH — recorded at any stage, bypasses clearance gate", () => {
       { full_name: "Pierre Nkomo", date_of_birth: "1950-12-01" },
       { visit_type: "inpatient" },
     );
-    recordDisposition(visit.id, "admit", "staff_chen");
+    recordDisposition(visit.id, "admit", brand<StaffId>("staff_chen"));
     // Admission clearances are pending — a discharge would be blocked, a death is not.
-    const dead = recordDeath(visit.id, "staff_chen", "Cardiac arrest");
+    const dead = recordDeath(visit.id, brand<StaffId>("staff_chen"), "Cardiac arrest");
     expect(dead.stage).toBe("deceased");
     expect(dead.status).toBe("closed");
     expect(dead.closed_at).not.toBeNull();
@@ -503,9 +526,70 @@ describe("DEATH — recorded at any stage, bypasses clearance gate", () => {
       { full_name: "Marie Eyong", date_of_birth: "1948-06-06" },
       { visit_type: "emergency" },
     );
-    const dead = recordDisposition(visit.id, "deceased", "staff_chen");
+    const dead = recordDisposition(visit.id, "deceased", brand<StaffId>("staff_chen"));
     expect(dead.stage).toBe("deceased");
     expect(dead.status).toBe("closed");
+  });
+});
+
+// ===========================================================================
+// FOLLOW-UP — tasks scheduled at discharge, then worked from the task list.
+// ===========================================================================
+
+describe("FOLLOW-UP — post-discharge task scheduling and lifecycle", () => {
+  it("creates no follow-up tasks for a death", () => {
+    const { visit } = createNewVisit(
+      { full_name: "Paul Biyick", date_of_birth: "1952-02-02" },
+      { visit_type: "emergency" },
+    );
+    recordDeath(visit.id, brand<StaffId>("staff_chen"));
+    expect(getFollowUpTasks().filter((f) => f.visit_id === visit.id)).toHaveLength(0);
+  });
+
+  it("titles tasks with the anonymous identifier for an unidentified patient", () => {
+    const { patient, visit } = createNewVisit(
+      { full_name: "Unidentified", is_emergency_anonymous: true },
+      { visit_type: "emergency" },
+    );
+    // No admission → the discharge gate does not apply.
+    updateVisitStage(visit.id, "discharged");
+    const tasks = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(tasks).toHaveLength(2);
+    for (const task of tasks) {
+      expect(task.title).toContain(patient.anonymous_identifier!);
+    }
+  });
+
+  it("completes and cancels tasks, and sorts pending first by due date", () => {
+    const { visit } = createNewVisit(
+      { full_name: "Suivi Patient", date_of_birth: "1985-08-08" },
+      { visit_type: "outpatient" },
+    );
+    updateVisitStage(visit.id, "discharged");
+
+    const [call, checkin] = getFollowUpTasks().filter(
+      (f) => f.visit_id === visit.id,
+    );
+    // Pending list is due-date ascending: the +2d call before the +7d check-in.
+    expect(call.kind).toBe("call");
+    expect(checkin.kind).toBe("tele_checkin");
+
+    const done = completeFollowUpTask(call.id, brand<StaffId>("staff_patel"), "Recovering well");
+    expect(done.status).toBe("done");
+    expect(done.completed_by_id).toBe("staff_patel");
+    expect(done.completed_at).not.toBeNull();
+    expect(done.notes).toBe("Recovering well");
+
+    const cancelled = cancelFollowUpTask(checkin.id);
+    expect(cancelled.status).toBe("cancelled");
+
+    // Worked tasks sort behind any pending ones and keep their final states.
+    const mine = getFollowUpTasks().filter((f) => f.visit_id === visit.id);
+    expect(mine.map((f) => f.status).sort()).toEqual(["cancelled", "done"]);
+
+    // Unknown ids throw rather than failing silently.
+    expect(() => completeFollowUpTask("missing", null)).toThrow(/not found/i);
+    expect(() => cancelFollowUpTask("missing")).toThrow(/not found/i);
   });
 });
 
@@ -527,7 +611,7 @@ describe("REPORTING — KPIs aggregate the journey data", () => {
       { full_name: "Dead Patient", date_of_birth: "1960-01-01" },
       { visit_type: "emergency" },
     );
-    recordDeath(dead.visit.id, "staff_chen");
+    recordDeath(dead.visit.id, brand<StaffId>("staff_chen"));
 
     const range = FULL_RANGE();
     const kpis = computeKpis(getVisits(), [], getBeds(), range);
@@ -551,20 +635,20 @@ describe("BILLING — itemized bill from a visit, then settlement", () => {
     // RECEPTIONIST — register an outpatient visit.
     const { visit } = createNewVisit(
       { full_name: "Bilan Ngo", date_of_birth: "1988-04-12", sex: "female" },
-      { visit_type: "outpatient", chief_complaint: "Cough", registered_by_id: "staff_reception" },
+      { visit_type: "outpatient", chief_complaint: "Cough", registered_by_id: brand<StaffId>("staff_reception") },
     );
 
     // DOCTOR — consultation, a completed lab order, and a prescription drive the
     // three core auto-charge sources.
-    addConsultation(visit.id, { doctor_id: "staff_chen", assessment: "URTI" });
+    addConsultation(visit.id, { doctor_id: brand<StaffId>("staff_chen"), assessment: "URTI" });
     const order = addOrder(visit.id, {
-      ordered_by_id: "staff_chen",
+      ordered_by_id: brand<StaffId>("staff_chen"),
       order_type: "lab",
       description: "Full Blood Count",
     });
     updateOrderStatus(order.id, "completed");
     addPrescription(visit.id, {
-      prescribed_by_id: "staff_chen",
+      prescribed_by_id: brand<StaffId>("staff_chen"),
       drug_name: "Paracetamol",
       dose: "1 g",
       route: "PO",
@@ -597,12 +681,12 @@ describe("BILLING — itemized bill from a visit, then settlement", () => {
       description: "Wound dressing pack",
       quantity: 2,
       unit_price: 1_500,
-      created_by_id: "staff_reception",
+      created_by_id: brand<StaffId>("staff_reception"),
     });
     addDiscount(visit.id, {
       description: "Goodwill discount",
       amount: 1_000,
-      created_by_id: "staff_reception",
+      created_by_id: brand<StaffId>("staff_reception"),
     });
     recalculateAutoCharges(visit.id);
 
@@ -613,7 +697,7 @@ describe("BILLING — itemized bill from a visit, then settlement", () => {
     expect(billed.isFullySettled).toBe(false);
 
     // SETTLE — every pending line flips to paid; the bill reads fully settled.
-    settleBill(visit.id, "staff_reception");
+    settleBill(visit.id, brand<StaffId>("staff_reception"));
     const settled = summarizeBill(getChargesForVisit(visit.id), catalog);
     expect(settled.isFullySettled).toBe(true);
     expect(getChargesForVisit(visit.id).every((c) => c.status === "paid")).toBe(true);

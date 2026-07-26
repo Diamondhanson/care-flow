@@ -18,13 +18,14 @@ import type {
   Prescription,
   PrescriptionStatus,
 } from "@careflow/shared";
+import type { MessageKey } from "@/i18n";
 
 // ---------------------------------------------------------------------------
 // Label + theme-token maps (mirror the orders.ts convention)
 // ---------------------------------------------------------------------------
 
 /** i18n keys — resolve with `t(PRESCRIPTION_STATUS_LABEL[status])`. */
-export const PRESCRIPTION_STATUS_LABEL: Record<PrescriptionStatus, string> = {
+export const PRESCRIPTION_STATUS_LABEL: Record<PrescriptionStatus, MessageKey> = {
   active: "prescriptionStatus.active",
   completed: "prescriptionStatus.completed",
   discontinued: "prescriptionStatus.discontinued",
@@ -41,7 +42,7 @@ export const PRESCRIPTION_STATUS_TOKEN: Record<
 };
 
 /** i18n keys — resolve with `t(MAR_STATUS_LABEL[status])`. */
-export const MAR_STATUS_LABEL: Record<MarStatus, string> = {
+export const MAR_STATUS_LABEL: Record<MarStatus, MessageKey> = {
   given: "marStatus.given",
   held: "marStatus.held",
   refused: "marStatus.refused",
@@ -110,7 +111,7 @@ export const MEAL_TIMING_OPTIONS: MealTiming[] = [
 ];
 
 /** i18n keys — resolve with `t(MEAL_TIMING_LABEL[timing])`. */
-export const MEAL_TIMING_LABEL: Record<MealTiming, string> = {
+export const MEAL_TIMING_LABEL: Record<MealTiming, MessageKey> = {
   with_meals: "mealTiming.withMeals",
   without_meals: "mealTiming.withoutMeals",
   neutral: "mealTiming.neutral",
