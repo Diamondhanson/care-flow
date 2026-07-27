@@ -50,9 +50,9 @@ export function LegalShell({
       {/* Placeholder disclaimer — this is a starting template, not legal advice. */}
       <div className="mt-6 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground">
         This document is a plain-language template provided as a starting point.
-        It is not legal advice. Review and adapt it with qualified counsel — and
+        It is not legal advice. Review and adapt it with qualified counsel, and
         replace the bracketed placeholders (company name, contact details,
-        governing law) — before relying on it.
+        governing law) before relying on it.
       </div>
 
       <p className="mt-6 text-[15px] leading-relaxed text-muted-foreground">
@@ -69,7 +69,7 @@ export function LegalShell({
           {related.label}
         </Link>
         <p className="text-xs text-muted-foreground">
-          CareFlow — the hospital&apos;s own operational record.
+          The hospital&apos;s own operational record.
         </p>
       </div>
     </div>

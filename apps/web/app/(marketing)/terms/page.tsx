@@ -1,7 +1,7 @@
 import { LegalShell, LegalSection, LegalList } from "@/components/legal/legal-shell";
 
 export const metadata = {
-  title: "Terms of Service — CareFlow",
+  title: "Terms of Service · CareFlow",
   description:
     "The terms governing use of the CareFlow hospital operations platform.",
 };
@@ -31,7 +31,7 @@ export default function TermsPage() {
       <LegalSection n={1} id="service" title="The service">
         <p>
           CareFlow is software that helps a hospital run its day-to-day
-          operations — registering patients, tracking them through triage,
+          operations: registering patients, tracking them through triage,
           consultation, diagnostics, treatment, admission, and discharge, and
           producing operational records and reports. Each hospital account is a
           separate tenant, and data is isolated per hospital.
@@ -75,9 +75,9 @@ export default function TermsPage() {
             device, and it does not provide medical advice or make clinical
             decisions.
           </strong>{" "}
-          Any alerts, worklists, flags, or summaries the software surfaces —
-          such as &ldquo;vitals need a look&rdquo; or an overdue-dose indicator —
-          are workflow aids, not clinical alarms or diagnoses. Licensed
+          Any alerts, worklists, flags, or summaries the software surfaces, such
+          as &ldquo;vitals need a look&rdquo; or an overdue-dose indicator, are
+          workflow aids, not clinical alarms or diagnoses. Licensed
           clinicians remain fully responsible for all clinical judgement, care
           decisions, and patient safety. Do not rely on CareFlow as a substitute
           for professional medical assessment.

@@ -1467,7 +1467,7 @@ export const en = {
     heroEyebrow: "Hospital operations, digitized",
     heroTitle: "Run your whole hospital from one clear record.",
     heroSubtitle:
-      "CareFlow tracks every patient from arrival to discharge — intake, consultation, tests, medication, beds and reports — so your team works from one shared, accurate record instead of scattered paper.",
+      "CareFlow tracks every patient from arrival to discharge, covering intake, consultation, tests, medication, beds and reports, so your team works from one shared, accurate record instead of scattered paper.",
     heroExplore: "See how it works",
     heroNote: "Built for clinics and hospitals in Cameroon. French and English.",
 
@@ -1493,7 +1493,7 @@ export const en = {
     journeyEyebrow: "The patient journey",
     journeyTitle: "Every step, handed cleanly to the next",
     journeySubtitle:
-      "CareFlow mirrors how your floor already works — so nothing is lost between the registration desk, the consulting room and the ward.",
+      "CareFlow mirrors how your floor already works, so nothing is lost between the registration desk, the consulting room and the ward.",
     journeyStep1Title: "Intake & triage",
     journeyStep1Body:
       "Register a patient in seconds, capture vitals, and set acuity so the sickest are seen first.",
@@ -1505,14 +1505,14 @@ export const en = {
       "Order labs and imaging, then attach the results straight onto the visit.",
     journeyStep4Title: "Treatment & beds",
     journeyStep4Body:
-      "Prescribe, give bedside medication, and assign a ward and bed — occupancy updates live.",
+      "Prescribe, give bedside medication, and assign a ward and bed, with occupancy updating live.",
     journeyStep5Title: "Discharge & follow-up",
     journeyStep5Body:
       "Confirm clearances, generate a summary, and schedule the follow-up.",
 
     // Showcase — live board
     showcaseBoardEyebrow: "Live board",
-    showcaseBoardTitle: "See where every patient is — at a glance",
+    showcaseBoardTitle: "See where every patient is, at a glance",
     showcaseBoardBody:
       "One board groups everyone by where they are in their care, from intake to discharge. No more walking the wards to find out who is still waiting.",
     showcaseBoardPoint1: "Colour-coded by care stage and triage acuity",
@@ -1523,7 +1523,7 @@ export const en = {
     showcaseReportsEyebrow: "Reports & beds",
     showcaseReportsTitle: "The numbers your review board asks for, ready to export",
     showcaseReportsBody:
-      "Admissions, outpatients, bed occupancy, length of stay and outcomes — counted automatically and exported to PDF or Excel in two clicks.",
+      "Admissions, outpatients, bed occupancy, length of stay and outcomes, all counted automatically and exported to PDF or Excel in two clicks.",
     showcaseReportsPoint1: "Live bed and ward occupancy",
     showcaseReportsPoint2: "Weekly and monthly summaries",
     showcaseReportsPoint3: "One-click PDF and Excel export",
@@ -1537,16 +1537,16 @@ export const en = {
       "From nurse intake and triage, through the doctor's consultation, tests and results, prescriptions and bedside medication, to admission, beds and discharge.",
     f2Title: "Every role, one record",
     f2Body:
-      "Reception, nurses, doctors, lab, pharmacy and administration each see exactly what their job needs — working from the same up-to-date record.",
+      "Reception, nurses, doctors, lab, pharmacy and administration each see exactly what their job needs, working from the same up-to-date record.",
     f3Title: "Beds & reports that stay live",
     f3Body:
       "See which beds are free, count admissions and outpatients, and export weekly and monthly reports for the review board.",
     f4Title: "Bilingual and works offline",
     f4Body:
-      "Full French and English, and a record that keeps working when the internet drops — changes sync automatically when it returns.",
+      "Full French and English, and a record that keeps working when the internet drops. Changes sync automatically when it returns.",
     f5Title: "Your data, isolated and secure",
     f5Body:
-      "Every hospital's records are fully separated. Staff only ever see their own hospital — enforced right at the database, not just the screen.",
+      "Every hospital's records are fully separated. Staff only ever see their own hospital, enforced right at the database, not just the screen.",
     f6Title: "Set up in minutes",
     f6Body:
       "Create your hospital, add departments, wards, beds and staff, and start admitting patients the same day. No installation, no servers.",
@@ -1554,7 +1554,7 @@ export const en = {
     // Roles band
     rolesTitle: "Built for everyone on the floor",
     rolesSubtitle:
-      "Each role sees exactly what their job needs — no clutter, no training manual.",
+      "Each role sees exactly what their job needs, with no clutter and no training manual.",
     roleReception: "Reception",
     roleReceptionDesc: "Register arrivals and find any patient fast.",
     roleNurse: "Nurses",
@@ -1570,9 +1570,9 @@ export const en = {
 
     ctaTitle: "Bring your hospital online today",
     ctaBody:
-      "Create your hospital account in a minute. Your data stays yours — every hospital is fully isolated.",
-    ctaNote: "Free during your trial — no card required.",
-    footerNote: "CareFlow — the hospital's own operational record.",
+      "Create your hospital account in a minute. Your data stays yours, and every hospital is fully isolated.",
+    ctaNote: "Free during your trial, no card required.",
+    footerNote: "The hospital's own operational record.",
     privacy: "Privacy",
     terms: "Terms",
   },
@@ -1636,7 +1636,7 @@ export const en = {
       noAccount: "New hospital?",
       signUpLink: "Create an account",
       demoHint:
-        "Demo account — username: admin · password: CareFlow2026 (Douala General Hospital).",
+        "Demo account. Username: admin · password: CareFlow2026 (Douala General Hospital).",
       ownerDivider: "Hospital owner",
       ownerHint:
         "Signed up with Google or your email? Continue here. Staff use the username + password above.",
@@ -1674,13 +1674,13 @@ export const en = {
     onboarding: {
       title: "Set up your hospital",
       subtitle:
-        "You're verified. Tell us about your hospital to finish — you can add departments, wards, beds and staff right after.",
+        "You're verified. Tell us about your hospital to finish. You can add departments, wards, beds and staff right after.",
       verifiedAs: "Verified as {email}",
       sectionHospital: "Your hospital",
       hospitalName: "Hospital name",
       hospitalNamePlaceholder: "e.g. Douala General Hospital",
       region: "Region / city",
-      regionPlaceholder: "e.g. Littoral — Douala",
+      regionPlaceholder: "e.g. Littoral, Douala",
       contactEmail: "Contact email",
       contactPhone: "Contact phone",
       invalidEmail: "Enter a valid email address.",

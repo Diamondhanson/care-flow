@@ -1,7 +1,7 @@
 import { LegalShell, LegalSection, LegalList } from "@/components/legal/legal-shell";
 
 export const metadata = {
-  title: "Privacy Policy — CareFlow",
+  title: "Privacy Policy · CareFlow",
   description:
     "How CareFlow collects, uses, and protects personal data and the patient information hospitals process on the platform.",
 };
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
           (&ldquo;CareFlow&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;), that
           healthcare facilities use to track patients from registration through
           treatment and follow-up. This policy explains what personal data we
-          handle when you use CareFlow — both the account data of the staff who
+          handle when you use CareFlow: both the account data of the staff who
           sign in, and the patient information hospitals record on the platform.
         </>
       }
@@ -36,19 +36,19 @@ export default function PrivacyPage() {
         <LegalList
           items={[
             <>
-              <strong>Account &amp; usage data</strong> — information about the
+              <strong>Account &amp; usage data</strong>: information about the
               hospital staff and owners who sign in to CareFlow (for example a
               name, email, and role). For this data we act as the{" "}
               <strong>controller</strong>, and this policy governs it.
             </>,
             <>
-              <strong>Patient / clinical data</strong> — the health records a
+              <strong>Patient / clinical data</strong>: the health records a
               hospital enters (demographics, notes, vitals, prescriptions, and
               so on). Here the hospital is the <strong>controller</strong> and
               CareFlow is a <strong>processor</strong> acting on the hospital&apos;s
               instructions. How that data may be used is governed by our
               agreement with the hospital and the hospital&apos;s own privacy
-              notice — not this page.
+              notice, not this page.
             </>,
           ]}
         />
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
         <p>
           <strong>Patient &amp; clinical data (entered by the hospital).</strong>{" "}
           On the hospital&apos;s instruction, CareFlow stores the records staff
-          create — such as patient identifiers, dates of birth, contact details,
+          create, such as patient identifiers, dates of birth, contact details,
           visit and consultation notes, diagnoses, orders and results, vital
           signs, allergies, prescriptions and medication administration, care
           plans, and billing entries.
@@ -95,7 +95,7 @@ export default function PrivacyPage() {
           items={[
             "Provide, operate, and maintain the CareFlow platform for your hospital.",
             "Authenticate you and keep each hospital's data isolated from every other tenant.",
-            "Send transactional messages — sign-in codes and in-app or push notifications you have enabled.",
+            "Send transactional messages: sign-in codes and in-app or push notifications you have enabled.",
             "Keep the service secure, diagnose problems, and improve reliability.",
           ]}
         />
@@ -131,19 +131,19 @@ export default function PrivacyPage() {
         <LegalList
           items={[
             <>
-              <strong>Supabase</strong> — hosts our database, authentication, and
+              <strong>Supabase</strong>: hosts our database, authentication, and
               file storage, with per-hospital row-level security.
             </>,
             <>
-              <strong>Resend</strong> — delivers transactional email such as
+              <strong>Resend</strong>: delivers transactional email such as
               sign-in codes.
             </>,
             <>
-              <strong>Google</strong> — provides optional sign-in for hospital
+              <strong>Google</strong>: provides optional sign-in for hospital
               owners.
             </>,
             <>
-              <strong>Our hosting provider</strong> — serves the application.
+              <strong>Our hosting provider</strong>: serves the application.
             </>,
           ]}
         />
@@ -161,7 +161,7 @@ export default function PrivacyPage() {
           hospital&apos;s records. Traffic is encrypted in transit. Access to
           production systems is limited to authorised personnel. Remember that a
           working copy of data is also cached on the device you use for offline
-          access — keep your devices secured and sign out on shared computers.
+          access, so keep your devices secured and sign out on shared computers.
         </p>
       </LegalSection>
 

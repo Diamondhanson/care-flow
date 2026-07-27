@@ -1461,7 +1461,7 @@ export const fr = {
     heroEyebrow: "Les opérations hospitalières, numérisées",
     heroTitle: "Gérez tout votre hôpital à partir d'un seul dossier clair.",
     heroSubtitle:
-      "CareFlow suit chaque patient de l'arrivée à la sortie — accueil, consultation, examens, médicaments, lits et rapports — pour que votre équipe travaille sur un dossier unique et fiable plutôt que sur des papiers éparpillés.",
+      "CareFlow suit chaque patient de l'arrivée à la sortie : accueil, consultation, examens, médicaments, lits et rapports, pour que votre équipe travaille sur un dossier unique et fiable plutôt que sur des papiers éparpillés.",
     heroExplore: "Voir comment ça marche",
     heroNote:
       "Conçu pour les cliniques et hôpitaux du Cameroun. Français et anglais.",
@@ -1488,7 +1488,7 @@ export const fr = {
     journeyEyebrow: "Le parcours du patient",
     journeyTitle: "Chaque étape, transmise proprement à la suivante",
     journeySubtitle:
-      "CareFlow épouse le fonctionnement réel de votre service — pour que rien ne se perde entre l'accueil, la salle de consultation et le service d'hospitalisation.",
+      "CareFlow épouse le fonctionnement réel de votre service, pour que rien ne se perde entre l'accueil, la salle de consultation et le service d'hospitalisation.",
     journeyStep1Title: "Accueil & triage",
     journeyStep1Body:
       "Enregistrez un patient en quelques secondes, prenez les constantes et fixez l'acuité pour voir d'abord les plus graves.",
@@ -1500,14 +1500,14 @@ export const fr = {
       "Prescrivez analyses et imagerie, puis rattachez les résultats directement à la visite.",
     journeyStep4Title: "Traitement & lits",
     journeyStep4Body:
-      "Prescrivez, administrez les médicaments au lit et attribuez un service et un lit — l'occupation se met à jour en direct.",
+      "Prescrivez, administrez les médicaments au lit et attribuez un service et un lit. L'occupation se met à jour en direct.",
     journeyStep5Title: "Sortie & suivi",
     journeyStep5Body:
       "Validez les autorisations, générez un résumé et planifiez le suivi.",
 
     // Vitrine — tableau en direct
     showcaseBoardEyebrow: "Tableau en direct",
-    showcaseBoardTitle: "Voyez où en est chaque patient — d'un coup d'œil",
+    showcaseBoardTitle: "Voyez où en est chaque patient, d'un coup d'œil",
     showcaseBoardBody:
       "Un seul tableau regroupe tout le monde selon l'étape de soins, de l'accueil à la sortie. Fini les allers-retours dans les services pour savoir qui attend encore.",
     showcaseBoardPoint1: "Code couleur par étape de soins et acuité de triage",
@@ -1518,7 +1518,7 @@ export const fr = {
     showcaseReportsEyebrow: "Rapports & lits",
     showcaseReportsTitle: "Les chiffres demandés par le conseil, prêts à exporter",
     showcaseReportsBody:
-      "Admissions, externes, occupation des lits, durée de séjour et issues — comptés automatiquement et exportés en PDF ou Excel en deux clics.",
+      "Admissions, externes, occupation des lits, durée de séjour et issues, comptés automatiquement et exportés en PDF ou Excel en deux clics.",
     showcaseReportsPoint1: "Occupation des lits et services en direct",
     showcaseReportsPoint2: "Synthèses hebdomadaires et mensuelles",
     showcaseReportsPoint3: "Export PDF et Excel en un clic",
@@ -1532,16 +1532,16 @@ export const fr = {
       "De l'accueil et du triage par l'infirmier, à la consultation du médecin, aux examens et résultats, aux ordonnances et aux soins au lit, jusqu'à l'admission, les lits et la sortie.",
     f2Title: "Chaque rôle, un seul dossier",
     f2Body:
-      "L'accueil, les infirmiers, les médecins, le laboratoire, la pharmacie et l'administration voient exactement ce dont leur métier a besoin — à partir du même dossier à jour.",
+      "L'accueil, les infirmiers, les médecins, le laboratoire, la pharmacie et l'administration voient exactement ce dont leur métier a besoin, à partir du même dossier à jour.",
     f3Title: "Lits et rapports en temps réel",
     f3Body:
       "Voyez quels lits sont libres, comptez les admissions et les externes, et exportez des rapports hebdomadaires et mensuels pour le conseil.",
     f4Title: "Bilingue et fonctionne hors ligne",
     f4Body:
-      "Français et anglais complets, et un dossier qui continue de fonctionner quand internet coupe — les changements se synchronisent automatiquement au retour.",
+      "Français et anglais complets, et un dossier qui continue de fonctionner quand internet coupe. Les changements se synchronisent automatiquement au retour.",
     f5Title: "Vos données, isolées et sécurisées",
     f5Body:
-      "Les dossiers de chaque hôpital sont totalement séparés. Le personnel ne voit que son propre hôpital — appliqué au niveau de la base de données, pas seulement à l'écran.",
+      "Les dossiers de chaque hôpital sont totalement séparés. Le personnel ne voit que son propre hôpital, une isolation appliquée au niveau de la base de données, pas seulement à l'écran.",
     f6Title: "Opérationnel en quelques minutes",
     f6Body:
       "Créez votre hôpital, ajoutez services, unités, lits et personnel, et commencez à admettre des patients le jour même. Sans installation ni serveurs.",
@@ -1549,7 +1549,7 @@ export const fr = {
     // Bande des rôles
     rolesTitle: "Pensé pour toute l'équipe du service",
     rolesSubtitle:
-      "Chaque rôle voit exactement ce dont son métier a besoin — sans encombrement, sans manuel de formation.",
+      "Chaque rôle voit exactement ce dont son métier a besoin, sans encombrement ni manuel de formation.",
     roleReception: "Accueil",
     roleReceptionDesc: "Enregistrez les arrivées et trouvez vite un patient.",
     roleNurse: "Infirmiers",
@@ -1565,9 +1565,9 @@ export const fr = {
 
     ctaTitle: "Mettez votre hôpital en ligne dès aujourd'hui",
     ctaBody:
-      "Créez le compte de votre hôpital en une minute. Vos données restent les vôtres — chaque hôpital est totalement isolé.",
-    ctaNote: "Gratuit pendant votre essai — sans carte bancaire.",
-    footerNote: "CareFlow — le dossier opérationnel propre à l'hôpital.",
+      "Créez le compte de votre hôpital en une minute. Vos données restent les vôtres, et chaque hôpital est totalement isolé.",
+    ctaNote: "Gratuit pendant votre essai, sans carte bancaire.",
+    footerNote: "Le dossier opérationnel propre à l'hôpital.",
     privacy: "Confidentialité",
     terms: "Conditions",
   },
@@ -1631,7 +1631,7 @@ export const fr = {
       noAccount: "Nouvel hôpital ?",
       signUpLink: "Créer un compte",
       demoHint:
-        "Compte de démonstration — utilisateur : admin · mot de passe : CareFlow2026 (Douala General Hospital).",
+        "Compte de démonstration. Utilisateur : admin · mot de passe : CareFlow2026 (Douala General Hospital).",
       ownerDivider: "Propriétaire d'hôpital",
       ownerHint:
         "Inscrit avec Google ou votre email ? Continuez ici. Le personnel utilise le nom d'utilisateur et le mot de passe ci-dessus.",
@@ -1670,13 +1670,13 @@ export const fr = {
     onboarding: {
       title: "Configurez votre hôpital",
       subtitle:
-        "Vous êtes vérifié. Décrivez votre hôpital pour terminer — vous pourrez ensuite ajouter services, unités, lits et personnel.",
+        "Vous êtes vérifié. Décrivez votre hôpital pour terminer. Vous pourrez ensuite ajouter services, unités, lits et personnel.",
       verifiedAs: "Vérifié en tant que {email}",
       sectionHospital: "Votre hôpital",
       hospitalName: "Nom de l'hôpital",
       hospitalNamePlaceholder: "ex. Hôpital Général de Douala",
       region: "Région / ville",
-      regionPlaceholder: "ex. Littoral — Douala",
+      regionPlaceholder: "ex. Littoral, Douala",
       contactEmail: "Email de contact",
       contactPhone: "Téléphone de contact",
       invalidEmail: "Saisissez une adresse email valide.",
