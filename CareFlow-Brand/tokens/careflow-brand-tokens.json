@@ -1,0 +1,38 @@
+{
+  "brand": "CareFlow",
+  "tagline": "Every patient, every stage, in one view.",
+  "accent": {
+    "name": "Signal Cyan",
+    "500": "#17C7D6",
+    "400": "#3DDBE8",
+    "600": "#0FB0C0",
+    "role": "signature brand accent (not the primary action color; slate #0F172B stays the action color)"
+  },
+  "logo": {
+    "channel": "#0FB0C0",
+    "node": "#3DDBE8",
+    "monochrome_light": "#0F172B",
+    "monochrome_dark": "#FFFFFF"
+  },
+  "neutrals": {
+    "text_light": "#0F172B",
+    "bg_light": "#F8FAFC",
+    "surface_light": "#FFFFFF",
+    "bg_dark": "#020618",
+    "surface_dark": "#0F172B",
+    "muted_light": "#54647D",
+    "muted_dark": "#9BACC4"
+  },
+  "type": {
+    "wordmark": "Geist SemiBold (outlined in the logo files)",
+    "interface": "Geist Sans",
+    "mono": "Geist Mono"
+  },
+  "accessibility": {
+    "method": "CIELAB dE76 with Machado full-severity CVD simulation (protan/deutan/tritan)",
+    "triage_worst_case_common_cvd_dE": 16.4,
+    "nearest_clinical_color": "Diagnostics #009298",
+    "nearest_clinical_dE_common_cvd": 19.4,
+    "note": "Accent clears every clinical stage & triage color at dE >= 11.7 under common (red-green) CVD. The one soft near-neighbor is the muted Discharge-planning grey #90A1B9 (a non-triage stage tint); the accent is always high-chroma cyan while that color is desaturated, and the accent never appears as a clinical chip."
+  }
+}

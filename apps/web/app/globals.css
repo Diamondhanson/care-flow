@@ -7,6 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  /* Brand accent (Signal Cyan) → Tailwind utilities: bg-cf-accent, text-cf-accent-deep, … */
+  --color-cf-accent: var(--cf-accent);
+  --color-cf-accent-bright: var(--cf-accent-bright);
+  --color-cf-accent-deep: var(--cf-accent-deep);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
@@ -164,6 +168,16 @@
   /* Patient name — a distinct teal so a person's name is instantly pickable
      out of surrounding clinical text. Deep enough for AA on the light canvas. */
   --patient-name: oklch(0.52 0.09 200.0);
+
+  /* ---- Brand identity — "Signal Cyan" (source: /CareFlow-Brand) ----
+     The brand SIGNATURE accent + its two working tints. Theme-invariant (the
+     mark reads on both canvases), so defined once here and inherited by .dark.
+     Rules from the brand guide: slate stays the primary action color — this is a
+     signature, not an action color — and it is NEVER used for clinical meaning
+     (stage/triage), where it was CIELAB/CVD-checked to stay clearly separated. */
+  --cf-accent: #17c7d6;        /* 500 — signature accent */
+  --cf-accent-bright: #3ddbe8; /* 400 — logo node / highlight (accent on dark) */
+  --cf-accent-deep: #0fb0c0;   /* 600 — logo channel / accent on light */
 }
 
 .dark {

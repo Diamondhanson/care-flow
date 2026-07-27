@@ -18,7 +18,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Activity } from "lucide-react";
+import { CareFlowMark } from "@/components/brand/careflow-logo";
 import { isValidPhoneNumber } from "react-phone-number-input";
 
 import { Button } from "@/components/ui/button";
@@ -40,7 +40,7 @@ function Splash() {
   return (
     <div className="flex h-svh items-center justify-center bg-background text-foreground">
       <span className="flex size-11 animate-pulse items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-        <Activity className="size-6" strokeWidth={2.25} />
+        <CareFlowMark className="size-6" />
       </span>
       <span className="sr-only">Loading</span>
     </div>

@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  Activity,
   BarChart3,
   Building2,
   ClipboardList,
@@ -25,6 +24,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { CareFlowLogo } from "@/components/brand/careflow-logo";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -134,21 +134,10 @@ function isActive(pathname: string, href: string) {
 function Brand({ compact = false }: { compact?: boolean }) {
   const { t } = useT();
   return (
-    <Link href="/dashboard" className="flex items-center gap-2.5">
-      <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-        <Activity className="size-5" strokeWidth={2.25} />
-      </span>
-      {!compact && (
-        <div className="flex flex-col leading-none">
-          <span className="text-[15px] font-semibold tracking-tight">
-            CareFlow
-          </span>
-          <span className="mt-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            {t("shell.statusBoard")}
-          </span>
-        </div>
-      )}
-    </Link>
+    <CareFlowLogo
+      href="/dashboard"
+      subtitle={compact ? undefined : t("shell.statusBoard")}
+    />
   );
 }
 

@@ -1,0 +1,24 @@
+/* CareFlow — brand identity tokens (additions to the existing UI palette).
+   The interface palette (slate canvas, clinical stage/triage colors) is unchanged;
+   these tokens add the one brand accent and its two working tints. */
+
+:root {
+  /* ---- Brand accent: "Signal Cyan" ---- */
+  --cf-accent:        #17C7D6; /* 500 — the signature brand color */
+  --cf-accent-bright: #3DDBE8; /* 400 — node, highlights, accent ON DARK canvas */
+  --cf-accent-deep:   #0FB0C0; /* 600 — logo channel, hover, accent ON LIGHT canvas */
+
+  /* ---- Existing neutrals (for reference; do not redefine app tokens) ---- */
+  --cf-slate:        #0F172B; /* text on light / action color */
+  --cf-bg-light:     #F8FAFC;
+  --cf-bg-dark:      #020618;
+  --cf-muted-light:  #54647D;
+  --cf-muted-dark:   #9BACC4;
+}
+
+/* Usage notes:
+   - The brand accent is a SIGNATURE, not the primary action color (slate stays the action color).
+   - On the LIGHT canvas prefer --cf-accent-deep for accent lines/icons that need weight;
+     use the accent as a FILL with slate/white content on top rather than as thin cyan text on white.
+   - On the DARK canvas prefer --cf-accent / --cf-accent-bright.
+   - NEVER use the accent for anything that carries clinical meaning (stage/triage). */

@@ -8,23 +8,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import { CareFlowLogo } from "@/components/brand/careflow-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { useT } from "@/components/locale-provider";
 import { cn } from "@/lib/utils";
 
 function MarketingBrand() {
-  return (
-    <Link href="/" className="flex items-center gap-2.5">
-      <span className="flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm">
-        <Activity className="size-5" strokeWidth={2.25} />
-      </span>
-      <span className="text-[15px] font-semibold tracking-tight">CareFlow</span>
-    </Link>
-  );
+  return <CareFlowLogo href="/" />;
 }
 
 export default function MarketingLayout({
