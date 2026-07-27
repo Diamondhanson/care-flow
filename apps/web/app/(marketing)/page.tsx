@@ -648,8 +648,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-border py-8 text-center text-xs text-muted-foreground">
-        {t("marketing.footerNote")}
+      <footer className="flex flex-col items-center gap-3 border-t border-border py-8 text-xs text-muted-foreground">
+        <span>{t("marketing.footerNote")}</span>
+        <nav className="flex items-center gap-4">
+          <Link href="/privacy" className="transition-colors hover:text-foreground">
+            {t("marketing.privacy")}
+          </Link>
+          <span aria-hidden className="text-border">
+            ·
+          </span>
+          <Link href="/terms" className="transition-colors hover:text-foreground">
+            {t("marketing.terms")}
+          </Link>
+        </nav>
       </footer>
     </div>
   );

@@ -1573,6 +1573,8 @@ export const en = {
       "Create your hospital account in a minute. Your data stays yours — every hospital is fully isolated.",
     ctaNote: "Free during your trial — no card required.",
     footerNote: "CareFlow — the hospital's own operational record.",
+    privacy: "Privacy",
+    terms: "Terms",
   },
 
   followUp: {

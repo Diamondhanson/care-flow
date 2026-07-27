@@ -1568,6 +1568,8 @@ export const fr = {
       "Créez le compte de votre hôpital en une minute. Vos données restent les vôtres — chaque hôpital est totalement isolé.",
     ctaNote: "Gratuit pendant votre essai — sans carte bancaire.",
     footerNote: "CareFlow — le dossier opérationnel propre à l'hôpital.",
+    privacy: "Confidentialité",
+    terms: "Conditions",
   },
 
   followUp: {
