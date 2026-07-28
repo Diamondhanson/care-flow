@@ -1,3 +1,5 @@
+// Redeploy marker: force a fresh Vercel build to pick up updated production
+// env vars (RESEND_API_KEY / RESEND_FROM). No functional change.
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
