@@ -37,10 +37,15 @@ const PAGE_SIZE = 1000;
  * ("could not find the table in the schema cache").
  */
 function isMissingTableError(error: { code?: string; message: string }): boolean {
+  // 42703 is "undefined COLUMN" — a real bug in our own query, not a table the
+  // hosted schema lacks. It must never be swallowed as an empty table (doing so
+  // silently hydrated four tables as empty; see WINDOW_COLUMN below).
+  if (error.code === "42703") return false;
   return (
     error.code === "42P01" ||
     error.code === "PGRST205" ||
-    /does not exist|schema cache/i.test(error.message)
+    /schema cache/i.test(error.message) ||
+    /relation .* does not exist/i.test(error.message)
   );
 }
 
@@ -84,10 +89,33 @@ const FULL_FETCH_TABLES: ReadonlySet<string> = new Set([
  */
 const OPEN_OR_RECENT: Record<string, (cutoff: string) => string> = {
   visits: (cutoff) => `status.eq.open,arrived_at.gte.${cutoff}`,
-  admissions: (cutoff) => `status.eq.active,created_at.gte.${cutoff}`,
+  admissions: (cutoff) => `status.eq.active,admitted_at.gte.${cutoff}`,
   // A pending follow-up must surface no matter how old it is.
   follow_up_tasks: (cutoff) => `status.eq.pending,created_at.gte.${cutoff}`,
 };
+
+/**
+ * The timestamp column a windowed table is filtered on. Most tables carry
+ * `created_at`, but four record their moment under a domain-specific name and
+ * have NO `created_at` at all — windowing those on `created_at` makes Postgres
+ * raise 42703 and the table hydrates EMPTY (admissions, vitals, results and the
+ * care log all silently vanished from the cache until this map existed).
+ */
+const WINDOW_COLUMN: Record<string, string> = {
+  admissions: "admitted_at",
+  treatment_records: "recorded_at",
+  results: "recorded_at",
+  care_plan_entries: "recorded_at",
+};
+
+/**
+ * The column `table` is windowed on. Exported so a test can assert every one of
+ * them really exists in packages/db/schema.sql — the guard against this bug
+ * class returning when a new table is added.
+ */
+export function windowColumnFor(table: string): string {
+  return WINDOW_COLUMN[table] ?? "created_at";
+}
 
 /** Fetch every matching row of one table (RLS-scoped), paging until exhausted. */
 async function fetchRows(
@@ -103,7 +131,7 @@ async function fetchRows(
       const orFilter = OPEN_OR_RECENT[table];
       query = orFilter
         ? query.or(orFilter(cutoff))
-        : query.gte("created_at", cutoff);
+        : query.gte(WINDOW_COLUMN[table] ?? "created_at", cutoff);
     }
     const { data, error } = await query;
     if (error) {
