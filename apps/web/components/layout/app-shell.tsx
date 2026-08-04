@@ -18,6 +18,7 @@ import {
   Menu,
   Pill,
   Receipt,
+  Settings,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -29,6 +30,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AskCareFlowButton } from "@/components/ai/ask-careflow-button";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { NotificationBell } from "@/components/notifications/notification-bell";
 import { RoleSwitcher } from "@/components/role-switcher";
@@ -77,7 +79,10 @@ const NAV_ITEMS: NavItem[] = [
   { title: "nav.departments", href: "/departments", icon: Building2 },
   { title: "nav.floorMap", href: "/floor-map", icon: LayoutGrid },
   { title: "nav.reports", href: "/reports", icon: BarChart3 },
+  { title: "nav.askCareflow", href: "/ask", icon: Sparkles },
   { title: "nav.staff", href: "/staff", icon: Users },
+  // Admin-only in practice: every non-admin ROLE_NAV allowlist omits it.
+  { title: "nav.settings", href: "/settings", icon: Settings },
 ];
 
 /**
@@ -99,6 +104,7 @@ const ROLE_NAV: Record<StaffRole, string[]> = {
     "/care-plans",
     "/follow-ups",
     "/floor-map",
+    "/ask",
   ],
   // Doctor: the board, the "needs you" worklist, tests, prescribing, care
   // plans, and the post-discharge follow-up worklist.
@@ -109,6 +115,7 @@ const ROLE_NAV: Record<StaffRole, string[]> = {
     "/medications",
     "/care-plans",
     "/follow-ups",
+    "/ask",
   ],
   // Pharmacist: medications and the tests that inform them.
   pharmacist: ["/dashboard", "/medications", "/diagnostics"],
@@ -368,6 +375,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {/* Dev-only impersonation control. Real RLS governs access by
                 user_id in production, so hide it outside development. */}
             {process.env.NODE_ENV !== "production" ? <RoleSwitcher /> : null}
+            <AskCareFlowButton />
             <TourHelpButton />
             <NotificationBell />
             <LocaleToggle />

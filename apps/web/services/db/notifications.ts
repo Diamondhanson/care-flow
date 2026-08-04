@@ -32,6 +32,7 @@ import type {
 import { generateId, nowISO, type Database } from "./shared";
 import { emitNotificationsChanged, loadDatabase, persist } from "./engine";
 import { loadScoped, tenantId } from "./tenancy";
+import { isNotificationTypeEnabled } from "@/services/notification-prefs";
 
 /** Resolved display name for a staff id (denormalised onto the row). */
 function staffDisplayName(db: Database, id: StaffId | null | undefined): string | null {
@@ -107,6 +108,9 @@ export function queueNotifications(
   recipientIds: readonly (StaffId | null | undefined)[],
   spec: NotifySpec,
 ): void {
+  // Hospital-wide per-event toggle (admin-set on /settings). Silenced at the
+  // producer: no row → no bell, no realtime, no push, for every recipient.
+  if (!isNotificationTypeEnabled(spec.type)) return;
   const actorId = spec.actorId ?? null;
   const actorName = staffDisplayName(db, actorId);
   const seen = new Set<string>();

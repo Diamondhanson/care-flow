@@ -35,7 +35,9 @@ export const fr = {
     followUps: "Suivis post-sortie",
     billing: "Facturation",
     reports: "Rapports",
+    askCareflow: "Demander à CareFlow",
     staff: "Personnel",
+    settings: "Paramètres",
   },
 
   shell: {
@@ -1726,5 +1728,127 @@ export const fr = {
     pushBlocked: "Le push est bloqué dans les paramètres du navigateur",
     pushUnsupported: "Le push n'est pas pris en charge sur cet appareil",
     pushPrompt: "Soyez alerté même lorsque CareFlow est fermé.",
+  },
+
+  settings: {
+    title: "Paramètres de l'hôpital",
+    subtitle: "Configuration appliquée à tout le personnel de cet hôpital.",
+    adminOnly:
+      "Seuls les administrateurs peuvent consulter et modifier les paramètres de l'hôpital.",
+    loading: "Chargement des paramètres…",
+    loadFailed: "Impossible de charger les paramètres. Vérifiez votre connexion et rechargez.",
+    notifTitle: "Notifications",
+    medRemindersLabel: "Rappels de médicaments à administrer",
+    medRemindersHint:
+      "Peu avant l'heure prévue d'une dose, les infirmiers du service reçoivent une alerte avec le nombre de médicaments à administrer. Un simple décompte : aucun nom de patient ni de médicament n'apparaît sur l'écran de verrouillage.",
+    leadLabel: "Délai d'avance",
+    leadHint: "Combien de temps avant l'heure prévue le rappel est envoyé.",
+    leadOption: "{count} minutes avant",
+    escalationLabel: "Escalade des doses en retard",
+    escalationHint:
+      "Si une dose n'est toujours pas enregistrée après l'heure prévue, les infirmiers du service et le médecin traitant reçoivent une alerte. Un simple décompte, comme pour les rappels.",
+    escalationAfterLabel: "Escalader après",
+    escalationAfterHint: "Combien de temps après l'heure prévue avant l'escalade.",
+    escalationOption: "{count} minutes de retard",
+    eventsTitle: "Notifications d'événements",
+    eventsHint:
+      "Désactivez les événements pour lesquels votre personnel ne doit pas être alerté. S'applique à tout l'hôpital ; les appareils appliquent les changements à leur prochaine connexion.",
+    events: {
+      consultationCreated: "Consultation rédigée",
+      orderCreated: "Examen ou imagerie prescrit",
+      resultRecorded: "Résultat enregistré",
+      prescriptionCreated: "Médicament prescrit",
+      vitalsRecorded: "Constantes enregistrées",
+      marException: "Dose suspendue, refusée ou manquée",
+      careplanEscalation: "Escalade du plan de soins au médecin",
+      careplanAcknowledged: "Entrée du plan de soins visée",
+      visitRegistered: "Patient enregistré",
+      admissionCreated: "Patient admis",
+      transferRecorded: "Patient transféré",
+    },
+    save: "Enregistrer",
+    saving: "Enregistrement…",
+    saved: "Paramètres enregistrés",
+    savedBody:
+      "Les règles de rappel s'appliquent en moins d'une minute ; les changements d'événements atteignent les autres appareils à leur prochaine connexion.",
+    saveFailed: "Impossible d'enregistrer les paramètres",
+    saveFailedBody: "Vérifiez votre connexion et réessayez.",
+  },
+  ai: {
+    assist: "Assistance IA",
+    suggestNextSteps: "Suggérer les prochaines étapes",
+    reviewResults: "Analyser les résultats",
+    generating: "Réflexion…",
+    assessment: "Évaluation suggérée",
+    differential: "Pathologies possibles à considérer",
+    plan: "Plan suggéré",
+    tests: "Examens suggérés",
+    diagnoses: "Diagnostics suggérés",
+    medications: "Médicaments suggérés",
+    disposition: "Recommandation d'admission",
+    dispositionNote:
+      "Utilisez les contrôles d'étape de soins ci-dessous pour admettre, observer ou faire sortir — rien ne se fait automatiquement.",
+    dispo: {
+      admit: "Envisager une admission",
+      discharge: "Envisager une sortie",
+      observe: "Envisager une mise en observation",
+    },
+    accept: "Accepter",
+    edit: "Modifier",
+    dismiss: "Ignorer",
+    add: "Ajouter",
+    added: "Ajouté",
+    accepted: "Enregistré",
+    insertedNote: "Ajouté à la note — vérifiez puis enregistrez",
+    prescribe: "Prescrire",
+    prescribed: "Prescrit",
+    primary: "Principal",
+    why: "Pourquoi",
+    sources: "Basé sur",
+    confidence: {
+      low: "Confiance faible",
+      moderate: "Confiance modérée",
+      high: "Confiance élevée",
+    },
+    med: {
+      dose: "Dose",
+      route: "Voie",
+      frequency: "Fréquence",
+      duration: "Durée",
+    },
+    insufficientData:
+      "Pas encore assez d'informations pour faire une suggestion sûre.",
+    allergyWarning:
+      "En conflit avec une allergie enregistrée — vérifiez avant de prescrire.",
+    allergyAcknowledge: "J'ai examiné ce conflit et j'en prends la responsabilité.",
+    unavailable:
+      "L'IA est indisponible pour le moment — vous pouvez continuer manuellement.",
+    offline:
+      "L'IA nécessite une connexion Internet — vous pouvez continuer à travailler manuellement.",
+    rateLimited: "Le service IA est saturé — attendez une minute et réessayez.",
+    needsConsultation: "Enregistrez d'abord le subjectif / la revue des systèmes.",
+    needsResults: "Aucun résultat enregistré pour cette visite pour l'instant.",
+    disclaimer:
+      "Les suggestions de l'IA sont une aide à la décision uniquement. Le clinicien est responsable de toutes les décisions.",
+    ask: {
+      title: "Demander à CareFlow",
+      subtitle:
+        "Un assistant de recherche en lecture seule sur les dossiers de votre hôpital.",
+      patientTab: "Ce patient",
+      cohortTab: "Tous les patients",
+      placeholder: "Posez une question sur ce patient ou un groupe de patients…",
+      readOnlyNote:
+        "Lecture seule — Demander à CareFlow ne modifie jamais les dossiers.",
+      askButton: "Demander",
+      selectPatient: "Rechercher un patient…",
+      noPatient: "Choisissez un patient pour interroger son dossier.",
+      followUps: "Questions de suivi",
+      queryPreview: "Ce qui a été recherché",
+      rows: "Dossiers correspondants",
+      count: "{count} dossier(s) correspondant(s)",
+      empty: "Aucun dossier correspondant.",
+      cohortNote:
+        "Les questions de cohorte sont réservées aux médecins et aux administrateurs.",
+    },
   },
 } satisfies Messages;

@@ -8,6 +8,10 @@
       "types": "./types/healthcare.ts",
       "default": "./types/healthcare.ts"
     },
+    "./types/ai": {
+      "types": "./types/ai.ts",
+      "default": "./types/ai.ts"
+    },
     "./validation/email": {
       "types": "./validation/email.ts",
       "default": "./validation/email.ts"

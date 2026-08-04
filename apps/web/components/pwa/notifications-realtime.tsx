@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { useAuth } from "@/components/auth-provider";
 import { subscribeToRealtimeNotifications } from "@/services/notifications-client";
+import { refreshNotificationPrefs } from "@/services/notification-prefs";
 import { openVisitDrawer } from "@/services/visit-drawer";
 
 /**
@@ -18,6 +19,9 @@ export function NotificationsRealtime() {
 
   useEffect(() => {
     if (!staffId) return;
+    // Pull the hospital's per-event notification toggles into the producer
+    // gate's cache (best-effort; offline keeps the last-known rules).
+    void refreshNotificationPrefs();
     const unsubscribe = subscribeToRealtimeNotifications(staffId);
     return unsubscribe;
   }, [staffId]);

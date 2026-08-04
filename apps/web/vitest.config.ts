@@ -27,6 +27,10 @@ export default defineConfig({
         __dirname,
         "../../packages/shared/validation/schemas.ts",
       ),
+      "@careflow/shared/types/ai": resolve(
+        __dirname,
+        "../../packages/shared/types/ai.ts",
+      ),
       "@careflow/shared": resolve(
         __dirname,
         "../../packages/shared/types/healthcare.ts",

@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   ADMISSION_STATUSES,
+  AI_DECISIONS,
+  AI_FEATURES,
   ALLERGY_CATEGORIES,
   ALLERGY_SEVERITIES,
   BED_STATUSES,
@@ -98,6 +100,8 @@ const ENUM_TO_ARRAY: Record<string, readonly string[]> = {
   charge_source: CHARGE_SOURCES,
   charge_status: CHARGE_STATUSES,
   usage_event_type: USAGE_EVENT_TYPES,
+  ai_feature: AI_FEATURES,
+  ai_decision: AI_DECISIONS,
 };
 
 /**

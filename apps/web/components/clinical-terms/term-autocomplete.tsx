@@ -391,22 +391,33 @@ export function TermChips({
             }
           }}
         >
-          {chips.map((chip, i) => (
-            <span
-              key={`${chip}-${i}`}
-              className="inline-flex h-6 items-center gap-1 rounded-md border border-border bg-muted/60 pl-2 pr-1 text-xs"
-            >
-              {chip}
-              <button
-                type="button"
-                onClick={() => removeChip(i)}
-                className="rounded-sm p-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                aria-label={`Remove ${chip}`}
+          {chips.map((chip, i) => {
+            // Short picked terms stay compact pills; sentence-length chips
+            // (typed or inserted from AI Assist) get a full-width row with
+            // breathing room so multi-line content reads cleanly.
+            const isLong = chip.length > 48;
+            return (
+              <span
+                key={`${chip}-${i}`}
+                className={cn(
+                  "inline-flex gap-1 rounded-md border border-border bg-muted/60 pl-2 pr-1 text-xs",
+                  isLong
+                    ? "w-full items-start whitespace-normal py-1.5 leading-relaxed"
+                    : "h-6 items-center",
+                )}
               >
-                <X className="size-3" />
-              </button>
-            </span>
-          ))}
+                {isLong ? <span className="min-w-0 flex-1">{chip}</span> : chip}
+                <button
+                  type="button"
+                  onClick={() => removeChip(i)}
+                  className="shrink-0 rounded-sm p-0.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  aria-label={`Remove ${chip}`}
+                >
+                  <X className="size-3" />
+                </button>
+              </span>
+            );
+          })}
           <input
             ref={inputRef}
             id={id}

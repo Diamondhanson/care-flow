@@ -46,6 +46,7 @@ import {
   PastVisitsSection,
 } from "@/components/live-board/drawer/history-section";
 import { BackgroundPanel } from "@/components/patient/background-panel";
+import { AiAssistPanel } from "@/components/ai/ai-assist-panel";
 import { CareOrders } from "@/components/care-plans/care-orders";
 import {
   buildVisitSummary,
@@ -339,6 +340,20 @@ export function PatientDrawer({
                 records={data.records}
                 resetKey={resetKey}
                 onSaved={refresh}
+              />
+
+              <Separator />
+
+              {/* AI Assist (Phase 22) — decision-support drafts. Collapsed by
+                  default, online-only; every accept flows through the same
+                  client services as manual entry. */}
+              <AiAssistPanel
+                key={`ai-${visit.id}`}
+                visit={visit}
+                consultations={data.consultations}
+                results={data.results}
+                recorderId={recorderId}
+                onMutated={refresh}
               />
 
               <Separator />

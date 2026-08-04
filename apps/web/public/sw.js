@@ -16,10 +16,12 @@
  * existing CareFlow tab (or opens one) and deep-links to the related record.
  */
 
-// Bumped v2 → v3: adds the push/notificationclick handlers. Bumping the cache
-// name forces an SW update on next navigation so the `activate` handler purges
-// the stale cache and clients pick up the new worker.
-const CACHE = "careflow-v3";
+// Bumped v3 → v4: /api/* now bypasses the worker entirely (network-only).
+// The AI endpoints (Phase 22) must never be served from cache — a stale
+// suggestion is worse than none, and caching would break response streaming.
+// Bumping the cache name forces an SW update on next navigation so the
+// `activate` handler purges the stale cache and clients pick up the new worker.
+const CACHE = "careflow-v4";
 const OFFLINE_URL = "/offline";
 
 // App shell precached on install so the very first offline load has something.
@@ -59,8 +61,11 @@ function isHashedAsset(url) {
 }
 
 function isBypassed(url) {
-  // Next dev server / HMR endpoints must always hit the network.
+  // Next dev server / HMR endpoints must always hit the network. API routes
+  // too (Phase 22): the /api/ai/* responses are per-request clinical drafts —
+  // never cacheable, and the AI features are online-only by design.
   return (
+    url.pathname.startsWith("/api/") ||
     url.pathname.startsWith("/_next/webpack-hmr") ||
     url.pathname.startsWith("/__nextjs") ||
     url.pathname.includes("/_next/static/webpack/") ||

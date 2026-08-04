@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,11 @@ import {
 import { BackgroundPanel } from "@/components/patient/background-panel";
 import { RosReview } from "@/components/ros/ros-review";
 import { compileRosNarrative } from "@/lib/ros/compile";
+import {
+  AI_SOAP_DRAFT_EVENT,
+  mergeChipValue,
+  type AiSoapDraftDetail,
+} from "@/lib/ai/soap-draft";
 import { VitalsTrend } from "@/components/care-plans/vitals-trend";
 import { useT, useLocale } from "@/components/locale-provider";
 import { ConsultationNote } from "@/components/live-board/drawer/record-views";
@@ -69,6 +74,26 @@ export function ConsultationForm({
     setAssessment("");
     setPlan("");
   });
+
+  // AI Assist hand-off (Phase 22): accepting a suggested assessment/plan
+  // inserts it HERE as chips — same guard, same editability, same single
+  // save path as typed text. Nothing is written until the doctor saves.
+  useEffect(() => {
+    function onDraft(event: Event) {
+      const detail = (event as CustomEvent<AiSoapDraftDetail>).detail;
+      if (!detail || detail.visitId !== visit.id) return;
+      if (detail.part === "assessment") {
+        setAssessment((cur) => mergeChipValue(cur, detail.text));
+      } else {
+        setPlan((cur) => mergeChipValue(cur, detail.text));
+      }
+      document
+        .getElementById(detail.part === "assessment" ? "soap-a" : "soap-p")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    window.addEventListener(AI_SOAP_DRAFT_EVENT, onDraft);
+    return () => window.removeEventListener(AI_SOAP_DRAFT_EVENT, onDraft);
+  }, [visit.id]);
 
   function handleSaveConsultation() {
     // Structured ROS answers are recorded per tap (Phase 21); saving links

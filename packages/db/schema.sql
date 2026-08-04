@@ -1678,6 +1678,441 @@ begin
   end if;
 end $$;
 
+-- Web Push webhook: POST each new notification row to the `send-push` Edge
+-- Function via pg_net (the SQL-tracked equivalent of a dashboard Database
+-- Webhook — see packages/db/migrations/2026-07-notifications-webhook.sql).
+-- SECURITY DEFINER because inserts arrive as `authenticated`, which has no
+-- grant on the `net` schema. Hosted-only: pg_net does not run locally by
+-- default, and the URL targets the hosted project.
+create extension if not exists pg_net;
+
+create or replace function public.notify_send_push()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  perform net.http_post(
+    url := 'https://ftudvptmhblydmrsmazw.supabase.co/functions/v1/send-push',
+    body := jsonb_build_object(
+      'type',   'INSERT',
+      'schema', tg_table_schema,
+      'table',  tg_table_name,
+      'record', to_jsonb(new)
+    ),
+    headers := '{"Content-Type": "application/json"}'::jsonb,
+    timeout_milliseconds := 5000
+  );
+  return new;
+end $$;
+
+drop trigger if exists trg_notifications_send_push on public.notifications;
+create trigger trg_notifications_send_push
+  after insert on public.notifications
+  for each row execute function public.notify_send_push();
+
+-- Medication due-soon reminders: a pg_cron pass every minute notifies ward
+-- nurses with a COUNT-ONLY message when scheduled doses enter the reminder
+-- window (no patient/drug names — pushes render on lock screens; the MAR is
+-- the record to administer from). Admin-controlled via `hospital_settings`.
+-- Verbatim mirror of packages/db/migrations/2026-08-med-due-reminders.sql;
+-- `parse_frequency_hours` is the SQL twin of the client parser in
+-- components/medications/prescriptions.ts — keep the twins in sync when
+-- frequency phrasings are added.
+
+create table if not exists hospital_settings (
+  hospital_id               uuid primary key references hospitals(id) on delete cascade,
+  med_reminders_enabled     boolean not null default true,
+  med_reminder_lead_minutes integer not null default 5
+    check (med_reminder_lead_minutes between 1 and 120),
+  updated_at                timestamptz not null default now()
+);
+
+drop trigger if exists trg_hospital_settings_updated_at on hospital_settings;
+create trigger trg_hospital_settings_updated_at before update on hospital_settings
+  for each row execute function set_updated_at();
+
+alter table hospital_settings enable row level security;
+
+drop policy if exists "staff read own hospital settings" on hospital_settings;
+create policy "staff read own hospital settings" on hospital_settings
+  for select to authenticated
+  using (hospital_id = (select current_hospital_id()));
+
+drop policy if exists "admin write own hospital settings" on hospital_settings;
+create policy "admin write own hospital settings" on hospital_settings
+  for all to authenticated
+  using (hospital_id = (select current_hospital_id()) and (select current_staff_role()) = 'admin')
+  with check (hospital_id = (select current_hospital_id()) and (select current_staff_role()) = 'admin');
+
+-- One row per (prescription, computed due time) already reminded, so a dose is
+-- never announced twice. due_at is deterministic (anchor + interval), so it is
+-- stable across cron runs. RLS on, no policies: server-only table.
+create table if not exists medication_reminder_log (
+  prescription_id uuid not null references prescriptions(id) on delete cascade,
+  due_at          timestamptz not null,
+  notified_at     timestamptz not null default now(),
+  primary key (prescription_id, due_at)
+);
+
+alter table medication_reminder_log enable row level security;
+
+create or replace function public.parse_frequency_hours(freq text)
+returns numeric
+language plpgsql
+immutable
+as $$
+declare
+  f text;
+  m text[];
+  n numeric;
+begin
+  if freq is null then return null; end if;
+  f := lower(trim(freq));
+  if f = '' then return null; end if;
+
+  -- On-demand / as-needed — no fixed interval.
+  if f ~ '\y(prn|as required|as needed|when required|sos)\y' then return null; end if;
+
+  -- "every N hours" / "N hourly" / "qNh".
+  m := regexp_match(f, 'every\s+(\d+(?:\.\d+)?)\s*(?:h|hour|hours|hrs?)');
+  if m is null then m := regexp_match(f, '(\d+(?:\.\d+)?)\s*(?:h|hour|hours|hrs?)\s*ly'); end if;
+  if m is null then m := regexp_match(f, '\yq\s*(\d+(?:\.\d+)?)\s*h\y'); end if;
+  if m is not null then
+    n := m[1]::numeric;
+    if n > 0 then return n; end if;
+  end if;
+
+  -- "<word> times a day/daily" — before the bare "daily" fallback so
+  -- "three times daily" isn't mistaken for once daily.
+  m := regexp_match(f, '\y(once|twice|thrice|one|two|three|four)\y.*\y(?:times\s+)?(?:a\s+day|daily|per\s+day)\y');
+  if m is not null then
+    n := case m[1]
+      when 'once' then 1 when 'one' then 1
+      when 'twice' then 2 when 'two' then 2
+      when 'three' then 3 when 'thrice' then 3
+      when 'four' then 4
+    end;
+    if n is not null then return 24 / n; end if;
+  end if;
+
+  -- "N times a day" (numeric).
+  m := regexp_match(f, '(\d+)\s*times?\s*(?:a\s+day|daily|per\s+day)');
+  if m is not null then
+    n := m[1]::numeric;
+    if n > 0 then return 24 / n; end if;
+  end if;
+
+  -- Latin shorthand commonly seen on a drug chart.
+  if f ~ '\y(qds|qid)\y' then return 6; end if;
+  if f ~ '\y(tds|tid)\y' then return 8; end if;
+  if f ~ '\y(bd|bid)\y' then return 12; end if;
+
+  -- Named time-of-day schedules, before the once-daily fallback.
+  declare
+    has_morning boolean := f ~ '\y(morning|mane|breakfast)\y';
+    has_midday  boolean := f ~ '\y(noon|midday|lunch|afternoon)\y';
+    has_evening boolean := f ~ '\y(evening|night|nocte|bedtime|before\s+bed)\y';
+  begin
+    if has_morning and has_midday and has_evening then return 8; end if;
+    if has_morning and has_evening then return 12; end if;
+    if has_morning or has_evening then return 24; end if;
+  end;
+
+  -- Weekly.
+  if f ~ '\y(weekly|once\s+a\s+week|per\s+week|every\s+week)\y' then return 168; end if;
+
+  -- Once-daily phrasings.
+  if f ~ '\y(od|nocte|mane|daily|nightly|at night|every day|each day)\y' then return 24; end if;
+
+  return null;
+end $$;
+
+-- SECURITY DEFINER: runs from pg_cron as its owner; inserts bypass RLS the same
+-- way the rest of the server side does. Not callable by app users (revoked
+-- below) — it takes no input and is driven purely by the clock.
+create or replace function public.remind_due_medications()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_inserted integer;
+begin
+  with cfg as (
+    -- Hospitals with reminders on (missing settings row = defaults).
+    select h.id as hospital_id,
+           coalesce(s.med_reminder_lead_minutes, 5) as lead_min
+    from hospitals h
+    left join hospital_settings s on s.hospital_id = h.id
+    where coalesce(s.med_reminders_enabled, true)
+  ),
+  candidates as (
+    -- Scheduled doses on active prescriptions of open visits, with the same
+    -- next-due computation as the client MAR. Ward department (via an active
+    -- admission) wins over the visit department, as in nurseIdsForVisit.
+    select distinct on (p.id)
+           p.id as prescription_id,
+           p.hospital_id,
+           coalesce(w.department_id, v.department_id) as department_id,
+           c.lead_min,
+           coalesce(
+             (select max(ma.administered_at)
+                from medication_administrations ma
+               where ma.prescription_id = p.id
+                 and ma.status = 'given'
+                 and ma.administered_at is not null),
+             p.created_at
+           ) + interval '1 hour' * parse_frequency_hours(p.frequency) as due_at
+    from prescriptions p
+    join cfg c on c.hospital_id = p.hospital_id
+    join visits v on v.id = p.visit_id and v.status = 'open'
+    left join admissions a on a.visit_id = v.id and a.status = 'active'
+    left join wards w on w.id = a.ward_id
+    where p.status = 'active'
+      and parse_frequency_hours(p.frequency) is not null
+    order by p.id, a.admitted_at desc nulls last
+  ),
+  windowed as (
+    select * from candidates
+    where due_at > now()
+      and due_at <= now() + make_interval(mins => lead_min)
+  ),
+  fresh as (
+    -- Claim each dose once; a conflict means an earlier run already announced it.
+    insert into medication_reminder_log (prescription_id, due_at)
+    select prescription_id, due_at from windowed
+    on conflict do nothing
+    returning prescription_id
+  ),
+  grouped as (
+    select w.hospital_id, w.department_id, w.lead_min, count(*) as n_due
+    from windowed w
+    join fresh f on f.prescription_id = w.prescription_id
+    group by w.hospital_id, w.department_id, w.lead_min
+  ),
+  recipients as (
+    -- Nurses of the dose's department; a department with no nurses (or no
+    -- department at all) falls back to every active nurse in the hospital —
+    -- the same rule as nurseIdsForVisit on the client.
+    select g.hospital_id, g.lead_min, g.n_due, st.id as staff_id
+    from grouped g
+    join staff st
+      on st.hospital_id = g.hospital_id
+     and st.role = 'nurse'
+     and st.is_active
+     and (
+       st.department_id = g.department_id
+       or not exists (
+         select 1 from staff s2
+         where s2.hospital_id = g.hospital_id
+           and s2.role = 'nurse' and s2.is_active
+           and s2.department_id = g.department_id
+       )
+     )
+  ),
+  per_nurse as (
+    -- One notification per nurse per run, however many wards contributed.
+    select hospital_id, staff_id, min(lead_min) as lead_min, sum(n_due) as total
+    from recipients
+    group by hospital_id, staff_id
+  ),
+  inserted as (
+    insert into notifications
+      (hospital_id, recipient_staff_id, type, title, body, link, data)
+    select
+      hospital_id,
+      staff_id,
+      'meds.due_soon',
+      case when total = 1
+        then '1 medication due in the next ' || lead_min || ' min'
+        else total || ' medications due in the next ' || lead_min || ' min'
+      end,
+      'Open the medication worklist to review and administer.',
+      '/medications',
+      jsonb_build_object('count', total, 'lead_minutes', lead_min)
+    from per_nurse
+    returning 1
+  )
+  select count(*) into v_inserted from inserted;
+
+  return v_inserted;
+end $$;
+
+revoke execute on function public.remind_due_medications() from public, anon, authenticated;
+
+create extension if not exists pg_cron;
+
+do $$
+begin
+  if exists (select 1 from cron.job where jobname = 'remind-due-medications') then
+    perform cron.unschedule('remind-due-medications');
+  end if;
+end $$;
+
+select cron.schedule('remind-due-medications', '* * * * *',
+  'select public.remind_due_medications()');
+
+-- Overdue-dose escalation + per-event notification toggles. Verbatim mirror of
+-- packages/db/migrations/2026-08-notification-controls.sql: when a dose is
+-- still not recorded X min past due, ward nurses AND the attending doctor get
+-- a count-only alert (only fresh crossings — a cron outage or late enable can
+-- never flush stale history). `notification_prefs` (jsonb, type -> false)
+-- silences client event types at the producer (queueNotifications).
+
+-- ---- 1. Settings columns ----------------------------------------------------
+
+alter table hospital_settings
+  add column if not exists med_escalation_enabled       boolean not null default true,
+  add column if not exists med_escalation_after_minutes integer not null default 30,
+  add column if not exists notification_prefs           jsonb   not null default '{}'::jsonb;
+
+do $$ begin
+  alter table hospital_settings
+    add constraint hospital_settings_escalation_minutes_check
+    check (med_escalation_after_minutes between 5 and 240);
+exception when duplicate_object then null; end $$;
+
+-- ---- 2. Escalation de-dupe log ---------------------------------------------
+-- Mirrors medication_reminder_log: one row per (prescription, due time)
+-- already escalated. RLS on, no policies: server-only table.
+
+create table if not exists medication_escalation_log (
+  prescription_id uuid not null references prescriptions(id) on delete cascade,
+  due_at          timestamptz not null,
+  escalated_at    timestamptz not null default now(),
+  primary key (prescription_id, due_at)
+);
+
+alter table medication_escalation_log enable row level security;
+
+-- ---- 3. The escalation pass -------------------------------------------------
+-- SECURITY DEFINER, cron-only (revoked from app roles), same shape as
+-- remind_due_medications(): compute → claim → fan out per recipient.
+
+create or replace function public.escalate_overdue_medications()
+returns integer
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_inserted integer;
+begin
+  with cfg as (
+    select h.id as hospital_id,
+           coalesce(s.med_escalation_after_minutes, 30) as after_min
+    from hospitals h
+    left join hospital_settings s on s.hospital_id = h.id
+    where coalesce(s.med_escalation_enabled, true)
+  ),
+  candidates as (
+    -- Same next-due computation as the client MAR and the reminder pass.
+    select distinct on (p.id)
+           p.id as prescription_id,
+           p.hospital_id,
+           coalesce(w.department_id, v.department_id) as department_id,
+           coalesce(a.attending_doctor_id, v.attending_doctor_id) as attending_doctor_id,
+           c.after_min,
+           coalesce(
+             (select max(ma.administered_at)
+                from medication_administrations ma
+               where ma.prescription_id = p.id
+                 and ma.status = 'given'
+                 and ma.administered_at is not null),
+             p.created_at
+           ) + interval '1 hour' * parse_frequency_hours(p.frequency) as due_at
+    from prescriptions p
+    join cfg c on c.hospital_id = p.hospital_id
+    join visits v on v.id = p.visit_id and v.status = 'open'
+    left join admissions a on a.visit_id = v.id and a.status = 'active'
+    left join wards w on w.id = a.ward_id
+    where p.status = 'active'
+      and parse_frequency_hours(p.frequency) is not null
+    order by p.id, a.admitted_at desc nulls last
+  ),
+  crossed as (
+    -- Threshold crossed, and crossed RECENTLY (see header: no stale bursts).
+    select * from candidates
+    where due_at + make_interval(mins => after_min) <= now()
+      and due_at + make_interval(mins => after_min) > now() - interval '15 minutes'
+  ),
+  fresh as (
+    insert into medication_escalation_log (prescription_id, due_at)
+    select prescription_id, due_at from crossed
+    on conflict do nothing
+    returning prescription_id
+  ),
+  fresh_doses as (
+    select c.* from crossed c
+    join fresh f on f.prescription_id = c.prescription_id
+  ),
+  dose_recipients as (
+    -- Ward nurses (nurseIdsForVisit rule) plus the attending doctor. UNION
+    -- (not ALL) so a recipient matching both arms is still counted once.
+    select d.hospital_id, d.after_min, d.prescription_id, st.id as staff_id
+    from fresh_doses d
+    join staff st
+      on st.hospital_id = d.hospital_id
+     and st.role = 'nurse'
+     and st.is_active
+     and (
+       st.department_id = d.department_id
+       or not exists (
+         select 1 from staff s2
+         where s2.hospital_id = d.hospital_id
+           and s2.role = 'nurse' and s2.is_active
+           and s2.department_id = d.department_id
+       )
+     )
+    union
+    select d.hospital_id, d.after_min, d.prescription_id, sd.id
+    from fresh_doses d
+    join staff sd on sd.id = d.attending_doctor_id and sd.is_active
+  ),
+  per_staff as (
+    select hospital_id, staff_id, min(after_min) as after_min, count(*) as total
+    from dose_recipients
+    group by hospital_id, staff_id
+  ),
+  inserted as (
+    insert into notifications
+      (hospital_id, recipient_staff_id, type, title, body, link, data)
+    select
+      hospital_id,
+      staff_id,
+      'meds.overdue',
+      case when total = 1
+        then '1 medication overdue by ' || after_min || '+ min'
+        else total || ' medications overdue by ' || after_min || '+ min'
+      end,
+      'Open the medication worklist to review and administer.',
+      '/medications',
+      jsonb_build_object('count', total, 'after_minutes', after_min)
+    from per_staff
+    returning 1
+  )
+  select count(*) into v_inserted from inserted;
+
+  return v_inserted;
+end $$;
+
+revoke execute on function public.escalate_overdue_medications() from public, anon, authenticated;
+
+-- ---- 4. Schedule it ---------------------------------------------------------
+
+do $$
+begin
+  if exists (select 1 from cron.job where jobname = 'escalate-overdue-medications') then
+    perform cron.unschedule('escalate-overdue-medications');
+  end if;
+end $$;
+
+select cron.schedule('escalate-overdue-medications', '* * * * *',
+  'select public.escalate_overdue_medications()');
+
 -- =============================================================================
 -- 10. VERIFIED TENANT ONBOARDING (Phase 18.5)
 -- =============================================================================
@@ -1917,6 +2352,101 @@ alter table prescriptions add column if not exists meal_timing text;
 alter table prescriptions drop constraint if exists chk_prescriptions_meal_timing;
 alter table prescriptions add constraint chk_prescriptions_meal_timing
   check (meal_timing is null or meal_timing in ('with_meals','without_meals','neutral'));
+
+
+-- =============================================================================
+-- 14. AI DECISION SUPPORT (Phase 22)
+-- -----------------------------------------------------------------------------
+-- Suggestion + decision audit trail for the AI Clinical Assist features
+-- (docs/CareFlow-AI-Build-Spec.md). Every AI interaction is recorded here —
+-- never trusted, always logged. The AI itself NEVER writes clinical tables:
+-- a doctor's Accept flows through the normal client services + outbox, so the
+-- clinical rows it produces are audited by the standard triggers like any
+-- other write. This table is the compliance record of what was suggested and
+-- what the clinician decided, and the future quality-evaluation dataset.
+-- =============================================================================
+
+-- Which AI feature produced the suggestion.
+do $$ begin
+  create type ai_feature as enum ('plan', 'results', 'ask_patient', 'ask_cohort');
+exception when duplicate_object then null; end $$;
+
+-- What the clinician did with it. Every row starts as 'shown'.
+do $$ begin
+  create type ai_decision as enum ('shown', 'accepted', 'edited', 'dismissed');
+exception when duplicate_object then null; end $$;
+
+create table if not exists ai_suggestions (
+  id              uuid primary key default gen_random_uuid(),
+  hospital_id     uuid not null references hospitals(id) on delete cascade,
+  visit_id        uuid references visits(id) on delete set null,   -- null for cohort asks
+  patient_id      uuid references patients(id) on delete set null,
+  requested_by_id uuid references staff(id) on delete set null,
+  feature         ai_feature not null,
+  model           text not null,                  -- e.g. 'gemini-2.5-flash'
+  -- The exact (redacted) context and the raw model output, for audit + evals.
+  context_json    jsonb,                          -- redacted context bundle sent to the model
+  request_text    text,                           -- for ask_*: the clinician's question
+  response_json   jsonb,                          -- validated structured suggestions
+  raw_response    text,                           -- unparsed model text (debug)
+  safety_flags    jsonb not null default '[]'::jsonb,
+  decision        ai_decision not null default 'shown',
+  accepted_json   jsonb,                          -- what the doctor actually accepted/edited
+  prompt_tokens   integer,
+  output_tokens   integer,
+  latency_ms      integer,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now(),
+  -- Defense-in-depth caps (mirrors section 11): generous, but the DB itself
+  -- refuses runaway payloads even if the app layer is ever bypassed.
+  constraint chk_ai_suggestions_context_len  check (context_json  is null or length(context_json::text)  <= 200000),
+  constraint chk_ai_suggestions_response_len check (response_json is null or length(response_json::text) <= 200000),
+  constraint chk_ai_suggestions_raw_len      check (raw_response  is null or char_length(raw_response)   <= 200000),
+  constraint chk_ai_suggestions_request_len  check (request_text  is null or char_length(request_text)   <= 4000)
+);
+
+create index if not exists idx_ai_suggestions_visit            on ai_suggestions(visit_id);
+create index if not exists idx_ai_suggestions_hospital_feature on ai_suggestions(hospital_id, feature);
+
+drop trigger if exists trg_ai_suggestions_updated_at on ai_suggestions;
+create trigger trg_ai_suggestions_updated_at before update on ai_suggestions
+  for each row execute function set_updated_at();
+
+-- Suspension blocks new AI logging just like every other tenant write.
+drop trigger if exists trg_ai_suggestions_subscription on ai_suggestions;
+create trigger trg_ai_suggestions_subscription
+  before insert or update or delete on ai_suggestions
+  for each row execute function enforce_active_subscription();
+
+-- Compliance: suggestion rows and decision updates land in audit_log too.
+drop trigger if exists trg_ai_suggestions_audit on ai_suggestions;
+create trigger trg_ai_suggestions_audit
+  after insert or update or delete on ai_suggestions
+  for each row execute function audit_trigger();
+
+alter table ai_suggestions enable row level security;
+
+-- Same tenancy pattern as every other clinical table: staff read their own
+-- hospital's rows; clinicians insert/update (decision recording); nobody
+-- deletes from the client — this is an append-mostly compliance record.
+drop policy if exists "read for staff" on ai_suggestions;
+create policy "read for staff" on ai_suggestions
+  for select to authenticated
+  using ((select is_staff()) and hospital_id = (select current_hospital_id()));
+
+drop policy if exists "clinician insert ai suggestions" on ai_suggestions;
+create policy "clinician insert ai suggestions" on ai_suggestions
+  for insert to authenticated
+  with check ((select current_staff_role()) in ('nurse','doctor','admin')
+              and hospital_id = (select current_hospital_id()));
+
+drop policy if exists "clinician update ai suggestions" on ai_suggestions;
+create policy "clinician update ai suggestions" on ai_suggestions
+  for update to authenticated
+  using ((select current_staff_role()) in ('nurse','doctor','admin')
+         and hospital_id = (select current_hospital_id()))
+  with check ((select current_staff_role()) in ('nurse','doctor','admin')
+              and hospital_id = (select current_hospital_id()));
 
 
 -- =============================================================================
